@@ -94,18 +94,18 @@
             <!-- Right: Investment balance card (1 col) - MARGIN AGENSI -->
             <div class="bg-white rounded-[32px] p-8 border border-gray-150 shadow-sm flex flex-col justify-between min-h-[220px]">
                 <div>
-                    <span class="block text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">MARGIN BERSIH AGENSI ($1.50/JAM)</span>
-                    <h3 class="text-2xl font-black text-slate-800 mt-3">${{ number_format($metrics['agency_net_margin'], 2) }}</h3>
+                    <span class="block text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">MARGIN BERSIH AGENSI (Rp{{ number_format($metrics['agency_margin_hourly_rate'], 0, ',', '.') }}/JAM)</span>
+                    <h3 class="text-2xl font-black text-slate-800 mt-3">Rp{{ number_format($metrics['agency_net_margin'], 0, ',', '.') }}</h3>
                     <div class="flex items-center gap-2 mt-2">
-                        <span class="text-xs text-gray-400 font-medium">Billed to Client:</span>
+                        <span class="text-xs text-gray-400 font-medium">Billing Internal:</span>
                         <span class="bg-indigo-50 border border-indigo-100 text-indigo-700 text-[10px] font-bold px-2 py-0.5 rounded-full">
-                            ${{ number_format($metrics['client_paid_amount'] + $metrics['client_pending_amount'], 2) }}
+                            Rp{{ number_format($metrics['client_paid_amount'] + $metrics['client_pending_amount'], 0, ',', '.') }}
                         </span>
                     </div>
                 </div>
 
                 <span class="block text-center text-xs font-bold text-gray-405 py-3 bg-gray-50 border border-gray-150 rounded-2xl font-mono">
-                    Net Margin: 30.0% of Billing
+                    Rate billing: Rp{{ number_format($metrics['client_billing_hourly_rate'], 0, ',', '.') }}/jam
                 </span>
             </div>
         </div>

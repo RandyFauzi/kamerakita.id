@@ -142,8 +142,8 @@
 
                         <!-- Rate Pendapatan per Jam -->
                         <div>
-                            <label for="base_hourly_rate" class="block text-sm font-semibold text-gray-700 mb-1">Rate per Jam (USD) <span class="text-red-500">*</span></label>
-                            <input type="number" step="0.01" name="base_hourly_rate" id="base_hourly_rate" value="{{ old('base_hourly_rate', $partner->base_hourly_rate) }}" required class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            <label for="base_hourly_rate" class="block text-sm font-semibold text-gray-700 mb-1">Rate per Jam (Rupiah) <span class="text-red-500">*</span></label>
+                            <input type="number" step="1000" min="0" name="base_hourly_rate" id="base_hourly_rate" value="{{ old('base_hourly_rate', $partner->base_hourly_rate) }}" required class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                             @error('base_hourly_rate') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
 

@@ -7,6 +7,12 @@ use App\Models\VideoWorkReport;
 
 class CalculatePartnerMetricsService
 {
+    private const DEFAULT_WORKER_HOURLY_RATE_IDR = 54000;
+    private const MITRA_COMMISSION_HOURLY_RATE_IDR = 9000;
+    private const DEFAULT_MITRA_OWN_HOURLY_RATE_IDR = 63000;
+    private const CLIENT_BILLING_HOURLY_RATE_IDR = 90000;
+    private const AGENCY_MARGIN_HOURLY_RATE_IDR = 27000;
+
     /**
      * Get dynamic metrics for a single Worker partner.
      */
@@ -25,8 +31,7 @@ class CalculatePartnerMetricsService
         $pendingMinutes = $approvedReports->where('payment_status', 'unpaid')
             ->sum('approved_duration_minutes');
 
-        // Worker rate is fixed at $3.00 USD per hour
-        $rate = 3.00;
+        $rate = $worker->base_hourly_rate ?: self::DEFAULT_WORKER_HOURLY_RATE_IDR;
         $paidEarnings = ($paidMinutes / 60) * $rate;
         $pendingEarnings = ($pendingMinutes / 60) * $rate;
         $totalEarnings = $paidEarnings + $pendingEarnings;
@@ -41,6 +46,7 @@ class CalculatePartnerMetricsService
             'paid_earnings' => $paidEarnings,
             'pending_earnings' => $pendingEarnings,
             'total_earnings' => $totalEarnings,
+            'hourly_rate' => $rate,
         ];
     }
 
@@ -60,7 +66,7 @@ class CalculatePartnerMetricsService
         $totalPaid = 0;
         $totalPending = 0;
         
-        // Passive commission from workers ($0.50 USD per hour)
+        // Passive commission from workers in Rupiah per approved hour.
         $commissionPaid = 0;
         $commissionPending = 0;
 
@@ -76,12 +82,11 @@ class CalculatePartnerMetricsService
             $totalPaid += $metrics['paid_minutes'];
             $totalPending += $metrics['pending_minutes'];
 
-            // Commission tracking: $0.50 per hour
-            $commissionPaid += ($metrics['paid_minutes'] / 60) * 0.50;
-            $commissionPending += ($metrics['pending_minutes'] / 60) * 0.50;
+            $commissionPaid += ($metrics['paid_minutes'] / 60) * self::MITRA_COMMISSION_HOURLY_RATE_IDR;
+            $commissionPending += ($metrics['pending_minutes'] / 60) * self::MITRA_COMMISSION_HOURLY_RATE_IDR;
         }
 
-        // Mitra's own recordings at $3.50 USD per hour (if they recorded any)
+        // Mitra's own recordings use the configured partner rate, with a Rupiah fallback.
         $ownReports = VideoWorkReport::query()
             ->where('partner_id', $mitra->id)
             ->where('qc_status', 'approved')
@@ -91,8 +96,9 @@ class CalculatePartnerMetricsService
         $ownPaid = $ownReports->where('payment_status', 'paid')->sum('approved_duration_minutes');
         $ownPending = $ownReports->where('payment_status', 'unpaid')->sum('approved_duration_minutes');
 
-        $personalPaidEarnings = ($ownPaid / 60) * 3.50;
-        $personalPendingEarnings = ($ownPending / 60) * 3.50;
+        $mitraOwnRate = $mitra->base_hourly_rate ?: self::DEFAULT_MITRA_OWN_HOURLY_RATE_IDR;
+        $personalPaidEarnings = ($ownPaid / 60) * $mitraOwnRate;
+        $personalPendingEarnings = ($ownPending / 60) * $mitraOwnRate;
 
         return [
             'workers_count' => $workers->count(),
@@ -114,6 +120,8 @@ class CalculatePartnerMetricsService
             // Commission earnings
             'commission_paid_earnings' => $commissionPaid,
             'commission_pending_earnings' => $commissionPending,
+            'commission_hourly_rate' => self::MITRA_COMMISSION_HOURLY_RATE_IDR,
+            'personal_hourly_rate' => $mitraOwnRate,
         ];
     }
 
@@ -132,29 +140,9 @@ class CalculatePartnerMetricsService
         $paid = $approvedReports->where('payment_status', 'paid')->sum('approved_duration_minutes');
         $pending = $approvedReports->where('payment_status', 'unpaid')->sum('approved_duration_minutes');
 
-        // Billed to client (Mytronlabs) at $5.00/hour
-        $clientPaidAmount = ($paid / 60) * 5.00;
-        $clientPendingAmount = ($pending / 60) * 5.00;
-
-        // Worker share = $3.00/hour
-        $workerShare = ($allTime / 60) * 3.00;
-        
-        // Mitra share = $0.50/hour for managed workers + $3.50/hour for own
-        $workerReports = VideoWorkReport::whereHas('partner', function($q) {
-            $q->where('partner_role', 'worker');
-        })->where('qc_status', 'approved')->get();
-        
-        $mitraReports = VideoWorkReport::whereHas('partner', function($q) {
-            $q->where('partner_role', 'mitra');
-        })->where('qc_status', 'approved')->get();
-        
-        $mitraOwnMinutes = $mitraReports->sum('approved_duration_minutes');
-        $workerApprovedMinutes = $workerReports->sum('approved_duration_minutes');
-
-        $mitraShare = ($workerApprovedMinutes / 60) * 0.50 + ($mitraOwnMinutes / 60) * 3.50;
-
-        // Agency Net Margin = Billed ($5) - Worker ($3) - Mitra ($0.5) = $1.50 per hour
-        $agencyNetMargin = ($allTime / 60) * 1.50;
+        $clientPaidAmount = ($paid / 60) * self::CLIENT_BILLING_HOURLY_RATE_IDR;
+        $clientPendingAmount = ($pending / 60) * self::CLIENT_BILLING_HOURLY_RATE_IDR;
+        $agencyNetMargin = ($allTime / 60) * self::AGENCY_MARGIN_HOURLY_RATE_IDR;
 
         return [
             'total_workers' => $totalWorkersCount,
@@ -170,6 +158,8 @@ class CalculatePartnerMetricsService
             'client_paid_amount' => $clientPaidAmount,
             'client_pending_amount' => $clientPendingAmount,
             'agency_net_margin' => $agencyNetMargin,
+            'client_billing_hourly_rate' => self::CLIENT_BILLING_HOURLY_RATE_IDR,
+            'agency_margin_hourly_rate' => self::AGENCY_MARGIN_HOURLY_RATE_IDR,
         ];
     }
 

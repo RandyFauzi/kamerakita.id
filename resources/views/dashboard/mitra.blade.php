@@ -37,10 +37,10 @@
                 <div class="absolute inset-0 bg-white/10 backdrop-blur-[1px] pointer-events-none"></div>
 
                 <div class="relative z-10">
-                    <span class="block text-xs font-bold uppercase tracking-wider text-slate-550 font-mono">KOMISI TIM WORKER (RATE $0.50/JAM)</span>
+                    <span class="block text-xs font-bold uppercase tracking-wider text-slate-550 font-mono">KOMISI TIM WORKER (RATE Rp{{ number_format($metrics['commission_hourly_rate'], 0, ',', '.') }}/JAM)</span>
                     <div class="flex items-baseline gap-2 mt-3">
-                        <span class="text-4xl font-black text-slate-900 tracking-tight">${{ number_format($metrics['commission_paid_earnings'] + $metrics['commission_pending_earnings'], 2) }}</span>
-                        <span class="text-xs text-slate-550 font-bold uppercase font-mono">Pending: ${{ number_format($metrics['commission_pending_earnings'], 2) }}</span>
+                        <span class="text-4xl font-black text-slate-900 tracking-tight">Rp{{ number_format($metrics['commission_paid_earnings'] + $metrics['commission_pending_earnings'], 0, ',', '.') }}</span>
+                        <span class="text-xs text-slate-550 font-bold uppercase font-mono">Pending: Rp{{ number_format($metrics['commission_pending_earnings'], 0, ',', '.') }}</span>
                     </div>
                     <span class="block text-xs text-slate-450 font-medium mt-1">Dihitung dari total jam kerja approved tim Worker: <strong>{{ $metrics['total_all_time_hours_formatted'] }}</strong></span>
                 </div>
@@ -58,8 +58,8 @@
             <!-- Right: Investment balance card (1 col) - PENDAPATAN PRIBADI -->
             <div class="bg-white rounded-[32px] p-8 border border-gray-150 shadow-sm flex flex-col justify-between min-h-[220px]">
                 <div>
-                    <span class="block text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">PENDAPATAN PRIBADI (RATE $3.50/JAM)</span>
-                    <h3 class="text-2xl font-black text-slate-800 mt-3">${{ number_format($metrics['personal_paid_earnings'] + $metrics['personal_pending_earnings'], 2) }}</h3>
+                    <span class="block text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">PENDAPATAN PRIBADI (RATE Rp{{ number_format($metrics['personal_hourly_rate'], 0, ',', '.') }}/JAM)</span>
+                    <h3 class="text-2xl font-black text-slate-800 mt-3">Rp{{ number_format($metrics['personal_paid_earnings'] + $metrics['personal_pending_earnings'], 0, ',', '.') }}</h3>
                     <div class="flex items-center gap-2 mt-2">
                         <span class="text-xs text-slate-400 font-medium">Own Record:</span>
                         <span class="bg-amber-50 border border-amber-100 text-amber-700 text-[10px] font-bold px-2 py-0.5 rounded-full">
@@ -69,7 +69,7 @@
                 </div>
 
                 <span class="block text-center text-xs font-bold text-gray-400 py-3 bg-gray-50 border border-gray-150 rounded-2xl font-mono">
-                    Pending: ${{ number_format($metrics['personal_pending_earnings'], 2) }}
+                    Pending: Rp{{ number_format($metrics['personal_pending_earnings'], 0, ',', '.') }}
                 </span>
             </div>
         </div>
@@ -153,7 +153,7 @@
                                 <td class="py-3.5 text-gray-600">{{ $data['metrics']['all_time_hours_formatted'] }}</td>
                                 <td class="py-3.5 text-emerald-800">{{ $data['metrics']['paid_hours_formatted'] }}</td>
                                 <td class="py-3.5 text-amber-800 font-bold">{{ $data['metrics']['pending_hours_formatted'] }}</td>
-                                <td class="py-3.5 font-extrabold text-slate-800">${{ number_format($data['metrics']['pending_earnings'], 2) }}</td>
+                                <td class="py-3.5 font-extrabold text-slate-800">Rp{{ number_format($data['metrics']['pending_earnings'], 0, ',', '.') }}</td>
                                 <td class="py-3.5 text-indigo-600 font-medium">
                                     <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $data['worker']->whatsapp_number) }}" target="_blank" class="hover:underline">
                                         {{ $data['worker']->whatsapp_number }}
