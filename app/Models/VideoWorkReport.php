@@ -85,7 +85,7 @@ class VideoWorkReport extends Model
 
     private function publicStorageUrl(?string $path): ?string
     {
-        if (! $path || ! Storage::disk('public')->exists($path)) {
+        if (! $path) {
             return null;
         }
 
