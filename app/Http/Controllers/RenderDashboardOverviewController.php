@@ -44,8 +44,8 @@ class RenderDashboardOverviewController extends Controller
             }
         }
 
-        // Check if user is Super Admin or Finance
-        if ($user->role === 'superadmin' || $user->role === 'finance') {
+        // Check if user is an internal admin/finance user
+        if ($user->hasFullAdminAccess() || $user->role === 'finance') {
             $metrics = $this->metricsService->getGlobalMetrics();
             
             // Get last 10 submissions globally

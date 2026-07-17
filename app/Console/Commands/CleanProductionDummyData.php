@@ -14,6 +14,7 @@ class CleanProductionDummyData extends Command
         {--keep-email=randyfauzi24@gmail.com : Main account email that must be preserved}
         {--password= : Optional new password for the preserved account}
         {--delete-evidence-files : Also delete uploaded evidence files in storage/app/public/evidences}
+        {--yes : Skip the final confirmation prompt}
         {--force : Required to actually delete data}';
 
     protected $description = 'Clean demo operational data while preserving one main superadmin account.';
@@ -38,7 +39,7 @@ class CleanProductionDummyData extends Command
             return self::SUCCESS;
         }
 
-        if (! $this->confirm('This will delete partners, reports, invoices, and all users except '.$keepEmail.'. Continue?')) {
+        if (! $this->option('yes') && ! $this->confirm('This will delete partners, reports, invoices, and all users except '.$keepEmail.'. Continue?')) {
             $this->info('Cleanup cancelled.');
             return self::SUCCESS;
         }

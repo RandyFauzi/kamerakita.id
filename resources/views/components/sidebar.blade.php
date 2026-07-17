@@ -20,7 +20,7 @@
                 Dashboard Overview
             </a>
 
-            @if(Auth::user()->role === 'superadmin' || Auth::user()->role === 'finance')
+            @if(Auth::user()->canAccessQcRoom())
                 <a href="{{ route('video-submissions.qc-room') }}" class="flex items-center px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('video-submissions.qc-room') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
                     <svg class="w-5 h-5 mr-3 {{ request()->routeIs('video-submissions.qc-room') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
@@ -29,7 +29,7 @@
                 </a>
             @endif
 
-            @if(Auth::user()->role === 'superadmin')
+            @if(Auth::user()->hasFullAdminAccess())
                 <a href="{{ route('partners.index') }}" class="flex items-center px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('partners.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
                     <svg class="w-5 h-5 mr-3 {{ request()->routeIs('partners.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>

@@ -18,19 +18,28 @@ Route::get('/dashboard', RenderDashboardOverviewController::class)
 
 Route::middleware(['auth', 'verified'])->group(function () {
     // Phase 1: Partner Demographics CRUD
-    Route::resource('partners', ManagePartnerDemographicsController::class);
+    Route::resource('partners', ManagePartnerDemographicsController::class)
+        ->middleware('role:superadmin,admin');
 
     // Phase 2: Evidence-Based Submission Module
     Route::get('/submit-report', [SubmitVideoWorkReportController::class, 'create'])->name('video-submissions.submit-report.create');
     Route::post('/submit-report', [SubmitVideoWorkReportController::class, 'store'])->name('video-submissions.submit-report.store');
     
     // Phase 3: QC Video Room
-    Route::get('/qc-room', [VerifyVideoWorkReportController::class, 'index'])->name('video-submissions.qc-room');
-    Route::post('/qc-room/{report}/verify', [VerifyVideoWorkReportController::class, 'verify'])->name('video-submissions.verify');
+    Route::get('/qc-room', [VerifyVideoWorkReportController::class, 'index'])
+        ->middleware('role:superadmin,admin,finance')
+        ->name('video-submissions.qc-room');
+    Route::post('/qc-room/{report}/verify', [VerifyVideoWorkReportController::class, 'verify'])
+        ->middleware('role:superadmin,admin,finance')
+        ->name('video-submissions.verify');
 
     // Phase 5: Bulk Payroll Export Module
-    Route::get('/payroll/export-csv', [ExportPayrollDataController::class, 'exportCsv'])->name('payroll.export-csv');
-    Route::post('/payroll/mark-as-paid', [ExportPayrollDataController::class, 'markAsPaid'])->name('payroll.mark-as-paid');
+    Route::get('/payroll/export-csv', [ExportPayrollDataController::class, 'exportCsv'])
+        ->middleware('role:superadmin,admin,finance')
+        ->name('payroll.export-csv');
+    Route::post('/payroll/mark-as-paid', [ExportPayrollDataController::class, 'markAsPaid'])
+        ->middleware('role:superadmin,admin,finance')
+        ->name('payroll.mark-as-paid');
 });
 
 Route::middleware('auth')->group(function () {
