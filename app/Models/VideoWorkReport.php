@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 
 class VideoWorkReport extends Model
 {
@@ -75,20 +75,24 @@ class VideoWorkReport extends Model
 
     public function getEvidenceEmailImageUrlAttribute(): ?string
     {
-        return $this->publicStorageUrl($this->evidence_email_image_path);
+        return $this->signedEvidenceUrl('email', $this->evidence_email_image_path);
     }
 
     public function getEvidenceAppQualityImageUrlAttribute(): ?string
     {
-        return $this->publicStorageUrl($this->evidence_app_quality_image_path);
+        return $this->signedEvidenceUrl('app-quality', $this->evidence_app_quality_image_path);
     }
 
-    private function publicStorageUrl(?string $path): ?string
+    private function signedEvidenceUrl(string $type, ?string $path): ?string
     {
         if (! $path) {
             return null;
         }
 
-        return Storage::disk('public')->url($path);
+        return URL::temporarySignedRoute(
+            'video-submissions.evidence.show',
+            now()->addMinutes(30),
+            ['report' => $this->id, 'type' => $type]
+        );
     }
 }

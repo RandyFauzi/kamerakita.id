@@ -141,6 +141,12 @@ Group middleware `auth`, `verified`:
   - Name: `video-submissions.verify`
   - Middleware: `role:superadmin,admin,finance`
 
+- `GET /video-work-reports/{report}/evidence/{type}`
+  - Controller: `ShowVideoWorkReportEvidenceController`
+  - Name: `video-submissions.evidence.show`
+  - Middleware: `signed`, `role:superadmin,admin,finance`
+  - Dipakai untuk membuka gambar evidence via signed URL, bukan public storage langsung.
+
 - `GET /payroll/export-csv`
   - Controller: `ExportPayrollDataController@exportCsv`
   - Name: `payroll.export-csv`
@@ -542,14 +548,32 @@ Method:
 Private helper:
 
 - `compressAndStoreImage($file, string $folder)`
-  - Simpan file ke `storage/app/public/evidences`.
+  - Simpan file ke disk `local` Laravel, yaitu `storage/app/private/...`.
   - Convert ke JPEG dengan kualitas 75 jika GD berhasil.
-  - Fallback ke `$file->store($folder, 'public')` jika GD gagal.
+  - Fallback ke `$file->store($folder, 'local')` jika GD gagal.
 
 Requirement penting:
 
 - PHP GD extension perlu aktif.
-- Jalankan `php artisan storage:link` agar file storage public dapat diakses dari browser.
+- Evidence laporan tidak perlu `php artisan storage:link` karena tidak dilayani dari public storage.
+- Akses gambar evidence dilakukan lewat signed route `video-submissions.evidence.show`.
+
+### `ShowVideoWorkReportEvidenceController`
+
+Tujuan:
+
+- Melayani file evidence secara private melalui signed URL.
+
+Alur:
+
+1. Route menerima `VideoWorkReport $report` dan `type`.
+2. `type` hanya boleh:
+   - `email`: membaca `evidence_email_image_path`.
+   - `app-quality`: membaca `evidence_app_quality_image_path`.
+3. Route wajib memiliki signature valid dan user wajib role `superadmin`, `admin`, atau `finance`.
+4. Controller membaca file dari disk `local` private.
+5. Jika file belum ada di private storage, controller fallback membaca disk `public` untuk kompatibilitas file lama.
+6. Response memakai header `Cache-Control` private/no-store agar browser tidak menyimpan evidence sensitif terlalu lama.
 
 ### `VerifyVideoWorkReportController`
 
@@ -600,14 +624,18 @@ Method:
     - `Nomor Rekening`
     - `Nama Pemilik Rekening`
     - `Nama Bank`
-    - `Total Nominal Rupiah`
     - `ID Mitra`
+    - `Mata Uang`
+    - `Rate per Jam Rupiah`
     - `Total Menit Kerja`
+    - `Total Jam Kerja`
+    - `Total Nominal Rupiah`
   - Perhitungan:
     - `totalMinutes = sum(approved_duration_minutes)`.
     - `hours = totalMinutes / 60`.
-    - `hourlyRate = partner.base_hourly_rate ?? 54000`.
+    - `hourlyRate = partner.base_hourly_rate ?: 54000`.
     - `totalEarnings = round(hours * hourlyRate)`.
+    - Mata uang selalu `IDR`.
   - Fallback rekening:
     - nomor rekening: `account_number` atau `0000000000`.
     - pemilik rekening: `account_owner_name` atau `full_name`.
@@ -1019,7 +1047,7 @@ Default:
 3. Jika partner role worker, user bisa buka `/submit-report`.
 4. Worker mengisi tanggal kerja, durasi menit, dua bukti gambar.
 5. Sistem validasi input.
-6. Sistem kompres gambar ke `storage/app/public/evidences`.
+6. Sistem kompres gambar ke `storage/app/private/evidences/...` lewat disk `local`.
 7. Sistem membuat `video_work_reports` dengan status:
    - `qc_status = pending`
    - `payment_status = unpaid`
@@ -1030,7 +1058,7 @@ Default:
 1. User buka `/qc-room`.
 2. Sistem mengambil report `pending`.
 3. User klik Review.
-4. Modal menampilkan info report dan pilihan aksi.
+4. Modal menampilkan info report, evidence dari signed URL, dan pilihan aksi.
 5. Jika approve penuh:
    - approved minutes = submitted minutes.
 6. Jika approve sebagian:
@@ -1045,6 +1073,9 @@ Default:
 2. Klik export CSV payroll.
 3. Sistem mengambil semua report approved+unpaid.
 4. Sistem group per partner.
+5. Sistem menghitung nominal dalam `IDR` memakai `partners.base_hourly_rate`.
+6. CSV menampilkan mata uang, rate Rupiah per jam, total menit, total jam, dan total nominal Rupiah.
+7. Browser download file CSV.
 5. Sistem hitung total menit dan nominal.
 6. Browser download file CSV.
 7. Setelah dibayar manual di bank/payment system, user klik Mark as Paid.
@@ -1116,6 +1147,17 @@ Buat storage symlink:
 php artisan storage:link
 ```
 
+Catatan:
+
+- Evidence laporan baru tidak bergantung pada symlink ini karena disimpan di private storage.
+- Symlink masih boleh diperlukan untuk asset publik lain yang memang disimpan di disk `public`.
+
+Migrasi evidence lama dari public storage ke private storage:
+
+```bash
+php artisan evidence:migrate-to-private --delete-public
+```
+
 Run test:
 
 ```bash
@@ -1156,18 +1198,21 @@ Catatan:
 
 - Tetap cek setiap route baru agar tidak hanya mengandalkan sidebar.
 
-### 3. QC modal memakai gambar upload asli
+### 3. QC modal memakai gambar upload asli via signed URL
 
 - Model `VideoWorkReport` memiliki accessor:
   - `evidence_email_image_url`.
   - `evidence_app_quality_image_url`.
-- URL dibentuk lewat `Storage::disk('public')->url($path)`.
+- URL dibentuk lewat `URL::temporarySignedRoute(...)` ke route `video-submissions.evidence.show`.
+- Signed URL berlaku 30 menit.
+- Route evidence tetap membutuhkan login, verified user, valid signature, dan role `superadmin`, `admin`, atau `finance`.
 - View QC memakai accessor tersebut untuk menampilkan gambar evidence.
 
 Catatan:
 
-- Jalankan `php artisan storage:link` di server production.
-- Jika gambar tidak muncul, cek apakah file memang ada di `storage/app/public/evidences` dan URL `/storage/...` bisa diakses.
+- Upload evidence baru disimpan di private local storage: `storage/app/private/evidences/...`.
+- File lama yang masih berada di public storage bisa dimigrasikan dengan `php artisan evidence:migrate-to-private --delete-public`.
+- Controller evidence masih punya fallback membaca disk `public` untuk kompatibilitas selama file lama belum dimigrasikan.
 
 ### 4. `User` model dan role
 
@@ -1188,15 +1233,16 @@ Rekomendasi:
 
 - Perbarui README agar sesuai dependency aktual.
 
-### 6. Access control UI tidak sama dengan access control backend
+### 6. Access control backend
 
 - Sidebar menyembunyikan link berdasarkan role.
-- Tetapi backend route belum sepenuhnya membatasi role.
+- Backend route sensitif juga sudah memakai middleware role.
+- Test regresi proteksi route ada di `tests/Feature/RouteRoleProtectionTest.php`.
 
 Rekomendasi:
 
 - Jangan mengandalkan UI untuk security.
-- Tambahkan middleware/policy.
+- Setiap route sensitif baru wajib diberi middleware/policy dan test akses langsung.
 
 ### 7. `ProcessPartnerPayrollService` belum dipakai
 
@@ -1207,14 +1253,15 @@ Rekomendasi:
 
 - Konsolidasikan payroll logic agar tidak duplikatif.
 
-### 8. File upload perlu validasi akses
+### 8. File upload evidence private
 
-- Upload disimpan di storage publik.
-- Perlu dipastikan hanya verifikator/admin terkait yang bisa melihat bukti jika data sensitif.
+- Upload evidence baru disimpan di private storage.
+- Akses evidence memakai signed URL dan role middleware.
+- Test akses evidence ada di `tests/Feature/VideoWorkReportEvidenceAccessTest.php`.
 
 Rekomendasi:
 
-- Jika bukti mengandung data pribadi, pertimbangkan private storage + controller signed URL.
+- Untuk production yang sudah punya file lama di public storage, jalankan migrasi evidence dan hapus salinan public.
 
 ## 18. Peta File Penting untuk AI
 
@@ -1236,7 +1283,9 @@ Jika ingin mengubah submit laporan:
 - `app/Http/Controllers/SubmitVideoWorkReportController.php`
 - `app/Models/VideoWorkReport.php`
 - `resources/views/video-submissions/submit-report.blade.php`
-- storage/public setup.
+- private storage setup.
+- `app/Http/Controllers/ShowVideoWorkReportEvidenceController.php`
+- `app/Console/Commands/MigrateEvidenceFilesToPrivateStorage.php`
 
 Jika ingin mengubah riwayat laporan worker/mitra:
 

@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\DB;
 
 class ExportPayrollDataController extends Controller
 {
+    private const DEFAULT_HOURLY_RATE_IDR = 54000;
+
     /**
      * Export unpaid approved video work reports into bank-ready Bulk Transfer CSV format.
      */
@@ -43,9 +45,12 @@ class ExportPayrollDataController extends Controller
                 'Nomor Rekening',
                 'Nama Pemilik Rekening',
                 'Nama Bank',
-                'Total Nominal Rupiah',
                 'ID Mitra',
-                'Total Menit Kerja'
+                'Mata Uang',
+                'Rate per Jam Rupiah',
+                'Total Menit Kerja',
+                'Total Jam Kerja',
+                'Total Nominal Rupiah'
             ]);
 
             foreach ($grouped as $partnerId => $reports) {
@@ -53,16 +58,19 @@ class ExportPayrollDataController extends Controller
                 
                 $totalMinutes = $reports->sum('approved_duration_minutes');
                 $hours = $totalMinutes / 60;
-                $hourlyRate = $partner->base_hourly_rate ?? 54000;
+                $hourlyRate = $partner->base_hourly_rate ?: self::DEFAULT_HOURLY_RATE_IDR;
                 $totalEarnings = round($hours * $hourlyRate);
 
                 fputcsv($file, [
                     $partner->account_number ?? '0000000000',
                     $partner->account_owner_name ?? $partner->full_name,
                     $partner->bank_name ?? 'BCA',
-                    $totalEarnings,
                     $partner->mitra_id,
-                    $totalMinutes
+                    'IDR',
+                    $hourlyRate,
+                    $totalMinutes,
+                    number_format($hours, 2, '.', ''),
+                    $totalEarnings
                 ]);
             }
 

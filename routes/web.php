@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ListPartnerReportHistoryController;
+use App\Http\Controllers\ShowVideoWorkReportEvidenceController;
 use App\Http\Controllers\SubmitVideoWorkReportController;
 use App\Http\Controllers\VerifyVideoWorkReportController;
 use App\Http\Controllers\RenderDashboardOverviewController;
@@ -41,6 +42,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/qc-room/{report}/verify', [VerifyVideoWorkReportController::class, 'verify'])
         ->middleware('role:superadmin,admin,finance')
         ->name('video-submissions.verify');
+    Route::get('/video-work-reports/{report}/evidence/{type}', ShowVideoWorkReportEvidenceController::class)
+        ->middleware(['signed', 'role:superadmin,admin,finance'])
+        ->name('video-submissions.evidence.show');
 
     // Phase 5: Bulk Payroll Export Module
     Route::get('/payroll/export-csv', [ExportPayrollDataController::class, 'exportCsv'])
