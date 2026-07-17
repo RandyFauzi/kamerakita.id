@@ -134,7 +134,7 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <button 
-                                            @click="openReview({{ json_encode($report->load('partner')) }})" 
+                                            @click="openReview(@js($report->load('partner')))"
                                             class="inline-flex items-center px-3.5 py-1.5 bg-indigo-50 border border-indigo-100 rounded-lg text-indigo-700 hover:bg-indigo-100 text-xs font-bold tracking-wider transition-colors duration-200">
                                             Review
                                         </button>
