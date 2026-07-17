@@ -1,0 +1,48 @@
+<x-guest-layout>
+    <div class="mb-6 text-center">
+        <h3 class="text-xl font-bold text-gray-900">Daftar Akun Baru</h3>
+        <p class="text-xs text-gray-400 mt-1">Lengkapi data pendaftaran akun agensi Anda.</p>
+    </div>
+
+    <form method="POST" action="{{ route('register') }}" class="space-y-4">
+        @csrf
+
+        <!-- Name -->
+        <div>
+            <label for="name" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Nama Lengkap</label>
+            <input id="name" type="text" name="name" value="{{ old('name') }}" required autofocus autocomplete="name" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+            <x-input-error :messages="$errors->get('name')" class="mt-1" />
+        </div>
+
+        <!-- Email Address -->
+        <div>
+            <label for="email" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Alamat Email</label>
+            <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="username" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+            <x-input-error :messages="$errors->get('email')" class="mt-1" />
+        </div>
+
+        <!-- Password -->
+        <div>
+            <label for="password" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Kata Sandi</label>
+            <input id="password" type="password" name="password" required autocomplete="new-password" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+            <x-input-error :messages="$errors->get('password')" class="mt-1" />
+        </div>
+
+        <!-- Confirm Password -->
+        <div>
+            <label for="password_confirmation" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Konfirmasi Kata Sandi</label>
+            <input id="password_confirmation" type="password" name="password_confirmation" required autocomplete="new-password" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-1" />
+        </div>
+
+        <div class="flex items-center justify-between pt-2">
+            <a class="text-xs text-indigo-650 hover:underline font-semibold" href="{{ route('login') }}">
+                Sudah punya akun?
+            </a>
+
+            <button type="submit" class="px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white font-bold text-xs uppercase tracking-widest rounded-xl transition shadow-sm">
+                Daftar Akun
+            </button>
+        </div>
+    </form>
+</x-guest-layout>
