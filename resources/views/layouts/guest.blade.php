@@ -24,13 +24,8 @@
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
             <!-- Modern Logo Header -->
             <div class="mb-4">
-                <a href="/" class="flex flex-col items-center gap-2.5">
-                    <div class="w-12 h-12 rounded-2xl bg-gray-900 flex items-center justify-center shadow-sm">
-                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4L4 20h3l2-5h6l2 5h3L12 4zm-1.5 8.5L12 8l1.5 4.5h-3z"/>
-                        </svg>
-                    </div>
-                    <span class="text-gray-900 font-black text-xl tracking-wider">Kamerakita<span class="text-indigo-650">.ai</span></span>
+                <a href="/" class="flex items-center justify-center">
+                    <img src="{{ asset('images/Logo.webp') }}" alt="Kamerakita.ai" class="h-14 w-auto object-contain">
                 </a>
             </div>
 

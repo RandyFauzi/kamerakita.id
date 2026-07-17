@@ -1,14 +1,10 @@
 <div class="fixed inset-y-0 left-0 z-20 w-64 bg-white border-r border-gray-200/60 flex flex-col justify-between transition-all duration-300 transform md:translate-x-0 -translate-x-full" id="sidebar">
     <div class="flex flex-col">
         <!-- Logo Header -->
-        <div class="h-16 flex items-center px-6 border-b border-gray-100 gap-2.5">
-            <!-- Modern Letter "A" Icon matching Airtm logo style -->
-            <div class="w-8 h-8 rounded-xl bg-gray-900 flex items-center justify-center">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4L4 20h3l2-5h6l2 5h3L12 4zm-1.5 8.5L12 8l1.5 4.5h-3z"/>
-                </svg>
-            </div>
-            <span class="text-gray-900 font-black text-lg tracking-wider">Kamerakita<span class="text-indigo-600">.ai</span></span>
+        <div class="h-16 flex items-center px-6 border-b border-gray-100">
+            <a href="{{ route('dashboard') }}" class="flex items-center">
+                <img src="{{ asset('images/Logo.webp') }}" alt="Kamerakita.ai" class="h-9 w-auto object-contain">
+            </a>
         </div>
 
         <!-- Navigation Links -->
