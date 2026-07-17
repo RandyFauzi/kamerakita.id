@@ -11,12 +11,14 @@ Project ini adalah aplikasi web berbasis Laravel untuk mengelola operasional age
 Fitur inti:
 
 - Autentikasi user memakai stack Laravel Breeze.
-- Role user: `superadmin`, `verifikator`, `finance`.
+- Role user: `superadmin`, `admin`, `verifikator`, `finance`.
 - Profil operasional partner: `worker` dan `mitra`.
 - Worker dapat submit laporan kerja video harian dengan dua bukti gambar.
+- Worker dan mitra punya halaman khusus riwayat laporan.
 - QC room menampilkan laporan pending dan memungkinkan approve penuh, approve sebagian, atau reject.
 - Dashboard berbeda tergantung user yang login dan apakah user terhubung ke data partner.
-- Superadmin/finance dapat export CSV payroll untuk laporan approved yang belum dibayar.
+- Superadmin/admin dapat mengelola akun admin internal.
+- Superadmin/admin/finance dapat export CSV payroll untuk laporan approved yang belum dibayar.
 - Sistem menyimpan invoice klien di tabel `client_invoices`.
 
 ## 2. Teknologi dan Dependency
@@ -86,7 +88,7 @@ Mengatur alias middleware:
 
 - `role` diarahkan ke `App\Http\Middleware\RoleMiddleware`.
 
-Middleware role sudah terdaftar, tetapi pada `routes/web.php` saat ini route utama belum memakai middleware `role`; sebagian pembatasan role dilakukan manual di controller/view.
+Middleware role sudah terdaftar dan dipakai untuk route sensitif seperti `partners`, `admin-users`, `qc-room`, dan `payroll`. Route dashboard tetap memakai pembacaan role/partner di controller karena dashboard berbeda berdasarkan konteks user.
 
 ## 5. Route Aplikasi
 
@@ -107,6 +109,14 @@ Group middleware `auth`, `verified`:
 - Resource `partners`
   - Controller: `ManagePartnerDemographicsController`
   - Fitur CRUD data mitra/worker.
+  - Middleware: `role:superadmin,admin`.
+
+- Resource `admin-users`
+  - Controller: `ManageAdminUsersController`
+  - Fitur CRUD akun internal non-superadmin.
+  - Parameter route: `adminUser`.
+  - Tidak memakai method `show`.
+  - Middleware: `role:superadmin,admin`.
 
 - `GET /submit-report`
   - Controller: `SubmitVideoWorkReportController@create`
@@ -116,21 +126,30 @@ Group middleware `auth`, `verified`:
   - Controller: `SubmitVideoWorkReportController@store`
   - Name: `video-submissions.submit-report.store`
 
+- `GET /report-history`
+  - Controller: `ListPartnerReportHistoryController`
+  - Name: `video-submissions.report-history`
+  - Dipakai worker dan mitra untuk melihat riwayat laporan masing-masing.
+
 - `GET /qc-room`
   - Controller: `VerifyVideoWorkReportController@index`
   - Name: `video-submissions.qc-room`
+  - Middleware: `role:superadmin,admin,finance`
 
 - `POST /qc-room/{report}/verify`
   - Controller: `VerifyVideoWorkReportController@verify`
   - Name: `video-submissions.verify`
+  - Middleware: `role:superadmin,admin,finance`
 
 - `GET /payroll/export-csv`
   - Controller: `ExportPayrollDataController@exportCsv`
   - Name: `payroll.export-csv`
+  - Middleware: `role:superadmin,admin,finance`
 
 - `POST /payroll/mark-as-paid`
   - Controller: `ExportPayrollDataController@markAsPaid`
   - Name: `payroll.mark-as-paid`
+  - Middleware: `role:superadmin,admin,finance`
 
 Group middleware `auth`:
 
@@ -167,7 +186,8 @@ Kolom di tabel `users`, default `verifikator`.
 
 Nilai yang digunakan:
 
-- `superadmin`: akses dashboard global, kelola partner, QC, payroll.
+- `superadmin`: akses dashboard global, kelola partner, kelola admin, QC, payroll.
+- `admin`: akses penuh mirip superadmin untuk operasional, tetapi bukan superadmin utama.
 - `finance`: akses dashboard global dan payroll/QC link di sidebar.
 - `verifikator`: role default, dapat login. Jika user tidak ditautkan ke partner dan bukan admin/finance, masuk ke fallback dashboard.
 
@@ -186,7 +206,7 @@ Hubungan user-partner:
 - Dashboard pertama-tama mencari `Partner::where('user_id', Auth::id())`.
 - Jika partner ditemukan dan `partner_role` adalah `worker`, tampil dashboard worker.
 - Jika partner ditemukan dan `partner_role` adalah `mitra`, tampil dashboard mitra.
-- Jika tidak ada partner dan user role `superadmin` atau `finance`, tampil dashboard admin/global.
+- Jika tidak ada partner dan user role `superadmin`, `admin`, atau `finance`, tampil dashboard admin/global.
 - Selain itu tampil fallback dashboard.
 
 ## 7. Database dan Migration
@@ -208,8 +228,11 @@ Kolom:
 
 Catatan model:
 
-- `App\Models\User` memakai attribute `#[Fillable(['name', 'email', 'password'])]`.
-- Kolom `role` tidak ada di fillable model. Seeder tetap bisa set role lewat factory create dengan mass assignment? Pada Laravel attribute fillable ini bisa membatasi mass assignment; perlu diuji bila ada error seeding terkait `role`.
+- `App\Models\User` memakai attribute `#[Fillable(['name', 'email', 'password', 'role', 'email_verified_at'])]`.
+- Helper akses penting:
+  - `hasFullAdminAccess()`: true untuk `superadmin` dan `admin`.
+  - `canAccessQcRoom()`: true untuk `superadmin`, `admin`, dan `finance`.
+  - `canAccessPayroll()`: true untuk `superadmin`, `admin`, dan `finance`.
 
 ### Tabel `partners`
 
@@ -398,7 +421,7 @@ Alur:
 4. Jika partner adalah `mitra`:
    - Ambil metrics mitra dari `CalculatePartnerMetricsService::getMitraMetrics`.
    - Render `dashboard.mitra`.
-5. Jika user role `superadmin` atau `finance`:
+5. Jika user role `superadmin`, `admin`, atau `finance`:
    - Ambil global metrics.
    - Ambil 10 report terbaru global.
    - Ambil semua client invoices.
@@ -447,7 +470,48 @@ Method:
 
 Catatan:
 
-- Route resource belum diberi middleware role khusus. Secara route, semua user auth+verified dapat mengakses jika tahu URL, walaupun sidebar hanya menampilkan ke superadmin.
+- Route resource `partners` dilindungi middleware `role:superadmin,admin`.
+- Saat membuat partner baru, controller juga membuat akun `users` untuk partner dan menghubungkan `partners.user_id`, sehingga worker/mitra bisa login.
+- Email partner dipakai sebagai email login. Password awal ditentukan dari form create.
+- Worker/mitra yang sudah punya `user_id` akan masuk dashboard sesuai `partner_role`.
+
+### `ManageAdminUsersController`
+
+Tujuan:
+
+- CRUD akun internal untuk admin operasional.
+- Dipakai agar ada akun admin tambahan yang dapat mengakses fitur penuh seperti owner, tetapi bukan `superadmin`.
+
+Pembatasan:
+
+- Route dilindungi middleware `role:superadmin,admin`.
+- Akun `superadmin` utama tidak boleh sembarang dibuat lewat halaman ini.
+- Email unik di tabel `users`.
+
+### `ListPartnerReportHistoryController`
+
+Tujuan:
+
+- Menampilkan halaman khusus riwayat laporan untuk akun `worker` dan `mitra`.
+
+Alur:
+
+1. Cari `Partner` berdasarkan `Auth::id()` lewat `partners.user_id`.
+2. Jika partner bukan `worker` atau `mitra`, request ditolak.
+3. Jika partner `worker`, query hanya mengambil `video_work_reports.partner_id = partner.id`.
+4. Jika partner `mitra`, query mengambil laporan milik mitra tersebut dan worker direct di bawahnya (`mitra_parent_id = partner.id`).
+5. Eager load relasi `partner` dan `verifier`.
+6. Hitung summary:
+   - total laporan.
+   - laporan pending QC.
+   - laporan approved.
+   - durasi approved yang masih `unpaid`.
+7. Filter opsional:
+   - `search`: mencocokkan ID laporan, nama partner, `mitra_id`, atau nomor WhatsApp.
+   - `qc_status`: `pending`, `approved`, `rejected`.
+   - `payment_status`: `unpaid`, `paid`.
+8. Order by `submission_date` terbaru lalu `created_at` terbaru.
+9. Paginate 20 dan render `video-submissions.report-history`.
 
 ### `SubmitVideoWorkReportController`
 
@@ -516,7 +580,8 @@ Method:
 
 Catatan:
 
-- Route QC juga belum dilindungi middleware role khusus. Sidebar menampilkannya untuk `superadmin` atau `finance`, tetapi URL route tersedia untuk semua user auth+verified.
+- Route QC dilindungi middleware `role:superadmin,admin,finance`.
+- Sidebar menampilkan link QC hanya untuk user yang `canAccessQcRoom()`.
 
 ### `ExportPayrollDataController`
 
@@ -555,7 +620,7 @@ Catatan penting:
 
 - CSV payroll menggunakan `base_hourly_rate`.
 - Di migration default awal `base_hourly_rate` adalah `54000` rupiah.
-- Tetapi form create/edit label menyebut "Rate per Jam (USD)" dan default create view memakai `3.00`. Ini inkonsistensi unit yang perlu dibereskan sebelum production payroll.
+- Form create/edit partner sekarang memakai label Rupiah, sehingga user operasional tidak perlu memahami kurs atau nilai USD.
 
 ## 10. Action dan Service
 
@@ -604,7 +669,8 @@ Data:
 
 Rate:
 
-- Worker rate fixed `$3.00/hour`.
+- Worker rate mengambil `partners.base_hourly_rate`.
+- Fallback jika kosong: `DEFAULT_WORKER_HOURLY_RATE_IDR = 54000`.
 
 Output penting:
 
@@ -617,6 +683,7 @@ Output penting:
 - `paid_earnings`
 - `pending_earnings`
 - `total_earnings`
+- `hourly_rate`
 
 #### `getMitraMetrics(Partner $mitra)`
 
@@ -625,9 +692,10 @@ Data:
 - Ambil workers yang `mitra_parent_id` sama dengan id mitra.
 - Untuk setiap worker, hitung worker metrics.
 - Mitra mendapat komisi dari worker:
-  - `$0.50/hour` dari jam approved worker.
+  - `MITRA_COMMISSION_HOURLY_RATE_IDR = 9000` dari jam approved worker.
 - Mitra juga bisa punya laporan sendiri:
-  - Personal rate `$3.50/hour`.
+  - Mengambil `partners.base_hourly_rate`.
+  - Fallback jika kosong: `DEFAULT_MITRA_OWN_HOURLY_RATE_IDR = 63000`.
 
 Output penting:
 
@@ -642,6 +710,8 @@ Output penting:
 - `personal_all_time_hours_formatted`
 - `commission_paid_earnings`
 - `commission_pending_earnings`
+- `commission_hourly_rate`
+- `personal_hourly_rate`
 
 #### `getGlobalMetrics()`
 
@@ -654,11 +724,9 @@ Data:
 
 Rate:
 
-- Client billed `$5.00/hour`.
-- Worker share `$3.00/hour`.
-- Mitra commission `$0.50/hour` untuk managed workers.
-- Mitra own recording `$3.50/hour`.
-- Agency margin dihitung `$1.50/hour`.
+- Client billed: `CLIENT_BILLING_HOURLY_RATE_IDR = 90000`.
+- Agency margin: `AGENCY_MARGIN_HOURLY_RATE_IDR = 27000`.
+- Worker dan mitra dihitung memakai rate Rupiah masing-masing seperti di atas.
 
 Output penting:
 
@@ -671,6 +739,8 @@ Output penting:
 - `client_paid_amount`
 - `client_pending_amount`
 - `agency_net_margin`
+- `client_billing_hourly_rate`
+- `agency_margin_hourly_rate`
 
 Catatan:
 
@@ -713,10 +783,13 @@ Navigation:
 
 - `resources/views/components/sidebar.blade.php`
   - Link dashboard untuk semua user.
-  - Link QC room untuk role `superadmin` atau `finance`.
-  - Link Kelola Mitra & Worker untuk role `superadmin`.
+  - Link QC room untuk role `superadmin`, `admin`, atau `finance`.
+  - Link Kelola Mitra & Worker untuk role `superadmin` atau `admin`.
+  - Link Kelola Admin untuk role `superadmin` atau `admin`.
   - Link Kirim Laporan Video jika user terhubung ke partner role `worker`.
+  - Link Riwayat Laporan jika user terhubung ke partner role `worker` atau `mitra`.
   - Menampilkan nama dan role user di footer sidebar.
+  - Link profile tidak ditampilkan sebagai menu sidebar; akses profile ada dari nama user di footer.
 
 - `resources/views/layouts/navigation.blade.php`
   - Navigation bawaan Breeze, tampaknya tidak menjadi navigation utama karena layout app memakai `<x-sidebar />` dan `<x-navbar />`.
@@ -725,14 +798,18 @@ Dashboard:
 
 - `dashboard.worker`
   - Tampilkan estimasi pendapatan worker.
-  - Rate tampilan: `$3/hour`.
+  - Rate tampilan memakai Rupiah dari `metrics['hourly_rate']`, misalnya `Rp50.000/jam`.
   - Tampilkan paid earnings, pending earnings, bank, status kemitraan.
   - Tampilkan 10 laporan terakhir worker.
+  - Tombol utama hanya `Submit laporan`.
+  - Tidak ada tombol penarikan gaji/withdraw karena gaji dibayarkan manual oleh admin via transfer.
+  - Link `Lihat semua` menuju halaman `video-submissions.report-history`.
 
 - `dashboard.mitra`
-  - Tampilkan komisi tim worker `$0.50/hour`.
-  - Tampilkan pendapatan pribadi mitra `$3.50/hour`.
+  - Tampilkan komisi tim worker dalam Rupiah.
+  - Tampilkan pendapatan pribadi mitra dalam Rupiah.
   - Tampilkan daftar worker direct dan metrik mereka.
+  - Shortcut kartu utama mengarah ke `Riwayat Laporan` dan `Edit Profil`.
 
 - `dashboard.admin`
   - Tampilkan global approved minutes.
@@ -774,12 +851,19 @@ Video submission:
   - Tabel pending reports.
   - Search report.
   - Modal review berbasis Alpine.
+  - Modal review menampilkan dua bukti gambar dinamis:
+    - `evidence_email_image_url`.
+    - `evidence_app_quality_image_url`.
+  - Jika file tidak ada/path kosong, modal menampilkan placeholder teks "file tidak ditemukan".
   - Pilihan QC: approve penuh, approve sebagian, reject.
 
-Catatan penting view QC:
-
-- Modal saat ini menampilkan gambar placeholder dari Unsplash, bukan `storage` path yang di-upload (`evidence_email_image_path` dan `evidence_app_quality_image_path`).
-- Untuk production, image `src` sebaiknya memakai `Storage::url($path)` atau `asset('storage/'.$path)`.
+- `video-submissions.report-history`
+  - Halaman khusus worker/mitra untuk melihat riwayat laporan.
+  - Worker hanya melihat laporan miliknya.
+  - Mitra melihat laporan miliknya dan worker direct di bawahnya.
+  - Tersedia summary total, pending QC, approved, dan durasi unpaid.
+  - Tersedia filter search, status QC, dan status bayar.
+  - Tabel menampilkan ID laporan, worker, tanggal kerja, durasi kirim, durasi disetujui, status QC, status bayar, dan catatan verifikasi.
 
 ## 12. Environment Variables
 
@@ -957,7 +1041,7 @@ Default:
 
 ### Alur payroll CSV
 
-1. Admin/finance buka dashboard admin.
+1. Superadmin/admin/finance buka dashboard admin.
 2. Klik export CSV payroll.
 3. Sistem mengambil semua report approved+unpaid.
 4. Sistem group per partner.
@@ -972,7 +1056,7 @@ Default:
 2. Sistem cek partner terkait user.
 3. Worker melihat earnings personal dan riwayat laporan.
 4. Mitra melihat komisi tim, pendapatan pribadi, dan daftar worker direct.
-5. Superadmin/finance melihat metrik global, latest reports, invoice klien, payroll action.
+5. Superadmin/admin/finance melihat metrik global, latest reports, invoice klien, payroll action.
 6. User tanpa partner dan bukan admin/finance melihat fallback.
 
 ## 16. Command Penting
@@ -1048,54 +1132,55 @@ php artisan test
 
 Bagian ini penting untuk AI/developer berikutnya.
 
-### 1. Unit `base_hourly_rate` tidak konsisten
+### 1. Unit finansial sudah diarahkan ke Rupiah
 
-- Migration default: `base_hourly_rate = 54000`, ini terlihat seperti rupiah.
-- Payroll CSV menghitung `totalEarnings = hours * base_hourly_rate` dan kolom CSV bernama `Total Nominal Rupiah`.
-- Form create/edit menulis label `Rate per Jam (USD)` dan default create view `3.00`.
+- `base_hourly_rate` dipakai sebagai rate Rupiah per jam.
+- Form create/edit partner menampilkan rate dalam Rupiah.
+- Dashboard worker/mitra menampilkan estimasi pendapatan dalam Rupiah.
+- Payroll CSV menghasilkan `Total Nominal Rupiah`.
 
-Rekomendasi:
+Catatan:
 
-- Tentukan satu unit resmi.
-- Jika payroll rupiah, label form sebaiknya "Rate per Jam (Rupiah)" dan default `54000`.
-- Jika dashboard USD dan payroll rupiah memang dua sistem berbeda, pisahkan field misalnya `base_hourly_rate_idr` dan rate USD fixed di service.
+- Jika suatu saat ada kebutuhan multi-currency, jangan memakai ulang `base_hourly_rate` tanpa nama yang lebih eksplisit. Buat field baru seperti `base_hourly_rate_idr` atau tabel rate terpisah.
 
-### 2. Middleware role belum diterapkan ke route sensitif
+### 2. Middleware role route sensitif
 
-Route `partners`, `qc-room`, dan `payroll` saat ini hanya dibungkus `auth` dan `verified`.
+Route sensitif utama sekarang sudah memakai middleware role:
 
-Risiko:
+- `partners`: `role:superadmin,admin`.
+- `admin-users`: `role:superadmin,admin`.
+- `qc-room`: `role:superadmin,admin,finance`.
+- `payroll`: `role:superadmin,admin,finance`.
 
-- User auth+verified yang mengetahui URL bisa mengakses fitur yang seharusnya khusus admin/finance/superadmin.
+Catatan:
 
-Rekomendasi:
+- Tetap cek setiap route baru agar tidak hanya mengandalkan sidebar.
 
-- Terapkan middleware role:
-  - `partners`: `role:superadmin`
-  - `qc-room`: `role:superadmin,finance,verifikator` sesuai kebutuhan bisnis.
-  - `payroll`: `role:superadmin,finance`
+### 3. QC modal memakai gambar upload asli
 
-### 3. QC modal belum memakai gambar upload asli
+- Model `VideoWorkReport` memiliki accessor:
+  - `evidence_email_image_url`.
+  - `evidence_app_quality_image_url`.
+- URL dibentuk lewat `Storage::disk('public')->url($path)`.
+- View QC memakai accessor tersebut untuk menampilkan gambar evidence.
 
-- View `qc-room.blade.php` masih memakai gambar placeholder Unsplash.
-- Data path upload sudah ada di model report.
+Catatan:
 
-Rekomendasi:
+- Jalankan `php artisan storage:link` di server production.
+- Jika gambar tidak muncul, cek apakah file memang ada di `storage/app/public/evidences` dan URL `/storage/...` bisa diakses.
 
-- Pakai URL dari storage:
-  - `asset('storage/' . activeReport.evidence_email_image_path)` tidak bisa langsung di Alpine tanpa membentuk URL.
-  - Solusi rapi: tambahkan accessor di model atau map data di controller/view sebelum `json_encode`.
+### 4. `User` model dan role
 
-### 4. `User` model tidak memasukkan `role` ke fillable
-
-- Migration punya kolom role.
-- Seeder create user dengan role.
-- Jika mass assignment memblokir role, seed/admin create bisa bermasalah.
+- `role` sudah masuk fillable.
+- Helper role ada di model `User`.
 
 Rekomendasi:
 
-- Tambahkan `role` ke fillable jika role memang bisa diisi mass assignment dari seeder/internal flow.
-- Jika tidak, set role dengan cara eksplisit yang aman.
+- Untuk role baru, update:
+  - validasi `ManageAdminUsersController`.
+  - helper `User`.
+  - middleware route.
+  - sidebar.
 
 ### 5. README menyebut Laravel 11.x, composer Laravel 13.x
 
@@ -1153,6 +1238,14 @@ Jika ingin mengubah submit laporan:
 - `resources/views/video-submissions/submit-report.blade.php`
 - storage/public setup.
 
+Jika ingin mengubah riwayat laporan worker/mitra:
+
+- `app/Http/Controllers/ListPartnerReportHistoryController.php`
+- `resources/views/video-submissions/report-history.blade.php`
+- `resources/views/components/sidebar.blade.php`
+- `resources/views/dashboard/worker.blade.php`
+- `resources/views/dashboard/mitra.blade.php`
+
 Jika ingin mengubah QC:
 
 - `app/Http/Controllers/VerifyVideoWorkReportController.php`
@@ -1170,8 +1263,21 @@ Jika ingin mengubah payroll:
 Jika ingin mengubah role/access:
 
 - `app/Http/Middleware/RoleMiddleware.php`
+- `app/Models/User.php`
 - `bootstrap/app.php`
 - `routes/web.php`
+- `resources/views/components/sidebar.blade.php`
+
+Jika ingin mengubah CRUD admin internal:
+
+- `app/Http/Controllers/ManageAdminUsersController.php`
+- `resources/views/admin-users/*.blade.php`
+- `app/Models/User.php`
+
+Jika ingin mengubah profile:
+
+- `app/Http/Controllers/ProfileController.php`
+- `resources/views/profile/*.blade.php`
 - `resources/views/components/sidebar.blade.php`
 
 Jika ingin mengubah frontend style:
@@ -1229,22 +1335,21 @@ Money/rate mental model saat ini:
 
 ```text
 Dashboard worker:
-  approved worker minutes * $3/hour
+  approved worker minutes * worker base_hourly_rate (Rupiah/jam)
 
 Dashboard mitra:
-  managed worker approved minutes * $0.50/hour
-  mitra own approved minutes * $3.50/hour
+  managed worker approved minutes * komisi mitra (Rupiah/jam)
+  mitra own approved minutes * mitra base_hourly_rate (Rupiah/jam)
 
 Dashboard global:
-  client billing * $5/hour
-  agency margin * $1.50/hour
+  client billing dan margin dihitung dalam Rupiah sesuai konstanta service
 
 Payroll CSV:
   approved unpaid minutes * partners.base_hourly_rate
-  output disebut Rupiah
+  output Rupiah
 ```
 
-Karena ada perbedaan USD vs Rupiah, hati-hati sebelum membuat fitur finansial baru.
+Pembayaran gaji tidak memakai flow withdraw dari sisi worker. Admin/finance memproses pembayaran manual via transfer, lalu sistem bisa menandai laporan approved-unpaid menjadi `paid`.
 
 ## 20. Kesimpulan
 
@@ -1255,4 +1360,4 @@ Project ini adalah dashboard operasional Laravel untuk agensi data/video dengan 
 3. QC/verifikasi laporan oleh tim internal.
 4. Perhitungan dashboard dan payroll.
 
-Sebelum mengubah kode, pahami dulu bahwa `users.role` dan `partners.partner_role` adalah dua hal berbeda. Pahami juga bahwa rate USD di dashboard dan rate payroll CSV saat ini belum sepenuhnya konsisten. Area paling sensitif untuk production adalah authorization route, bukti gambar QC, dan payroll.
+Sebelum mengubah kode, pahami dulu bahwa `users.role` dan `partners.partner_role` adalah dua hal berbeda. Area paling sensitif untuk production adalah authorization route, bukti gambar QC, akun login partner, dan payroll.
