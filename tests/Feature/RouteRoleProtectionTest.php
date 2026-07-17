@@ -54,6 +54,19 @@ class RouteRoleProtectionTest extends TestCase
             ->assertForbidden();
     }
 
+    public function test_admin_can_render_qc_room(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'admin',
+            'email_verified_at' => now(),
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('video-submissions.qc-room'))
+            ->assertOk()
+            ->assertSee('QC Video Room');
+    }
+
     public function test_verified_non_admin_user_cannot_access_payroll_routes_directly(): void
     {
         $user = User::factory()->create([

@@ -196,7 +196,7 @@
                                     <div class="mt-2 aspect-video bg-slate-200 rounded-xl overflow-hidden relative flex items-center justify-center border border-gray-300">
                                         <template x-if="activeReport.evidence_email_image_url && !emailImageFailed">
                                             <a :href="activeReport.evidence_email_image_url" target="_blank" class="block w-full h-full">
-                                                <img :src="activeReport.evidence_email_image_url" @error="emailImageFailed = true" class="object-contain w-full h-full bg-white" alt="Bukti gambar email">
+                                                <img :src="activeReport.evidence_email_image_url" x-on:error="emailImageFailed = true" class="object-contain w-full h-full bg-white" alt="Bukti gambar email">
                                             </a>
                                         </template>
                                         <template x-if="!activeReport.evidence_email_image_url || emailImageFailed">
@@ -214,7 +214,7 @@
                                     <div class="mt-2 aspect-video bg-slate-200 rounded-xl overflow-hidden relative flex items-center justify-center border border-gray-300">
                                         <template x-if="activeReport.evidence_app_quality_image_url && !qualityImageFailed">
                                             <a :href="activeReport.evidence_app_quality_image_url" target="_blank" class="block w-full h-full">
-                                                <img :src="activeReport.evidence_app_quality_image_url" @error="qualityImageFailed = true" class="object-contain w-full h-full bg-white" alt="Bukti kualitas aplikasi">
+                                                <img :src="activeReport.evidence_app_quality_image_url" x-on:error="qualityImageFailed = true" class="object-contain w-full h-full bg-white" alt="Bukti kualitas aplikasi">
                                             </a>
                                         </template>
                                         <template x-if="!activeReport.evidence_app_quality_image_url || qualityImageFailed">
