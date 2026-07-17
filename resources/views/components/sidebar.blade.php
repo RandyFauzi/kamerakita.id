@@ -20,6 +20,13 @@
                 Dashboard Overview
             </a>
 
+            <a href="{{ route('profile.edit') }}" class="flex items-center px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('profile.edit') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
+                <svg class="w-5 h-5 mr-3 {{ request()->routeIs('profile.edit') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A8.967 8.967 0 0112 15c2.21 0 4.236.8 5.879 2.129M15 11a3 3 0 11-6 0 3 3 0 016 0zm6 1a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                Profile
+            </a>
+
             @if(Auth::user()->canAccessQcRoom())
                 <a href="{{ route('video-submissions.qc-room') }}" class="flex items-center px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('video-submissions.qc-room') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
                     <svg class="w-5 h-5 mr-3 {{ request()->routeIs('video-submissions.qc-room') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -66,10 +73,10 @@
             <div class="w-9 h-9 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center">
                 {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
             </div>
-            <div class="overflow-hidden">
+            <a href="{{ route('profile.edit') }}" class="overflow-hidden">
                 <span class="block text-sm font-bold text-gray-900 truncate">{{ Auth::user()->name }}</span>
                 <span class="block text-[10px] text-gray-400 font-semibold uppercase tracking-wider">{{ Auth::user()->role }}</span>
-            </div>
+            </a>
         </div>
         
         <form method="POST" action="{{ route('logout') }}">

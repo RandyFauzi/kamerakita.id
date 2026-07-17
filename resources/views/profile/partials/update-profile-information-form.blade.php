@@ -1,54 +1,101 @@
 <section>
-    <header>
-        <h2 class="text-lg font-medium text-gray-900">
-            {{ __('Profile Information') }}
-        </h2>
-
-        <p class="mt-1 text-sm text-gray-600">
-            {{ __("Update your account's profile information and email address.") }}
-        </p>
+    <header class="border-b border-gray-100 pb-4">
+        <span class="block text-xs font-black tracking-widest text-indigo-650 uppercase font-mono mb-1">PROFILE</span>
+        <h3 class="text-lg font-bold text-gray-900">Informasi Akun & Data Diri</h3>
+        <p class="text-xs text-gray-400">Email login dikunci untuk menjaga keamanan akun. Hubungi superadmin jika email perlu diganti.</p>
     </header>
 
-    <form id="send-verification" method="post" action="{{ route('verification.send') }}">
-        @csrf
-    </form>
-
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
+    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-8">
         @csrf
         @method('patch')
 
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $user->name)" required autofocus autocomplete="name" />
-            <x-input-error class="mt-2" :messages="$errors->get('name')" />
-        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+                <label for="name" class="block text-sm font-semibold text-gray-700 mb-1">Nama Tampilan <span class="text-red-500">*</span></label>
+                <input id="name" name="name" type="text" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" value="{{ old('name', $user->name) }}" required autocomplete="name">
+                <x-input-error class="mt-2" :messages="$errors->get('name')" />
+            </div>
 
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)" required autocomplete="username" />
-            <x-input-error class="mt-2" :messages="$errors->get('email')" />
+            <div>
+                <label for="email_locked" class="block text-sm font-semibold text-gray-700 mb-1">Email Login</label>
+                <input id="email_locked" type="email" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50 text-gray-500 cursor-not-allowed" value="{{ $user->email }}" disabled>
+            </div>
 
-            @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
-                <div>
-                    <p class="text-sm mt-2 text-gray-800">
-                        {{ __('Your email address is unverified.') }}
-
-                        <button form="send-verification" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            {{ __('Click here to re-send the verification email.') }}
-                        </button>
-                    </p>
-
-                    @if (session('status') === 'verification-link-sent')
-                        <p class="mt-2 font-medium text-sm text-green-600">
-                            {{ __('A new verification link has been sent to your email address.') }}
-                        </p>
-                    @endif
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Role Akun</label>
+                <div class="flex items-center h-[42px]">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border bg-indigo-50 text-indigo-700 border-indigo-100 uppercase">
+                        {{ $user->role }}
+                    </span>
                 </div>
-            @endif
+            </div>
         </div>
 
-        <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
+        @if($partner)
+            <div class="border-t border-gray-100 pt-6 space-y-6">
+                <div>
+                    <span class="block text-xs font-black tracking-widest text-slate-400 uppercase font-mono mb-1">DATA DIRI {{ strtoupper($partner->partner_role) }}</span>
+                    <h4 class="text-base font-bold text-gray-900">{{ $partner->mitra_id }} - {{ $partner->full_name }}</h4>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="full_name" class="block text-sm font-semibold text-gray-700 mb-1">Nama Lengkap <span class="text-red-500">*</span></label>
+                        <input id="full_name" name="full_name" type="text" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" value="{{ old('full_name', $partner->full_name) }}" required>
+                        <x-input-error class="mt-2" :messages="$errors->get('full_name')" />
+                    </div>
+
+                    <div>
+                        <label for="nik" class="block text-sm font-semibold text-gray-700 mb-1">NIK</label>
+                        <input id="nik" name="nik" type="text" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" value="{{ old('nik', $partner->nik) }}">
+                        <x-input-error class="mt-2" :messages="$errors->get('nik')" />
+                    </div>
+
+                    <div>
+                        <label for="whatsapp_number" class="block text-sm font-semibold text-gray-700 mb-1">No. WhatsApp <span class="text-red-500">*</span></label>
+                        <input id="whatsapp_number" name="whatsapp_number" type="text" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" value="{{ old('whatsapp_number', $partner->whatsapp_number) }}" required>
+                        <x-input-error class="mt-2" :messages="$errors->get('whatsapp_number')" />
+                    </div>
+
+                    <div>
+                        <label for="smartphone_type" class="block text-sm font-semibold text-gray-700 mb-1">Tipe Smartphone</label>
+                        <input id="smartphone_type" name="smartphone_type" type="text" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" value="{{ old('smartphone_type', $partner->smartphone_type) }}">
+                        <x-input-error class="mt-2" :messages="$errors->get('smartphone_type')" />
+                    </div>
+                </div>
+
+                <div>
+                    <label for="full_address" class="block text-sm font-semibold text-gray-700 mb-1">Alamat Lengkap</label>
+                    <textarea id="full_address" name="full_address" rows="3" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">{{ old('full_address', $partner->full_address) }}</textarea>
+                    <x-input-error class="mt-2" :messages="$errors->get('full_address')" />
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label for="bank_name" class="block text-sm font-semibold text-gray-700 mb-1">Nama Bank</label>
+                        <input id="bank_name" name="bank_name" type="text" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" value="{{ old('bank_name', $partner->bank_name) }}">
+                        <x-input-error class="mt-2" :messages="$errors->get('bank_name')" />
+                    </div>
+
+                    <div>
+                        <label for="bank_account_number" class="block text-sm font-semibold text-gray-700 mb-1">Nomor Rekening</label>
+                        <input id="bank_account_number" name="bank_account_number" type="text" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" value="{{ old('bank_account_number', $partner->bank_account_number ?? $partner->account_number) }}">
+                        <x-input-error class="mt-2" :messages="$errors->get('bank_account_number')" />
+                    </div>
+
+                    <div>
+                        <label for="bank_account_owner" class="block text-sm font-semibold text-gray-700 mb-1">Nama Pemilik Rekening</label>
+                        <input id="bank_account_owner" name="bank_account_owner" type="text" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" value="{{ old('bank_account_owner', $partner->bank_account_owner ?? $partner->account_owner_name) }}">
+                        <x-input-error class="mt-2" :messages="$errors->get('bank_account_owner')" />
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        <div class="flex items-center gap-4 pt-2">
+            <button type="submit" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-650 border border-transparent rounded-xl font-semibold text-sm text-white hover:from-blue-700 hover:to-indigo-700 transition shadow-md shadow-indigo-100">
+                Simpan Profile
+            </button>
 
             @if (session('status') === 'profile-updated')
                 <p
@@ -56,8 +103,8 @@
                     x-show="show"
                     x-transition
                     x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-gray-600"
-                >{{ __('Saved.') }}</p>
+                    class="text-sm font-semibold text-green-700"
+                >Tersimpan.</p>
             @endif
         </div>
     </form>
