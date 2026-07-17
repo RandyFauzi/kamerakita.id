@@ -5,6 +5,7 @@ use App\Http\Controllers\SubmitVideoWorkReportController;
 use App\Http\Controllers\VerifyVideoWorkReportController;
 use App\Http\Controllers\RenderDashboardOverviewController;
 use App\Http\Controllers\ExportPayrollDataController;
+use App\Http\Controllers\ManageAdminUsersController;
 use App\Http\Controllers\ManagePartnerDemographicsController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,6 +20,12 @@ Route::get('/dashboard', RenderDashboardOverviewController::class)
 Route::middleware(['auth', 'verified'])->group(function () {
     // Phase 1: Partner Demographics CRUD
     Route::resource('partners', ManagePartnerDemographicsController::class)
+        ->middleware('role:superadmin,admin');
+
+    // Internal Admin Account CRUD
+    Route::resource('admin-users', ManageAdminUsersController::class)
+        ->parameters(['admin-users' => 'adminUser'])
+        ->except(['show'])
         ->middleware('role:superadmin,admin');
 
     // Phase 2: Evidence-Based Submission Module

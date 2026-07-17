@@ -36,6 +36,13 @@
                     </svg>
                     Kelola Mitra & Worker
                 </a>
+
+                <a href="{{ route('admin-users.index') }}" class="flex items-center px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('admin-users.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
+                    <svg class="w-5 h-5 mr-3 {{ request()->routeIs('admin-users.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3M13 7a4 4 0 11-8 0 4 4 0 018 0zM3 21v-1a6 6 0 0112 0v1H3z"/>
+                    </svg>
+                    Kelola Admin
+                </a>
             @endif
 
             @php
