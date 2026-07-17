@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ListPartnerReportHistoryController;
 use App\Http\Controllers\SubmitVideoWorkReportController;
 use App\Http\Controllers\VerifyVideoWorkReportController;
 use App\Http\Controllers\RenderDashboardOverviewController;
@@ -31,6 +32,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Phase 2: Evidence-Based Submission Module
     Route::get('/submit-report', [SubmitVideoWorkReportController::class, 'create'])->name('video-submissions.submit-report.create');
     Route::post('/submit-report', [SubmitVideoWorkReportController::class, 'store'])->name('video-submissions.submit-report.store');
+    Route::get('/report-history', ListPartnerReportHistoryController::class)->name('video-submissions.report-history');
     
     // Phase 3: QC Video Room
     Route::get('/qc-room', [VerifyVideoWorkReportController::class, 'index'])

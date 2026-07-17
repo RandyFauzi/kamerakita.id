@@ -46,12 +46,12 @@
                 </div>
 
                 <div class="grid grid-cols-2 gap-4 mt-6 relative z-10">
-                    <a href="{{ route('partners.index') }}" class="flex items-center justify-center gap-2 py-3.5 bg-white hover:bg-gray-50 text-gray-800 font-bold text-xs rounded-2xl shadow-sm transition">
-                        Kelola Anggota Tim
+                    <a href="{{ route('video-submissions.report-history') }}" class="flex items-center justify-center gap-2 py-3.5 bg-white hover:bg-gray-50 text-gray-800 font-bold text-xs rounded-2xl shadow-sm transition">
+                        Riwayat Laporan
                     </a>
-                    <button class="flex items-center justify-center gap-2 py-3.5 bg-white/60 hover:bg-white/80 text-gray-800 font-bold text-xs rounded-2xl shadow-sm transition">
-                        Log Kerja Kelompok
-                    </button>
+                    <a href="{{ route('profile.edit') }}" class="flex items-center justify-center gap-2 py-3.5 bg-white/60 hover:bg-white/80 text-gray-800 font-bold text-xs rounded-2xl shadow-sm transition">
+                        Edit Profil
+                    </a>
                 </div>
             </div>
 

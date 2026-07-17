@@ -140,7 +140,7 @@
         <div class="bg-white rounded-[32px] p-6 border border-gray-150 shadow-sm">
             <div class="flex justify-between items-center pb-4 border-b border-gray-100 mb-4">
                 <span class="block text-sm font-bold text-gray-900">Riwayat Laporan Video Terakhir</span>
-                <span class="text-xs text-gray-400">10 data terbaru</span>
+                <a href="{{ route('video-submissions.report-history') }}" class="text-xs font-bold text-indigo-600 hover:text-indigo-800">Lihat semua</a>
             </div>
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-100 text-sm">
