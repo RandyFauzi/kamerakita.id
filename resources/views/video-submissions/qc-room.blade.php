@@ -190,7 +190,14 @@
                                         <span class="bg-indigo-50 text-indigo-700 text-xs px-2.5 py-0.5 rounded-full font-bold">Email Evidence</span>
                                     </div>
                                     <div class="mt-2 aspect-video bg-slate-200 rounded-xl overflow-hidden relative flex items-center justify-center border border-gray-300">
-                                        <img src="https://images.unsplash.com/photo-1557200134-90327ee9fafa?w=500&auto=format&fit=crop" class="object-cover w-full h-full">
+                                        <template x-if="activeReport.evidence_email_image_url">
+                                            <a :href="activeReport.evidence_email_image_url" target="_blank" class="block w-full h-full">
+                                                <img :src="activeReport.evidence_email_image_url" class="object-contain w-full h-full bg-white" alt="Bukti gambar email">
+                                            </a>
+                                        </template>
+                                        <template x-if="!activeReport.evidence_email_image_url">
+                                            <span class="text-xs font-semibold text-gray-400">File bukti email tidak ditemukan</span>
+                                        </template>
                                     </div>
                                     <p class="text-xs text-gray-400 mt-2">Diupload untuk memvalidasi data pengiriman dari e-mail resmi Minutes.</p>
                                 </div>
@@ -201,7 +208,14 @@
                                         <span class="bg-indigo-50 text-indigo-700 text-xs px-2.5 py-0.5 rounded-full font-bold">App Quality</span>
                                     </div>
                                     <div class="mt-2 aspect-video bg-slate-200 rounded-xl overflow-hidden relative flex items-center justify-center border border-gray-300">
-                                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=500&auto=format&fit=crop" class="object-cover w-full h-full">
+                                        <template x-if="activeReport.evidence_app_quality_image_url">
+                                            <a :href="activeReport.evidence_app_quality_image_url" target="_blank" class="block w-full h-full">
+                                                <img :src="activeReport.evidence_app_quality_image_url" class="object-contain w-full h-full bg-white" alt="Bukti kualitas aplikasi">
+                                            </a>
+                                        </template>
+                                        <template x-if="!activeReport.evidence_app_quality_image_url">
+                                            <span class="text-xs font-semibold text-gray-400">File bukti kualitas aplikasi tidak ditemukan</span>
+                                        </template>
                                     </div>
                                     <p class="text-xs text-gray-400 mt-2">Tangkap layar dashboard Minutes Data Apps untuk memvalidasi durasi log.</p>
                                 </div>

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 class VideoWorkReport extends Model
 {
@@ -28,6 +29,13 @@ class VideoWorkReport extends Model
     protected $casts = [
         'submission_date' => 'date',
         'verified_at' => 'datetime',
+    ];
+
+    protected $appends = [
+        'evidence_email_image_url',
+        'evidence_app_quality_image_url',
+        'submitted_duration_formatted',
+        'approved_duration_formatted',
     ];
 
     public function partner(): BelongsTo
@@ -63,5 +71,24 @@ class VideoWorkReport extends Model
     public function getApprovedDurationFormattedAttribute(): string
     {
         return $this->formatMinutes($this->approved_duration_minutes);
+    }
+
+    public function getEvidenceEmailImageUrlAttribute(): ?string
+    {
+        return $this->publicStorageUrl($this->evidence_email_image_path);
+    }
+
+    public function getEvidenceAppQualityImageUrlAttribute(): ?string
+    {
+        return $this->publicStorageUrl($this->evidence_app_quality_image_path);
+    }
+
+    private function publicStorageUrl(?string $path): ?string
+    {
+        if (! $path || ! Storage::disk('public')->exists($path)) {
+            return null;
+        }
+
+        return Storage::disk('public')->url($path);
     }
 }

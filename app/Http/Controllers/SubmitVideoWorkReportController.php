@@ -6,6 +6,8 @@ use App\Models\Partner;
 use App\Models\VideoWorkReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class SubmitVideoWorkReportController extends Controller
 {
@@ -44,9 +46,8 @@ class SubmitVideoWorkReportController extends Controller
             'evidence_app_quality_image_path.image' => 'File bukti kualitas aplikasi harus berupa gambar.',
         ]);
 
-        // Compress and store images securely
-        $emailPath = $this->compressAndStoreImage($request->file('evidence_email_image_path'), 'evidences');
-        $qualityPath = $this->compressAndStoreImage($request->file('evidence_app_quality_image_path'), 'evidences');
+        $emailPath = $this->compressAndStoreImage($request->file('evidence_email_image_path'), 'evidences/email');
+        $qualityPath = $this->compressAndStoreImage($request->file('evidence_app_quality_image_path'), 'evidences/app-quality');
 
         VideoWorkReport::create([
             'partner_id' => $partner->id,
@@ -67,17 +68,15 @@ class SubmitVideoWorkReportController extends Controller
      */
     private function compressAndStoreImage($file, string $folder): string
     {
+        if (! function_exists('imagejpeg')) {
+            return $file->store($folder, 'public');
+        }
+
         $mime = $file->getClientMimeType();
         $originalPath = $file->getPathname();
         
-        $filename = uniqid('evidence_') . '.jpg';
-        $destinationFolder = storage_path('app/public/' . $folder);
-        
-        if (!file_exists($destinationFolder)) {
-            mkdir($destinationFolder, 0755, true);
-        }
-        
-        $destinationPath = $destinationFolder . '/' . $filename;
+        $filename = Str::uuid() . '.jpg';
+        $relativePath = trim($folder, '/') . '/' . $filename;
 
         // Initialize GD image resource
         $image = null;
@@ -90,10 +89,18 @@ class SubmitVideoWorkReportController extends Controller
         }
 
         if ($image) {
-            // Compress to JPEG with 75% quality
-            imagejpeg($image, $destinationPath, 75);
+            ob_start();
+            imagejpeg($image, null, 75);
+            $compressedImage = ob_get_clean();
             imagedestroy($image);
-            return $folder . '/' . $filename;
+
+            if ($compressedImage === false) {
+                return $file->store($folder, 'public');
+            }
+
+            Storage::disk('public')->put($relativePath, $compressedImage);
+
+            return $relativePath;
         }
 
         // Fallback to default storage method if GD fails
