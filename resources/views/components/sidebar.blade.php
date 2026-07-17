@@ -1,9 +1,11 @@
 <div class="fixed inset-y-0 left-0 z-20 w-64 bg-white border-r border-gray-200/60 flex flex-col justify-between transition-all duration-300 transform md:translate-x-0 -translate-x-full" id="sidebar">
     <div class="flex flex-col">
         <!-- Logo Header -->
-        <div class="h-16 flex items-center px-5 border-b border-gray-100">
-            <a href="{{ route('dashboard') }}" class="flex items-center gap-3 min-w-0">
-                <img src="{{ asset('images/Logo.webp') }}" alt="Kamerakita.ai" class="h-10 w-auto object-contain shrink-0">
+        <div class="h-16 flex items-center px-5 border-b border-gray-100 overflow-hidden">
+            <a href="{{ route('dashboard') }}" class="flex items-center gap-2.5 min-w-0">
+                <span class="w-8 h-8 rounded-lg overflow-hidden shrink-0 flex items-center justify-center bg-white">
+                    <img src="{{ asset('images/Logo.webp') }}" alt="Kamerakita.ai" class="max-h-8 max-w-8 object-contain">
+                </span>
                 <span class="text-sm font-black tracking-wide text-slate-950 whitespace-nowrap">KAMERAKITA<span class="text-indigo-600">.AI</span></span>
             </a>
         </div>
