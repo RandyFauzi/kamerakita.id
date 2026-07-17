@@ -32,26 +32,44 @@
 
             <!-- Stat Cards Grid -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <x-stat-card 
-                    title="Laporan Menunggu QC (Pending)" 
-                    value="{{ $totalPendingCount }}" 
-                    trend="Menunggu antrean verifikasi" 
-                    :icon="'<svg class=\"w-6 h-6 text-yellow-600\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z\"></path></svg>'" 
-                />
-                
-                <x-stat-card 
-                    title="Disetujui Hari Ini" 
-                    value="{{ $totalApprovedCountToday }}" 
-                    trend="Telah diverifikasi hari ini" 
-                    :icon="'<svg class=\"w-6 h-6 text-emerald-600\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z\"></path></svg>'" 
-                />
+                <div class="bg-white/80 backdrop-blur-md overflow-hidden shadow-sm sm:rounded-2xl border border-gray-100 p-6 flex items-center justify-between hover:shadow-md transition-all duration-300">
+                    <div class="space-y-2">
+                        <span class="block text-xs font-bold text-gray-400 uppercase tracking-wider">Laporan Menunggu QC (Pending)</span>
+                        <span class="block text-3xl font-black text-slate-800 tracking-tight">{{ $totalPendingCount }}</span>
+                        <span class="block text-xs font-semibold text-emerald-600">Menunggu antrean verifikasi</span>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-yellow-50 border border-yellow-100 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                </div>
 
-                <x-stat-card 
-                    title="Ditolak Hari Ini" 
-                    value="{{ $totalRejectedCountToday }}" 
-                    trend="Laporan ditolak / butuh perbaikan" 
-                    :icon="'<svg class=\"w-6 h-6 text-rose-600\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z\"></path></svg>'" 
-                />
+                <div class="bg-white/80 backdrop-blur-md overflow-hidden shadow-sm sm:rounded-2xl border border-gray-100 p-6 flex items-center justify-between hover:shadow-md transition-all duration-300">
+                    <div class="space-y-2">
+                        <span class="block text-xs font-bold text-gray-400 uppercase tracking-wider">Disetujui Hari Ini</span>
+                        <span class="block text-3xl font-black text-slate-800 tracking-tight">{{ $totalApprovedCountToday }}</span>
+                        <span class="block text-xs font-semibold text-emerald-600">Telah diverifikasi hari ini</span>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="bg-white/80 backdrop-blur-md overflow-hidden shadow-sm sm:rounded-2xl border border-gray-100 p-6 flex items-center justify-between hover:shadow-md transition-all duration-300">
+                    <div class="space-y-2">
+                        <span class="block text-xs font-bold text-gray-400 uppercase tracking-wider">Ditolak Hari Ini</span>
+                        <span class="block text-3xl font-black text-slate-800 tracking-tight">{{ $totalRejectedCountToday }}</span>
+                        <span class="block text-xs font-semibold text-rose-600">Laporan ditolak / butuh perbaikan</span>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-100 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                </div>
             </div>
 
             <!-- Filter & Search Card -->
