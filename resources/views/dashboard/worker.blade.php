@@ -48,20 +48,14 @@
                     <span class="block text-xs text-slate-400 font-medium mt-1">Gaji terhitung otomatis berdasarkan jam approved.</span>
                 </div>
 
-                <!-- Minimalist Actions side-by-side -->
-                <div class="grid grid-cols-2 gap-4 mt-6 relative z-10">
+                <!-- Minimalist Actions -->
+                <div class="mt-6 relative z-10">
                     <a href="{{ route('video-submissions.submit-report.create') }}" class="flex items-center justify-center gap-2 py-3.5 bg-white hover:bg-gray-50 text-gray-800 font-bold text-xs rounded-2xl shadow-sm transition">
                         <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
                         </svg>
                         Submit laporan
                     </a>
-                    <button class="flex items-center justify-center gap-2 py-3.5 bg-white/60 hover:bg-white/80 text-gray-800 font-bold text-xs rounded-2xl shadow-sm transition">
-                        <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 12H4"/>
-                        </svg>
-                        Penarikan Gaji
-                    </button>
                 </div>
             </div>
 
