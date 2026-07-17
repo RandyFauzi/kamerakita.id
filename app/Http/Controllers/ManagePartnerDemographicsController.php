@@ -3,7 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Partner;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 
 class ManagePartnerDemographicsController extends Controller
 {
@@ -14,7 +19,7 @@ class ManagePartnerDemographicsController extends Controller
         $status = $request->input('status');
 
         $partners = Partner::query()
-            ->with(['mitraParent'])
+            ->with(['mitraParent', 'user'])
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('full_name', 'like', "%{$search}%")
@@ -61,7 +66,8 @@ class ManagePartnerDemographicsController extends Controller
             'nik' => 'nullable|string|max:30|unique:partners,nik',
             'full_name' => 'required|string|max:255',
             'whatsapp_number' => 'required|string|max:20',
-            'email' => 'nullable|email|max:100',
+            'email' => ['required', 'email', 'max:100', 'unique:partners,email', 'unique:users,email'],
+            'password' => ['required', 'confirmed', Password::min(8)],
             'full_address' => 'nullable|string',
             'bank_name' => 'nullable|string|max:100',
             'bank_account_number' => 'nullable|string|max:50',
@@ -75,13 +81,30 @@ class ManagePartnerDemographicsController extends Controller
         $validated['account_number'] = $validated['bank_account_number'] ?? null;
         $validated['account_owner_name'] = $validated['bank_account_owner'] ?? null;
 
-        Partner::create($validated);
+        DB::transaction(function () use ($validated) {
+            $user = User::create([
+                'name' => $validated['full_name'],
+                'email' => $validated['email'],
+                'password' => Hash::make($validated['password']),
+                'role' => 'verifikator',
+                'email_verified_at' => now(),
+            ]);
 
-        return redirect()->route('partners.index')->with('success', 'Mitra/Worker berhasil didaftarkan!');
+            unset($validated['password']);
+
+            Partner::create([
+                ...$validated,
+                'user_id' => $user->id,
+            ]);
+        });
+
+        return redirect()->route('partners.index')->with('success', 'Mitra/Worker berhasil didaftarkan dan akun login sudah dibuat!');
     }
 
     public function edit(Partner $partner)
     {
+        $partner->load('user');
+
         $mitraList = Partner::where('partner_role', 'mitra')
             ->where('id', '!=', $partner->id)
             ->get();
@@ -96,7 +119,14 @@ class ManagePartnerDemographicsController extends Controller
             'nik' => 'nullable|string|max:30|unique:partners,nik,' . $partner->id,
             'full_name' => 'required|string|max:255',
             'whatsapp_number' => 'required|string|max:20',
-            'email' => 'nullable|email|max:100',
+            'email' => [
+                'required',
+                'email',
+                'max:100',
+                Rule::unique('partners', 'email')->ignore($partner->id),
+                Rule::unique('users', 'email')->ignore($partner->user_id),
+            ],
+            'password' => [$partner->user_id ? 'nullable' : 'required', 'confirmed', Password::min(8)],
             'full_address' => 'nullable|string',
             'bank_name' => 'nullable|string|max:100',
             'bank_account_number' => 'nullable|string|max:50',
@@ -110,14 +140,42 @@ class ManagePartnerDemographicsController extends Controller
         $validated['account_number'] = $validated['bank_account_number'] ?? null;
         $validated['account_owner_name'] = $validated['bank_account_owner'] ?? null;
 
-        $partner->update($validated);
+        DB::transaction(function () use ($partner, $validated) {
+            $password = $validated['password'] ?? null;
+            unset($validated['password']);
 
-        return redirect()->route('partners.index')->with('success', 'Data mitra/worker berhasil diperbarui!');
+            $user = $partner->user ?: new User();
+            $user->name = $validated['full_name'];
+            $user->email = $validated['email'];
+            $user->role = $user->role ?: 'verifikator';
+            $user->email_verified_at = $user->email_verified_at ?: now();
+
+            if ($password) {
+                $user->password = Hash::make($password);
+            }
+
+            $user->save();
+
+            $partner->update([
+                ...$validated,
+                'user_id' => $user->id,
+            ]);
+        });
+
+        return redirect()->route('partners.index')->with('success', 'Data mitra/worker dan akun login berhasil diperbarui!');
     }
 
     public function destroy(Partner $partner)
     {
-        $partner->delete();
+        DB::transaction(function () use ($partner) {
+            $user = $partner->user;
+            $partner->delete();
+
+            if ($user) {
+                $user->delete();
+            }
+        });
+
         return redirect()->route('partners.index')->with('success', 'Mitra/Worker berhasil dihapus dari sistem.');
     }
 }

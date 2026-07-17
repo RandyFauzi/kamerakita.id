@@ -62,11 +62,24 @@
                             @error('whatsapp_number') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
 
-                        <!-- Email -->
+                        <!-- Email Login -->
                         <div>
-                            <label for="email" class="block text-sm font-semibold text-gray-700 mb-1">Email</label>
-                            <input type="email" name="email" id="email" value="{{ old('email') }}" placeholder="Contoh: mitra@kamerakita.id" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            <label for="email" class="block text-sm font-semibold text-gray-700 mb-1">Email Login <span class="text-red-500">*</span></label>
+                            <input type="email" name="email" id="email" value="{{ old('email') }}" required placeholder="Contoh: worker@kamerakita.id" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                             @error('email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        </div>
+
+                        <!-- Password -->
+                        <div>
+                            <label for="password" class="block text-sm font-semibold text-gray-700 mb-1">Password Login <span class="text-red-500">*</span></label>
+                            <input type="password" name="password" id="password" required class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            @error('password') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        </div>
+
+                        <!-- Password Confirmation -->
+                        <div>
+                            <label for="password_confirmation" class="block text-sm font-semibold text-gray-700 mb-1">Konfirmasi Password <span class="text-red-500">*</span></label>
+                            <input type="password" name="password_confirmation" id="password_confirmation" required class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
                     </div>
 

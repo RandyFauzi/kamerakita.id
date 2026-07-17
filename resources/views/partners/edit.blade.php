@@ -62,11 +62,31 @@
                             @error('whatsapp_number') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
 
-                        <!-- Email -->
+                        <!-- Email Login -->
                         <div>
-                            <label for="email" class="block text-sm font-semibold text-gray-700 mb-1">Email</label>
-                            <input type="email" name="email" id="email" value="{{ old('email', $partner->email) }}" placeholder="Contoh: mitra@kamerakita.id" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            <label for="email" class="block text-sm font-semibold text-gray-700 mb-1">Email Login <span class="text-red-500">*</span></label>
+                            <input type="email" name="email" id="email" value="{{ old('email', $partner->email ?? $partner->user?->email) }}" required placeholder="Contoh: worker@kamerakita.id" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                             @error('email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        </div>
+
+                        <!-- Password -->
+                        <div>
+                            <label for="password" class="block text-sm font-semibold text-gray-700 mb-1">
+                                {{ $partner->user_id ? 'Password Baru' : 'Password Login' }}
+                                @unless($partner->user_id)<span class="text-red-500">*</span>@endunless
+                            </label>
+                            <input type="password" name="password" id="password" {{ $partner->user_id ? '' : 'required' }} class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            <p class="text-xs text-gray-400 mt-1">{{ $partner->user_id ? 'Kosongkan jika tidak ingin mengganti password.' : 'Wajib diisi karena data ini belum punya akun login.' }}</p>
+                            @error('password') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        </div>
+
+                        <!-- Password Confirmation -->
+                        <div>
+                            <label for="password_confirmation" class="block text-sm font-semibold text-gray-700 mb-1">
+                                Konfirmasi Password
+                                @unless($partner->user_id)<span class="text-red-500">*</span>@endunless
+                            </label>
+                            <input type="password" name="password_confirmation" id="password_confirmation" {{ $partner->user_id ? '' : 'required' }} class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
                     </div>
 

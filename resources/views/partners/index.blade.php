@@ -93,7 +93,10 @@
                                         {{ $partner->mitra_id }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {{ $partner->full_name }}
+                                        <div class="flex flex-col">
+                                            <span>{{ $partner->full_name }}</span>
+                                            <span class="text-xs text-gray-400 font-normal">{{ $partner->user?->email ?? 'Belum punya akun login' }}</span>
+                                        </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 uppercase font-mono text-xs">
                                         {{ $partner->partner_role === 'mitra' ? 'Mitra' : 'Worker' }}
