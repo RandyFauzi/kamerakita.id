@@ -30,14 +30,19 @@
             </div>
 
             <!-- Page Header Card -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-2xl border border-gray-150 p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h3 class="text-lg font-black text-slate-900 leading-tight">Riwayat Penerimaan Gaji</h3>
-                    <p class="text-xs text-gray-400 mt-1">Daftar lengkap bukti transfer dan rincian laporan yang sudah dibayarkan untuk profil Anda.</p>
+            <div class="overflow-hidden shadow-sm sm:rounded-3xl p-6 text-white relative" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);">
+                <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div class="space-y-1">
+                        <span class="bg-indigo-500/20 text-indigo-300 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">Worker Payout Logs</span>
+                        <h3 class="text-xl font-black tracking-tight">Riwayat Penerimaan Gaji</h3>
+                        <p class="text-xs text-slate-350 max-w-xl leading-normal">Daftar lengkap bukti transfer bank dan rincian laporan kerja harian Anda yang telah dibayarkan oleh Finance.</p>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl px-4 py-2.5 text-xs text-indigo-200 font-bold shrink-0">
+                        Rate Anda: <span class="text-white font-black">Rp {{ number_format($partner->base_hourly_rate ?: 54000, 0, ',', '.') }}</span> / Jam
+                    </div>
                 </div>
-                <div class="bg-indigo-50 border border-indigo-100 rounded-xl px-4 py-2 text-indigo-700 text-xs font-bold">
-                    Rate: Rp {{ number_format($partner->base_hourly_rate ?: 54000, 0, ',', '.') }} / Jam
-                </div>
+                <!-- Premium subtle background glows -->
+                <div class="absolute -right-16 -top-16 w-64 h-64 bg-indigo-500 rounded-full blur-3xl opacity-20"></div>
             </div>
 
             <!-- Payments List Accordions -->
@@ -45,39 +50,41 @@
                 @forelse($payments as $index => $pay)
                     <div x-data="{ open: false }" class="bg-white border border-gray-150 rounded-2xl overflow-hidden shadow-sm transition" :class="open ? 'border-indigo-200 shadow-md' : 'hover:shadow-sm'">
                         <!-- Header -->
-                        <div class="p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 cursor-pointer select-none" @click="open = !open">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 bg-emerald-50 border border-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 cursor-pointer select-none" @click="open = !open">
+                            <!-- Left: Date info & Icon -->
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-emerald-50 border border-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center shrink-0">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
                                 </div>
-                                <div>
-                                    <span class="block text-xs font-bold text-gray-400 uppercase tracking-wider">Tanggal Transfer</span>
+                                <div class="space-y-0.5">
+                                    <span class="block text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Transfer Selesai</span>
                                     <span class="block text-sm font-black text-slate-800">{{ $pay['paid_at']->translatedFormat('d F Y - H:i') }}</span>
                                 </div>
                             </div>
 
-                            <div class="flex items-center gap-6 w-full sm:w-auto justify-between sm:justify-end">
-                                <div class="text-left sm:text-right">
-                                    <span class="block text-[9px] font-bold text-gray-450 uppercase tracking-wider">Total Diterima</span>
-                                    <span class="block text-base font-black text-slate-900 leading-tight">Rp {{ number_format($pay['total_amount'], 0, ',', '.') }}</span>
-                                    <span class="block text-[9px] font-medium text-gray-400" x-text="'Untuk ' + {{ count($pay['reports']) }} + ' Laporan' "></span>
+                            <!-- Right: Nominal, Proof button and expand indicator -->
+                            <div class="flex items-center gap-6 w-full md:w-auto justify-between md:justify-end">
+                                <div class="text-left md:text-right">
+                                    <span class="block text-[9px] font-bold text-gray-455 uppercase tracking-wider">Total Gaji Diterima</span>
+                                    <span class="block text-lg font-black text-slate-900 leading-tight">Rp {{ number_format($pay['total_amount'], 0, ',', '.') }}</span>
+                                    <span class="block text-[9px] font-semibold text-gray-400" x-text="'Untuk ' + {{ count($pay['reports']) }} + ' Laporan' "></span>
                                 </div>
 
-                                <div class="flex items-center gap-2">
+                                <div class="flex items-center gap-3">
                                     @if($pay['proof_url'])
                                         <button type="button" 
                                                 @click.stop="openProofModal('{{ $pay['proof_url'] }}')"
-                                                class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 border border-indigo-100 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold transition">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                class="inline-flex items-center gap-1.5 px-3 py-2 bg-indigo-50 border border-indigo-100 hover:bg-indigo-100 text-indigo-750 rounded-xl text-xs font-bold transition duration-200">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                             </svg>
                                             Bukti Transfer
                                         </button>
                                     @endif
-                                    <div class="p-1 text-gray-450 rounded-lg transition-transform duration-200" :class="open ? 'rotate-180' : ''">
+                                    <div class="p-1.5 text-gray-450 hover:bg-slate-50 rounded-lg transition-transform duration-200" :class="open ? 'rotate-180' : ''">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
                                         </svg>

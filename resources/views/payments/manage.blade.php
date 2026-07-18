@@ -61,7 +61,7 @@
             @endif
 
             <!-- Page Header Card -->
-            <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 overflow-hidden shadow-sm sm:rounded-3xl p-8 text-white relative">
+            <div class="overflow-hidden shadow-sm sm:rounded-3xl p-8 text-white relative" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);">
                 <div class="relative z-10 space-y-2 max-w-2xl">
                     <span class="bg-indigo-500/20 text-indigo-300 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider">Payroll Desk</span>
                     <h3 class="text-2xl font-black tracking-tight">Antrean Pembayaran Gaji Mitra (Worker)</h3>
@@ -152,16 +152,18 @@
                         </div>
                     </div>
                 @empty
-                    <div class="bg-white rounded-3xl p-12 text-center border border-gray-150 shadow-sm space-y-2">
-                        <div class="w-16 h-16 bg-gray-50 border border-gray-100 rounded-2xl flex items-center justify-center mx-auto text-gray-400">
+                    <div class="bg-white rounded-3xl p-16 text-center border border-gray-150 shadow-sm space-y-4 max-w-lg mx-auto mt-6">
+                        <div class="w-16 h-16 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-center justify-center mx-auto text-emerald-500 shadow-sm shadow-emerald-50">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
                         </div>
-                        <h4 class="text-base font-bold text-slate-800">Antrean Pembayaran Bersih</h4>
-                        <p class="text-xs text-gray-400 max-w-sm mx-auto leading-relaxed">
-                            Tidak ada antrean pembayaran saat ini. Semua laporan harian video yang disetujui (Approved) telah diselesaikan pembayarannya.
-                        </p>
+                        <div class="space-y-1">
+                            <h4 class="text-base font-black text-slate-800">Antrean Pembayaran Bersih</h4>
+                            <p class="text-xs text-gray-400 leading-relaxed">
+                                Tidak ada antrean pembayaran saat ini. Semua laporan harian video yang disetujui (Approved) telah diselesaikan pembayarannya.
+                            </p>
+                        </div>
                     </div>
                 @endforelse
             </div>
