@@ -34,6 +34,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/submit-report', [SubmitVideoWorkReportController::class, 'create'])->name('video-submissions.submit-report.create');
     Route::post('/submit-report', [SubmitVideoWorkReportController::class, 'store'])->name('video-submissions.submit-report.store');
     Route::get('/report-history', ListPartnerReportHistoryController::class)->name('video-submissions.report-history');
+    Route::get('/payment-history', ListPartnerPaymentHistoryController::class)->name('video-submissions.payment-history');
     
     // Phase 3: QC Video Room
     Route::get('/qc-room', [VerifyVideoWorkReportController::class, 'index'])
@@ -57,7 +58,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('payments.process');
 
     Route::get('/video-work-reports/{report}/evidence/{type}', ShowVideoWorkReportEvidenceController::class)
-        ->middleware(['role:superadmin,admin,finance'])
+        ->middleware(['role:superadmin,admin,finance,worker,mitra'])
         ->name('video-submissions.evidence.show');
 
     // Phase 5: Bulk Payroll Export Module

@@ -34,6 +34,7 @@ class VideoWorkReport extends Model
     protected $appends = [
         'evidence_email_image_url',
         'evidence_app_quality_image_url',
+        'payment_proof_url',
         'submitted_duration_formatted',
         'approved_duration_formatted',
     ];
@@ -81,6 +82,11 @@ class VideoWorkReport extends Model
     public function getEvidenceAppQualityImageUrlAttribute(): ?string
     {
         return $this->signedEvidenceUrl('app-quality', $this->evidence_app_quality_image_path);
+    }
+
+    public function getPaymentProofUrlAttribute(): ?string
+    {
+        return $this->signedEvidenceUrl('payment', $this->payment_reference_proof_path);
     }
 
     private function signedEvidenceUrl(string $type, ?string $path): ?string
