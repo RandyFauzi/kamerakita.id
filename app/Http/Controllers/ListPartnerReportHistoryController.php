@@ -35,11 +35,25 @@ class ListPartnerReportHistoryController extends Controller
             'total_reports' => (clone $baseQuery)->count(),
             'pending_reports' => (clone $baseQuery)->where('qc_status', 'pending')->count(),
             'approved_reports' => (clone $baseQuery)->where('qc_status', 'approved')->count(),
+            'rejected_reports' => (clone $baseQuery)->where('qc_status', 'rejected')->count(),
             'unpaid_minutes' => (clone $baseQuery)
                 ->where('qc_status', 'approved')
                 ->where('payment_status', 'unpaid')
                 ->sum('approved_duration_minutes'),
         ];
+
+        $rejectedReportsNeedingFix = collect();
+
+        if ($partner->partner_role === 'worker') {
+            $rejectedReportsNeedingFix = VideoWorkReport::query()
+                ->with(['partner', 'verifier'])
+                ->where('partner_id', $partner->id)
+                ->where('qc_status', 'rejected')
+                ->where('payment_status', 'unpaid')
+                ->orderByDesc('verified_at')
+                ->orderByDesc('submission_date')
+                ->get();
+        }
 
         $reportsQuery = clone $baseQuery;
 
@@ -77,6 +91,7 @@ class ListPartnerReportHistoryController extends Controller
             'partner' => $partner,
             'reports' => $reports,
             'summary' => $summary,
+            'rejectedReportsNeedingFix' => $rejectedReportsNeedingFix,
         ]);
     }
 }
