@@ -148,8 +148,13 @@ class ManagePaymentsController extends Controller
             }
 
             // Delete proof file
-            if ($proofPath && Storage::disk('local')->exists($proofPath)) {
-                Storage::disk('local')->delete($proofPath);
+            if ($proofPath) {
+                foreach (['evidence', 'local', 'public'] as $diskName) {
+                    $disk = Storage::disk($diskName);
+                    if ($disk->exists($proofPath)) {
+                        $disk->delete($proofPath);
+                    }
+                }
             }
 
             // Revert reports to unpaid status
@@ -171,7 +176,7 @@ class ManagePaymentsController extends Controller
     private function compressAndStoreImage($file, string $folder): string
     {
         if (! function_exists('imagejpeg')) {
-            return $file->store($folder, 'local');
+            return $file->store($folder, 'evidence');
         }
 
         $mime = $file->getClientMimeType();
@@ -196,14 +201,14 @@ class ManagePaymentsController extends Controller
             imagedestroy($image);
 
             if ($compressedImage === false) {
-                return $file->store($folder, 'local');
+                return $file->store($folder, 'evidence');
             }
 
-            Storage::disk('local')->put($relativePath, $compressedImage);
+            Storage::disk('evidence')->put($relativePath, $compressedImage);
 
             return $relativePath;
         }
 
-        return $file->store($folder, 'local');
+        return $file->store($folder, 'evidence');
     }
 }

@@ -25,7 +25,11 @@ class ShowVideoWorkReportEvidenceController extends Controller
 
         abort_if(blank($path), 404);
 
-        $disk = Storage::disk('local');
+        $disk = Storage::disk('evidence');
+
+        if (! $disk->exists($path)) {
+            $disk = Storage::disk('local');
+        }
 
         if (! $disk->exists($path)) {
             $disk = Storage::disk('public');

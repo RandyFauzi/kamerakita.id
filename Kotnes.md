@@ -144,8 +144,8 @@ Group middleware `auth`, `verified`:
 - `GET /video-work-reports/{report}/evidence/{type}`
   - Controller: `ShowVideoWorkReportEvidenceController`
   - Name: `video-submissions.evidence.show`
-  - Middleware: `signed`, `role:superadmin,admin,finance`
-  - Dipakai untuk membuka gambar evidence via signed URL, bukan public storage langsung.
+  - Middleware: `role:superadmin,admin,finance,worker,mitra`
+  - Dipakai untuk membuka gambar evidence lewat controller backend, bukan public storage langsung.
 
 - `GET /payroll/export-csv`
   - Controller: `ExportPayrollDataController@exportCsv`
@@ -548,9 +548,11 @@ Method:
 Private helper:
 
 - `compressAndStoreImage($file, string $folder)`
-  - Simpan file ke disk `local` Laravel, yaitu `storage/app/private/...`.
+  - Simpan file ke disk `evidence`.
+  - Default root disk `evidence` adalah `storage/app/private/...`.
+  - Di production root ini bisa dipindah via `EVIDENCE_STORAGE_PATH` ke folder permanen di luar repo.
   - Convert ke JPEG dengan kualitas 75 jika GD berhasil.
-  - Fallback ke `$file->store($folder, 'local')` jika GD gagal.
+  - Fallback ke `$file->store($folder, 'evidence')` jika GD gagal.
 
 Requirement penting:
 
@@ -562,7 +564,7 @@ Requirement penting:
 
 Tujuan:
 
-- Melayani file evidence secara private melalui signed URL.
+- Melayani file evidence secara private melalui route backend yang dilindungi login dan role.
 
 Alur:
 
@@ -570,9 +572,9 @@ Alur:
 2. `type` hanya boleh:
    - `email`: membaca `evidence_email_image_path`.
    - `app-quality`: membaca `evidence_app_quality_image_path`.
-3. Route wajib memiliki signature valid dan user wajib role `superadmin`, `admin`, atau `finance`.
-4. Controller membaca file dari disk `local` private.
-5. Jika file belum ada di private storage, controller fallback membaca disk `public` untuk kompatibilitas file lama.
+3. Route wajib login dan user wajib punya role yang diizinkan.
+4. Controller membaca file dari disk `evidence`.
+5. Jika file belum ada di disk `evidence`, controller fallback membaca disk `local`, lalu disk `public` untuk kompatibilitas file lama.
 6. Response memakai header `Cache-Control` private/no-store agar browser tidak menyimpan evidence sensitif terlalu lama.
 
 ### `VerifyVideoWorkReportController`
@@ -942,6 +944,7 @@ Catatan lokal:
 
 - `BROADCAST_CONNECTION`: koneksi broadcast.
 - `FILESYSTEM_DISK`: disk filesystem default.
+- `EVIDENCE_STORAGE_PATH`: folder fisik permanen untuk bukti laporan dan bukti transfer. Di production sebaiknya diarahkan ke folder di luar folder Git project agar tidak ikut hilang saat deploy/pull membersihkan working tree.
 - `QUEUE_CONNECTION`: koneksi queue.
 - `CACHE_STORE`: store cache.
 - `MEMCACHED_HOST`: host memcached jika dipakai.
@@ -1047,7 +1050,7 @@ Default:
 3. Jika partner role worker, user bisa buka `/submit-report`.
 4. Worker mengisi tanggal kerja, durasi menit, dua bukti gambar.
 5. Sistem validasi input.
-6. Sistem kompres gambar ke `storage/app/private/evidences/...` lewat disk `local`.
+6. Sistem kompres gambar ke disk `evidence`, default-nya `storage/app/private/evidences/...`.
 7. Sistem membuat `video_work_reports` dengan status:
    - `qc_status = pending`
    - `payment_status = unpaid`
@@ -1058,7 +1061,7 @@ Default:
 1. User buka `/qc-room`.
 2. Sistem mengambil report `pending`.
 3. User klik Review.
-4. Modal menampilkan info report, evidence dari signed URL, dan pilihan aksi.
+4. Modal menampilkan info report, evidence dari route private backend, dan pilihan aksi.
 5. Jika approve penuh:
    - approved minutes = submitted minutes.
 6. Jika approve sebagian:
@@ -1152,11 +1155,24 @@ Catatan:
 - Evidence laporan baru tidak bergantung pada symlink ini karena disimpan di private storage.
 - Symlink masih boleh diperlukan untuk asset publik lain yang memang disimpan di disk `public`.
 
-Migrasi evidence lama dari public storage ke private storage:
+Migrasi evidence lama dari public/local storage ke disk evidence:
 
 ```bash
 php artisan evidence:migrate-to-private --delete-public
 ```
+
+Cek apakah path evidence di database masih punya file fisik:
+
+```bash
+php artisan evidence:check-files --show-missing
+```
+
+Catatan deployment production:
+
+- File upload user tidak pernah ikut Git dan memang harus begitu.
+- Jangan deploy dengan cara yang menghapus folder upload.
+- Set `EVIDENCE_STORAGE_PATH` ke folder permanen di luar folder repo jika server memakai auto-deploy yang mengganti isi project.
+- Backup database saja tidak cukup; backup juga folder `EVIDENCE_STORAGE_PATH`.
 
 Run test:
 
@@ -1198,21 +1214,21 @@ Catatan:
 
 - Tetap cek setiap route baru agar tidak hanya mengandalkan sidebar.
 
-### 3. QC modal memakai gambar upload asli via signed URL
+### 3. QC modal memakai gambar upload asli via route private
 
 - Model `VideoWorkReport` memiliki accessor:
   - `evidence_email_image_url`.
   - `evidence_app_quality_image_url`.
-- URL dibentuk lewat `URL::temporarySignedRoute(...)` ke route `video-submissions.evidence.show`.
-- Signed URL berlaku 30 menit.
-- Route evidence tetap membutuhkan login, verified user, valid signature, dan role `superadmin`, `admin`, atau `finance`.
+- URL dibentuk lewat route `video-submissions.evidence.show`.
+- Route evidence tetap membutuhkan login, verified user, dan role yang diizinkan.
 - View QC memakai accessor tersebut untuk menampilkan gambar evidence.
 
 Catatan:
 
-- Upload evidence baru disimpan di private local storage: `storage/app/private/evidences/...`.
+- Upload evidence baru disimpan di disk `evidence`.
+- Default disk `evidence` adalah `storage/app/private/evidences/...`, tetapi production sebaiknya memakai `EVIDENCE_STORAGE_PATH` di luar repo.
 - File lama yang masih berada di public storage bisa dimigrasikan dengan `php artisan evidence:migrate-to-private --delete-public`.
-- Controller evidence masih punya fallback membaca disk `public` untuk kompatibilitas selama file lama belum dimigrasikan.
+- Controller evidence masih punya fallback membaca disk `local` dan `public` untuk kompatibilitas selama file lama belum dimigrasikan.
 
 ### 4. `User` model dan role
 
@@ -1255,13 +1271,13 @@ Rekomendasi:
 
 ### 8. File upload evidence private
 
-- Upload evidence baru disimpan di private storage.
-- Akses evidence memakai signed URL dan role middleware.
+- Upload evidence baru disimpan di disk `evidence`.
+- Akses evidence memakai route backend dan role middleware.
 - Test akses evidence ada di `tests/Feature/VideoWorkReportEvidenceAccessTest.php`.
 
 Rekomendasi:
 
-- Untuk production yang sudah punya file lama di public storage, jalankan migrasi evidence dan hapus salinan public.
+- Untuk production yang sudah punya file lama di public/local storage, set `EVIDENCE_STORAGE_PATH`, jalankan migrasi evidence, lalu backup folder evidence tersebut.
 
 ## 18. Peta File Penting untuk AI
 

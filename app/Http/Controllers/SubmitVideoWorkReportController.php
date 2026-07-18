@@ -69,7 +69,7 @@ class SubmitVideoWorkReportController extends Controller
     private function compressAndStoreImage($file, string $folder): string
     {
         if (! function_exists('imagejpeg')) {
-            return $file->store($folder, 'local');
+            return $file->store($folder, 'evidence');
         }
 
         $mime = $file->getClientMimeType();
@@ -95,15 +95,15 @@ class SubmitVideoWorkReportController extends Controller
             imagedestroy($image);
 
             if ($compressedImage === false) {
-                return $file->store($folder, 'local');
+                return $file->store($folder, 'evidence');
             }
 
-            Storage::disk('local')->put($relativePath, $compressedImage);
+            Storage::disk('evidence')->put($relativePath, $compressedImage);
 
             return $relativePath;
         }
 
         // Fallback to default storage method if GD fails
-        return $file->store($folder, 'local');
+        return $file->store($folder, 'evidence');
     }
 }

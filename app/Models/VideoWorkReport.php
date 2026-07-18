@@ -21,6 +21,8 @@ class VideoWorkReport extends Model
         'approved_duration_minutes',
         'qc_status',
         'payment_status',
+        'payment_reference_proof_path',
+        'paid_at',
         'verifier_notes',
         'verified_by',
         'verified_at',

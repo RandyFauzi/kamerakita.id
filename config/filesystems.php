@@ -47,6 +47,14 @@ return [
             'report' => false,
         ],
 
+        'evidence' => [
+            'driver' => 'local',
+            'root' => env('EVIDENCE_STORAGE_PATH') ?: storage_path('app/private'),
+            'visibility' => 'private',
+            'throw' => false,
+            'report' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
