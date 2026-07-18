@@ -1,11 +1,12 @@
 <!-- Mobile Sidebar Overlay Backdrop -->
-<div class="fixed inset-0 bg-slate-950/40 backdrop-blur-xs z-30 md:hidden transition-opacity duration-300 opacity-0 pointer-events-none" id="sidebar-overlay" onclick="
+<div class="fixed inset-0 bg-slate-950/40 backdrop-blur-xs z-30 md:hidden transition-opacity duration-300 opacity-0 pointer-events-none" id="sidebar-overlay" style="z-index: 30" onclick="
     document.getElementById('sidebar').classList.add('-translate-x-full');
     this.classList.add('opacity-0', 'pointer-events-none');
     this.classList.remove('opacity-100', 'pointer-events-auto');
+    document.body.classList.remove('overflow-hidden');
 "></div>
 
-<div class="fixed inset-y-0 left-0 z-40 w-[min(18rem,85vw)] md:w-64 bg-white border-r border-gray-200/60 flex flex-col justify-between transition-all duration-300 transform md:translate-x-0 -translate-x-full shadow-xl md:shadow-none" id="sidebar">
+<div class="fixed inset-y-0 left-0 z-40 w-64 max-w-[85vw] bg-white border-r border-gray-200/60 flex flex-col justify-between transition-transform duration-300 transform md:translate-x-0 -translate-x-full shadow-xl md:shadow-none" id="sidebar" style="z-index: 40; width: min(16rem, 85vw)">
     <div class="flex flex-col">
         <!-- Logo Header -->
         <div class="h-16 flex items-center justify-between px-5 border-b border-gray-100 overflow-hidden">
@@ -21,6 +22,7 @@
                 const overlay = document.getElementById('sidebar-overlay');
                 overlay.classList.add('opacity-0', 'pointer-events-none');
                 overlay.classList.remove('opacity-100', 'pointer-events-auto');
+                document.body.classList.remove('overflow-hidden');
             ">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -29,7 +31,15 @@
         </div>
 
         <!-- Navigation Links -->
-        <nav class="p-4 space-y-1">
+        <nav class="p-4 space-y-1" onclick="
+            if (event.target.closest('a')) {
+                document.getElementById('sidebar').classList.add('-translate-x-full');
+                const overlay = document.getElementById('sidebar-overlay');
+                overlay.classList.add('opacity-0', 'pointer-events-none');
+                overlay.classList.remove('opacity-100', 'pointer-events-auto');
+                document.body.classList.remove('overflow-hidden');
+            }
+        ">
             <a href="{{ route('dashboard') }}" class="flex items-center px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('dashboard') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
                 <svg class="w-5 h-5 mr-3 {{ request()->routeIs('dashboard') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
