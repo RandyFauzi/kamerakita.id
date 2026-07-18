@@ -57,6 +57,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/payments/manage/{partner}/pay', [\App\Http\Controllers\ManagePaymentsController::class, 'processPayment'])
         ->middleware('role:superadmin,admin,finance')
         ->name('payments.process');
+    Route::post('/payments/manage/cancel', [\App\Http\Controllers\ManagePaymentsController::class, 'cancelPayment'])
+        ->middleware('role:superadmin,admin,finance')
+        ->name('payments.cancel');
 
     Route::get('/video-work-reports/{report}/evidence/{type}', ShowVideoWorkReportEvidenceController::class)
         ->middleware(['role:superadmin,admin,finance,worker,mitra'])

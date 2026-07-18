@@ -6,6 +6,7 @@
     </x-slot>
 
     <div class="py-8" x-data="{ 
+        currentTab: 'queue',
         showPayModal: false,
         activeWorker: {},
         evidenceImage: null,
@@ -73,8 +74,22 @@
                 <div class="absolute -right-16 -top-16 w-64 h-64 bg-indigo-500 rounded-full blur-3xl opacity-20"></div>
             </div>
 
+            <!-- Tab Switchers -->
+            <div class="flex gap-2 border-b border-gray-100 pb-1">
+                <button @click="currentTab = 'queue'"
+                        :class="currentTab === 'queue' ? 'border-b-2 border-indigo-600 text-indigo-700 font-black' : 'text-gray-450 hover:text-gray-900 font-bold'"
+                        class="px-4 py-2 text-xs uppercase tracking-wider transition-all duration-200 focus:outline-none">
+                    Antrean Pembayaran ({{ count($workers) }})
+                </button>
+                <button @click="currentTab = 'history'"
+                        :class="currentTab === 'history' ? 'border-b-2 border-indigo-600 text-indigo-700 font-black' : 'text-gray-450 hover:text-gray-900 font-bold'"
+                        class="px-4 py-2 text-xs uppercase tracking-wider transition-all duration-200 focus:outline-none">
+                    Riwayat Pembayaran ({{ count($payoutHistory) }})
+                </button>
+            </div>
+
             <!-- Workers Payout Accordion Queue -->
-            <div class="space-y-4">
+            <div x-show="currentTab === 'queue'" class="space-y-4">
                 @forelse($workers as $index => $w)
                     <div x-data="{ expanded: false }" class="bg-white rounded-2xl border border-gray-150 shadow-sm overflow-hidden transition-all duration-300" :class="expanded ? 'shadow-md border-indigo-200' : 'hover:shadow-sm'">
                         <!-- Accordion Header -->
@@ -162,6 +177,112 @@
                             <h4 class="text-base font-black text-slate-800">Antrean Pembayaran Bersih</h4>
                             <p class="text-xs text-gray-400 leading-relaxed">
                                 Tidak ada antrean pembayaran saat ini. Semua laporan harian video yang disetujui (Approved) telah diselesaikan pembayarannya.
+                            </p>
+                        </div>
+                    </div>
+                @endforelse
+            </div>
+
+            <!-- Payout History Tab -->
+            <div x-show="currentTab === 'history'" class="space-y-4" x-cloak>
+                @forelse($payoutHistory as $index => $pay)
+                    <div x-data="{ expanded: false }" class="bg-white rounded-2xl border border-gray-150 shadow-sm overflow-hidden transition-all duration-300" :class="expanded ? 'shadow-md border-indigo-200' : 'hover:shadow-sm'">
+                        <!-- Accordion Header -->
+                        <div class="p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 cursor-pointer select-none" @click="expanded = !expanded">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-slate-50 border border-gray-200 rounded-xl flex items-center justify-center font-black text-lg text-slate-700">
+                                    {{ strtoupper(substr($pay['partner']->full_name, 0, 2)) }}
+                                </div>
+                                <div class="space-y-0.5">
+                                    <h4 class="text-base font-black text-slate-900">{{ $pay['partner']->full_name }}</h4>
+                                    <div class="flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-400 font-medium">
+                                        <span>Tanggal Bayar: {{ $pay['paid_at']->translatedFormat('d F Y - H:i') }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-6 w-full md:w-auto justify-between md:justify-end">
+                                <div class="text-left md:text-right">
+                                    <span class="block text-[10px] font-bold text-gray-450 uppercase tracking-wider">Total Dibayar</span>
+                                    <span class="block text-lg font-black text-emerald-600 leading-tight">Rp {{ number_format($pay['total_amount'], 0, ',', '.') }}</span>
+                                    <span class="block text-[10px] font-medium text-gray-400">Untuk {{ count($pay['reports']) }} Laporan</span>
+                                </div>
+
+                                <div class="flex items-center gap-3">
+                                    @if($pay['proof_url'])
+                                        <a href="{{ $pay['proof_url'] }}" target="_blank" @click.stop
+                                           class="inline-flex items-center gap-1.5 px-3 py-2 bg-indigo-50 border border-indigo-100 hover:bg-indigo-100 text-indigo-750 rounded-xl text-xs font-bold transition duration-200">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                            </svg>
+                                            Bukti
+                                        </a>
+                                    @endif
+
+                                    <form action="{{ route('payments.cancel') }}" method="POST" @click.stop onsubmit="return confirm('Apakah Anda yakin ingin membatalkan/menghapus riwayat pembayaran ini? Seluruh laporan dalam batch ini akan otomatis dikembalikan ke status Unpaid.')" class="inline-block">
+                                        @csrf
+                                        <input type="hidden" name="batch_id" value="{{ $pay['batch_id'] }}">
+                                        <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-2 bg-rose-50 border border-rose-100 hover:bg-rose-100 text-rose-700 rounded-xl text-xs font-bold transition duration-200">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                            </svg>
+                                            Batal Bayar
+                                        </button>
+                                    </form>
+
+                                    <div class="p-1.5 text-gray-400 hover:bg-gray-50 rounded-lg transition-transform duration-200" :class="expanded ? 'rotate-180' : ''">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Accordion Body (Paid Reports List) -->
+                        <div x-show="expanded" x-collapse x-cloak>
+                            <div class="px-6 pb-6 border-t border-gray-100 bg-slate-50/50">
+                                <div class="overflow-x-auto mt-4">
+                                    <table class="min-w-full divide-y divide-gray-200/60 text-xs">
+                                        <thead>
+                                            <tr class="text-gray-450 font-bold text-left uppercase tracking-wider">
+                                                <th class="pb-3 pt-2">ID Laporan</th>
+                                                <th class="pb-3 pt-2">Tanggal Kerja</th>
+                                                <th class="pb-3 pt-2">Durasi Kerja</th>
+                                                <th class="pb-3 pt-2 text-right">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-gray-100 font-medium text-slate-700">
+                                            @foreach($pay['reports'] as $report)
+                                                <tr>
+                                                    <td class="py-3 font-mono text-gray-500">{{ substr($report->id, 0, 8) }}...</td>
+                                                    <td class="py-3">{{ $report->submission_date->translatedFormat('d F Y') }}</td>
+                                                    <td class="py-3 font-bold">{{ $report->approved_duration_formatted }}</td>
+                                                    <td class="py-3 text-right">
+                                                        <span class="inline-flex px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider border bg-emerald-50 border-emerald-150 text-emerald-800">
+                                                            Paid
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="bg-white rounded-3xl p-16 text-center border border-gray-150 shadow-sm space-y-4 max-w-lg mx-auto mt-6">
+                        <div class="w-16 h-16 bg-gray-50 border border-gray-100 rounded-2xl flex items-center justify-center mx-auto text-gray-400">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <div class="space-y-1">
+                            <h4 class="text-base font-black text-slate-800">Belum Ada Riwayat</h4>
+                            <p class="text-xs text-gray-400 leading-relaxed">
+                                Tidak ada riwayat pembayaran yang ditemukan di sistem.
                             </p>
                         </div>
                     </div>
