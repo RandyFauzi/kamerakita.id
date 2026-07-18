@@ -38,7 +38,7 @@ class ShowVideoWorkReportEvidenceController extends Controller
             $backup = app(EvidenceFileBackupService::class)->recover($path);
             abort_unless($backup, 404);
 
-            $contents = $backup->contents;
+            $contents = $backup->decodedContents();
             $mimeType = $backup->mime_type;
         }
 

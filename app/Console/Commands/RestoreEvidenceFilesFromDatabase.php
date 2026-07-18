@@ -28,7 +28,7 @@ class RestoreEvidenceFilesFromDatabase extends Command
             }
 
             try {
-                $stored = $disk->put($backup->path, $backup->contents);
+                $stored = $disk->put($backup->path, $backup->decodedContents());
 
                 if (! $stored || ! $disk->exists($backup->path)) {
                     throw new \RuntimeException('File could not be verified after restoration.');

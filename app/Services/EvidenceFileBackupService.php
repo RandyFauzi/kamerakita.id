@@ -27,7 +27,7 @@ class EvidenceFileBackupService
             [
                 'mime_type' => $disk->mimeType($path) ?: 'image/jpeg',
                 'file_size' => strlen($contents),
-                'contents' => $contents,
+                'contents' => base64_encode($contents),
             ],
         );
     }
@@ -44,7 +44,7 @@ class EvidenceFileBackupService
             $disk = Storage::disk('evidence');
 
             if (! $disk->exists($path)) {
-                $disk->put($path, $backup->contents);
+                $disk->put($path, $backup->decodedContents());
             }
         } catch (Throwable $exception) {
             Log::warning('Evidence served from database but could not be restored to disk.', [

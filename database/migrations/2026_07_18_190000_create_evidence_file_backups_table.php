@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('path', 191)->unique();
             $table->string('mime_type', 100);
             $table->unsignedInteger('file_size');
-            $table->mediumBlob('contents');
+            $table->longText('contents');
             $table->timestamps();
         });
     }
