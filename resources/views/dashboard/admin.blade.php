@@ -215,6 +215,7 @@
                                     @php
                                         $qcColors = [
                                             'pending' => 'bg-yellow-50 text-yellow-700 border-yellow-100',
+                                            'on_review' => 'bg-blue-50 text-blue-700 border-blue-100',
                                             'approved' => 'bg-emerald-50 text-emerald-700 border-emerald-100',
                                             'rejected' => 'bg-rose-50 text-rose-700 border-rose-100',
                                         ];
