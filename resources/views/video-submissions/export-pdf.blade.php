@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QC_Video_Reports_Export_{{ date('Ymd_His') }}</title>
+    <title>KameraKita.id - {{ date('d-m-Y') }}</title>
     <!-- Tailwind CSS for high fidelity print styling -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
@@ -14,7 +14,7 @@
             body {
                 background-color: white !important;
                 color: black !important;
-                padding: 0 !important;
+                padding: 1.2cm !important;
                 margin: 0 !important;
             }
             .page-card {
@@ -27,7 +27,7 @@
         }
         @page {
             size: A4;
-            margin: 1.2cm;
+            margin: 0; /* Hides native browser header (date, title) and footer (URL, page) */
         }
         .page-card {
             break-inside: avoid;
