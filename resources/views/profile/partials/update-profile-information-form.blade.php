@@ -26,7 +26,7 @@
                 <div class="flex items-center h-[42px]">
                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border bg-indigo-50 text-indigo-700 border-indigo-100 uppercase">
                         @if($partner && $partner->partner_role === 'worker')
-                            Distributor
+                            Kontributor
                         @elseif($partner && $partner->partner_role === 'mitra')
                             Mitra (Koordinator)
                         @else
@@ -41,7 +41,7 @@
             <div class="border-t border-gray-100 pt-6 space-y-6">
                 <div>
                     <span class="block text-xs font-black tracking-widest text-slate-400 uppercase font-mono mb-1">
-                        DATA DIRI {{ $partner->partner_role === 'worker' ? 'DISTRIBUTOR' : strtoupper($partner->partner_role) }}
+                        DATA DIRI {{ $partner->partner_role === 'worker' ? 'KONTRIBUTOR' : strtoupper($partner->partner_role) }}
                     </span>
                     <h4 class="text-base font-bold text-gray-900">{{ $partner->mitra_id }} - {{ $partner->full_name }}</h4>
                 </div>
