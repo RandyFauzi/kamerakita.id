@@ -329,6 +329,7 @@
                         <template x-if="['pending', 'on_review'].includes(activeReport.qc_status)">
                             <form :action="'/qc-room/' + activeReport.id + '/verify'" method="POST" class="space-y-4">
                                 @csrf
+                                <input type="hidden" name="action" :value="actionType">
                                 
                                 <div>
                                     <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Tentukan Aksi Verifikasi</label>
@@ -336,51 +337,46 @@
                                     <!-- Conditional Action Options depending on current status -->
                                     <div class="grid gap-3" :class="activeReport.qc_status === 'pending' ? 'grid-cols-2' : 'grid-cols-3'">
                                         <!-- If Pending: Can Reject directly or Move to On Review -->
-                                        <template x-if="activeReport.qc_status === 'pending'">
-                                            <label class="flex flex-col items-center justify-center p-3 border rounded-xl cursor-pointer text-center hover:bg-slate-50 transition-colors"
-                                                   :class="actionType === 'start_review' ? 'border-blue-600 bg-blue-50/50 text-blue-700 font-bold' : 'border-gray-200 text-gray-600'">
-                                                <input type="radio" name="action" value="start_review" class="sr-only" x-model="actionType">
-                                                <span class="block text-sm font-bold">Mulai Review</span>
-                                                <span class="block text-xs text-gray-400 mt-1">Pindahkan ke ON REVIEW</span>
-                                            </label>
-                                        </template>
+                                        <button type="button" x-show="activeReport.qc_status === 'pending'"
+                                                class="flex flex-col items-center justify-center p-3 border rounded-xl text-center transition-all duration-200 focus:outline-none"
+                                                :class="actionType === 'start_review' ? 'border-blue-600 bg-blue-50 text-blue-700 font-bold shadow-sm' : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'"
+                                                @click="actionType = 'start_review'">
+                                            <span class="block text-sm font-bold">Mulai Review</span>
+                                            <span class="block text-xs text-gray-400 mt-0.5">Pindahkan ke ON REVIEW</span>
+                                        </button>
 
-                                        <template x-if="activeReport.qc_status === 'pending'">
-                                            <label class="flex flex-col items-center justify-center p-3 border rounded-xl cursor-pointer text-center hover:bg-slate-50 transition-colors"
-                                                   :class="actionType === 'reject' ? 'border-red-600 bg-red-50/50 text-red-750 font-bold' : 'border-gray-200 text-gray-600'">
-                                                <input type="radio" name="action" value="reject" class="sr-only" x-model="actionType">
-                                                <span class="block text-sm font-bold">Reject Langsung</span>
-                                                <span class="block text-xs text-gray-400 mt-1">Tolak Laporan langsung</span>
-                                            </label>
-                                        </template>
+                                        <button type="button" x-show="activeReport.qc_status === 'pending'"
+                                                class="flex flex-col items-center justify-center p-3 border rounded-xl text-center transition-all duration-200 focus:outline-none"
+                                                :class="actionType === 'reject' ? 'border-red-600 bg-red-50 text-red-750 font-bold shadow-sm' : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'"
+                                                @click="actionType = 'reject'">
+                                            <span class="block text-sm font-bold">Reject Langsung</span>
+                                            <span class="block text-xs text-gray-400 mt-0.5">Tolak Laporan langsung</span>
+                                        </button>
 
                                         <!-- If On Review: Can Approve Full, Approve Partial, or Reject -->
-                                        <template x-if="activeReport.qc_status === 'on_review'">
-                                            <label class="flex flex-col items-center justify-center p-3 border rounded-xl cursor-pointer text-center hover:bg-slate-50 transition-colors"
-                                                   :class="actionType === 'approve_full' ? 'border-indigo-600 bg-indigo-50/50 text-indigo-700' : 'border-gray-200 text-gray-600'">
-                                                <input type="radio" name="action" value="approve_full" class="sr-only" x-model="actionType" @change="approvedMinutes = activeReport.submitted_duration_minutes">
-                                                <span class="block text-sm font-bold">Approve Penuh</span>
-                                                <span class="block text-xs text-gray-400 mt-1" x-text="activeReport.submitted_duration_minutes + ' menit' "></span>
-                                            </label>
-                                        </template>
+                                        <button type="button" x-show="activeReport.qc_status === 'on_review'"
+                                                class="flex flex-col items-center justify-center p-3 border rounded-xl text-center transition-all duration-200 focus:outline-none"
+                                                :class="actionType === 'approve_full' ? 'border-indigo-650 bg-indigo-50 text-indigo-700 font-bold shadow-sm' : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'"
+                                                @click="actionType = 'approve_full'; approvedMinutes = activeReport.submitted_duration_minutes">
+                                            <span class="block text-sm font-bold">Approve Penuh</span>
+                                            <span class="block text-xs text-gray-400 mt-0.5" x-text="activeReport.submitted_duration_minutes + ' menit'"></span>
+                                        </button>
 
-                                        <template x-if="activeReport.qc_status === 'on_review'">
-                                            <label class="flex flex-col items-center justify-center p-3 border rounded-xl cursor-pointer text-center hover:bg-slate-50 transition-colors"
-                                                   :class="actionType === 'approve_partial' ? 'border-indigo-600 bg-indigo-50/50 text-indigo-700' : 'border-gray-200 text-gray-600'">
-                                                <input type="radio" name="action" value="approve_partial" class="sr-only" x-model="actionType">
-                                                <span class="block text-sm font-bold">Approve Sebagian</span>
-                                                <span class="block text-xs text-gray-400 mt-1">Input durasi manual</span>
-                                            </label>
-                                        </template>
+                                        <button type="button" x-show="activeReport.qc_status === 'on_review'"
+                                                class="flex flex-col items-center justify-center p-3 border rounded-xl text-center transition-all duration-200 focus:outline-none"
+                                                :class="actionType === 'approve_partial' ? 'border-indigo-650 bg-indigo-50 text-indigo-700 font-bold shadow-sm' : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'"
+                                                @click="actionType = 'approve_partial'">
+                                            <span class="block text-sm font-bold">Approve Sebagian</span>
+                                            <span class="block text-xs text-gray-400 mt-0.5">Input durasi manual</span>
+                                        </button>
 
-                                        <template x-if="activeReport.qc_status === 'on_review'">
-                                            <label class="flex flex-col items-center justify-center p-3 border rounded-xl cursor-pointer text-center hover:bg-slate-50 transition-colors"
-                                                   :class="actionType === 'reject' ? 'border-red-600 bg-red-50/50 text-red-750' : 'border-gray-200 text-gray-600'">
-                                                <input type="radio" name="action" value="reject" class="sr-only" x-model="actionType">
-                                                <span class="block text-sm font-bold">Reject</span>
-                                                <span class="block text-xs text-gray-400 mt-1">Video ditolak</span>
-                                            </label>
-                                        </template>
+                                        <button type="button" x-show="activeReport.qc_status === 'on_review'"
+                                                class="flex flex-col items-center justify-center p-3 border rounded-xl text-center transition-all duration-200 focus:outline-none"
+                                                :class="actionType === 'reject' ? 'border-red-600 bg-red-50 text-red-750 font-bold shadow-sm' : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'"
+                                                @click="actionType = 'reject'">
+                                            <span class="block text-sm font-bold">Reject</span>
+                                            <span class="block text-xs text-gray-400 mt-0.5">Video ditolak</span>
+                                        </button>
                                     </div>
                                 </div>
 
