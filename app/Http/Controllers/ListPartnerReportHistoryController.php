@@ -42,19 +42,6 @@ class ListPartnerReportHistoryController extends Controller
                 ->sum('approved_duration_minutes'),
         ];
 
-        $rejectedReportsNeedingFix = collect();
-
-        if ($partner->partner_role === 'worker') {
-            $rejectedReportsNeedingFix = VideoWorkReport::query()
-                ->with(['partner', 'verifier'])
-                ->where('partner_id', $partner->id)
-                ->where('qc_status', 'rejected')
-                ->where('payment_status', 'unpaid')
-                ->orderByDesc('verified_at')
-                ->orderByDesc('submission_date')
-                ->get();
-        }
-
         $reportsQuery = clone $baseQuery;
 
         if ($request->filled('search')) {
@@ -91,7 +78,6 @@ class ListPartnerReportHistoryController extends Controller
             'partner' => $partner,
             'reports' => $reports,
             'summary' => $summary,
-            'rejectedReportsNeedingFix' => $rejectedReportsNeedingFix,
         ]);
     }
 }

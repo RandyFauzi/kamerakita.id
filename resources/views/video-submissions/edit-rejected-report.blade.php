@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-bold text-xl sm:text-2xl text-gray-800 leading-tight">
-            {{ __('Perbaiki Laporan Ditolak') }}
+            {{ __('Edit Laporan Kerja Video') }}
         </h2>
     </x-slot>
 
@@ -10,8 +10,9 @@
             <div class="bg-white overflow-hidden shadow-sm rounded-2xl border border-gray-100 p-4 sm:p-6 space-y-5 sm:space-y-6">
                 <div class="border-b border-gray-100 pb-4 space-y-3">
                     <div>
-                        <h3 class="text-lg font-bold text-gray-900">Kirim Ulang Laporan</h3>
-                        <p class="text-xs text-gray-400">Perbaiki tanggal, durasi, dan upload ulang screenshot agar laporan masuk kembali ke antrean QC.</p>
+                        <h3 class="text-lg font-bold text-gray-900">Form Edit Laporan Harian Worker</h3>
+                        <p class="text-xs text-gray-400">Edit data laporan dan upload ulang screenshot, lalu ajukan kembali ke antrean QC.</p>
+                        <p class="text-[11px] font-mono text-gray-400">ID Laporan: {{ $report->id }}</p>
                     </div>
 
                     @if($report->verifier_notes)
@@ -76,7 +77,7 @@
                             Batal
                         </a>
                         <button type="submit" class="w-full sm:w-auto min-h-12 inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 border border-transparent rounded-xl font-semibold text-sm text-white hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-md shadow-indigo-100">
-                            Kirim Ulang ke QC
+                            Simpan & Ajukan Ulang
                         </button>
                     </div>
                 </form>
