@@ -21,27 +21,31 @@
     @endphp
 
     <div class="space-y-6">
-        <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-            <div>
-                <span class="block text-xs font-black tracking-widest text-indigo-600 uppercase">Riwayat Laporan</span>
-                <h1 class="text-2xl font-black text-slate-900 mt-1">Laporan Kerja Video</h1>
-                <p class="text-sm text-slate-500 mt-1">
-                    @if($partner->partner_role === 'mitra')
-                        Menampilkan laporan pribadi dan seluruh worker direct di bawah akun mitra Anda.
-                    @else
-                        Menampilkan seluruh laporan yang pernah Anda kirimkan.
-                    @endif
-                </p>
+        <!-- Page Header Card -->
+        <div class="overflow-hidden shadow-sm sm:rounded-3xl p-6 text-white relative" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);">
+            <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div class="space-y-1">
+                    <span class="bg-indigo-500/20 text-indigo-300 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">Laporan Kerja</span>
+                    <h3 class="text-xl font-black tracking-tight">Riwayat Laporan Video</h3>
+                    <p class="text-xs text-slate-350 max-w-xl leading-normal">
+                        @if($partner->partner_role === 'mitra')
+                            Menampilkan laporan pribadi dan seluruh worker direct di bawah akun mitra Anda.
+                        @else
+                            Menampilkan seluruh laporan yang pernah Anda kirimkan.
+                        @endif
+                    </p>
+                </div>
+                @if($partner->partner_role === 'worker')
+                    <a href="{{ route('video-submissions.submit-report.create') }}" class="inline-flex items-center justify-center gap-2 px-5 py-3 bg-white hover:bg-slate-50 text-slate-900 rounded-2xl text-xs font-black shadow-sm transition duration-200 shrink-0">
+                        <svg class="w-4 h-4 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        Kirim Laporan Baru
+                    </a>
+                @endif
             </div>
-
-            @if($partner->partner_role === 'worker')
-                <a href="{{ route('video-submissions.submit-report.create') }}" class="inline-flex items-center justify-center gap-2 px-5 py-3 bg-slate-950 hover:bg-slate-800 text-white rounded-2xl text-xs font-bold shadow-sm transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
-                    </svg>
-                    Kirim Laporan Baru
-                </a>
-            @endif
+            <!-- Premium subtle background glows -->
+            <div class="absolute -right-16 -top-16 w-64 h-64 bg-indigo-500 rounded-full blur-3xl opacity-20"></div>
         </div>
 
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
