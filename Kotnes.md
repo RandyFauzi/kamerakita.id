@@ -545,13 +545,15 @@ Method:
     - `payment_status = unpaid`
     - `approved_duration_minutes = 0`
 
-Private helper:
+Service penyimpanan evidence:
 
-- `compressAndStoreImage($file, string $folder)`
-  - Simpan file ke disk `evidence`.
+- `StoreEvidenceImageService::store(UploadedFile $file, string $folder)`
+  - Simpan file lewat `StoreEvidenceImageService` ke disk `evidence`.
   - Root disk `evidence` adalah `storage/app/private/...`, sama pola private storage Laravel/ONFIX.
   - Convert ke JPEG dengan kualitas 75 jika GD berhasil.
   - Fallback ke `$file->store($folder, 'evidence')` jika GD gagal.
+  - Setelah menulis file, service wajib mengecek file benar-benar ada di disk.
+  - Jika file gagal ditulis/terbaca, database report tidak disimpan dan user mendapat pesan error.
 
 Requirement penting:
 
@@ -1165,12 +1167,19 @@ Cek apakah path evidence di database masih punya file fisik:
 php artisan evidence:check-files --show-missing
 ```
 
+Tes apakah storage evidence bisa ditulis dan dibaca oleh server:
+
+```bash
+php artisan evidence:test-write
+```
+
 Catatan deployment production:
 
 - File upload user tidak pernah ikut Git dan memang harus begitu.
 - Bukti laporan/bukti transfer disimpan di `storage/app/private/evidences/...`.
 - `git pull` normal tidak akan menghapus isi upload karena file upload tidak tracked oleh Git.
 - Jangan deploy dengan cara menghapus folder `storage/app/private` atau menjalankan clean yang ikut menghapus ignored files seperti `git clean -fdx`.
+- Jika `evidence:test-write` gagal, upload harus dianggap belum aman karena database bisa kehilangan pasangan file fisiknya.
 - Backup database saja tidak cukup; backup juga folder `storage/app/private/evidences`.
 
 Run test:
@@ -1226,6 +1235,7 @@ Catatan:
 
 - Upload evidence baru disimpan di disk `evidence`.
 - Disk `evidence` adalah `storage/app/private/evidences/...`, sama seperti pola private storage ONFIX.
+- Disk `evidence` memakai `throw=true`, sehingga error permission/storage tidak disembunyikan.
 - File lama yang masih berada di public storage bisa dimigrasikan dengan `php artisan evidence:migrate-to-private --delete-public`.
 - Controller evidence masih punya fallback membaca disk `local` dan `public` untuk kompatibilitas selama file lama belum dimigrasikan.
 

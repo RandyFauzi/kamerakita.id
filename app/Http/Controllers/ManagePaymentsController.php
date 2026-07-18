@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Partner;
 use App\Models\VideoWorkReport;
+use App\Services\StoreEvidenceImageService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+use Throwable;
 
 class ManagePaymentsController extends Controller
 {
@@ -91,7 +94,7 @@ class ManagePaymentsController extends Controller
     public function processPayment(Request $request, Partner $partner)
     {
         $request->validate([
-            'evidence_payment_proof' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'evidence_payment_proof' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ], [
             'evidence_payment_proof.required' => 'Bukti transfer wajib diunggah.',
             'evidence_payment_proof.image' => 'File bukti transfer harus berupa gambar.',
@@ -108,15 +111,33 @@ class ManagePaymentsController extends Controller
             return redirect()->back()->with('error', 'Tidak ada tagihan tertunda yang perlu dibayar untuk Mitra ini.');
         }
 
-        // Save transfer proof image with compression
-        $proofPath = $this->compressAndStoreImage($request->file('evidence_payment_proof'), 'evidences/payments');
+        $proofPath = null;
 
-        // Update all reports
-        VideoWorkReport::whereIn('id', $reports->pluck('id'))->update([
-            'payment_status' => 'paid',
-            'payment_reference_proof_path' => $proofPath,
-            'paid_at' => now(),
-        ]);
+        try {
+            $proofPath = app(StoreEvidenceImageService::class)
+                ->store($request->file('evidence_payment_proof'), 'evidences/payments');
+
+            DB::transaction(function () use ($reports, $proofPath): void {
+                VideoWorkReport::whereIn('id', $reports->pluck('id'))->update([
+                    'payment_status' => 'paid',
+                    'payment_reference_proof_path' => $proofPath,
+                    'paid_at' => now(),
+                ]);
+            });
+        } catch (Throwable $exception) {
+            if ($proofPath && Storage::disk('evidence')->exists($proofPath)) {
+                Storage::disk('evidence')->delete($proofPath);
+            }
+
+            Log::error('Failed to store payment proof evidence.', [
+                'partner_id' => $partner->id,
+                'message' => $exception->getMessage(),
+            ]);
+
+            return back()
+                ->withInput()
+                ->with('error', 'Pembayaran gagal diproses karena bukti transfer tidak berhasil disimpan. Cek permission folder storage/app/private lalu coba lagi.');
+        }
 
         return redirect()->route('payments.manage')->with('success', "Pembayaran untuk Mitra {$partner->full_name} berhasil diproses!");
     }
@@ -170,45 +191,4 @@ class ManagePaymentsController extends Controller
         }
     }
 
-    /**
-     * Compress and save uploaded image as JPEG with 75% quality to save space.
-     */
-    private function compressAndStoreImage($file, string $folder): string
-    {
-        if (! function_exists('imagejpeg')) {
-            return $file->store($folder, 'evidence');
-        }
-
-        $mime = $file->getClientMimeType();
-        $originalPath = $file->getPathname();
-        
-        $filename = Str::uuid() . '.jpg';
-        $relativePath = trim($folder, '/') . '/' . $filename;
-
-        $image = null;
-        if ($mime === 'image/jpeg' || $mime === 'image/jpg') {
-            $image = @imagecreatefromjpeg($originalPath);
-        } elseif ($mime === 'image/png') {
-            $image = @imagecreatefrompng($originalPath);
-        } elseif ($mime === 'image/gif') {
-            $image = @imagecreatefromgif($originalPath);
-        }
-
-        if ($image) {
-            ob_start();
-            imagejpeg($image, null, 75);
-            $compressedImage = ob_get_clean();
-            imagedestroy($image);
-
-            if ($compressedImage === false) {
-                return $file->store($folder, 'evidence');
-            }
-
-            Storage::disk('evidence')->put($relativePath, $compressedImage);
-
-            return $relativePath;
-        }
-
-        return $file->store($folder, 'evidence');
-    }
 }

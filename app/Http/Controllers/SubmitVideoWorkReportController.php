@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Partner;
 use App\Models\VideoWorkReport;
+use App\Services\StoreEvidenceImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+use Throwable;
 
 class SubmitVideoWorkReportController extends Controller
 {
@@ -33,8 +36,8 @@ class SubmitVideoWorkReportController extends Controller
         $validated = $request->validate([
             'submission_date' => 'required|date|before_or_equal:today',
             'submitted_duration_minutes' => 'required|integer|min:1|max:1440',
-            'evidence_email_image_path' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'evidence_app_quality_image_path' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'evidence_email_image_path' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'evidence_app_quality_image_path' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ], [
             'submission_date.required' => 'Tanggal pengiriman wajib diisi.',
             'submission_date.before_or_equal' => 'Tanggal pengiriman tidak boleh melebihi hari ini.',
@@ -46,64 +49,43 @@ class SubmitVideoWorkReportController extends Controller
             'evidence_app_quality_image_path.image' => 'File screenshot kualitas aplikasi harus berupa gambar.',
         ]);
 
-        $emailPath = $this->compressAndStoreImage($request->file('evidence_email_image_path'), 'evidences/email');
-        $qualityPath = $this->compressAndStoreImage($request->file('evidence_app_quality_image_path'), 'evidences/app-quality');
+        $emailPath = null;
+        $qualityPath = null;
 
-        VideoWorkReport::create([
-            'partner_id' => $partner->id,
-            'submission_date' => $validated['submission_date'],
-            'evidence_email_image_path' => $emailPath,
-            'evidence_app_quality_image_path' => $qualityPath,
-            'submitted_duration_minutes' => $validated['submitted_duration_minutes'],
-            'approved_duration_minutes' => 0,
-            'qc_status' => 'pending',
-            'payment_status' => 'unpaid',
-        ]);
+        try {
+            $imageStorage = app(StoreEvidenceImageService::class);
+            $emailPath = $imageStorage->store($request->file('evidence_email_image_path'), 'evidences/email');
+            $qualityPath = $imageStorage->store($request->file('evidence_app_quality_image_path'), 'evidences/app-quality');
 
-        return redirect()->route('dashboard')->with('success', 'Laporan kerja video Anda berhasil dikirim dan sedang menunggu antrean QC!');
-    }
-
-    /**
-     * Compress and save uploaded image as JPEG with 75% quality to save space.
-     */
-    private function compressAndStoreImage($file, string $folder): string
-    {
-        if (! function_exists('imagejpeg')) {
-            return $file->store($folder, 'evidence');
-        }
-
-        $mime = $file->getClientMimeType();
-        $originalPath = $file->getPathname();
-        
-        $filename = Str::uuid() . '.jpg';
-        $relativePath = trim($folder, '/') . '/' . $filename;
-
-        // Initialize GD image resource
-        $image = null;
-        if ($mime === 'image/jpeg' || $mime === 'image/jpg') {
-            $image = @imagecreatefromjpeg($originalPath);
-        } elseif ($mime === 'image/png') {
-            $image = @imagecreatefrompng($originalPath);
-        } elseif ($mime === 'image/gif') {
-            $image = @imagecreatefromgif($originalPath);
-        }
-
-        if ($image) {
-            ob_start();
-            imagejpeg($image, null, 75);
-            $compressedImage = ob_get_clean();
-            imagedestroy($image);
-
-            if ($compressedImage === false) {
-                return $file->store($folder, 'evidence');
+            DB::transaction(function () use ($partner, $validated, $emailPath, $qualityPath): void {
+                VideoWorkReport::create([
+                    'partner_id' => $partner->id,
+                    'submission_date' => $validated['submission_date'],
+                    'evidence_email_image_path' => $emailPath,
+                    'evidence_app_quality_image_path' => $qualityPath,
+                    'submitted_duration_minutes' => $validated['submitted_duration_minutes'],
+                    'approved_duration_minutes' => 0,
+                    'qc_status' => 'pending',
+                    'payment_status' => 'unpaid',
+                ]);
+            });
+        } catch (Throwable $exception) {
+            foreach ([$emailPath, $qualityPath] as $path) {
+                if ($path && Storage::disk('evidence')->exists($path)) {
+                    Storage::disk('evidence')->delete($path);
+                }
             }
 
-            Storage::disk('evidence')->put($relativePath, $compressedImage);
+            Log::error('Failed to store video work report evidence.', [
+                'partner_id' => $partner->id,
+                'message' => $exception->getMessage(),
+            ]);
 
-            return $relativePath;
+            return back()
+                ->withInput()
+                ->with('error', 'Laporan gagal dikirim karena file bukti tidak berhasil disimpan. Cek permission folder storage/app/private lalu coba lagi.');
         }
 
-        // Fallback to default storage method if GD fails
-        return $file->store($folder, 'evidence');
+        return redirect()->route('dashboard')->with('success', 'Laporan kerja video Anda berhasil dikirim dan sedang menunggu antrean QC!');
     }
 }
