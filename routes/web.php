@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\EditRejectedVideoWorkReportController;
 use App\Http\Controllers\ListPartnerReportHistoryController;
 use App\Http\Controllers\ListPartnerPaymentHistoryController;
 use App\Http\Controllers\ShowVideoWorkReportEvidenceController;
@@ -35,6 +36,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/submit-report', [SubmitVideoWorkReportController::class, 'create'])->name('video-submissions.submit-report.create');
     Route::post('/submit-report', [SubmitVideoWorkReportController::class, 'store'])->name('video-submissions.submit-report.store');
     Route::get('/report-history', ListPartnerReportHistoryController::class)->name('video-submissions.report-history');
+    Route::get('/report-history/{report}/edit-rejected', [EditRejectedVideoWorkReportController::class, 'edit'])->name('video-submissions.rejected.edit');
+    Route::patch('/report-history/{report}/edit-rejected', [EditRejectedVideoWorkReportController::class, 'update'])->name('video-submissions.rejected.update');
     Route::get('/payment-history', ListPartnerPaymentHistoryController::class)->name('video-submissions.payment-history');
     
     // Phase 3: QC Video Room

@@ -88,6 +88,7 @@
                     <select id="qc_status" name="qc_status" class="block w-full min-h-11 py-2.5 px-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition bg-white">
                         <option value="">Semua QC</option>
                         <option value="pending" @selected(request('qc_status') === 'pending')>Pending</option>
+                        <option value="on_review" @selected(request('qc_status') === 'on_review')>On Review</option>
                         <option value="approved" @selected(request('qc_status') === 'approved')>Approved</option>
                         <option value="rejected" @selected(request('qc_status') === 'rejected')>Rejected</option>
                     </select>
@@ -144,6 +145,11 @@
                         @if($report->verifier_notes)
                             <p class="text-xs leading-5 text-slate-500 bg-slate-50 rounded-lg p-3">{{ $report->verifier_notes }}</p>
                         @endif
+                        @if($partner->partner_role === 'worker' && $report->qc_status === 'rejected')
+                            <a href="{{ route('video-submissions.rejected.edit', $report) }}" class="min-h-11 inline-flex w-full items-center justify-center rounded-xl bg-rose-600 px-4 py-2.5 text-xs font-black text-white shadow-sm transition hover:bg-rose-700">
+                                Perbaiki & Kirim Ulang
+                            </a>
+                        @endif
                     </article>
                 @empty
                     <p class="py-8 text-center text-slate-400 text-sm font-semibold">Belum ada riwayat laporan yang sesuai.</p>
@@ -162,6 +168,7 @@
                             <th class="py-3 pr-4 text-left font-semibold">Status QC</th>
                             <th class="py-3 pr-4 text-left font-semibold">Status Bayar</th>
                             <th class="py-3 text-left font-semibold hidden md:table-cell">Catatan Verifikasi</th>
+                            <th class="py-3 text-right font-semibold">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100 bg-white">
@@ -188,13 +195,22 @@
                                         {{ ucfirst($report->payment_status) }}
                                     </span>
                                 </td>
-                                <td class="py-4 align-top text-xs text-slate-500 max-w-xs hidden md:table-cell">
+                                <td class="py-4 pr-4 align-top text-xs text-slate-500 max-w-xs hidden md:table-cell">
                                     {{ $report->verifier_notes ?: '-' }}
+                                </td>
+                                <td class="py-4 align-top text-right">
+                                    @if($partner->partner_role === 'worker' && $report->qc_status === 'rejected')
+                                        <a href="{{ route('video-submissions.rejected.edit', $report) }}" class="inline-flex items-center justify-center rounded-lg bg-rose-50 px-3 py-2 text-xs font-black text-rose-700 transition hover:bg-rose-100">
+                                            Perbaiki
+                                        </a>
+                                    @else
+                                        <span class="text-xs text-slate-300">-</span>
+                                    @endif
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="py-12 text-center">
+                                <td colspan="9" class="py-12 text-center">
                                     <div class="flex flex-col items-center justify-center gap-2 text-slate-400">
                                         <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 17v-6m4 6V7m4 10v-4M5 21h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z"/>

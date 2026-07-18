@@ -59,7 +59,7 @@ class ListPartnerReportHistoryController extends Controller
         $qcStatus = $request->string('qc_status')->toString();
         $paymentStatus = $request->string('payment_status')->toString();
 
-        if (in_array($qcStatus, ['pending', 'approved', 'rejected'], true)) {
+        if (in_array($qcStatus, ['pending', 'on_review', 'approved', 'rejected'], true)) {
             $reportsQuery->where('qc_status', $qcStatus);
         }
 

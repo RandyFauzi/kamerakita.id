@@ -131,6 +131,16 @@ Group middleware `auth`, `verified`:
   - Name: `video-submissions.report-history`
   - Dipakai worker dan mitra untuk melihat riwayat laporan masing-masing.
 
+- `GET /report-history/{report}/edit-rejected`
+  - Controller: `EditRejectedVideoWorkReportController@edit`
+  - Name: `video-submissions.rejected.edit`
+  - Dipakai worker untuk memperbaiki laporan yang ditolak.
+
+- `PATCH /report-history/{report}/edit-rejected`
+  - Controller: `EditRejectedVideoWorkReportController@update`
+  - Name: `video-submissions.rejected.update`
+  - Setelah diperbaiki, status laporan kembali menjadi `pending`.
+
 - `GET /qc-room`
   - Controller: `VerifyVideoWorkReportController@index`
   - Name: `video-submissions.qc-room`
@@ -514,10 +524,41 @@ Alur:
    - durasi approved yang masih `unpaid`.
 7. Filter opsional:
    - `search`: mencocokkan ID laporan, nama partner, `mitra_id`, atau nomor WhatsApp.
-   - `qc_status`: `pending`, `approved`, `rejected`.
+   - `qc_status`: `pending`, `on_review`, `approved`, `rejected`.
    - `payment_status`: `unpaid`, `paid`.
 8. Order by `submission_date` terbaru lalu `created_at` terbaru.
 9. Paginate 20 dan render `video-submissions.report-history`.
+
+### `EditRejectedVideoWorkReportController`
+
+Tujuan:
+
+- Worker dapat memperbaiki laporan yang sudah ditolak admin/QC tanpa membuat laporan baru yang terpisah.
+
+Pembatasan:
+
+- Hanya akun partner role `worker`.
+- Hanya laporan milik worker yang sedang login.
+- Hanya laporan dengan `qc_status = rejected`.
+- Laporan yang sudah `paid` tidak bisa diperbaiki.
+
+Alur:
+
+1. Worker buka riwayat laporan.
+2. Jika laporan berstatus `rejected`, tombol `Perbaiki` tampil.
+3. Worker mengubah tanggal kerja dan durasi jam/menit.
+4. Worker wajib upload ulang dua screenshot:
+   - Screenshot total durasi di aplikasi.
+   - Screenshot bagian kualitas di aplikasi.
+5. File baru disimpan memakai `StoreEvidenceImageService`.
+6. Jika file baru sukses tersimpan, report yang sama diupdate:
+   - `qc_status = pending`
+   - `approved_duration_minutes = 0`
+   - `payment_status = unpaid`
+   - `verifier_notes = null`
+   - `verified_by = null`
+   - `verified_at = null`
+7. File evidence lama dihapus setelah update sukses.
 
 ### `SubmitVideoWorkReportController`
 
