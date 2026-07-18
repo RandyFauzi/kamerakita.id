@@ -17,7 +17,7 @@
         openReview(report) {
             this.activeReport = report;
             this.showVerifyModal = true;
-            this.actionType = 'approve_full';
+            this.actionType = report.qc_status === 'pending' ? 'start_review' : 'approve_full';
             this.approvedMinutes = report.submitted_duration_minutes;
             this.notes = report.verifier_notes || '';
             this.emailImageFailed = false;
@@ -90,6 +90,10 @@
                 <a href="{{ route('video-submissions.qc-room', array_merge(request()->query(), ['status' => 'pending'])) }}" 
                    class="px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-xl transition {{ $status === 'pending' ? 'bg-yellow-100 text-yellow-800 border border-yellow-250 shadow-sm' : 'bg-white border border-gray-200 text-gray-500 hover:bg-gray-50' }}">
                     Pending ({{ $totalPendingCount }})
+                </a>
+                <a href="{{ route('video-submissions.qc-room', array_merge(request()->query(), ['status' => 'on_review'])) }}" 
+                   class="px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-xl transition {{ $status === 'on_review' ? 'bg-blue-100 text-blue-800 border border-blue-250 shadow-sm' : 'bg-white border border-gray-200 text-gray-500 hover:bg-gray-50' }}">
+                    On Review ({{ $totalOnReviewCount }})
                 </a>
                 <a href="{{ route('video-submissions.qc-room', array_merge(request()->query(), ['status' => 'approved'])) }}" 
                    class="px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-xl transition {{ $status === 'approved' ? 'bg-emerald-100 text-emerald-800 border border-emerald-250 shadow-sm' : 'bg-white border border-gray-200 text-gray-500 hover:bg-gray-50' }}">
@@ -180,8 +184,12 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         @if($report->qc_status === 'pending')
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border bg-yellow-50 text-yellow-800 border-yellow-200">
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border bg-yellow-50 text-yellow-800 border-yellow-250">
                                                 Pending
+                                            </span>
+                                        @elseif($report->qc_status === 'on_review')
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border bg-blue-50 text-blue-800 border-blue-200">
+                                                On Review
                                             </span>
                                         @elseif($report->qc_status === 'approved')
                                             <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border bg-emerald-50 text-emerald-800 border-emerald-200">
@@ -198,7 +206,7 @@
                                             <button 
                                                 @click="openReview(@js($report->load('partner')))"
                                                 class="inline-flex items-center px-3 py-1.5 bg-indigo-50 border border-indigo-100 rounded-lg text-indigo-700 hover:bg-indigo-100 text-xs font-bold tracking-wider transition">
-                                                {{ $report->qc_status === 'pending' ? 'Review' : 'Detail' }}
+                                                {{ in_array($report->qc_status, ['pending', 'on_review']) ? 'Review' : 'Detail' }}
                                             </button>
 
                                             @if(Auth::user()->role === 'superadmin' || Auth::user()->role === 'admin')
@@ -317,34 +325,62 @@
                             </div>
                         </div>
 
-                        <!-- Verification Action Form (Show only if status is pending) -->
-                        <template x-if="activeReport.qc_status === 'pending'">
+                        <!-- Verification Action Form (Show only if status is pending or on_review) -->
+                        <template x-if="['pending', 'on_review'].includes(activeReport.qc_status)">
                             <form :action="'/qc-room/' + activeReport.id + '/verify'" method="POST" class="space-y-4">
                                 @csrf
                                 
                                 <div>
                                     <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Tentukan Aksi Verifikasi</label>
-                                    <div class="grid grid-cols-3 gap-3">
-                                        <label class="flex flex-col items-center justify-center p-3 border rounded-xl cursor-pointer text-center hover:bg-slate-50 transition-colors"
-                                               :class="actionType === 'approve_full' ? 'border-indigo-600 bg-indigo-50/50 text-indigo-700' : 'border-gray-200 text-gray-600'">
-                                            <input type="radio" name="action" value="approve_full" class="sr-only" x-model="actionType" @change="approvedMinutes = activeReport.submitted_duration_minutes">
-                                            <span class="block text-sm font-bold">Approve Penuh</span>
-                                            <span class="block text-xs text-gray-400 mt-1" x-text="activeReport.submitted_duration_minutes + ' menit' "></span>
-                                        </label>
+                                    
+                                    <!-- Conditional Action Options depending on current status -->
+                                    <div class="grid gap-3" :class="activeReport.qc_status === 'pending' ? 'grid-cols-2' : 'grid-cols-3'">
+                                        <!-- If Pending: Can Reject directly or Move to On Review -->
+                                        <template x-if="activeReport.qc_status === 'pending'">
+                                            <label class="flex flex-col items-center justify-center p-3 border rounded-xl cursor-pointer text-center hover:bg-slate-50 transition-colors"
+                                                   :class="actionType === 'start_review' ? 'border-blue-600 bg-blue-50/50 text-blue-700 font-bold' : 'border-gray-200 text-gray-600'">
+                                                <input type="radio" name="action" value="start_review" class="sr-only" x-model="actionType">
+                                                <span class="block text-sm font-bold">Mulai Review</span>
+                                                <span class="block text-xs text-gray-400 mt-1">Pindahkan ke ON REVIEW</span>
+                                            </label>
+                                        </template>
 
-                                        <label class="flex flex-col items-center justify-center p-3 border rounded-xl cursor-pointer text-center hover:bg-slate-50 transition-colors"
-                                               :class="actionType === 'approve_partial' ? 'border-indigo-600 bg-indigo-50/50 text-indigo-700' : 'border-gray-200 text-gray-600'">
-                                            <input type="radio" name="action" value="approve_partial" class="sr-only" x-model="actionType">
-                                            <span class="block text-sm font-bold">Approve Sebagian</span>
-                                            <span class="block text-xs text-gray-400 mt-1">Input durasi manual</span>
-                                        </label>
+                                        <template x-if="activeReport.qc_status === 'pending'">
+                                            <label class="flex flex-col items-center justify-center p-3 border rounded-xl cursor-pointer text-center hover:bg-slate-50 transition-colors"
+                                                   :class="actionType === 'reject' ? 'border-red-600 bg-red-50/50 text-red-750 font-bold' : 'border-gray-200 text-gray-600'">
+                                                <input type="radio" name="action" value="reject" class="sr-only" x-model="actionType">
+                                                <span class="block text-sm font-bold">Reject Langsung</span>
+                                                <span class="block text-xs text-gray-400 mt-1">Tolak Laporan langsung</span>
+                                            </label>
+                                        </template>
 
-                                        <label class="flex flex-col items-center justify-center p-3 border rounded-xl cursor-pointer text-center hover:bg-slate-50 transition-colors"
-                                               :class="actionType === 'reject' ? 'border-rose-600 bg-rose-50/50 text-rose-700' : 'border-gray-200 text-gray-600'">
-                                            <input type="radio" name="action" value="reject" class="sr-only" x-model="actionType">
-                                            <span class="block text-sm font-bold">Reject</span>
-                                            <span class="block text-xs text-gray-400 mt-1">Video ditolak</span>
-                                        </label>
+                                        <!-- If On Review: Can Approve Full, Approve Partial, or Reject -->
+                                        <template x-if="activeReport.qc_status === 'on_review'">
+                                            <label class="flex flex-col items-center justify-center p-3 border rounded-xl cursor-pointer text-center hover:bg-slate-50 transition-colors"
+                                                   :class="actionType === 'approve_full' ? 'border-indigo-600 bg-indigo-50/50 text-indigo-700' : 'border-gray-200 text-gray-600'">
+                                                <input type="radio" name="action" value="approve_full" class="sr-only" x-model="actionType" @change="approvedMinutes = activeReport.submitted_duration_minutes">
+                                                <span class="block text-sm font-bold">Approve Penuh</span>
+                                                <span class="block text-xs text-gray-400 mt-1" x-text="activeReport.submitted_duration_minutes + ' menit' "></span>
+                                            </label>
+                                        </template>
+
+                                        <template x-if="activeReport.qc_status === 'on_review'">
+                                            <label class="flex flex-col items-center justify-center p-3 border rounded-xl cursor-pointer text-center hover:bg-slate-50 transition-colors"
+                                                   :class="actionType === 'approve_partial' ? 'border-indigo-600 bg-indigo-50/50 text-indigo-700' : 'border-gray-200 text-gray-600'">
+                                                <input type="radio" name="action" value="approve_partial" class="sr-only" x-model="actionType">
+                                                <span class="block text-sm font-bold">Approve Sebagian</span>
+                                                <span class="block text-xs text-gray-400 mt-1">Input durasi manual</span>
+                                            </label>
+                                        </template>
+
+                                        <template x-if="activeReport.qc_status === 'on_review'">
+                                            <label class="flex flex-col items-center justify-center p-3 border rounded-xl cursor-pointer text-center hover:bg-slate-50 transition-colors"
+                                                   :class="actionType === 'reject' ? 'border-red-600 bg-red-50/50 text-red-750' : 'border-gray-200 text-gray-600'">
+                                                <input type="radio" name="action" value="reject" class="sr-only" x-model="actionType">
+                                                <span class="block text-sm font-bold">Reject</span>
+                                                <span class="block text-xs text-gray-400 mt-1">Video ditolak</span>
+                                            </label>
+                                        </template>
                                     </div>
                                 </div>
 
@@ -355,10 +391,10 @@
                                     <p class="text-xs text-gray-400 mt-1" x-text="'Maksimal durasi: ' + activeReport.submitted_duration_minutes + ' menit'"></p>
                                 </div>
 
-                                <div x-show="actionType === 'reject'" class="space-y-3 animate-in slide-in-from-top-4 duration-200">
+                                <div x-show="actionType === 'reject' || actionType === 'approve_partial'" class="space-y-3 animate-in slide-in-from-top-4 duration-200">
                                     <div>
-                                        <label for="verifier_notes" class="block text-sm font-semibold text-gray-700 mb-1">Catatan Penolakan / Masukan <span class="text-red-500">*</span></label>
-                                        <textarea name="verifier_notes" id="verifier_notes" rows="3" x-model="notes" :required="actionType === 'reject'" placeholder="Jelaskan alasan penolakan secara spesifik (misal: gambar kabur, e-mail tidak cocok)..." class="block w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                                        <label for="verifier_notes" class="block text-sm font-semibold text-gray-700 mb-1">Catatan Masukan / Alasan <span class="text-red-500">*</span></label>
+                                        <textarea name="verifier_notes" id="verifier_notes" rows="3" x-model="notes" :required="actionType === 'reject' || actionType === 'approve_partial'" placeholder="Jelaskan alasan penolakan atau alasan hanya disetujui sebagian..." class="block w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
                                     </div>
                                 </div>
 
@@ -375,7 +411,7 @@
                         </template>
 
                         <!-- Show notes if already verified (Approved/Rejected) -->
-                        <template x-if="activeReport.qc_status !== 'pending'">
+                        <template x-if="!['pending', 'on_review'].includes(activeReport.qc_status)">
                             <div class="space-y-4">
                                 <div class="p-4 rounded-2xl border text-sm" :class="activeReport.qc_status === 'approved' ? 'bg-emerald-50 border-emerald-150 text-emerald-800' : 'bg-rose-50 border-rose-150 text-rose-800'">
                                     <span class="block font-bold text-xs uppercase tracking-wider mb-1">Hasil Verifikasi</span>

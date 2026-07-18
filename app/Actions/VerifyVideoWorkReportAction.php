@@ -13,6 +13,15 @@ class VerifyVideoWorkReportAction
     {
         $action = $data['action'];
 
+        if ($action === 'start_review') {
+            $report->update([
+                'qc_status' => 'on_review',
+                'verified_by' => $verifierId,
+                'verified_at' => now(),
+            ]);
+            return "Laporan {$report->id} telah dipindahkan ke status ON REVIEW.";
+        }
+
         if ($action === 'approve_full') {
             $report->update([
                 'approved_duration_minutes' => $report->submitted_duration_minutes,
@@ -28,6 +37,7 @@ class VerifyVideoWorkReportAction
             $report->update([
                 'approved_duration_minutes' => $approvedMinutes,
                 'qc_status' => 'approved',
+                'verifier_notes' => $data['verifier_notes'] ?? null,
                 'verified_by' => $verifierId,
                 'verified_at' => now(),
             ]);

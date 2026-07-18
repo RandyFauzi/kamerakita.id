@@ -43,6 +43,7 @@ class VerifyVideoWorkReportController extends Controller
 
         // Calculate statistics for stat cards
         $totalPendingCount = VideoWorkReport::where('qc_status', 'pending')->count();
+        $totalOnReviewCount = VideoWorkReport::where('qc_status', 'on_review')->count();
         $totalApprovedCountToday = VideoWorkReport::where('qc_status', 'approved')
             ->whereDate('verified_at', today())
             ->count();
@@ -57,6 +58,7 @@ class VerifyVideoWorkReportController extends Controller
             'startDate',
             'endDate',
             'totalPendingCount',
+            'totalOnReviewCount',
             'totalApprovedCountToday',
             'totalRejectedCountToday'
         ));
@@ -65,16 +67,17 @@ class VerifyVideoWorkReportController extends Controller
     public function verify(Request $request, VideoWorkReport $report, \App\Actions\VerifyVideoWorkReportAction $verifyAction)
     {
         $validated = $request->validate([
-            'action' => 'required|in:approve_full,approve_partial,reject',
+            'action' => 'required|in:approve_full,approve_partial,reject,start_review',
             'approved_duration_minutes' => 'nullable|integer|min:0|max:' . $report->submitted_duration_minutes,
-            'verifier_notes' => 'required_if:action,reject|nullable|string|max:1000',
+            'verifier_notes' => 'required_if:action,reject,approve_partial|nullable|string|max:1000',
         ], [
-            'verifier_notes.required_if' => 'Alasan penolakan wajib diisi jika laporan ditolak.',
+            'verifier_notes.required_if' => 'Alasan wajib diisi jika laporan ditolak atau disetujui sebagian.',
         ]);
 
         $msg = $verifyAction->execute($report, $validated, Auth::id());
 
-        return redirect()->route('video-submissions.qc-room', ['status' => 'pending'])->with('success', $msg);
+        // Redirect to the same status view the user was looking at
+        return redirect()->route('video-submissions.qc-room', ['status' => $report->qc_status])->with('success', $msg);
     }
 
     public function destroy(VideoWorkReport $report)
