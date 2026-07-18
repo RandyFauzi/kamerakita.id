@@ -42,6 +42,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/qc-room/{report}/verify', [VerifyVideoWorkReportController::class, 'verify'])
         ->middleware('role:superadmin,admin,finance')
         ->name('video-submissions.verify');
+    Route::delete('/qc-room/{report}', [VerifyVideoWorkReportController::class, 'destroy'])
+        ->middleware('role:superadmin,admin')
+        ->name('video-submissions.destroy');
     Route::get('/video-work-reports/{report}/evidence/{type}', ShowVideoWorkReportEvidenceController::class)
         ->middleware(['signed', 'role:superadmin,admin,finance'])
         ->name('video-submissions.evidence.show');

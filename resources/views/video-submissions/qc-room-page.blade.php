@@ -18,7 +18,7 @@
             this.showVerifyModal = true;
             this.actionType = 'approve_full';
             this.approvedMinutes = report.submitted_duration_minutes;
-            this.notes = '';
+            this.notes = report.verifier_notes || '';
             this.emailImageFailed = false;
             this.qualityImageFailed = false;
         }
@@ -76,10 +76,32 @@
                 </div>
             </div>
 
+            <!-- Tab switchers for Status -->
+            <div class="flex flex-wrap gap-2">
+                <a href="{{ route('video-submissions.qc-room', array_merge(request()->query(), ['status' => 'all'])) }}" 
+                   class="px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-xl transition {{ $status === 'all' ? 'bg-gray-900 text-white shadow-sm' : 'bg-white border border-gray-200 text-gray-500 hover:bg-gray-50' }}">
+                    Semua Laporan
+                </a>
+                <a href="{{ route('video-submissions.qc-room', array_merge(request()->query(), ['status' => 'pending'])) }}" 
+                   class="px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-xl transition {{ $status === 'pending' ? 'bg-yellow-100 text-yellow-800 border border-yellow-250 shadow-sm' : 'bg-white border border-gray-200 text-gray-500 hover:bg-gray-50' }}">
+                    Pending ({{ $totalPendingCount }})
+                </a>
+                <a href="{{ route('video-submissions.qc-room', array_merge(request()->query(), ['status' => 'approved'])) }}" 
+                   class="px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-xl transition {{ $status === 'approved' ? 'bg-emerald-100 text-emerald-800 border border-emerald-250 shadow-sm' : 'bg-white border border-gray-200 text-gray-500 hover:bg-gray-50' }}">
+                    Approved
+                </a>
+                <a href="{{ route('video-submissions.qc-room', array_merge(request()->query(), ['status' => 'rejected'])) }}" 
+                   class="px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-xl transition {{ $status === 'rejected' ? 'bg-rose-100 text-rose-800 border border-rose-250 shadow-sm' : 'bg-white border border-gray-200 text-gray-500 hover:bg-gray-50' }}">
+                    Rejected
+                </a>
+            </div>
+
             <!-- Filter & Search Card -->
             <div class="bg-white/80 backdrop-blur-md overflow-hidden shadow-sm sm:rounded-2xl border border-gray-100 p-6">
-                <form action="{{ route('video-submissions.qc-room') }}" method="GET" class="flex gap-4">
-                    <div class="flex-1">
+                <form action="{{ route('video-submissions.qc-room') }}" method="GET" class="flex flex-col md:flex-row gap-4 items-end">
+                    <input type="hidden" name="status" value="{{ $status }}">
+                    <div class="flex-1 w-full">
+                        <label for="search" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 font-mono">Cari Nama/ID</label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -89,9 +111,27 @@
                             <input type="text" name="search" id="search" value="{{ $search }}" placeholder="Cari berdasarkan Nama Mitra, ID Mitra, atau ID Laporan..." class="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200">
                         </div>
                     </div>
-                    <button type="submit" class="inline-flex items-center px-6 py-2.5 bg-gray-900 border border-transparent rounded-xl font-semibold text-sm text-white hover:bg-gray-800 transition-colors duration-200">
-                        Cari
-                    </button>
+                    
+                    <div class="w-full md:w-48">
+                        <label for="start_date" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 font-mono">Dari Tanggal</label>
+                        <input type="date" name="start_date" id="start_date" value="{{ $startDate }}" class="block w-full py-2.5 px-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                    </div>
+
+                    <div class="w-full md:w-48">
+                        <label for="end_date" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 font-mono">Sampai Tanggal</label>
+                        <input type="date" name="end_date" id="end_date" value="{{ $endDate }}" class="block w-full py-2.5 px-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                    </div>
+
+                    <div class="flex gap-2 w-full md:w-auto">
+                        <button type="submit" class="flex-1 md:flex-none justify-center inline-flex items-center px-6 py-2.5 bg-gray-900 border border-transparent rounded-xl font-semibold text-sm text-white hover:bg-gray-800 transition-colors duration-200">
+                            Filter
+                        </button>
+                        @if($search || $startDate || $endDate || $status !== 'pending')
+                            <a href="{{ route('video-submissions.qc-room') }}" class="flex-1 md:flex-none justify-center inline-flex items-center px-5 py-2.5 bg-gray-100 border border-gray-200 rounded-xl font-semibold text-sm text-gray-700 hover:bg-gray-200 transition-all">
+                                Reset
+                            </a>
+                        @endif
+                    </div>
                 </form>
             </div>
 
@@ -110,7 +150,7 @@
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-100">
-                            @forelse($pendingReports as $report)
+                            @forelse($reports as $report)
                                 <tr class="hover:bg-gray-50/50 transition-colors duration-150">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-indigo-600">
                                         {{ substr($report->id, 0, 8) }}...
@@ -128,16 +168,40 @@
                                         {{ $report->submitted_duration_formatted }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border bg-yellow-50 text-yellow-800 border-yellow-200">
-                                            Pending
-                                        </span>
+                                        @if($report->qc_status === 'pending')
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border bg-yellow-50 text-yellow-800 border-yellow-200">
+                                                Pending
+                                            </span>
+                                        @elseif($report->qc_status === 'approved')
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border bg-emerald-50 text-emerald-800 border-emerald-200">
+                                                Approved ({{ $report->approved_duration_minutes }}m)
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border bg-rose-50 text-rose-800 border-rose-200">
+                                                Rejected
+                                            </span>
+                                        @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <button 
-                                            @click="openReview(@js($report->load('partner')))"
-                                            class="inline-flex items-center px-3.5 py-1.5 bg-indigo-50 border border-indigo-100 rounded-lg text-indigo-700 hover:bg-indigo-100 text-xs font-bold tracking-wider transition-colors duration-200">
-                                            Review
-                                        </button>
+                                        <div class="flex items-center justify-end gap-2">
+                                            <button 
+                                                @click="openReview(@js($report->load('partner')))"
+                                                class="inline-flex items-center px-3 py-1.5 bg-indigo-50 border border-indigo-100 rounded-lg text-indigo-700 hover:bg-indigo-100 text-xs font-bold tracking-wider transition">
+                                                {{ $report->qc_status === 'pending' ? 'Review' : 'Detail' }}
+                                            </button>
+
+                                            @if(Auth::user()->role === 'superadmin' || Auth::user()->role === 'admin')
+                                                <form action="{{ route('video-submissions.destroy', $report) }}" method="POST" class="inline-block" onsubmit="return confirm('Apakah Anda yakin ingin menghapus laporan ini secara permanen?')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="p-1.5 text-gray-400 hover:text-red-650 hover:bg-red-50 rounded-lg transition" title="Hapus Laporan">
+                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                        </svg>
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </div>
                                     </td>
                                 </tr>
                             @empty
@@ -147,7 +211,7 @@
                                             <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                             </svg>
-                                            <span class="font-medium text-sm">Semua video telah selesai diverifikasi! Tidak ada antrean pending.</span>
+                                            <span class="font-medium text-sm">Tidak ada data laporan video ditemukan untuk filter ini.</span>
                                         </div>
                                     </td>
                                 </tr>
@@ -156,9 +220,9 @@
                     </table>
                 </div>
 
-                @if($pendingReports->hasPages())
+                @if($reports->hasPages())
                     <div class="px-6 py-4 bg-gray-50/50 border-t border-gray-100">
-                        {{ $pendingReports->links() }}
+                        {{ $reports->links() }}
                     </div>
                 @endif
             </div>
@@ -246,60 +310,83 @@
                             </div>
                         </div>
 
-                        <!-- Verification Action Form -->
-                        <form :action="'/qc-room/' + activeReport.id + '/verify'" method="POST" class="space-y-4">
-                            @csrf
-                            
-                            <div>
-                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Tentukan Aksi Verifikasi</label>
-                                <div class="grid grid-cols-3 gap-3">
-                                    <label class="flex flex-col items-center justify-center p-3 border rounded-xl cursor-pointer text-center hover:bg-slate-50 transition-colors"
-                                           :class="actionType === 'approve_full' ? 'border-indigo-600 bg-indigo-50/50 text-indigo-700' : 'border-gray-200 text-gray-600'">
-                                        <input type="radio" name="action" value="approve_full" class="sr-only" x-model="actionType" @change="approvedMinutes = activeReport.submitted_duration_minutes">
-                                        <span class="block text-sm font-bold">Approve Penuh</span>
-                                        <span class="block text-xs text-gray-400 mt-1" x-text="activeReport.submitted_duration_minutes + ' menit' "></span>
-                                    </label>
-
-                                    <label class="flex flex-col items-center justify-center p-3 border rounded-xl cursor-pointer text-center hover:bg-slate-50 transition-colors"
-                                           :class="actionType === 'approve_partial' ? 'border-indigo-600 bg-indigo-50/50 text-indigo-700' : 'border-gray-200 text-gray-600'">
-                                        <input type="radio" name="action" value="approve_partial" class="sr-only" x-model="actionType">
-                                        <span class="block text-sm font-bold">Approve Sebagian</span>
-                                        <span class="block text-xs text-gray-400 mt-1">Input durasi manual</span>
-                                    </label>
-
-                                    <label class="flex flex-col items-center justify-center p-3 border rounded-xl cursor-pointer text-center hover:bg-slate-50 transition-colors"
-                                           :class="actionType === 'reject' ? 'border-rose-600 bg-rose-50/50 text-rose-700' : 'border-gray-200 text-gray-600'">
-                                        <input type="radio" name="action" value="reject" class="sr-only" x-model="actionType">
-                                        <span class="block text-sm font-bold">Reject</span>
-                                        <span class="block text-xs text-gray-400 mt-1">Video ditolak</span>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <!-- Conditional Fields -->
-                            <div x-show="actionType === 'approve_partial'" class="animate-in slide-in-from-top-4 duration-200">
-                                <label for="approved_duration_minutes" class="block text-sm font-semibold text-gray-700 mb-1">Durasi yang Disetujui (Menit)</label>
-                                <input type="number" name="approved_duration_minutes" id="approved_duration_minutes" x-model="approvedMinutes" :max="activeReport.submitted_duration_minutes" min="0" class="block w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-                                <p class="text-xs text-gray-400 mt-1" x-text="'Maksimal durasi: ' + activeReport.submitted_duration_minutes + ' menit'"></p>
-                            </div>
-
-                            <div x-show="actionType === 'reject'" class="space-y-3 animate-in slide-in-from-top-4 duration-200">
+                        <!-- Verification Action Form (Show only if status is pending) -->
+                        <template x-if="activeReport.qc_status === 'pending'">
+                            <form :action="'/qc-room/' + activeReport.id + '/verify'" method="POST" class="space-y-4">
+                                @csrf
+                                
                                 <div>
-                                    <label for="verifier_notes" class="block text-sm font-semibold text-gray-700 mb-1">Catatan Penolakan / Masukan <span class="text-red-500">*</span></label>
-                                    <textarea name="verifier_notes" id="verifier_notes" rows="3" x-model="notes" :required="actionType === 'reject'" placeholder="Jelaskan alasan penolakan secara spesifik (misal: gambar kabur, e-mail tidak cocok)..." class="block w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Tentukan Aksi Verifikasi</label>
+                                    <div class="grid grid-cols-3 gap-3">
+                                        <label class="flex flex-col items-center justify-center p-3 border rounded-xl cursor-pointer text-center hover:bg-slate-50 transition-colors"
+                                               :class="actionType === 'approve_full' ? 'border-indigo-600 bg-indigo-50/50 text-indigo-700' : 'border-gray-200 text-gray-600'">
+                                            <input type="radio" name="action" value="approve_full" class="sr-only" x-model="actionType" @change="approvedMinutes = activeReport.submitted_duration_minutes">
+                                            <span class="block text-sm font-bold">Approve Penuh</span>
+                                            <span class="block text-xs text-gray-400 mt-1" x-text="activeReport.submitted_duration_minutes + ' menit' "></span>
+                                        </label>
+
+                                        <label class="flex flex-col items-center justify-center p-3 border rounded-xl cursor-pointer text-center hover:bg-slate-50 transition-colors"
+                                               :class="actionType === 'approve_partial' ? 'border-indigo-600 bg-indigo-50/50 text-indigo-700' : 'border-gray-200 text-gray-600'">
+                                            <input type="radio" name="action" value="approve_partial" class="sr-only" x-model="actionType">
+                                            <span class="block text-sm font-bold">Approve Sebagian</span>
+                                            <span class="block text-xs text-gray-400 mt-1">Input durasi manual</span>
+                                        </label>
+
+                                        <label class="flex flex-col items-center justify-center p-3 border rounded-xl cursor-pointer text-center hover:bg-slate-50 transition-colors"
+                                               :class="actionType === 'reject' ? 'border-rose-600 bg-rose-50/50 text-rose-700' : 'border-gray-200 text-gray-600'">
+                                            <input type="radio" name="action" value="reject" class="sr-only" x-model="actionType">
+                                            <span class="block text-sm font-bold">Reject</span>
+                                            <span class="block text-xs text-gray-400 mt-1">Video ditolak</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Conditional Fields -->
+                                <div x-show="actionType === 'approve_partial'" class="animate-in slide-in-from-top-4 duration-200">
+                                    <label for="approved_duration_minutes" class="block text-sm font-semibold text-gray-700 mb-1">Durasi yang Disetujui (Menit)</label>
+                                    <input type="number" name="approved_duration_minutes" id="approved_duration_minutes" x-model="approvedMinutes" :max="activeReport.submitted_duration_minutes" min="0" class="block w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                    <p class="text-xs text-gray-400 mt-1" x-text="'Maksimal durasi: ' + activeReport.submitted_duration_minutes + ' menit'"></p>
+                                </div>
+
+                                <div x-show="actionType === 'reject'" class="space-y-3 animate-in slide-in-from-top-4 duration-200">
+                                    <div>
+                                        <label for="verifier_notes" class="block text-sm font-semibold text-gray-700 mb-1">Catatan Penolakan / Masukan <span class="text-red-500">*</span></label>
+                                        <textarea name="verifier_notes" id="verifier_notes" rows="3" x-model="notes" :required="actionType === 'reject'" placeholder="Jelaskan alasan penolakan secara spesifik (misal: gambar kabur, e-mail tidak cocok)..." class="block w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                                    </div>
+                                </div>
+
+                                <!-- Modal Actions -->
+                                <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                                    <button type="button" @click="showVerifyModal = false" class="inline-flex items-center px-5 py-2.5 bg-white border border-gray-200 rounded-xl font-semibold text-sm text-gray-700 hover:bg-gray-50 focus:outline-none transition">
+                                        Batalkan
+                                    </button>
+                                    <button type="submit" class="inline-flex items-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-750 text-white border border-transparent rounded-xl font-semibold text-sm focus:outline-none transition shadow-md shadow-indigo-100">
+                                        Kirim Hasil QC
+                                    </button>
+                                </div>
+                            </form>
+                        </template>
+
+                        <!-- Show notes if already verified (Approved/Rejected) -->
+                        <template x-if="activeReport.qc_status !== 'pending'">
+                            <div class="space-y-4">
+                                <div class="p-4 rounded-2xl border text-sm" :class="activeReport.qc_status === 'approved' ? 'bg-emerald-50 border-emerald-150 text-emerald-800' : 'bg-rose-50 border-rose-150 text-rose-800'">
+                                    <span class="block font-bold text-xs uppercase tracking-wider mb-1">Hasil Verifikasi</span>
+                                    <p class="font-medium">
+                                        Status: <span class="font-black uppercase" x-text="activeReport.qc_status"></span>
+                                    </p>
+                                    <p class="mt-1" x-text="'Durasi Approved: ' + activeReport.approved_duration_minutes + ' menit'"></p>
+                                    <template x-if="activeReport.verifier_notes">
+                                        <p class="mt-2 pt-2 border-t border-black/5" x-text="'Catatan Verifikator: ' + activeReport.verifier_notes"></p>
+                                    </template>
+                                </div>
+                                <div class="flex justify-end pt-4 border-t border-gray-100">
+                                    <button type="button" @click="showVerifyModal = false" class="inline-flex items-center px-5 py-2.5 bg-gray-900 hover:bg-gray-800 text-white rounded-xl font-semibold text-sm transition">
+                                        Tutup
+                                    </button>
                                 </div>
                             </div>
-
-                            <!-- Modal Actions -->
-                            <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
-                                <button type="button" @click="showVerifyModal = false" class="inline-flex items-center px-5 py-2.5 bg-white border border-gray-200 rounded-xl font-semibold text-sm text-gray-700 hover:bg-gray-50 focus:outline-none transition">
-                                    Batalkan
-                                </button>
-                                <button type="submit" class="inline-flex items-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-750 text-white border border-transparent rounded-xl font-semibold text-sm focus:outline-none transition shadow-md shadow-indigo-100">
-                                    Kirim Hasil QC
-                                </button>
-                            </div>
-                        </form>
+                        </template>
                     </div>
                 </div>
             </div>

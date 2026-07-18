@@ -11,17 +11,33 @@ class VerifyVideoWorkReportController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
-        
-        $pendingReports = VideoWorkReport::query()
+        $status = $request->input('status', 'pending'); // default to pending if not specified
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+
+        $reports = VideoWorkReport::query()
             ->with(['partner'])
-            ->where('qc_status', 'pending')
-            ->when($search, function ($query, $search) {
-                $query->whereHas('partner', function ($q) use ($search) {
-                    $q->where('full_name', 'like', "%{$search}%")
-                      ->orWhere('mitra_id', 'like', "%{$search}%");
-                })->orWhere('id', 'like', "%{$search}%");
+            // Status filter
+            ->when($status !== 'all', function ($query) use ($status) {
+                $query->where('qc_status', $status);
             })
-            ->orderBy('submission_date', 'asc')
+            // Date filters
+            ->when($startDate, function ($query, $startDate) {
+                $query->where('submission_date', '>=', $startDate);
+            })
+            ->when($endDate, function ($query, $endDate) {
+                $query->where('submission_date', '<=', $endDate);
+            })
+            // Search filter
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->whereHas('partner', function ($sub) use ($search) {
+                        $sub->where('full_name', 'like', "%{$search}%")
+                            ->orWhere('mitra_id', 'like', "%{$search}%");
+                    })->orWhere('id', 'like', "%{$search}%");
+                });
+            })
+            ->orderBy('submission_date', 'desc')
             ->paginate(15)
             ->withQueryString();
 
@@ -35,8 +51,11 @@ class VerifyVideoWorkReportController extends Controller
             ->count();
 
         return view('video-submissions.qc-room', compact(
-            'pendingReports', 
+            'reports', 
             'search',
+            'status',
+            'startDate',
+            'endDate',
             'totalPendingCount',
             'totalApprovedCountToday',
             'totalRejectedCountToday'
@@ -55,6 +74,17 @@ class VerifyVideoWorkReportController extends Controller
 
         $msg = $verifyAction->execute($report, $validated, Auth::id());
 
-        return redirect()->route('video-submissions.qc-room')->with('success', $msg);
+        return redirect()->route('video-submissions.qc-room', ['status' => 'pending'])->with('success', $msg);
+    }
+
+    public function destroy(VideoWorkReport $report)
+    {
+        if (Auth::user()->role !== 'superadmin' && Auth::user()->role !== 'admin') {
+            abort(403);
+        }
+        
+        $report->delete();
+
+        return redirect()->route('video-submissions.qc-room')->with('success', 'Laporan video berhasil dihapus dari sistem.');
     }
 }
