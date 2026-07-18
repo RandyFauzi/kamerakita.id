@@ -23,9 +23,76 @@
                     @endif
                 </div>
 
-                <form action="{{ route('video-submissions.rejected.update', $report) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+                @if(session('error'))
+                    <div class="rounded-xl border border-red-200 bg-red-50 p-4" role="alert">
+                        <p class="text-sm font-bold text-red-800">Laporan belum berhasil disimpan</p>
+                        <p class="mt-1 text-xs leading-5 text-red-700">{{ session('error') }}</p>
+                    </div>
+                @endif
+
+                @if($errors->any())
+                    <div class="rounded-xl border border-red-200 bg-red-50 p-4" role="alert">
+                        <p class="text-sm font-bold text-red-800">Periksa kembali data laporan</p>
+                        <ul class="mt-2 space-y-1 text-xs leading-5 text-red-700">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                <form
+                    action="{{ route('video-submissions.rejected.update', $report) }}"
+                    method="POST"
+                    enctype="multipart/form-data"
+                    class="space-y-6"
+                    x-data="{
+                        emailFile: null,
+                        qualityFile: null,
+                        clientError: '',
+                        attempted: false,
+                        submitting: false,
+                        selectFile(event, field) {
+                            const file = event.target.files[0] || null;
+                            this.clientError = '';
+
+                            if (file && file.size > 2 * 1024 * 1024) {
+                                event.target.value = '';
+                                this[field] = null;
+                                this.clientError = 'Ukuran setiap gambar maksimal 2 MB.';
+                                return;
+                            }
+
+                            this[field] = file;
+                        },
+                        submitReport(event) {
+                            this.attempted = true;
+                            this.clientError = '';
+
+                            if (!this.emailFile || !this.qualityFile) {
+                                event.preventDefault();
+                                this.clientError = 'Pilih kedua screenshot sebelum mengajukan ulang laporan.';
+                                this.$nextTick(() => {
+                                    const target = !this.emailFile ? this.$refs.emailInput : this.$refs.qualityInput;
+                                    target?.focus();
+                                    target?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                });
+                                return;
+                            }
+
+                            this.submitting = true;
+                        }
+                    }"
+                    @submit="submitReport($event)"
+                >
                     @csrf
                     @method('PATCH')
+
+                    <template x-if="clientError">
+                        <div class="rounded-xl border border-red-200 bg-red-50 p-4" role="alert">
+                            <p class="text-sm font-semibold text-red-700" x-text="clientError"></p>
+                        </div>
+                    </template>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
                         <div>
@@ -54,21 +121,29 @@
                         </div>
                     </div>
 
-                    <div class="bg-slate-50 border border-gray-100 rounded-xl sm:rounded-2xl p-4 sm:p-5 space-y-3">
+                    <div class="bg-slate-50 border rounded-xl sm:rounded-2xl p-4 sm:p-5 space-y-3 transition" :class="attempted && !emailFile ? 'border-red-300 bg-red-50/50' : 'border-gray-100'">
                         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1.5 border-b border-gray-200/50 pb-2">
                             <span class="text-sm font-bold text-slate-800">1. Screenshot total durasi di aplikasi <span class="text-red-500">*</span></span>
                             <span class="text-xs text-gray-400">Format: JPG, PNG, WEBP (Maks: 2MB)</span>
                         </div>
-                        <input type="file" accept="image/jpeg,image/png,image/webp" name="evidence_email_image_path" id="evidence_email_image_path" required class="block w-full text-xs sm:text-sm text-gray-500 file:mr-3 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 file:transition-all">
+                        <input x-ref="emailInput" @change="selectFile($event, 'emailFile')" type="file" accept="image/jpeg,image/png,image/webp" name="evidence_email_image_path" id="evidence_email_image_path" class="block w-full text-xs sm:text-sm text-gray-500 file:mr-3 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 file:transition-all">
+                        <p x-show="emailFile" class="text-xs font-semibold text-emerald-700">
+                            File dipilih: <span x-text="emailFile?.name"></span>
+                        </p>
+                        <p x-show="attempted && !emailFile" class="text-xs font-semibold text-red-600">Screenshot total durasi wajib dipilih.</p>
                         @error('evidence_email_image_path') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
-                    <div class="bg-slate-50 border border-gray-100 rounded-xl sm:rounded-2xl p-4 sm:p-5 space-y-3">
+                    <div class="bg-slate-50 border rounded-xl sm:rounded-2xl p-4 sm:p-5 space-y-3 transition" :class="attempted && !qualityFile ? 'border-red-300 bg-red-50/50' : 'border-gray-100'">
                         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1.5 border-b border-gray-200/50 pb-2">
                             <span class="text-sm font-bold text-slate-800">2. Screenshot Bagian Kualitas di Aplikasi <span class="text-red-500">*</span></span>
                             <span class="text-xs text-gray-400">Format: JPG, PNG, WEBP (Maks: 2MB)</span>
                         </div>
-                        <input type="file" accept="image/jpeg,image/png,image/webp" name="evidence_app_quality_image_path" id="evidence_app_quality_image_path" required class="block w-full text-xs sm:text-sm text-gray-500 file:mr-3 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 file:transition-all">
+                        <input x-ref="qualityInput" @change="selectFile($event, 'qualityFile')" type="file" accept="image/jpeg,image/png,image/webp" name="evidence_app_quality_image_path" id="evidence_app_quality_image_path" class="block w-full text-xs sm:text-sm text-gray-500 file:mr-3 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 file:transition-all">
+                        <p x-show="qualityFile" class="text-xs font-semibold text-emerald-700">
+                            File dipilih: <span x-text="qualityFile?.name"></span>
+                        </p>
+                        <p x-show="attempted && !qualityFile" class="text-xs font-semibold text-red-600">Screenshot bagian kualitas wajib dipilih.</p>
                         @error('evidence_app_quality_image_path') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
@@ -76,8 +151,12 @@
                         <a href="{{ route('video-submissions.report-history') }}" class="w-full sm:w-auto min-h-12 inline-flex items-center justify-center px-6 py-3 bg-white border border-gray-200 rounded-xl font-semibold text-sm text-gray-700 hover:bg-gray-50 transition duration-150">
                             Batal
                         </a>
-                        <button type="submit" class="w-full sm:w-auto min-h-12 inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 border border-transparent rounded-xl font-semibold text-sm text-white hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-md shadow-indigo-100">
-                            Simpan & Ajukan Ulang
+                        <button type="submit" :disabled="submitting" class="w-full sm:w-auto min-h-12 inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 border border-transparent rounded-xl font-semibold text-sm text-white hover:from-blue-700 hover:to-indigo-700 disabled:cursor-wait disabled:opacity-70 transition-all duration-300 shadow-md shadow-indigo-100">
+                            <svg x-show="submitting" class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                            </svg>
+                            <span x-text="submitting ? 'Sedang Mengirim...' : 'Simpan & Ajukan Ulang'">Simpan & Ajukan Ulang</span>
                         </button>
                     </div>
                 </form>
