@@ -77,6 +77,7 @@
                     <table class="min-w-full divide-y divide-gray-100">
                         <thead class="bg-gray-50/50">
                             <tr>
+                                <th scope="col" class="w-16 px-4 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">No.</th>
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">ID Mitra</th>
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Nama Lengkap</th>
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Peran (Role)</th>
@@ -90,6 +91,9 @@
                         <tbody class="bg-white divide-y divide-gray-100">
                             @forelse($partners as $partner)
                                 <tr class="hover:bg-gray-50/50 transition-colors duration-150">
+                                    <td class="w-16 px-4 py-4 whitespace-nowrap text-center text-sm font-semibold text-gray-500">
+                                        {{ $partners->firstItem() + $loop->index }}
+                                    </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-indigo-650">
                                         {{ $partner->mitra_id }}
                                     </td>
@@ -143,7 +147,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="8" class="px-6 py-12 text-center text-gray-500">
+                                    <td colspan="9" class="px-6 py-12 text-center text-gray-500">
                                         <span class="text-sm">Tidak ada data mitra atau worker ditemukan.</span>
                                     </td>
                                 </tr>
