@@ -11,8 +11,6 @@ class CalculatePartnerMetricsService
     private const DEFAULT_WORKER_HOURLY_RATE_IDR = 54000;
     private const MITRA_COMMISSION_HOURLY_RATE_IDR = 9000;
     private const DEFAULT_MITRA_OWN_HOURLY_RATE_IDR = 63000;
-    private const CLIENT_BILLING_HOURLY_RATE_IDR = 90000;
-    private const AGENCY_MARGIN_HOURLY_RATE_IDR = 27000;
 
     /**
      * Get dynamic metrics for a single Worker partner.
@@ -135,17 +133,13 @@ class CalculatePartnerMetricsService
         $totalWorkersCount = $allWorkers->count();
         $totalMitraCount = Partner::where('partner_role', 'mitra')->count();
 
-        $approvedReports = VideoWorkReport::where('qc_status', 'approved')->get();
+        $approvedReports = VideoWorkReport::with('partner')->where('qc_status', 'approved')->get();
 
         $allTime = $approvedReports->sum('approved_duration_minutes');
         $paid = $approvedReports->where('payment_status', 'paid')->sum('approved_duration_minutes');
         $pending = $approvedReports->where('payment_status', 'unpaid')->sum('approved_duration_minutes');
 
-        $clientPaidAmount = ($paid / 60) * self::CLIENT_BILLING_HOURLY_RATE_IDR;
-        $clientPendingAmount = ($pending / 60) * self::CLIENT_BILLING_HOURLY_RATE_IDR;
-        $agencyNetMargin = ($allTime / 60) * self::AGENCY_MARGIN_HOURLY_RATE_IDR;
-
-        // Fetch live USD to IDR rate (bypassing SSL verification for Windows/Laragon offline environments compatibility)
+        // Fetch live USD to IDR rate
         $usdToIdrRate = cache()->remember('usd_to_idr_rate', 300, function() {
             try {
                 $response = Http::withoutVerifying()->timeout(5)->get('https://open.er-api.com/v6/latest/USD');
@@ -158,12 +152,39 @@ class CalculatePartnerMetricsService
             return 17900;
         });
 
-        // Convert amounts to USD dynamically for admin view
+        // Billing to Client is fixed at $4.00 USD/hour, converted dynamically to IDR
+        $clientBillingRateIdr = $usdToIdrRate * 4;
+
+        $clientPaidAmount = ($paid / 60) * $clientBillingRateIdr;
+        $clientPendingAmount = ($pending / 60) * $clientBillingRateIdr;
+
+        // Calculate Payouts
+        $workerPayout = 0;
+        $mitraPayout = 0;
+        $commissionPayout = 0;
+
+        foreach ($approvedReports as $report) {
+            $partner = $report->partner;
+            $durationHours = $report->approved_duration_minutes / 60;
+            if ($partner) {
+                if ($partner->partner_role === 'worker') {
+                    $workerPayout += $durationHours * ($partner->base_hourly_rate ?: self::DEFAULT_WORKER_HOURLY_RATE_IDR);
+                    $commissionPayout += $durationHours * self::MITRA_COMMISSION_HOURLY_RATE_IDR;
+                } else {
+                    $mitraPayout += $durationHours * ($partner->base_hourly_rate ?: self::DEFAULT_MITRA_OWN_HOURLY_RATE_IDR);
+                }
+            }
+        }
+
+        // Net Margin = Total Billed - Payouts
+        $totalBilledIdr = $clientPaidAmount + $clientPendingAmount;
+        $totalPayoutIdr = $workerPayout + $mitraPayout + $commissionPayout;
+        $agencyNetMargin = $totalBilledIdr - $totalPayoutIdr;
+
+        // Convert amounts to USD
         $clientPaidUsd = $clientPaidAmount / $usdToIdrRate;
         $clientPendingUsd = $clientPendingAmount / $usdToIdrRate;
         $agencyNetMarginUsd = $agencyNetMargin / $usdToIdrRate;
-        $clientBillingHourlyRateUsd = self::CLIENT_BILLING_HOURLY_RATE_IDR / $usdToIdrRate;
-        $agencyMarginHourlyRateUsd = self::AGENCY_MARGIN_HOURLY_RATE_IDR / $usdToIdrRate;
 
         return [
             'total_workers' => $totalWorkersCount,
@@ -179,16 +200,12 @@ class CalculatePartnerMetricsService
             'client_paid_amount' => $clientPaidAmount,
             'client_pending_amount' => $clientPendingAmount,
             'agency_net_margin' => $agencyNetMargin,
-            'client_billing_hourly_rate' => self::CLIENT_BILLING_HOURLY_RATE_IDR,
-            'agency_margin_hourly_rate' => self::AGENCY_MARGIN_HOURLY_RATE_IDR,
 
             // Live USD rates
             'usd_to_idr_rate' => $usdToIdrRate,
             'client_paid_amount_usd' => $clientPaidUsd,
             'client_pending_amount_usd' => $clientPendingUsd,
             'agency_net_margin_usd' => $agencyNetMarginUsd,
-            'client_billing_hourly_rate_usd' => $clientBillingHourlyRateUsd,
-            'agency_margin_hourly_rate_usd' => $agencyMarginHourlyRateUsd,
         ];
     }
 
