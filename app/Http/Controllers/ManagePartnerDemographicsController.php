@@ -18,13 +18,27 @@ class ManagePartnerDemographicsController extends Controller
         $role = $request->input('role');
         $status = $request->input('status');
 
+        $summaryRow = Partner::query()
+            ->selectRaw('COUNT(*) as total_users')
+            ->selectRaw("SUM(CASE WHEN partner_role = 'worker' THEN 1 ELSE 0 END) as total_workers")
+            ->selectRaw("SUM(CASE WHEN partner_role = 'mitra' THEN 1 ELSE 0 END) as total_mitra")
+            ->selectRaw("SUM(CASE WHEN status = 'suspended' THEN 1 ELSE 0 END) as total_suspended")
+            ->first();
+
+        $summary = [
+            'total_users' => (int) $summaryRow->total_users,
+            'total_workers' => (int) $summaryRow->total_workers,
+            'total_mitra' => (int) $summaryRow->total_mitra,
+            'total_suspended' => (int) $summaryRow->total_suspended,
+        ];
+
         $partners = Partner::query()
             ->with(['mitraParent', 'user'])
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('full_name', 'like', "%{$search}%")
-                      ->orWhere('mitra_id', 'like', "%{$search}%")
-                      ->orWhere('whatsapp_number', 'like', "%{$search}%");
+                        ->orWhere('mitra_id', 'like', "%{$search}%")
+                        ->orWhere('whatsapp_number', 'like', "%{$search}%");
                 });
             })
             ->when($role, function ($query, $role) {
@@ -37,14 +51,14 @@ class ManagePartnerDemographicsController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        return view('partners.index', compact('partners', 'search', 'role', 'status'));
+        return view('partners.index', compact('partners', 'search', 'role', 'status', 'summary'));
     }
 
     public function create()
     {
         // Get potential Mitra (Coordinators) for parent selection
         $mitraList = Partner::where('partner_role', 'mitra')->get();
-        
+
         // Auto-generate next KMK-XXX code
         $latestPartner = Partner::orderBy('mitra_id', 'desc')->first();
         if ($latestPartner && preg_match('/KMK-(\d+)/', $latestPartner->mitra_id, $matches)) {
@@ -52,7 +66,7 @@ class ManagePartnerDemographicsController extends Controller
         } else {
             $nextNumber = 1;
         }
-        $nextMitraId = 'KMK-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+        $nextMitraId = 'KMK-'.str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
 
         return view('partners.create', compact('mitraList', 'nextMitraId'));
     }
@@ -108,6 +122,7 @@ class ManagePartnerDemographicsController extends Controller
         $mitraList = Partner::where('partner_role', 'mitra')
             ->where('id', '!=', $partner->id)
             ->get();
+
         return view('partners.edit', compact('partner', 'mitraList'));
     }
 
@@ -116,7 +131,7 @@ class ManagePartnerDemographicsController extends Controller
         $validated = $request->validate([
             'partner_role' => 'required|in:worker,mitra',
             'mitra_parent_id' => 'nullable|exists:partners,id',
-            'nik' => 'nullable|string|max:30|unique:partners,nik,' . $partner->id,
+            'nik' => 'nullable|string|max:30|unique:partners,nik,'.$partner->id,
             'full_name' => 'required|string|max:255',
             'whatsapp_number' => 'required|string|max:20',
             'email' => [
@@ -144,7 +159,7 @@ class ManagePartnerDemographicsController extends Controller
             $password = $validated['password'] ?? null;
             unset($validated['password']);
 
-            $user = $partner->user ?: new User();
+            $user = $partner->user ?: new User;
             $user->name = $validated['full_name'];
             $user->email = $validated['email'];
             $user->role = $user->role ?: 'verifikator';
