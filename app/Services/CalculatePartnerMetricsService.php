@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Partner;
 use App\Models\VideoWorkReport;
+use Illuminate\Support\Facades\Http;
 
 class CalculatePartnerMetricsService
 {
@@ -126,7 +127,7 @@ class CalculatePartnerMetricsService
     }
 
     /**
-     * Get global metrics for Super Admin.
+     * Get global metrics for Super Admin, including dynamic live USD conversions.
      */
     public function getGlobalMetrics(): array
     {
@@ -144,6 +145,26 @@ class CalculatePartnerMetricsService
         $clientPendingAmount = ($pending / 60) * self::CLIENT_BILLING_HOURLY_RATE_IDR;
         $agencyNetMargin = ($allTime / 60) * self::AGENCY_MARGIN_HOURLY_RATE_IDR;
 
+        // Fetch live USD to IDR rate
+        $usdToIdrRate = cache()->remember('usd_to_idr_rate', 3600, function() {
+            try {
+                $response = Http::timeout(3)->get('https://open.er-api.com/v6/latest/USD');
+                if ($response->successful()) {
+                    return $response->json()['rates']['IDR'] ?? 16200;
+                }
+            } catch (\Exception $e) {
+                // Fallback
+            }
+            return 16200;
+        });
+
+        // Convert amounts to USD dynamically for admin view
+        $clientPaidUsd = $clientPaidAmount / $usdToIdrRate;
+        $clientPendingUsd = $clientPendingAmount / $usdToIdrRate;
+        $agencyNetMarginUsd = $agencyNetMargin / $usdToIdrRate;
+        $clientBillingHourlyRateUsd = self::CLIENT_BILLING_HOURLY_RATE_IDR / $usdToIdrRate;
+        $agencyMarginHourlyRateUsd = self::AGENCY_MARGIN_HOURLY_RATE_IDR / $usdToIdrRate;
+
         return [
             'total_workers' => $totalWorkersCount,
             'total_mitra' => $totalMitraCount,
@@ -154,12 +175,20 @@ class CalculatePartnerMetricsService
             'global_paid_hours_formatted' => $this->formatMinutes($paid),
             'global_pending_hours_formatted' => $this->formatMinutes($pending),
 
-            // Financial Projections
+            // Financial Projections (IDR)
             'client_paid_amount' => $clientPaidAmount,
             'client_pending_amount' => $clientPendingAmount,
             'agency_net_margin' => $agencyNetMargin,
             'client_billing_hourly_rate' => self::CLIENT_BILLING_HOURLY_RATE_IDR,
             'agency_margin_hourly_rate' => self::AGENCY_MARGIN_HOURLY_RATE_IDR,
+
+            // Live USD rates
+            'usd_to_idr_rate' => $usdToIdrRate,
+            'client_paid_amount_usd' => $clientPaidUsd,
+            'client_pending_amount_usd' => $clientPendingUsd,
+            'agency_net_margin_usd' => $agencyNetMarginUsd,
+            'client_billing_hourly_rate_usd' => $clientBillingHourlyRateUsd,
+            'agency_margin_hourly_rate_usd' => $agencyMarginHourlyRateUsd,
         ];
     }
 

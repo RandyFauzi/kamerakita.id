@@ -94,19 +94,30 @@
             <!-- Right: Investment balance card (1 col) - MARGIN AGENSI -->
             <div class="bg-white rounded-[32px] p-8 border border-gray-150 shadow-sm flex flex-col justify-between min-h-[220px]">
                 <div>
-                    <span class="block text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">MARGIN BERSIH AGENSI (Rp{{ number_format($metrics['agency_margin_hourly_rate'], 0, ',', '.') }}/JAM)</span>
-                    <h3 class="text-2xl font-black text-slate-800 mt-3">Rp{{ number_format($metrics['agency_net_margin'], 0, ',', '.') }}</h3>
-                    <div class="flex items-center gap-2 mt-2">
-                        <span class="text-xs text-gray-400 font-medium">Billing Internal:</span>
+                    <div class="flex justify-between items-start">
+                        <span class="block text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">MARGIN BERSIH AGENSI</span>
+                        <span class="bg-blue-55 border border-blue-100 text-blue-700 text-[9px] font-black px-2 py-0.5 rounded-full uppercase font-mono">
+                            Live $1 = Rp{{ number_format($metrics['usd_to_idr_rate'], 0, ',', '.') }}
+                        </span>
+                    </div>
+                    <h3 class="text-2xl font-black text-slate-800 mt-3">
+                        Rp{{ number_format($metrics['agency_net_margin'], 0, ',', '.') }}
+                        <span class="block text-xs text-gray-400 font-bold mt-1">
+                            ≈ ${{ number_format($metrics['agency_net_margin_usd'], 2) }} USD
+                        </span>
+                    </h3>
+                    <div class="flex items-center gap-2 mt-2.5">
+                        <span class="text-xs text-gray-405 font-semibold">Billing Internal:</span>
                         <span class="bg-indigo-50 border border-indigo-100 text-indigo-700 text-[10px] font-bold px-2 py-0.5 rounded-full">
-                            Rp{{ number_format($metrics['client_paid_amount'] + $metrics['client_pending_amount'], 0, ',', '.') }}
+                            Rp{{ number_format($metrics['client_paid_amount'] + $metrics['client_pending_amount'], 0, ',', '.') }} (≈ ${{ number_format($metrics['client_paid_amount_usd'] + $metrics['client_pending_amount_usd'], 2) }} USD)
                         </span>
                     </div>
                 </div>
 
-                <span class="block text-center text-xs font-bold text-gray-405 py-3 bg-gray-50 border border-gray-150 rounded-2xl font-mono">
-                    Rate billing: Rp{{ number_format($metrics['client_billing_hourly_rate'], 0, ',', '.') }}/jam
-                </span>
+                <div class="block text-center text-xs font-bold text-gray-405 py-3 bg-gray-50 border border-gray-150 rounded-2xl font-mono space-y-1">
+                    <div>Rate billing: Rp{{ number_format($metrics['client_billing_hourly_rate'], 0, ',', '.') }}/jam (≈ ${{ number_format($metrics['client_billing_hourly_rate_usd'], 2) }}/jam)</div>
+                    <div class="text-[10px] text-gray-400">Rate margin: Rp{{ number_format($metrics['agency_margin_hourly_rate'], 0, ',', '.') }}/jam (≈ ${{ number_format($metrics['agency_margin_hourly_rate_usd'], 2) }}/jam)</div>
+                </div>
             </div>
         </div>
 
