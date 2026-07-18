@@ -72,7 +72,7 @@
                     </div>
                 </div>
 
-                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $partner->whatsapp_number) }}" target="_blank" class="w-full py-3.5 bg-gray-50 border border-gray-200 hover:bg-gray-100 text-gray-800 font-bold text-xs rounded-2xl shadow-sm transition flex items-center justify-center">
+                <a href="https://wa.me/6287886272647?text=Halo%20Koordinator%20Kamerakita.id,%20saya%20ingin%20bertanya%20terkait%20status%20laporan%20video%20kerja%20saya." target="_blank" class="w-full py-3.5 bg-gray-50 border border-gray-200 hover:bg-gray-100 text-gray-800 font-bold text-xs rounded-2xl shadow-sm transition flex items-center justify-center">
                     Hubungi Koordinator
                 </a>
             </div>
