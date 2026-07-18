@@ -49,7 +49,7 @@ return [
 
         'evidence' => [
             'driver' => 'local',
-            'root' => env('EVIDENCE_STORAGE_PATH') ?: storage_path('app/private'),
+            'root' => storage_path('app/private'),
             'visibility' => 'private',
             'throw' => false,
             'report' => false,

@@ -549,8 +549,7 @@ Private helper:
 
 - `compressAndStoreImage($file, string $folder)`
   - Simpan file ke disk `evidence`.
-  - Default root disk `evidence` adalah `storage/app/private/...`.
-  - Di production root ini bisa dipindah via `EVIDENCE_STORAGE_PATH` ke folder permanen di luar repo.
+  - Root disk `evidence` adalah `storage/app/private/...`, sama pola private storage Laravel/ONFIX.
   - Convert ke JPEG dengan kualitas 75 jika GD berhasil.
   - Fallback ke `$file->store($folder, 'evidence')` jika GD gagal.
 
@@ -944,7 +943,6 @@ Catatan lokal:
 
 - `BROADCAST_CONNECTION`: koneksi broadcast.
 - `FILESYSTEM_DISK`: disk filesystem default.
-- `EVIDENCE_STORAGE_PATH`: folder fisik permanen untuk bukti laporan dan bukti transfer. Jika dikosongkan, aplikasi memakai Laravel standar `storage/app/private`. Jika server memakai deploy yang menghapus folder project, isi dengan path writable milik akun hosting, misalnya `/home/USERNAME/kamerakita_uploads/evidence`.
 - `QUEUE_CONNECTION`: koneksi queue.
 - `CACHE_STORE`: store cache.
 - `MEMCACHED_HOST`: host memcached jika dipakai.
@@ -1170,11 +1168,10 @@ php artisan evidence:check-files --show-missing
 Catatan deployment production:
 
 - File upload user tidak pernah ikut Git dan memang harus begitu.
-- Jangan deploy dengan cara yang menghapus folder upload.
-- Jika ingin alur seperti ONFIX/Laravel standar, kosongkan `EVIDENCE_STORAGE_PATH` dan biarkan file masuk ke `storage/app/private`.
-- Set `EVIDENCE_STORAGE_PATH` hanya kalau server memakai auto-deploy yang mengganti isi project.
-- Jangan pakai contoh literal `/home/account/...`; ganti `account` dengan username hosting yang asli, misalnya dari prompt shell `u361393239`.
-- Backup database saja tidak cukup; backup juga folder `EVIDENCE_STORAGE_PATH`.
+- Bukti laporan/bukti transfer disimpan di `storage/app/private/evidences/...`.
+- `git pull` normal tidak akan menghapus isi upload karena file upload tidak tracked oleh Git.
+- Jangan deploy dengan cara menghapus folder `storage/app/private` atau menjalankan clean yang ikut menghapus ignored files seperti `git clean -fdx`.
+- Backup database saja tidak cukup; backup juga folder `storage/app/private/evidences`.
 
 Run test:
 
@@ -1228,7 +1225,7 @@ Catatan:
 Catatan:
 
 - Upload evidence baru disimpan di disk `evidence`.
-- Default disk `evidence` adalah `storage/app/private/evidences/...`, tetapi production sebaiknya memakai `EVIDENCE_STORAGE_PATH` di luar repo.
+- Disk `evidence` adalah `storage/app/private/evidences/...`, sama seperti pola private storage ONFIX.
 - File lama yang masih berada di public storage bisa dimigrasikan dengan `php artisan evidence:migrate-to-private --delete-public`.
 - Controller evidence masih punya fallback membaca disk `local` dan `public` untuk kompatibilitas selama file lama belum dimigrasikan.
 
@@ -1279,7 +1276,7 @@ Rekomendasi:
 
 Rekomendasi:
 
-- Untuk production yang sudah punya file lama di public/local storage, set `EVIDENCE_STORAGE_PATH`, jalankan migrasi evidence, lalu backup folder evidence tersebut.
+- Untuk production yang sudah punya file lama di public/local storage, jalankan migrasi evidence, lalu backup folder `storage/app/private/evidences`.
 
 ## 18. Peta File Penting untuk AI
 
