@@ -145,17 +145,17 @@ class CalculatePartnerMetricsService
         $clientPendingAmount = ($pending / 60) * self::CLIENT_BILLING_HOURLY_RATE_IDR;
         $agencyNetMargin = ($allTime / 60) * self::AGENCY_MARGIN_HOURLY_RATE_IDR;
 
-        // Fetch live USD to IDR rate
-        $usdToIdrRate = cache()->remember('usd_to_idr_rate', 3600, function() {
+        // Fetch live USD to IDR rate (bypassing SSL verification for Windows/Laragon offline environments compatibility)
+        $usdToIdrRate = cache()->remember('usd_to_idr_rate', 300, function() {
             try {
-                $response = Http::timeout(3)->get('https://open.er-api.com/v6/latest/USD');
+                $response = Http::withoutVerifying()->timeout(5)->get('https://open.er-api.com/v6/latest/USD');
                 if ($response->successful()) {
-                    return $response->json()['rates']['IDR'] ?? 16200;
+                    return $response->json()['rates']['IDR'] ?? 17900;
                 }
             } catch (\Exception $e) {
                 // Fallback
             }
-            return 16200;
+            return 17900;
         });
 
         // Convert amounts to USD dynamically for admin view
