@@ -7,6 +7,7 @@
 
     <div class="py-8" x-data="{ 
         showVerifyModal: false,
+        showDeleteModal: false,
         activeReport: {},
         actionType: 'approve_full',
         approvedMinutes: '',
@@ -21,6 +22,10 @@
             this.notes = report.verifier_notes || '';
             this.emailImageFailed = false;
             this.qualityImageFailed = false;
+        },
+        openDelete(report) {
+            this.activeReport = report;
+            this.showDeleteModal = true;
         }
     }">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
@@ -197,15 +202,11 @@
                                             </button>
 
                                             @if(Auth::user()->role === 'superadmin' || Auth::user()->role === 'admin')
-                                                <form action="{{ route('video-submissions.destroy', $report) }}" method="POST" class="inline-block" onsubmit="return confirm('Apakah Anda yakin ingin menghapus laporan ini secara permanen?')">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="p-1.5 text-gray-400 hover:text-red-650 hover:bg-red-50 rounded-lg transition" title="Hapus Laporan">
-                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                                        </svg>
-                                                    </button>
-                                                </form>
+                                                <button type="button" @click="openDelete(@js($report))" class="p-1.5 text-gray-400 hover:text-red-650 hover:bg-red-50 rounded-lg transition" title="Hapus Laporan">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                    </svg>
+                                                </button>
                                             @endif
                                         </div>
                                     </td>
@@ -394,6 +395,41 @@
                             </div>
                         </template>
                     </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- Custom Premium Delete Confirmation Modal -->
+        <template x-if="showDeleteModal">
+            <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+                <div class="bg-white rounded-[32px] max-w-md w-full shadow-2xl p-6 border border-gray-100 animate-in fade-in zoom-in-95 duration-200">
+                    <div class="flex items-center gap-4 text-rose-600 mb-4">
+                        <div class="p-3 bg-rose-50 rounded-2xl">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-black text-slate-900 leading-tight">Hapus Laporan Video?</h3>
+                            <p class="text-xs text-gray-400 font-medium">Tindakan ini tidak dapat dibatalkan.</p>
+                        </div>
+                    </div>
+
+                    <p class="text-sm text-gray-550 leading-relaxed mb-6">
+                        Apakah Anda yakin ingin menghapus laporan video dengan ID <strong class="text-slate-800 font-bold" x-text="activeReport.id ? activeReport.id.substring(0, 8) + '...' : ''"></strong> secara permanen dari sistem?
+                    </p>
+
+                    <!-- Modal Actions -->
+                    <form :action="'/qc-room/' + activeReport.id" method="POST" class="flex justify-end gap-3 border-t border-gray-100 pt-4">
+                        @csrf
+                        @method('DELETE')
+                        <button type="button" @click="showDeleteModal = false" class="px-5 py-2.5 bg-white border border-gray-200 text-gray-700 font-bold text-xs rounded-2xl hover:bg-gray-50 transition">
+                            Batalkan
+                        </button>
+                        <button type="submit" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-2xl shadow-sm transition">
+                            Hapus Permanen
+                        </button>
+                    </form>
                 </div>
             </div>
         </template>
