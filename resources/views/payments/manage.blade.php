@@ -1,11 +1,17 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-bold text-2xl text-gray-800 leading-tight">
+        <h2 class="font-bold text-xl sm:text-2xl text-gray-800 leading-tight">
             {{ __('Manajemen Pembayaran Gaji') }}
         </h2>
     </x-slot>
 
-    <div class="py-8" x-data="{ 
+    @php
+        $queuedAmount = collect($workers)->sum('total_amount');
+        $queuedReportCount = collect($workers)->sum(fn ($worker) => count($worker['reports']));
+        $paidAmount = collect($payoutHistory)->sum('total_amount');
+    @endphp
+
+    <div class="py-2 sm:py-8" x-data="{
         currentTab: 'queue',
         showPayModal: false,
         activeWorker: {},
@@ -61,30 +67,90 @@
                 </div>
             @endif
 
-            <!-- Page Header Card -->
-            <div class="overflow-hidden shadow-sm sm:rounded-3xl p-8 text-white relative" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);">
-                <div class="relative z-10 space-y-2 max-w-2xl">
-                    <span class="bg-indigo-500/20 text-indigo-300 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider">Payroll Desk</span>
-                    <h3 class="text-2xl font-black tracking-tight">Antrean Pembayaran Gaji Mitra (Worker)</h3>
-                    <p class="text-xs text-slate-350 leading-relaxed">
-                        Halaman ini mengelompokkan seluruh laporan kerja harian harian yang telah disetujui (Approved) dan menunggu transfer pembayaran. Selesaikan pembayaran secara kolektif per worker, salin rekening, dan unggah bukti transfer.
-                    </p>
+            @if(session('error'))
+                <div class="rounded-xl border border-red-200 bg-red-50 p-4" role="alert">
+                    <p class="text-sm font-bold text-red-800">Pembayaran belum berhasil diproses</p>
+                    <p class="mt-1 text-xs leading-5 text-red-700">{{ session('error') }}</p>
                 </div>
-                <!-- Premium subtle background glows -->
-                <div class="absolute -right-16 -top-16 w-64 h-64 bg-indigo-500 rounded-full blur-3xl opacity-20"></div>
+            @endif
+
+            <!-- Page Header Card -->
+            <section class="overflow-hidden rounded-2xl bg-slate-950 p-5 text-white shadow-sm sm:rounded-3xl sm:p-7">
+                <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+                    <div class="max-w-2xl">
+                        <span class="text-[10px] font-black uppercase tracking-widest text-indigo-300">Payroll Desk</span>
+                        <h3 class="mt-2 text-xl font-black tracking-tight sm:text-2xl">Pembayaran Gaji Worker</h3>
+                        <p class="mt-2 text-xs leading-5 text-slate-300 sm:text-sm">
+                            Kelola laporan yang telah disetujui, salin rekening tujuan, lalu catat pembayaran dengan bukti transfer.
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-3 border-t border-slate-800 pt-4 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
+                        <div>
+                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Siap Dibayar</span>
+                            <strong class="mt-1 block text-lg font-black text-white">{{ $queuedReportCount }} laporan</strong>
+                        </div>
+                        <span class="h-9 w-px bg-slate-800"></span>
+                        <div>
+                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Antrean</span>
+                            <strong class="mt-1 block text-lg font-black text-emerald-400">Rp {{ number_format($queuedAmount, 0, ',', '.') }}</strong>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
+                <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-5">
+                    <div class="flex items-center justify-between gap-3">
+                        <div>
+                            <span class="block text-[10px] font-black uppercase tracking-widest text-slate-400">Worker Menunggu</span>
+                            <strong class="mt-2 block text-2xl font-black text-slate-900">{{ count($workers) }}</strong>
+                        </div>
+                        <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 2m6-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+                <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-5">
+                    <div class="flex items-center justify-between gap-3">
+                        <div>
+                            <span class="block text-[10px] font-black uppercase tracking-widest text-slate-400">Nominal Menunggu</span>
+                            <strong class="mt-2 block text-xl font-black text-indigo-700">Rp {{ number_format($queuedAmount, 0, ',', '.') }}</strong>
+                        </div>
+                        <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M5 4h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2zm12 9h.01"/>
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+                <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-5">
+                    <div class="flex items-center justify-between gap-3">
+                        <div>
+                            <span class="block text-[10px] font-black uppercase tracking-widest text-slate-400">Total Sudah Dibayar</span>
+                            <strong class="mt-2 block text-xl font-black text-emerald-700">Rp {{ number_format($paidAmount, 0, ',', '.') }}</strong>
+                        </div>
+                        <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </span>
+                    </div>
+                </div>
             </div>
 
             <!-- Tab Switchers -->
-            <div class="flex gap-2 border-b border-gray-100 pb-1">
+            <div class="grid grid-cols-2 gap-1 rounded-xl border border-gray-200 bg-gray-100 p-1 sm:inline-grid sm:min-w-[430px]">
                 <button @click="currentTab = 'queue'"
-                        :class="currentTab === 'queue' ? 'border-b-2 border-indigo-600 text-indigo-700 font-black' : 'text-gray-450 hover:text-gray-900 font-bold'"
-                        class="px-4 py-2 text-xs uppercase tracking-wider transition-all duration-200 focus:outline-none">
-                    Antrean Pembayaran ({{ count($workers) }})
+                        :class="currentTab === 'queue' ? 'bg-white text-indigo-700 shadow-sm' : 'text-gray-500 hover:text-gray-900'"
+                        class="min-h-10 rounded-lg px-3 py-2 text-[11px] font-black uppercase tracking-wider transition focus:outline-none sm:px-4">
+                    Antrean <span class="ml-1 rounded-full bg-indigo-50 px-2 py-0.5 text-indigo-700">{{ count($workers) }}</span>
                 </button>
                 <button @click="currentTab = 'history'"
-                        :class="currentTab === 'history' ? 'border-b-2 border-indigo-600 text-indigo-700 font-black' : 'text-gray-450 hover:text-gray-900 font-bold'"
-                        class="px-4 py-2 text-xs uppercase tracking-wider transition-all duration-200 focus:outline-none">
-                    Riwayat Pembayaran ({{ count($payoutHistory) }})
+                        :class="currentTab === 'history' ? 'bg-white text-indigo-700 shadow-sm' : 'text-gray-500 hover:text-gray-900'"
+                        class="min-h-10 rounded-lg px-3 py-2 text-[11px] font-black uppercase tracking-wider transition focus:outline-none sm:px-4">
+                    Riwayat <span class="ml-1 rounded-full bg-slate-200 px-2 py-0.5 text-slate-700">{{ count($payoutHistory) }}</span>
                 </button>
             </div>
 
@@ -102,7 +168,7 @@
                                     <h4 class="text-base font-black text-slate-900">{{ $w['partner']->full_name }}</h4>
                                     <div class="flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-400 font-medium">
                                         <span>ID: {{ $w['partner']->mitra_id }}</span>
-                                        <span>•</span>
+                                        <span aria-hidden="true">&middot;</span>
                                         <span>Rek: {{ $w['partner']->bank_name ?? 'BCA' }} ({{ $w['partner']->bank_account_number ?? $w['partner']->account_number ?? '-' }})</span>
                                     </div>
                                 </div>
@@ -167,17 +233,19 @@
                         </div>
                     </div>
                 @empty
-                    <div class="bg-white rounded-3xl p-16 text-center border border-gray-150 shadow-sm space-y-4 max-w-lg mx-auto mt-6">
-                        <div class="w-16 h-16 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-center justify-center mx-auto text-emerald-500 shadow-sm shadow-emerald-50">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="flex min-h-64 items-center justify-center rounded-2xl border border-gray-150 bg-white px-6 py-10 text-center shadow-sm">
+                        <div class="max-w-md space-y-4">
+                            <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-emerald-100 bg-emerald-50 text-emerald-600">
+                            <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
-                        </div>
-                        <div class="space-y-1">
-                            <h4 class="text-base font-black text-slate-800">Antrean Pembayaran Bersih</h4>
-                            <p class="text-xs text-gray-400 leading-relaxed">
-                                Tidak ada antrean pembayaran saat ini. Semua laporan harian video yang disetujui (Approved) telah diselesaikan pembayarannya.
+                            </div>
+                            <div>
+                            <h4 class="text-base font-black text-slate-900">Tidak Ada Antrean Pembayaran</h4>
+                            <p class="mt-2 text-sm leading-6 text-gray-500">
+                                Semua laporan yang telah disetujui sudah dibayar. Antrean baru akan muncul setelah admin menyetujui laporan worker.
                             </p>
+                            </div>
                         </div>
                     </div>
                 @endforelse
@@ -273,17 +341,19 @@
                         </div>
                     </div>
                 @empty
-                    <div class="bg-white rounded-3xl p-16 text-center border border-gray-150 shadow-sm space-y-4 max-w-lg mx-auto mt-6">
-                        <div class="w-16 h-16 bg-gray-50 border border-gray-100 rounded-2xl flex items-center justify-center mx-auto text-gray-400">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="flex min-h-64 items-center justify-center rounded-2xl border border-gray-150 bg-white px-6 py-10 text-center shadow-sm">
+                        <div class="max-w-md space-y-4">
+                            <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-gray-100 bg-gray-50 text-gray-400">
+                            <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
-                        </div>
-                        <div class="space-y-1">
-                            <h4 class="text-base font-black text-slate-800">Belum Ada Riwayat</h4>
-                            <p class="text-xs text-gray-400 leading-relaxed">
-                                Tidak ada riwayat pembayaran yang ditemukan di sistem.
+                            </div>
+                            <div>
+                            <h4 class="text-base font-black text-slate-900">Belum Ada Riwayat Pembayaran</h4>
+                            <p class="mt-2 text-sm leading-6 text-gray-500">
+                                Pembayaran yang telah dikonfirmasi akan tersimpan dan ditampilkan pada bagian ini.
                             </p>
+                            </div>
                         </div>
                     </div>
                 @endforelse
