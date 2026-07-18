@@ -108,7 +108,15 @@
             </div>
             <a href="{{ route('profile.edit') }}" class="overflow-hidden">
                 <span class="block text-sm font-bold text-gray-900 truncate">{{ Auth::user()->name }}</span>
-                <span class="block text-[10px] text-gray-400 font-semibold uppercase tracking-wider">{{ Auth::user()->role }}</span>
+                <span class="block text-[10px] text-gray-400 font-semibold uppercase tracking-wider">
+                    @if($partner && $partner->partner_role === 'worker')
+                        Kontributor
+                    @elseif($partner && $partner->partner_role === 'mitra')
+                        Mitra (Koordinator)
+                    @else
+                        {{ Auth::user()->role }}
+                    @endif
+                </span>
             </a>
         </div>
         
