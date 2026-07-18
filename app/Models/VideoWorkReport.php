@@ -89,11 +89,9 @@ class VideoWorkReport extends Model
             return null;
         }
 
-        return URL::temporarySignedRoute(
-            'video-submissions.evidence.show',
-            now()->addMinutes(30),
-            ['report' => $this->id, 'type' => $type],
-            false // Generate relative URL to prevent localhost mismatch on Laragon domain (kamerakitaid.site)
-        );
+        return route('video-submissions.evidence.show', [
+            'report' => $this->id,
+            'type' => $type
+        ], false); // Generate relative URL for universal cross-host reliability
     }
 }
