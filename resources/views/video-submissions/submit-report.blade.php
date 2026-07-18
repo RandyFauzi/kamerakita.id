@@ -36,7 +36,7 @@
                     <!-- Evidence 1: Email Screenshot -->
                     <div class="bg-slate-50 border border-gray-100 rounded-2xl p-5 space-y-3">
                         <div class="flex justify-between items-center border-b border-gray-200/50 pb-2">
-                            <span class="text-sm font-bold text-slate-800">1. Bukti Gambar Email Otomatis Aplikasi <span class="text-red-500">*</span></span>
+                            <span class="text-sm font-bold text-slate-800">1. Screenshot total durasi di aplikasi <span class="text-red-500">*</span></span>
                             <span class="text-xs text-gray-400">Format: JPG, PNG (Maks: 2MB)</span>
                         </div>
                         <input type="file" name="evidence_email_image_path" id="evidence_email_image_path" required class="block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-55 file:text-indigo-700 hover:file:bg-indigo-100 file:transition-all">
@@ -47,7 +47,7 @@
                     <!-- Evidence 2: App Quality Screenshot -->
                     <div class="bg-slate-50 border border-gray-100 rounded-2xl p-5 space-y-3">
                         <div class="flex justify-between items-center border-b border-gray-200/50 pb-2">
-                            <span class="text-sm font-bold text-slate-800">2. Bukti Tangkapan Layar Kualitas Aplikasi <span class="text-red-500">*</span></span>
+                            <span class="text-sm font-bold text-slate-800">2. Screenshot Bagian Kualitas di Aplikasi <span class="text-red-500">*</span></span>
                             <span class="text-xs text-gray-400">Format: JPG, PNG (Maks: 2MB)</span>
                         </div>
                         <input type="file" name="evidence_app_quality_image_path" id="evidence_app_quality_image_path" required class="block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-55 file:text-indigo-700 hover:file:bg-indigo-100 file:transition-all">
