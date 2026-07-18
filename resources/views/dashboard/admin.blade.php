@@ -4,7 +4,7 @@
             <h2 class="font-bold text-2xl text-gray-800 leading-tight">
                 {{ __('Super Admin Dashboard') }}
             </h2>
-            <div class="flex gap-2">
+            <div class="flex flex-wrap gap-2">
                 <a href="{{ route('payroll.export-csv') }}" class="inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-650 border border-transparent rounded-xl font-semibold text-xs text-white uppercase tracking-widest hover:from-blue-700 hover:to-indigo-700 focus:outline-none transition shadow-md shadow-indigo-100">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -81,7 +81,7 @@
                     <span class="block text-xs text-slate-400 font-medium mt-1">Total durasi data terkumpul di agensi Kamerakita.ai</span>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4 mt-6 relative z-10">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6 relative z-10">
                     <a href="{{ route('payroll.export-csv') }}" class="flex items-center justify-center gap-2 py-3.5 bg-white hover:bg-gray-50 text-gray-800 font-bold text-xs rounded-2xl shadow-sm transition">
                         Ekspor CSV Payroll
                     </a>

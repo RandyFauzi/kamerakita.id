@@ -1,13 +1,31 @@
+<!-- Mobile Sidebar Overlay Backdrop -->
+<div class="fixed inset-0 bg-slate-950/40 backdrop-blur-xs z-15 md:hidden transition-opacity duration-300 opacity-0 pointer-events-none" id="sidebar-overlay" onclick="
+    document.getElementById('sidebar').classList.add('-translate-x-full');
+    this.classList.add('opacity-0', 'pointer-events-none');
+    this.classList.remove('opacity-100', 'pointer-events-auto');
+"></div>
+
 <div class="fixed inset-y-0 left-0 z-20 w-64 bg-white border-r border-gray-200/60 flex flex-col justify-between transition-all duration-300 transform md:translate-x-0 -translate-x-full" id="sidebar">
     <div class="flex flex-col">
         <!-- Logo Header -->
-        <div class="h-16 flex items-center px-5 border-b border-gray-100 overflow-hidden">
+        <div class="h-16 flex items-center justify-between px-5 border-b border-gray-100 overflow-hidden">
             <a href="{{ route('dashboard') }}" class="flex items-center gap-2.5 min-w-0">
                 <span class="w-8 h-8 rounded-lg overflow-hidden shrink-0 flex items-center justify-center bg-white">
                     <img src="{{ asset('images/Logo.webp') }}" alt="Kamerakita.ai" class="max-h-8 max-w-8 object-contain">
                 </span>
                 <span class="text-sm font-black tracking-wide text-slate-950 whitespace-nowrap">KAMERAKITA<span class="text-indigo-600">.AI</span></span>
             </a>
+            <!-- Mobile Close Button (X) -->
+            <button class="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-50 md:hidden focus:outline-none" onclick="
+                document.getElementById('sidebar').classList.add('-translate-x-full');
+                const overlay = document.getElementById('sidebar-overlay');
+                overlay.classList.add('opacity-0', 'pointer-events-none');
+                overlay.classList.remove('opacity-100', 'pointer-events-auto');
+            ">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
         </div>
 
         <!-- Navigation Links -->

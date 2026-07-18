@@ -125,20 +125,20 @@
                 <table class="min-w-full divide-y divide-gray-100 text-sm">
                     <thead>
                         <tr class="text-gray-500">
-                            <th class="py-3 pr-4 text-left font-semibold">ID Laporan</th>
+                            <th class="py-3 pr-4 text-left font-semibold hidden sm:table-cell">ID Laporan</th>
                             <th class="py-3 pr-4 text-left font-semibold">Worker</th>
                             <th class="py-3 pr-4 text-left font-semibold">Tanggal Kerja</th>
                             <th class="py-3 pr-4 text-left font-semibold">Durasi Kirim</th>
                             <th class="py-3 pr-4 text-left font-semibold">Durasi Disetujui</th>
                             <th class="py-3 pr-4 text-left font-semibold">Status QC</th>
                             <th class="py-3 pr-4 text-left font-semibold">Status Bayar</th>
-                            <th class="py-3 text-left font-semibold">Catatan Verifikasi</th>
+                            <th class="py-3 text-left font-semibold hidden md:table-cell">Catatan Verifikasi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100 bg-white">
                         @forelse($reports as $report)
                             <tr>
-                                <td class="py-4 pr-4 align-top">
+                                <td class="py-4 pr-4 align-top hidden sm:table-cell">
                                     <span class="block max-w-[130px] truncate font-mono text-xs font-bold text-indigo-650" title="{{ $report->id }}">{{ $report->id }}</span>
                                     <span class="block text-[10px] text-slate-400 mt-1">{{ $report->created_at->format('d M Y H:i') }}</span>
                                 </td>
@@ -159,7 +159,7 @@
                                         {{ ucfirst($report->payment_status) }}
                                     </span>
                                 </td>
-                                <td class="py-4 align-top text-xs text-slate-500 max-w-xs">
+                                <td class="py-4 align-top text-xs text-slate-500 max-w-xs hidden md:table-cell">
                                     {{ $report->verifier_notes ?: '-' }}
                                 </td>
                             </tr>
