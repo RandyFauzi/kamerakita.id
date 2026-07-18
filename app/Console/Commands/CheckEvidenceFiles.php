@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\EvidenceFileBackup;
 use App\Models\VideoWorkReport;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
@@ -29,6 +30,7 @@ class CheckEvidenceFiles extends Command
             ->values();
 
         $available = 0;
+        $recoverable = 0;
         $missing = [];
 
         foreach ($paths as $path) {
@@ -37,13 +39,22 @@ class CheckEvidenceFiles extends Command
 
             if ($exists) {
                 $available++;
+
+                continue;
+            }
+
+            if (EvidenceFileBackup::query()->where('path', $path)->exists()) {
+                $recoverable++;
+
                 continue;
             }
 
             $missing[] = $path;
         }
 
-        $this->info("Evidence file check complete. Existing: {$available}. Missing: ".count($missing).'.');
+        $this->info(
+            "Evidence file check complete. On disk: {$available}. Recoverable from database: {$recoverable}. Missing: ".count($missing).'.'
+        );
 
         if ($this->option('show-missing') && $missing !== []) {
             foreach ($missing as $path) {

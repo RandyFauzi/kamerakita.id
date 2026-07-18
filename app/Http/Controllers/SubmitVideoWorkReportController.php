@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Partner;
 use App\Models\VideoWorkReport;
+use App\Services\EvidenceFileBackupService;
 use App\Services\StoreEvidenceImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,7 +19,7 @@ class SubmitVideoWorkReportController extends Controller
     {
         $partner = Partner::where('user_id', Auth::id())->first();
 
-        if (!$partner || $partner->partner_role !== 'worker') {
+        if (! $partner || $partner->partner_role !== 'worker') {
             return redirect()->route('dashboard')->with('error', 'Hanya akun dengan profil Worker yang dapat mengakses halaman ini.');
         }
 
@@ -29,7 +30,7 @@ class SubmitVideoWorkReportController extends Controller
     {
         $partner = Partner::where('user_id', Auth::id())->first();
 
-        if (!$partner || $partner->partner_role !== 'worker') {
+        if (! $partner || $partner->partner_role !== 'worker') {
             return redirect()->route('dashboard')->with('error', 'Akses ditolak.');
         }
 
@@ -68,11 +69,19 @@ class SubmitVideoWorkReportController extends Controller
                     'qc_status' => 'pending',
                     'payment_status' => 'unpaid',
                 ]);
+
+                $backup = app(EvidenceFileBackupService::class);
+                $backup->backup($emailPath);
+                $backup->backup($qualityPath);
             });
         } catch (Throwable $exception) {
             foreach ([$emailPath, $qualityPath] as $path) {
-                if ($path && Storage::disk('evidence')->exists($path)) {
-                    Storage::disk('evidence')->delete($path);
+                try {
+                    if ($path && Storage::disk('evidence')->exists($path)) {
+                        Storage::disk('evidence')->delete($path);
+                    }
+                } catch (Throwable) {
+                    // The original upload failure is the actionable error.
                 }
             }
 

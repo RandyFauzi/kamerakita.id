@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Partner;
 use App\Models\VideoWorkReport;
+use App\Services\EvidenceFileBackupService;
 use App\Services\StoreEvidenceImageService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -33,7 +35,9 @@ class ManagePaymentsController extends Controller
         $workers = [];
         foreach ($grouped as $partnerId => $reports) {
             $partner = $reports->first()->partner;
-            if (!$partner) continue;
+            if (! $partner) {
+                continue;
+            }
 
             $totalMinutes = $reports->sum('approved_duration_minutes');
             $hours = $totalMinutes / 60;
@@ -58,15 +62,18 @@ class ManagePaymentsController extends Controller
             ->get();
 
         $groupedPaid = $paidReports->groupBy(function ($item) {
-            $paidAt = $item->paid_at instanceof \Carbon\Carbon ? $item->paid_at : \Carbon\Carbon::parse($item->paid_at);
-            return $paidAt->format('Y-m-d H:i:s') . '_' . $item->payment_reference_proof_path;
+            $paidAt = $item->paid_at instanceof Carbon ? $item->paid_at : Carbon::parse($item->paid_at);
+
+            return $paidAt->format('Y-m-d H:i:s').'_'.$item->payment_reference_proof_path;
         });
 
         $payoutHistory = [];
         foreach ($groupedPaid as $key => $reports) {
             $first = $reports->first();
             $partner = $first->partner;
-            if (!$partner) continue;
+            if (! $partner) {
+                continue;
+            }
 
             $totalMinutes = $reports->sum('approved_duration_minutes');
             $hours = $totalMinutes / 60;
@@ -81,7 +88,7 @@ class ManagePaymentsController extends Controller
                 'reports' => $reports->sortByDesc('submission_date'),
                 'total_minutes' => $totalMinutes,
                 'total_amount' => $totalAmount,
-                'batch_id' => base64_encode($first->paid_at->format('Y-m-d H:i:s') . '|' . $first->payment_reference_proof_path),
+                'batch_id' => base64_encode($first->paid_at->format('Y-m-d H:i:s').'|'.$first->payment_reference_proof_path),
             ];
         }
 
@@ -123,6 +130,8 @@ class ManagePaymentsController extends Controller
                     'payment_reference_proof_path' => $proofPath,
                     'paid_at' => now(),
                 ]);
+
+                app(EvidenceFileBackupService::class)->backup($proofPath);
             });
         } catch (Throwable $exception) {
             if ($proofPath && Storage::disk('evidence')->exists($proofPath)) {
@@ -153,11 +162,11 @@ class ManagePaymentsController extends Controller
 
         try {
             $decoded = base64_decode($request->batch_id);
-            if (!str_contains($decoded, '|')) {
+            if (! str_contains($decoded, '|')) {
                 return redirect()->back()->with('error', 'Format batch ID tidak valid.');
             }
 
-            list($paidAtStr, $proofPath) = explode('|', $decoded);
+            [$paidAtStr, $proofPath] = explode('|', $decoded);
 
             // Fetch reports in this batch
             $reports = VideoWorkReport::where('paid_at', $paidAtStr)
@@ -176,6 +185,8 @@ class ManagePaymentsController extends Controller
                         $disk->delete($proofPath);
                     }
                 }
+
+                app(EvidenceFileBackupService::class)->delete($proofPath);
             }
 
             // Revert reports to unpaid status
@@ -187,8 +198,7 @@ class ManagePaymentsController extends Controller
 
             return redirect()->route('payments.manage')->with('success', 'Riwayat pembayaran berhasil dihapus. Laporan terkait telah dikembalikan ke status Unpaid.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan: '.$e->getMessage());
         }
     }
-
 }

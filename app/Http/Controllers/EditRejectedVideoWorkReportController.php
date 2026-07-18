@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Partner;
 use App\Models\VideoWorkReport;
+use App\Services\EvidenceFileBackupService;
 use App\Services\StoreEvidenceImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -69,11 +70,13 @@ class EditRejectedVideoWorkReportController extends Controller
                     'verified_by' => null,
                     'verified_at' => null,
                 ]);
-            });
 
-            $this->deleteEvidenceFiles($oldPaths);
+                $backup = app(EvidenceFileBackupService::class);
+                $backup->backup($newEmailPath);
+                $backup->backup($newQualityPath);
+            });
         } catch (Throwable $exception) {
-            $this->deleteEvidenceFiles([$newEmailPath, $newQualityPath]);
+            $this->deleteEvidenceFiles([$newEmailPath, $newQualityPath], true);
 
             Log::error('Failed to resubmit rejected video work report.', [
                 'report_id' => $report->id,
@@ -84,6 +87,8 @@ class EditRejectedVideoWorkReportController extends Controller
                 ->withInput()
                 ->with('error', 'Laporan gagal dikirim ulang karena file bukti tidak berhasil disimpan. Cek permission storage lalu coba lagi.');
         }
+
+        $this->deleteEvidenceFiles($oldPaths, true);
 
         return redirect()
             ->route('video-submissions.report-history')
@@ -104,7 +109,7 @@ class EditRejectedVideoWorkReportController extends Controller
         return $partner;
     }
 
-    private function deleteEvidenceFiles(array $paths): void
+    private function deleteEvidenceFiles(array $paths, bool $deleteBackup = false): void
     {
         foreach ($paths as $path) {
             if (! $path) {
@@ -112,10 +117,29 @@ class EditRejectedVideoWorkReportController extends Controller
             }
 
             foreach (['evidence', 'local', 'public'] as $diskName) {
-                $disk = Storage::disk($diskName);
+                try {
+                    $disk = Storage::disk($diskName);
 
-                if ($disk->exists($path)) {
-                    $disk->delete($path);
+                    if ($disk->exists($path)) {
+                        $disk->delete($path);
+                    }
+                } catch (Throwable $exception) {
+                    Log::warning('Failed to clean up an evidence file.', [
+                        'path' => $path,
+                        'disk' => $diskName,
+                        'message' => $exception->getMessage(),
+                    ]);
+                }
+            }
+
+            if ($deleteBackup) {
+                try {
+                    app(EvidenceFileBackupService::class)->delete($path);
+                } catch (Throwable $exception) {
+                    Log::warning('Failed to clean up an evidence database backup.', [
+                        'path' => $path,
+                        'message' => $exception->getMessage(),
+                    ]);
                 }
             }
         }
