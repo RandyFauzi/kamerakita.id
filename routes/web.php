@@ -48,9 +48,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/qc-room/{report}', [VerifyVideoWorkReportController::class, 'destroy'])
         ->middleware('role:superadmin,admin')
         ->name('video-submissions.destroy');
-    Route::get('/video-work-reports/{report}/evidence/{type}', ShowVideoWorkReportEvidenceController::class)
-        ->middleware(['role:superadmin,admin,finance'])
-        ->name('video-submissions.evidence.show');
+    // Batch Payment Module
+    Route::get('/payments/manage', [\App\Http\Controllers\ManagePaymentsController::class, 'index'])
+        ->middleware('role:superadmin,admin,finance')
+        ->name('payments.manage');
+    Route::post('/payments/manage/{partner}/pay', [\App\Http\Controllers\ManagePaymentsController::class, 'processPayment'])
+        ->middleware('role:superadmin,admin,finance')
+        ->name('payments.process');
 
     // Phase 5: Bulk Payroll Export Module
     Route::get('/payroll/export-csv', [ExportPayrollDataController::class, 'exportCsv'])
