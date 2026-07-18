@@ -28,7 +28,8 @@ class ListPartnerPaymentHistoryController extends Controller
             ->get();
 
         $grouped = $paidReports->groupBy(function ($item) {
-            return $item->paid_at->format('Y-m-d H:i:s') . '_' . $item->payment_reference_proof_path;
+            $paidAt = $item->paid_at instanceof \Carbon\Carbon ? $item->paid_at : \Carbon\Carbon::parse($item->paid_at);
+            return $paidAt->format('Y-m-d H:i:s') . '_' . $item->payment_reference_proof_path;
         });
 
         $payments = [];

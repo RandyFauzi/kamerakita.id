@@ -29,6 +29,7 @@ class VideoWorkReport extends Model
     protected $casts = [
         'submission_date' => 'date',
         'verified_at' => 'datetime',
+        'paid_at' => 'datetime',
     ];
 
     protected $appends = [
