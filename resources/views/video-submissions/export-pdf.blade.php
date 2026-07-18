@@ -21,13 +21,13 @@
                 break-inside: avoid !important;
                 page-break-inside: avoid !important;
                 border: 1px solid #e2e8f0 !important;
-                margin-bottom: 2rem !important;
+                margin-bottom: 1rem !important;
                 background-color: white !important;
             }
         }
         @page {
             size: A4;
-            margin: 1.5cm;
+            margin: 1.2cm;
         }
         .page-card {
             break-inside: avoid;
@@ -38,7 +38,7 @@
 <body class="bg-gray-50 text-gray-900 font-sans p-6 antialiased">
 
     <!-- Top floating navigation bar (Hidden in Print) -->
-    <div class="no-print max-w-5xl mx-auto mb-8 bg-white border border-gray-200 rounded-3xl p-4 flex justify-between items-center shadow-sm">
+    <div class="no-print max-w-5xl mx-auto mb-6 bg-white border border-gray-200 rounded-3xl p-4 flex justify-between items-center shadow-sm">
         <div class="space-y-0.5">
             <h4 class="font-bold text-gray-800 text-sm">Mode Pratinjau Cetak A4</h4>
             <p class="text-xs text-gray-400">Tekan cetak untuk menyimpan laporan sebagai file PDF.</p>
@@ -57,15 +57,15 @@
     </div>
 
     <!-- Printable container -->
-    <div class="max-w-5xl mx-auto space-y-6">
+    <div class="max-w-5xl mx-auto space-y-4">
         <!-- Print Header -->
-        <div class="border-b-2 border-gray-900 pb-4 flex justify-between items-end">
-            <div class="space-y-1">
-                <h2 class="text-2xl font-black tracking-tight text-gray-900">KAMERAKITA<span class="text-indigo-650">.AI</span></h2>
-                <p class="text-xs font-bold uppercase tracking-widest text-indigo-650 font-mono">Laporan Rekapitulasi Verifikasi QC Video</p>
-                <p class="text-[10px] text-gray-400">Dicetak pada: {{ date('d F Y H:i:s') }}</p>
+        <div class="border-b-2 border-gray-900 pb-3 flex justify-between items-end">
+            <div class="space-y-0.5">
+                <h2 class="text-xl font-black tracking-tight text-gray-900">KAMERAKITA<span class="text-indigo-650">.AI</span></h2>
+                <p class="text-[10px] font-bold uppercase tracking-widest text-indigo-650 font-mono">Laporan Rekapitulasi Verifikasi QC Video</p>
+                <p class="text-[9px] text-gray-400">Dicetak pada: {{ date('d F Y H:i:s') }}</p>
             </div>
-            <div class="text-right text-xs text-gray-550 font-medium space-y-1 font-mono">
+            <div class="text-right text-[10px] text-gray-500 font-medium space-y-0.5 font-mono">
                 <div>Status Filter: <strong class="text-gray-900 uppercase">{{ $status }}</strong></div>
                 @if($startDate || $endDate)
                     <div>Periode: <strong>{{ $startDate ?? 'Mulai Awal' }}</strong> s/d <strong>{{ $endDate ?? 'Hari Ini' }}</strong></div>
@@ -75,19 +75,25 @@
         </div>
 
         <!-- Reports list -->
-        <div class="space-y-8 pt-4">
+        <div class="space-y-3 pt-2">
             @forelse($reports as $index => $report)
-                <div class="page-card bg-white border border-gray-150 rounded-[32px] p-6 shadow-sm flex flex-col space-y-4">
-                    <!-- Report Header -->
-                    <div class="flex justify-between items-start pb-4 border-b border-gray-100">
-                        <div>
-                            <span class="block text-[10px] font-black tracking-widest text-indigo-600 font-mono">LAPORAN NO. {{ $index + 1 }}</span>
-                            <h3 class="text-base font-bold text-gray-900 mt-0.5">ID: {{ $report->id }}</h3>
-                            <p class="text-xs text-gray-405 font-medium mt-1">Submitter: <strong class="text-gray-950">{{ $report->partner->full_name }}</strong> (ID: {{ $report->partner->mitra_id }})</p>
+                <div class="page-card bg-white border border-gray-200 rounded-2xl p-4 flex gap-4 items-center shadow-sm">
+                    <!-- Left: Metadata (compact) -->
+                    <div class="flex-1 min-w-[280px] space-y-1.5">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[9px] font-black uppercase bg-indigo-50 border border-indigo-100 text-indigo-700 px-2 py-0.5 rounded-md font-mono">NO. {{ $index + 1 }}</span>
+                            <span class="text-[10px] font-mono text-gray-400">ID: {{ substr($report->id, 0, 18) }}...</span>
                         </div>
-                        <div class="text-right font-mono space-y-1">
-                            <div class="text-xs">Tanggal Kerja: <strong class="text-gray-900">{{ $report->submission_date->format('d/m/Y') }}</strong></div>
-                            <div class="text-xs">Status QC: 
+                        <div class="text-xs font-bold text-gray-900">
+                            {{ $report->partner->full_name }} 
+                            <span class="text-[10px] font-normal text-gray-400">({{ $report->partner->mitra_id }})</span>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-x-2 gap-y-0.5 text-[10px] font-mono text-gray-600">
+                            <div>Tanggal: <span class="font-bold text-gray-800">{{ $report->submission_date->format('d/m/Y') }}</span></div>
+                            <div>Kirim: <span class="font-bold text-gray-800">{{ $report->submitted_duration_formatted }}</span></div>
+                            <div class="col-span-2">
+                                QC Status: 
                                 @if($report->qc_status === 'pending')
                                     <span class="text-yellow-600 font-bold uppercase">Pending</span>
                                 @elseif($report->qc_status === 'approved')
@@ -96,43 +102,38 @@
                                     <span class="text-rose-600 font-bold uppercase">Rejected</span>
                                 @endif
                             </div>
-                            <div class="text-xs">Durasi Kirim: <strong class="text-gray-900">{{ $report->submitted_duration_formatted }}</strong></div>
                         </div>
+
+                        @if($report->verifier_notes)
+                            <div class="text-[9px] text-gray-500 italic bg-gray-50 border border-gray-150 rounded-lg p-1.5 mt-1 leading-normal">
+                                notes: "{{ $report->verifier_notes }}"
+                            </div>
+                        @endif
                     </div>
 
-                    <!-- Evidence Images side-by-side -->
-                    <div class="grid grid-cols-2 gap-4">
-                        <!-- Evidence Email -->
-                        <div class="bg-gray-50 border border-gray-200 rounded-2xl p-4 flex flex-col justify-between">
-                            <span class="block text-xs font-bold text-slate-800 border-b border-gray-100 pb-1.5">1. Bukti Gambar Email</span>
-                            <div class="mt-2 aspect-video bg-white rounded-xl overflow-hidden border border-gray-200 relative flex items-center justify-center">
-                                @if($report->evidence_email_image_path)
-                                    <img src="{{ asset('storage/' . $report->evidence_email_image_path) }}" class="object-contain w-full h-full bg-white" alt="Bukti Email">
+                    <!-- Right: Compact Images (side-by-side) -->
+                    <div class="flex gap-3 shrink-0">
+                        <div class="text-center">
+                            <span class="block text-[8px] font-black text-gray-400 uppercase font-mono mb-1">1. Bukti Email</span>
+                            <div class="w-32 h-18 bg-white rounded-lg overflow-hidden border border-gray-200 relative flex items-center justify-center">
+                                @if($report->evidence_email_image_url)
+                                    <img src="{{ $report->evidence_email_image_url }}" class="object-contain w-full h-full bg-white" alt="Bukti Email">
                                 @else
-                                    <span class="text-[10px] text-gray-400">Gambar tidak ditemukan</span>
+                                    <span class="text-[9px] text-gray-300">Tidak ada</span>
                                 @endif
                             </div>
                         </div>
-
-                        <!-- Evidence App Quality -->
-                        <div class="bg-gray-50 border border-gray-200 rounded-2xl p-4 flex flex-col justify-between">
-                            <span class="block text-xs font-bold text-slate-800 border-b border-gray-100 pb-1.5">2. Bukti Kualitas Aplikasi</span>
-                            <div class="mt-2 aspect-video bg-white rounded-xl overflow-hidden border border-gray-200 relative flex items-center justify-center">
-                                @if($report->evidence_app_quality_image_path)
-                                    <img src="{{ asset('storage/' . $report->evidence_app_quality_image_path) }}" class="object-contain w-full h-full bg-white" alt="Bukti Kualitas Aplikasi">
+                        <div class="text-center">
+                            <span class="block text-[8px] font-black text-gray-400 uppercase font-mono mb-1">2. Bukti Kualitas</span>
+                            <div class="w-32 h-18 bg-white rounded-lg overflow-hidden border border-gray-200 relative flex items-center justify-center">
+                                @if($report->evidence_app_quality_image_url)
+                                    <img src="{{ $report->evidence_app_quality_image_url }}" class="object-contain w-full h-full bg-white" alt="Bukti Kualitas">
                                 @else
-                                    <span class="text-[10px] text-gray-400">Gambar tidak ditemukan</span>
+                                    <span class="text-[9px] text-gray-300">Tidak ada</span>
                                 @endif
                             </div>
                         </div>
                     </div>
-
-                    @if($report->verifier_notes)
-                        <div class="p-3 bg-gray-50 border border-gray-200 rounded-2xl text-xs">
-                            <span class="block font-bold text-gray-400 uppercase tracking-wider text-[10px] mb-1">Catatan/Alasan Verifikator:</span>
-                            <p class="text-gray-700 italic">"{{ $report->verifier_notes }}"</p>
-                        </div>
-                    @endif
                 </div>
             @empty
                 <div class="text-center py-12 text-gray-400 text-sm">
@@ -148,7 +149,7 @@
             // Trigger browser print dialog after loading everything
             setTimeout(() => {
                 window.print();
-            }, 1000);
+            }, 800);
         });
     </script>
 </body>
