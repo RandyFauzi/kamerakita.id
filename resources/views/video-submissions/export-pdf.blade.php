@@ -111,25 +111,25 @@
                         @endif
                     </div>
 
-                    <!-- Right: Compact Images (side-by-side) -->
+                    <!-- Right: Compact Images (side-by-side) with strict inline dimensions -->
                     <div class="flex gap-3 shrink-0">
                         <div class="text-center">
                             <span class="block text-[8px] font-black text-gray-400 uppercase font-mono mb-1">1. Bukti Email</span>
-                            <div class="w-32 h-18 bg-white rounded-lg overflow-hidden border border-gray-200 relative flex items-center justify-center">
+                            <div style="width: 110px; height: 150px;" class="bg-white rounded-lg overflow-hidden border border-gray-200 flex items-center justify-center shrink-0">
                                 @if($report->evidence_email_image_url)
-                                    <img src="{{ $report->evidence_email_image_url }}" class="object-contain w-full h-full bg-white" alt="Bukti Email">
+                                    <img src="{{ $report->evidence_email_image_url }}" style="width: 100%; height: 100%; object-fit: contain;" class="bg-white" alt="Bukti Email">
                                 @else
-                                    <span class="text-[9px] text-gray-300">Tidak ada</span>
+                                    <span class="text-[9px] text-gray-300 font-mono">Tidak ada</span>
                                 @endif
                             </div>
                         </div>
                         <div class="text-center">
                             <span class="block text-[8px] font-black text-gray-400 uppercase font-mono mb-1">2. Bukti Kualitas</span>
-                            <div class="w-32 h-18 bg-white rounded-lg overflow-hidden border border-gray-200 relative flex items-center justify-center">
+                            <div style="width: 110px; height: 150px;" class="bg-white rounded-lg overflow-hidden border border-gray-200 flex items-center justify-center shrink-0">
                                 @if($report->evidence_app_quality_image_url)
-                                    <img src="{{ $report->evidence_app_quality_image_url }}" class="object-contain w-full h-full bg-white" alt="Bukti Kualitas">
+                                    <img src="{{ $report->evidence_app_quality_image_url }}" style="width: 100%; height: 100%; object-fit: contain;" class="bg-white" alt="Bukti Kualitas">
                                 @else
-                                    <span class="text-[9px] text-gray-300">Tidak ada</span>
+                                    <span class="text-[9px] text-gray-300 font-mono">Tidak ada</span>
                                 @endif
                             </div>
                         </div>
