@@ -64,8 +64,9 @@
         </div>
 
         <form method="GET" action="{{ route('video-submissions.report-history') }}" class="bg-white rounded-3xl p-6 border border-gray-150 shadow-sm">
-            <div class="flex flex-col md:flex-row gap-4 items-end">
-                <div class="flex-1 min-w-0 w-full">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+                <!-- Cari Laporan (6/12 cols) -->
+                <div class="col-span-1 md:col-span-6">
                     <label for="search" class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">Cari Laporan</label>
                     <div class="relative">
                         <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -75,7 +76,8 @@
                     </div>
                 </div>
 
-                <div class="w-full md:w-44 shrink-0">
+                <!-- Status QC (2/12 cols) -->
+                <div class="col-span-1 md:col-span-2">
                     <label for="qc_status" class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">Status QC</label>
                     <select id="qc_status" name="qc_status" class="w-full px-4 py-2.5 border border-gray-250 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 bg-slate-50/50">
                         <option value="">Semua QC</option>
@@ -85,7 +87,8 @@
                     </select>
                 </div>
 
-                <div class="w-full md:w-44 shrink-0">
+                <!-- Status Bayar (2/12 cols) -->
+                <div class="col-span-1 md:col-span-2">
                     <label for="payment_status" class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">Status Bayar</label>
                     <select id="payment_status" name="payment_status" class="w-full px-4 py-2.5 border border-gray-250 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 bg-slate-50/50">
                         <option value="">Semua Bayar</option>
@@ -94,14 +97,15 @@
                     </select>
                 </div>
 
-                <div class="flex gap-2 w-full md:w-auto shrink-0 justify-end">
-                    <button type="submit" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm shadow-slate-900/10">
+                <!-- Buttons (2/12 cols) -->
+                <div class="col-span-1 md:col-span-2 flex gap-2 w-full justify-end">
+                    <button type="submit" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm shadow-slate-900/10">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
                         </svg>
                         Filter
                     </button>
-                    <a href="{{ route('video-submissions.report-history') }}" class="px-5 py-2.5 bg-white hover:bg-gray-50 border border-gray-250 text-slate-600 rounded-xl text-xs font-bold transition flex items-center justify-center">Reset</a>
+                    <a href="{{ route('video-submissions.report-history') }}" class="w-full py-2.5 bg-white hover:bg-gray-50 border border-gray-250 text-slate-600 rounded-xl text-xs font-bold transition flex items-center justify-center">Reset</a>
                 </div>
             </div>
         </form>
