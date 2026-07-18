@@ -21,6 +21,7 @@
 /storage/*.key
 /storage/pail
 /storage/app/*
+/storage/app/evidences/*
 !/storage/app/.gitignore
 /storage/framework/cache/*
 !/storage/framework/cache/.gitignore
