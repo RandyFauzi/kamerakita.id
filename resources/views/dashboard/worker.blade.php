@@ -40,9 +40,9 @@
                 <div class="absolute inset-0 bg-white/20 backdrop-blur-[1px] pointer-events-none"></div>
 
                 <div class="relative z-10">
-                    <span class="block text-xs font-bold uppercase tracking-wider text-slate-550 font-mono">ESTIMASI PENDAPATAN ANDA (RATE ${{ number_format($metrics['hourly_rate'], 2) }}/JAM)</span>
+                    <span class="block text-xs font-bold uppercase tracking-wider text-slate-550 font-mono">ESTIMASI PENDAPATAN ANDA (RATE Rp{{ number_format($metrics['hourly_rate'], 0, ',', '.') }}/JAM)</span>
                     <div class="flex items-baseline gap-2 mt-3">
-                        <span class="text-4xl font-black text-slate-900 tracking-tight">${{ number_format($metrics['total_earnings'], 2) }}</span>
+                        <span class="text-4xl font-black text-slate-900 tracking-tight">Rp{{ number_format($metrics['total_earnings'], 0, ',', '.') }}</span>
                         <span class="text-xs text-slate-550 font-bold uppercase font-mono">Total ({{ $metrics['all_time_hours_formatted'] }})</span>
                     </div>
                     <span class="block text-xs text-slate-450 font-medium mt-1">Gaji terhitung otomatis berdasarkan jam approved.</span>
@@ -63,7 +63,7 @@
             <div class="bg-white rounded-[32px] p-8 border border-gray-150 shadow-sm flex flex-col justify-between min-h-[220px]">
                 <div>
                     <span class="block text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">PENDAPATAN PENDING</span>
-                    <h3 class="text-2xl font-black text-slate-800 mt-3">${{ number_format($metrics['pending_earnings'], 2) }}</h3>
+                    <h3 class="text-2xl font-black text-slate-800 mt-3">Rp{{ number_format($metrics['pending_earnings'], 0, ',', '.') }}</h3>
                     <div class="flex items-center gap-2 mt-2">
                         <span class="text-xs text-slate-400">Durasi pending:</span>
                         <span class="bg-amber-50 border border-amber-100 text-amber-700 text-[10px] font-bold px-2 py-0.5 rounded-full">
@@ -90,7 +90,7 @@
                         </svg>
                     </div>
                     <span class="block text-xs font-bold text-gray-800">Telah Dicairkan</span>
-                    <span class="block text-[10px] text-gray-400 font-medium">${{ number_format($metrics['paid_earnings'], 2) }}</span>
+                    <span class="block text-[10px] text-gray-400 font-medium">Rp{{ number_format($metrics['paid_earnings'], 0, ',', '.') }}</span>
                 </div>
 
                 <!-- Feature 2: Bank Info -->
