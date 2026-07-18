@@ -289,38 +289,38 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div class="bg-slate-50 border border-gray-200 rounded-2xl p-4 space-y-2 flex flex-col justify-between">
                                     <div class="flex justify-between items-center border-b border-gray-100 pb-2">
-                                        <span class="text-sm font-bold text-slate-800">1. Bukti Gambar Email</span>
-                                        <span class="bg-indigo-50 text-indigo-700 text-xs px-2.5 py-0.5 rounded-full font-bold">Email Evidence</span>
+                                        <span class="text-sm font-bold text-slate-800">1. Screenshot total durasi di aplikasi</span>
+                                        <span class="bg-indigo-50 text-indigo-700 text-xs px-2.5 py-0.5 rounded-full font-bold">Total Durasi</span>
                                     </div>
                                     <div class="mt-2 aspect-video bg-slate-200 rounded-xl overflow-hidden relative flex items-center justify-center border border-gray-300">
                                         <template x-if="activeReport.evidence_email_image_url && !emailImageFailed">
                                             <a :href="activeReport.evidence_email_image_url" target="_blank" class="block w-full h-full">
-                                                <img :src="activeReport.evidence_email_image_url" x-on:error="emailImageFailed = true" class="object-contain w-full h-full bg-white" alt="Bukti gambar email">
+                                                <img :src="activeReport.evidence_email_image_url" x-on:error="emailImageFailed = true" class="object-contain w-full h-full bg-white" alt="Screenshot total durasi di aplikasi">
                                             </a>
                                         </template>
                                         <template x-if="!activeReport.evidence_email_image_url || emailImageFailed">
-                                            <span class="text-xs font-semibold text-gray-400">File bukti email tidak ditemukan</span>
+                                            <span class="text-xs font-semibold text-gray-400">File screenshot total durasi tidak ditemukan</span>
                                         </template>
                                     </div>
-                                    <p class="text-xs text-gray-400 mt-2">Diupload untuk memvalidasi data pengiriman dari e-mail resmi Minutes.</p>
+                                    <p class="text-xs text-gray-400 mt-2">Diupload untuk memvalidasi total durasi kerja yang tampil di aplikasi.</p>
                                 </div>
 
                                 <div class="bg-slate-50 border border-gray-200 rounded-2xl p-4 space-y-2 flex flex-col justify-between">
                                     <div class="flex justify-between items-center border-b border-gray-100 pb-2">
-                                        <span class="text-sm font-bold text-slate-800">2. Bukti Kualitas Aplikasi</span>
-                                        <span class="bg-indigo-50 text-indigo-700 text-xs px-2.5 py-0.5 rounded-full font-bold">App Quality</span>
+                                        <span class="text-sm font-bold text-slate-800">2. Screenshot Bagian Kualitas di Aplikasi</span>
+                                        <span class="bg-indigo-50 text-indigo-700 text-xs px-2.5 py-0.5 rounded-full font-bold">Kualitas</span>
                                     </div>
                                     <div class="mt-2 aspect-video bg-slate-200 rounded-xl overflow-hidden relative flex items-center justify-center border border-gray-300">
                                         <template x-if="activeReport.evidence_app_quality_image_url && !qualityImageFailed">
                                             <a :href="activeReport.evidence_app_quality_image_url" target="_blank" class="block w-full h-full">
-                                                <img :src="activeReport.evidence_app_quality_image_url" x-on:error="qualityImageFailed = true" class="object-contain w-full h-full bg-white" alt="Bukti kualitas aplikasi">
+                                                <img :src="activeReport.evidence_app_quality_image_url" x-on:error="qualityImageFailed = true" class="object-contain w-full h-full bg-white" alt="Screenshot bagian kualitas di aplikasi">
                                             </a>
                                         </template>
                                         <template x-if="!activeReport.evidence_app_quality_image_url || qualityImageFailed">
-                                            <span class="text-xs font-semibold text-gray-400">File bukti kualitas aplikasi tidak ditemukan</span>
+                                            <span class="text-xs font-semibold text-gray-400">File screenshot kualitas aplikasi tidak ditemukan</span>
                                         </template>
                                     </div>
-                                    <p class="text-xs text-gray-400 mt-2">Tangkap layar dashboard Minutes Data Apps untuk memvalidasi durasi log.</p>
+                                    <p class="text-xs text-gray-400 mt-2">Diupload untuk memvalidasi bagian kualitas rekaman yang tampil di aplikasi.</p>
                                 </div>
                             </div>
                         </div>

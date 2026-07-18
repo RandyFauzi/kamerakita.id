@@ -40,10 +40,10 @@ class SubmitVideoWorkReportController extends Controller
             'submission_date.before_or_equal' => 'Tanggal pengiriman tidak boleh melebihi hari ini.',
             'submitted_duration_minutes.required' => 'Durasi menit wajib diisi.',
             'submitted_duration_minutes.min' => 'Durasi menit minimal adalah 1 menit.',
-            'evidence_email_image_path.required' => 'Bukti gambar email wajib diunggah.',
-            'evidence_email_image_path.image' => 'File bukti email harus berupa gambar.',
-            'evidence_app_quality_image_path.required' => 'Bukti kualitas aplikasi wajib diunggah.',
-            'evidence_app_quality_image_path.image' => 'File bukti kualitas aplikasi harus berupa gambar.',
+            'evidence_email_image_path.required' => 'Screenshot total durasi di aplikasi wajib diunggah.',
+            'evidence_email_image_path.image' => 'File screenshot total durasi harus berupa gambar.',
+            'evidence_app_quality_image_path.required' => 'Screenshot bagian kualitas di aplikasi wajib diunggah.',
+            'evidence_app_quality_image_path.image' => 'File screenshot kualitas aplikasi harus berupa gambar.',
         ]);
 
         $emailPath = $this->compressAndStoreImage($request->file('evidence_email_image_path'), 'evidences/email');

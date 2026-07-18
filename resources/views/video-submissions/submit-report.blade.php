@@ -11,7 +11,7 @@
                 
                 <div class="border-b border-gray-100 pb-4">
                     <h3 class="text-lg font-bold text-gray-900">Form Laporan Harian Worker</h3>
-                    <p class="text-xs text-gray-400">Harap lampirkan bukti otentik pengiriman email dan tangkapan layar kualitas aplikasi.</p>
+                    <p class="text-xs text-gray-400">Harap lampirkan screenshot total durasi dan bagian kualitas dari aplikasi.</p>
                 </div>
 
                 <form action="{{ route('video-submissions.submit-report.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
@@ -46,7 +46,7 @@
                         </div>
                     </div>
 
-                    <!-- Evidence 1: Email Screenshot -->
+                    <!-- Evidence 1: Total duration screenshot -->
                     <div class="bg-slate-50 border border-gray-100 rounded-xl sm:rounded-2xl p-4 sm:p-5 space-y-3">
                         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1.5 border-b border-gray-200/50 pb-2">
                             <span class="text-sm font-bold text-slate-800">1. Screenshot total durasi di aplikasi <span class="text-red-500">*</span></span>
@@ -54,10 +54,10 @@
                         </div>
                         <input type="file" accept="image/jpeg,image/png,image/webp" name="evidence_email_image_path" id="evidence_email_image_path" required class="block w-full text-xs sm:text-sm text-gray-500 file:mr-3 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-55 file:text-indigo-700 hover:file:bg-indigo-100 file:transition-all">
                         @error('evidence_email_image_path') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                        <p class="text-xs text-gray-400 mt-1">Unggah tangkapan layar dari email notifikasi otomatis yang Anda terima dari Minutes App.</p>
+                        <p class="text-xs text-gray-400 mt-1">Unggah tangkapan layar total durasi kerja yang tampil di aplikasi.</p>
                     </div>
 
-                    <!-- Evidence 2: App Quality Screenshot -->
+                    <!-- Evidence 2: App quality screenshot -->
                     <div class="bg-slate-50 border border-gray-100 rounded-xl sm:rounded-2xl p-4 sm:p-5 space-y-3">
                         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1.5 border-b border-gray-200/50 pb-2">
                             <span class="text-sm font-bold text-slate-800">2. Screenshot Bagian Kualitas di Aplikasi <span class="text-red-500">*</span></span>
