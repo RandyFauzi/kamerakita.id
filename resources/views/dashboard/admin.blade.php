@@ -102,7 +102,9 @@
                     </div>
                     <h3 class="text-3xl font-black text-slate-900 tracking-tight">
                         ${{ number_format($metrics['agency_net_margin_usd'], 2) }}
-                        <span class="text-xs text-gray-400 font-bold block mt-1">≈ Rp{{ number_format($metrics['agency_net_margin'], 0, ',', '.') }} IDR</span>
+                        <span class="text-xs text-gray-500 font-semibold block mt-1.5">
+                            Setara: <strong class="text-slate-800">Rp{{ number_format($metrics['agency_net_margin'], 0, ',', '.') }} IDR</strong> (Laba Bersih Agensi)
+                        </span>
                     </h3>
                 </div>
 
