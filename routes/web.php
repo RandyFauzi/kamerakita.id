@@ -56,6 +56,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware('role:superadmin,admin,finance')
         ->name('payments.process');
 
+    Route::get('/video-work-reports/{report}/evidence/{type}', ShowVideoWorkReportEvidenceController::class)
+        ->middleware(['role:superadmin,admin,finance'])
+        ->name('video-submissions.evidence.show');
+
     // Phase 5: Bulk Payroll Export Module
     Route::get('/payroll/export-csv', [ExportPayrollDataController::class, 'exportCsv'])
         ->middleware('role:superadmin,admin,finance')
