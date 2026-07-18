@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ListPartnerReportHistoryController;
+use App\Http\Controllers\ListPartnerPaymentHistoryController;
 use App\Http\Controllers\ShowVideoWorkReportEvidenceController;
 use App\Http\Controllers\SubmitVideoWorkReportController;
 use App\Http\Controllers\VerifyVideoWorkReportController;
