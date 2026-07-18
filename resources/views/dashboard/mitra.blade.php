@@ -1,11 +1,11 @@
 <x-app-layout>
-    <div class="space-y-6" x-data="{ showBanner: true }">
+    <div class="space-y-4 sm:space-y-6" x-data="{ showBanner: true }">
         
         <!-- Top Banner: YOUR ACCOUNT IS ACTIVE -->
         <template x-if="showBanner">
-            <div class="bg-white rounded-3xl p-6 border border-gray-150 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative animate-in fade-in slide-in-from-top-4 duration-300">
-                <div class="flex gap-4 items-start">
-                    <div class="p-3 bg-indigo-50 text-indigo-650 rounded-2xl">
+            <div class="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-gray-150 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative animate-in fade-in slide-in-from-top-4 duration-300">
+                <div class="flex gap-3 sm:gap-4 items-start pr-8 md:pr-0">
+                    <div class="p-2.5 sm:p-3 bg-indigo-50 text-indigo-650 rounded-xl sm:rounded-2xl shrink-0">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
                         </svg>
@@ -21,7 +21,7 @@
                 </div>
                 <div class="flex items-center gap-3">
                     <span class="bg-emerald-50 text-emerald-800 text-[10px] font-black px-3 py-1.5 rounded-full uppercase border border-emerald-100">Tim Verified</span>
-                    <button @click="showBanner = false" class="p-1 text-gray-400 hover:text-gray-600 rounded-lg">
+                    <button type="button" aria-label="Tutup pemberitahuan" @click="showBanner = false" class="absolute top-4 right-4 w-9 h-9 inline-flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-lg">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                         </svg>
@@ -31,15 +31,15 @@
         </template>
 
         <!-- Dynamic Holographic Card & Info Balance -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
             <!-- Left: Holographic balance card (2 cols) - KOMISI TIM -->
-            <div class="lg:col-span-2 bg-gradient-to-r from-teal-200 via-indigo-100 to-pink-100 rounded-[32px] p-8 border border-white/40 shadow-sm flex flex-col justify-between min-h-[220px] relative overflow-hidden group">
+            <div class="lg:col-span-2 bg-gradient-to-r from-teal-200 via-indigo-100 to-pink-100 rounded-2xl sm:rounded-[32px] p-5 sm:p-8 border border-white/40 shadow-sm flex flex-col justify-between min-h-[200px] sm:min-h-[220px] relative overflow-hidden group">
                 <div class="absolute inset-0 bg-white/10 backdrop-blur-[1px] pointer-events-none"></div>
 
                 <div class="relative z-10">
                     <span class="block text-xs font-bold uppercase tracking-wider text-slate-550 font-mono">KOMISI TIM WORKER (RATE Rp{{ number_format($metrics['commission_hourly_rate'], 0, ',', '.') }}/JAM)</span>
-                    <div class="flex items-baseline gap-2 mt-3">
-                        <span class="text-4xl font-black text-slate-900 tracking-tight">Rp{{ number_format($metrics['commission_paid_earnings'] + $metrics['commission_pending_earnings'], 0, ',', '.') }}</span>
+                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-1 mt-3 min-w-0">
+                        <span class="text-3xl sm:text-4xl font-black text-slate-900 break-all">Rp{{ number_format($metrics['commission_paid_earnings'] + $metrics['commission_pending_earnings'], 0, ',', '.') }}</span>
                         <span class="text-xs text-slate-550 font-bold uppercase font-mono">Pending: Rp{{ number_format($metrics['commission_pending_earnings'], 0, ',', '.') }}</span>
                     </div>
                     <span class="block text-xs text-slate-450 font-medium mt-1">Dihitung dari total jam kerja approved tim Worker: <strong>{{ $metrics['total_all_time_hours_formatted'] }}</strong></span>
@@ -56,7 +56,7 @@
             </div>
 
             <!-- Right: Investment balance card (1 col) - PENDAPATAN PRIBADI -->
-            <div class="bg-white rounded-[32px] p-8 border border-gray-150 shadow-sm flex flex-col justify-between min-h-[220px]">
+            <div class="bg-white rounded-2xl sm:rounded-[32px] p-5 sm:p-8 border border-gray-150 shadow-sm flex flex-col justify-between gap-5 min-h-[180px] sm:min-h-[220px]">
                 <div>
                     <span class="block text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">PENDAPATAN PRIBADI (RATE Rp{{ number_format($metrics['personal_hourly_rate'], 0, ',', '.') }}/JAM)</span>
                     <h3 class="text-2xl font-black text-slate-800 mt-3">Rp{{ number_format($metrics['personal_paid_earnings'] + $metrics['personal_pending_earnings'], 0, ',', '.') }}</h3>
@@ -77,7 +77,7 @@
         <!-- OTHER FEATURES Section -->
         <div class="space-y-3">
             <span class="block text-xs font-black tracking-widest text-slate-400 uppercase font-mono">STATISTIK KELOMPOK</span>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
                 <!-- Feature 1: Workers managed -->
                 <div class="bg-white rounded-2xl p-5 border border-gray-150 shadow-sm flex flex-col items-center justify-center text-center space-y-2 hover:shadow-md transition">
                     <div class="p-2.5 bg-blue-50 text-blue-600 rounded-xl">
@@ -127,7 +127,7 @@
         </div>
 
         <!-- Workers List Card -->
-        <div class="bg-white rounded-[32px] p-6 border border-gray-150 shadow-sm">
+        <div class="bg-white rounded-2xl sm:rounded-[32px] p-4 sm:p-6 border border-gray-150 shadow-sm">
             <div class="flex justify-between items-center pb-4 border-b border-gray-100 mb-4">
                 <span class="block text-sm font-bold text-gray-900">Pencapaian Menit Tim Worker</span>
                 <span class="text-xs text-gray-400">Daftar tim direct</span>

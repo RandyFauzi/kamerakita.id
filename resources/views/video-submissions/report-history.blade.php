@@ -20,9 +20,9 @@
         ];
     @endphp
 
-    <div class="space-y-6">
+    <div class="space-y-4 sm:space-y-6">
         <!-- Page Header Card -->
-        <div class="overflow-hidden shadow-sm sm:rounded-3xl p-6 text-white relative" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);">
+        <div class="overflow-hidden shadow-sm rounded-2xl sm:rounded-3xl p-4 sm:p-6 text-white relative" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);">
             <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div class="space-y-1">
                     <span class="bg-indigo-500/20 text-indigo-300 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">Laporan Kerja</span>
@@ -36,7 +36,7 @@
                     </p>
                 </div>
                 @if($partner->partner_role === 'worker')
-                    <a href="{{ route('video-submissions.submit-report.create') }}" class="inline-flex items-center justify-center gap-2 px-5 py-3 bg-white hover:bg-slate-50 text-slate-900 rounded-2xl text-xs font-black shadow-sm transition duration-200 shrink-0">
+                    <a href="{{ route('video-submissions.submit-report.create') }}" class="w-full md:w-auto min-h-11 inline-flex items-center justify-center gap-2 px-5 py-3 bg-white hover:bg-slate-50 text-slate-900 rounded-xl sm:rounded-2xl text-xs font-black shadow-sm transition duration-200 shrink-0">
                         <svg class="w-4 h-4 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"/>
                         </svg>
@@ -48,26 +48,26 @@
             <div class="absolute -right-16 -top-16 w-64 h-64 bg-indigo-500 rounded-full blur-3xl opacity-20"></div>
         </div>
 
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="bg-white rounded-2xl p-5 border border-gray-150 shadow-sm">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <div class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-5 border border-gray-150 shadow-sm">
                 <span class="block text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Laporan</span>
                 <strong class="block text-2xl font-black text-slate-900 mt-2">{{ number_format($summary['total_reports'], 0, ',', '.') }}</strong>
             </div>
-            <div class="bg-white rounded-2xl p-5 border border-gray-150 shadow-sm">
+            <div class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-5 border border-gray-150 shadow-sm">
                 <span class="block text-[10px] font-black text-slate-400 uppercase tracking-widest">Menunggu QC</span>
                 <strong class="block text-2xl font-black text-amber-700 mt-2">{{ number_format($summary['pending_reports'], 0, ',', '.') }}</strong>
             </div>
-            <div class="bg-white rounded-2xl p-5 border border-gray-150 shadow-sm">
+            <div class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-5 border border-gray-150 shadow-sm">
                 <span class="block text-[10px] font-black text-slate-400 uppercase tracking-widest">Approved</span>
                 <strong class="block text-2xl font-black text-emerald-700 mt-2">{{ number_format($summary['approved_reports'], 0, ',', '.') }}</strong>
             </div>
-            <div class="bg-white rounded-2xl p-5 border border-gray-150 shadow-sm">
+            <div class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-5 border border-gray-150 shadow-sm">
                 <span class="block text-[10px] font-black text-slate-400 uppercase tracking-widest">Durasi Unpaid</span>
                 <strong class="block text-2xl font-black text-indigo-650 mt-2">{{ $formatMinutes($summary['unpaid_minutes']) }}</strong>
             </div>
         </div>
 
-        <form method="GET" action="{{ route('video-submissions.report-history') }}" class="bg-white rounded-3xl p-6 border border-gray-150 shadow-sm">
+        <form method="GET" action="{{ route('video-submissions.report-history') }}" class="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-gray-150 shadow-sm">
             <div class="flex flex-col md:flex-row gap-4 items-end">
                 <!-- Cari Laporan -->
                 <div class="flex-1 w-full">
@@ -78,14 +78,14 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                             </svg>
                         </div>
-                        <input type="text" name="search" id="search" value="{{ request('search') }}" placeholder="Cari berdasarkan ID Laporan..." class="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-white">
+                        <input type="text" name="search" id="search" value="{{ request('search') }}" placeholder="Cari berdasarkan ID Laporan..." class="block w-full min-h-11 pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-white">
                     </div>
                 </div>
 
                 <!-- Status QC -->
                 <div class="w-full md:w-48">
                     <label for="qc_status" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 font-mono">Status QC</label>
-                    <select id="qc_status" name="qc_status" class="block w-full py-2.5 px-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition bg-white">
+                    <select id="qc_status" name="qc_status" class="block w-full min-h-11 py-2.5 px-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition bg-white">
                         <option value="">Semua QC</option>
                         <option value="pending" @selected(request('qc_status') === 'pending')>Pending</option>
                         <option value="approved" @selected(request('qc_status') === 'approved')>Approved</option>
@@ -96,7 +96,7 @@
                 <!-- Status Bayar -->
                 <div class="w-full md:w-48">
                     <label for="payment_status" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 font-mono">Status Bayar</label>
-                    <select id="payment_status" name="payment_status" class="block w-full py-2.5 px-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition bg-white">
+                    <select id="payment_status" name="payment_status" class="block w-full min-h-11 py-2.5 px-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition bg-white">
                         <option value="">Semua Bayar</option>
                         <option value="unpaid" @selected(request('payment_status') === 'unpaid')>Unpaid</option>
                         <option value="paid" @selected(request('payment_status') === 'paid')>Paid</option>
@@ -115,13 +115,42 @@
             </div>
         </form>
 
-        <div class="bg-white rounded-[32px] p-6 border border-gray-150 shadow-sm">
+        <div class="bg-white rounded-2xl sm:rounded-[32px] p-4 sm:p-6 border border-gray-150 shadow-sm">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 pb-4 border-b border-gray-100 mb-4">
                 <span class="block text-sm font-bold text-gray-900">Daftar Riwayat Laporan</span>
                 <span class="text-xs text-gray-400">{{ $reports->total() }} data ditemukan</span>
             </div>
 
-            <div class="overflow-x-auto">
+            <div class="space-y-3 sm:hidden">
+                @forelse($reports as $report)
+                    <article class="rounded-xl border border-gray-150 p-4 space-y-3">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="min-w-0">
+                                <strong class="block text-sm text-slate-900 truncate">{{ $report->partner->full_name }}</strong>
+                                <span class="block text-xs text-slate-400">{{ $report->partner->mitra_id }} · {{ $report->submission_date->translatedFormat('d M Y') }}</span>
+                            </div>
+                            <span class="inline-flex shrink-0 px-2.5 py-1 rounded-full text-[10px] font-bold border {{ $qcColors[$report->qc_status] ?? 'bg-gray-50 text-gray-600 border-gray-150' }}">
+                                {{ ucfirst(str_replace('_', ' ', $report->qc_status)) }}
+                            </span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 text-xs">
+                            <div><span class="block text-slate-400">Durasi kirim</span><strong class="text-slate-800">{{ $report->submitted_duration_formatted }}</strong></div>
+                            <div><span class="block text-slate-400">Disetujui</span><strong class="text-slate-800">{{ $report->approved_duration_formatted }}</strong></div>
+                        </div>
+                        <div class="flex items-center justify-between pt-3 border-t border-gray-100">
+                            <span class="font-mono text-[10px] text-slate-400">{{ substr($report->id, 0, 8) }}...</span>
+                            <span class="inline-flex px-2.5 py-1 rounded-full text-[10px] font-bold border {{ $payColors[$report->payment_status] ?? 'bg-gray-50 text-gray-600 border-gray-150' }}">{{ ucfirst($report->payment_status) }}</span>
+                        </div>
+                        @if($report->verifier_notes)
+                            <p class="text-xs leading-5 text-slate-500 bg-slate-50 rounded-lg p-3">{{ $report->verifier_notes }}</p>
+                        @endif
+                    </article>
+                @empty
+                    <p class="py-8 text-center text-slate-400 text-sm font-semibold">Belum ada riwayat laporan yang sesuai.</p>
+                @endforelse
+            </div>
+
+            <div class="hidden sm:block overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-100 text-sm">
                     <thead>
                         <tr class="text-gray-500">

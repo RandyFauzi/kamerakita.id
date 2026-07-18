@@ -22,18 +22,18 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="antialiased bg-[#f8f8f6] text-slate-800">
-        <div class="min-h-screen flex">
+    <body class="antialiased bg-[#f8f8f6] text-slate-800 overflow-x-hidden">
+        <div class="min-h-screen flex min-w-0">
             <!-- Sidebar Navigation -->
             <x-sidebar />
 
             <!-- Page Body Content -->
-            <div class="flex-1 md:pl-64 flex flex-col min-h-screen">
+            <div class="flex-1 min-w-0 md:pl-64 flex flex-col min-h-screen">
                 <!-- Top Navbar -->
                 <x-navbar :header="$header ?? null" />
 
                 <!-- Main Content Slot -->
-                <main class="flex-1 p-6">
+                <main class="flex-1 min-w-0 px-4 pb-6 pt-3 sm:p-6">
                     {{ $slot }}
                 </main>
             </div>

@@ -1,11 +1,11 @@
 <!-- Mobile Sidebar Overlay Backdrop -->
-<div class="fixed inset-0 bg-slate-950/40 backdrop-blur-xs z-15 md:hidden transition-opacity duration-300 opacity-0 pointer-events-none" id="sidebar-overlay" onclick="
+<div class="fixed inset-0 bg-slate-950/40 backdrop-blur-xs z-30 md:hidden transition-opacity duration-300 opacity-0 pointer-events-none" id="sidebar-overlay" onclick="
     document.getElementById('sidebar').classList.add('-translate-x-full');
     this.classList.add('opacity-0', 'pointer-events-none');
     this.classList.remove('opacity-100', 'pointer-events-auto');
 "></div>
 
-<div class="fixed inset-y-0 left-0 z-20 w-64 bg-white border-r border-gray-200/60 flex flex-col justify-between transition-all duration-300 transform md:translate-x-0 -translate-x-full" id="sidebar">
+<div class="fixed inset-y-0 left-0 z-40 w-[min(18rem,85vw)] md:w-64 bg-white border-r border-gray-200/60 flex flex-col justify-between transition-all duration-300 transform md:translate-x-0 -translate-x-full shadow-xl md:shadow-none" id="sidebar">
     <div class="flex flex-col">
         <!-- Logo Header -->
         <div class="h-16 flex items-center justify-between px-5 border-b border-gray-100 overflow-hidden">
@@ -16,7 +16,7 @@
                 <span class="text-sm font-black tracking-wide text-slate-950 whitespace-nowrap">KAMERAKITA<span class="text-indigo-600">.AI</span></span>
             </a>
             <!-- Mobile Close Button (X) -->
-            <button class="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-50 md:hidden focus:outline-none" onclick="
+            <button type="button" aria-label="Tutup menu navigasi" class="w-10 h-10 shrink-0 inline-flex items-center justify-center rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-50 md:hidden focus:outline-none" onclick="
                 document.getElementById('sidebar').classList.add('-translate-x-full');
                 const overlay = document.getElementById('sidebar-overlay');
                 overlay.classList.add('opacity-0', 'pointer-events-none');

@@ -1,7 +1,7 @@
-<header class="h-16 flex items-center justify-between px-8 sticky top-0 z-10 bg-transparent">
-    <div class="flex items-center gap-4">
+<header class="min-h-16 flex items-start sm:items-center px-4 py-3 sm:px-6 lg:px-8 sticky top-0 z-20 bg-[#f8f8f6]/95 backdrop-blur-md border-b border-gray-200/70">
+    <div class="flex items-start sm:items-center gap-3 w-full min-w-0">
         <!-- Sidebar Toggle (Mobile) -->
-        <button class="p-1.5 rounded-xl text-gray-500 hover:bg-gray-100 md:hidden" onclick="
+        <button type="button" aria-label="Buka menu navigasi" class="w-11 h-11 shrink-0 inline-flex items-center justify-center rounded-xl text-gray-600 hover:bg-gray-100 md:hidden" onclick="
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebar-overlay');
             sidebar.classList.toggle('-translate-x-full');
@@ -18,14 +18,14 @@
             </svg>
         </button>
 
-        @if(isset($header))
-            {{ $header }}
-        @else
-            <h2 class="font-bold text-lg text-gray-800 leading-tight">
-                {{ __('Dashboard') }}
-            </h2>
-        @endif
+        <div class="flex-1 min-w-0 pt-1.5 sm:pt-0">
+            @if(isset($header))
+                {{ $header }}
+            @else
+                <h2 class="font-bold text-lg text-gray-800 leading-tight truncate">
+                    {{ __('Ringkasan') }}
+                </h2>
+            @endif
+        </div>
     </div>
-
-    <div></div>
 </header>
