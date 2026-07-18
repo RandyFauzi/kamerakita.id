@@ -13,7 +13,25 @@
         </div>
     </x-slot>
 
-    <div class="py-8">
+    <div
+        class="py-8"
+        x-data="{
+            showDeleteModal: false,
+            deleteTarget: {},
+            deleting: false,
+            openDeleteModal(target) {
+                this.deleteTarget = target;
+                this.deleting = false;
+                this.showDeleteModal = true;
+            },
+            closeDeleteModal() {
+                this.showDeleteModal = false;
+                this.deleteTarget = {};
+                this.deleting = false;
+            }
+        }"
+        @keydown.escape.window="closeDeleteModal()"
+    >
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             
             @if(session('success'))
@@ -195,15 +213,22 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                                 </svg>
                                             </a>
-                                            <form action="{{ route('partners.destroy', $partner) }}" method="POST" class="inline-block" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="p-1.5 text-gray-500 hover:text-red-650 hover:bg-red-50 rounded-lg transition" title="Hapus">
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                                    </svg>
-                                                </button>
-                                            </form>
+                                            <button
+                                                type="button"
+                                                @click="openDeleteModal(@js([
+                                                    'name' => $partner->full_name,
+                                                    'mitraId' => $partner->mitra_id,
+                                                    'role' => $partner->partner_role === 'mitra' ? 'Mitra' : 'Worker',
+                                                    'url' => route('partners.destroy', $partner),
+                                                ]))"
+                                                class="p-1.5 text-gray-500 hover:text-red-650 hover:bg-red-50 rounded-lg transition"
+                                                title="Hapus"
+                                                aria-label="Hapus akun {{ $partner->full_name }}"
+                                            >
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                </svg>
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -226,5 +251,56 @@
             </div>
 
         </div>
+
+        <template x-if="showDeleteModal">
+            <div
+                class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm"
+                @click.self="closeDeleteModal()"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="delete-partner-title"
+            >
+                <div class="w-full max-w-md rounded-2xl border border-gray-100 bg-white p-5 shadow-2xl sm:p-6">
+                    <div class="flex items-start gap-4">
+                        <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-red-50 text-red-600">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 4h.01M10.3 4.5L2.7 18a2 2 0 001.75 3h15.1a2 2 0 001.75-3L13.7 4.5a2 2 0 00-3.4 0z"/>
+                            </svg>
+                        </span>
+                        <div class="min-w-0">
+                            <h3 id="delete-partner-title" class="text-lg font-black leading-tight text-slate-900">Hapus Akun Pengguna?</h3>
+                            <p class="mt-1 text-xs font-medium text-gray-400">Tindakan ini tidak dapat dibatalkan.</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-5 rounded-xl border border-gray-100 bg-slate-50 p-4">
+                        <span class="block truncate text-sm font-bold text-slate-900" x-text="deleteTarget.name"></span>
+                        <span class="mt-1 block text-xs text-gray-500">
+                            <span x-text="deleteTarget.mitraId"></span>
+                            <span aria-hidden="true">&middot;</span>
+                            <span x-text="deleteTarget.role"></span>
+                        </span>
+                    </div>
+
+                    <p class="mt-4 text-sm leading-6 text-gray-600">
+                        Akun login dan data kemitraan pengguna ini akan dihapus secara permanen dari sistem.
+                    </p>
+
+                    <form :action="deleteTarget.url" method="POST" @submit="deleting = true" class="mt-6 flex flex-col-reverse gap-2 border-t border-gray-100 pt-4 sm:flex-row sm:justify-end sm:gap-3">
+                        @csrf
+                        @method('DELETE')
+                        <button type="button" @click="closeDeleteModal()" class="inline-flex min-h-11 items-center justify-center rounded-xl border border-gray-200 bg-white px-5 py-2.5 text-xs font-bold text-gray-700 transition hover:bg-gray-50">
+                            Batal
+                        </button>
+                        <button type="submit" :disabled="deleting" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-red-600 px-5 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-red-700 disabled:cursor-wait disabled:opacity-70">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                            <span x-text="deleting ? 'Menghapus...' : 'Hapus Akun'">Hapus Akun</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </template>
     </div>
 </x-app-layout>
