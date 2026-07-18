@@ -139,8 +139,8 @@ class CalculatePartnerMetricsService
         $paid = $approvedReports->where('payment_status', 'paid')->sum('approved_duration_minutes');
         $pending = $approvedReports->where('payment_status', 'unpaid')->sum('approved_duration_minutes');
 
-        // Fetch live USD to IDR rate
-        $usdToIdrRate = cache()->remember('usd_to_idr_rate', 300, function() {
+        // Fetch live USD to IDR rate (cached daily until midnight 00:00 for optimal server performance)
+        $usdToIdrRate = cache()->remember('usd_to_idr_rate', now()->endOfDay(), function() {
             try {
                 $response = Http::withoutVerifying()->timeout(5)->get('https://open.er-api.com/v6/latest/USD');
                 if ($response->successful()) {
