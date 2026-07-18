@@ -944,7 +944,7 @@ Catatan lokal:
 
 - `BROADCAST_CONNECTION`: koneksi broadcast.
 - `FILESYSTEM_DISK`: disk filesystem default.
-- `EVIDENCE_STORAGE_PATH`: folder fisik permanen untuk bukti laporan dan bukti transfer. Di production sebaiknya diarahkan ke folder di luar folder Git project agar tidak ikut hilang saat deploy/pull membersihkan working tree.
+- `EVIDENCE_STORAGE_PATH`: folder fisik permanen untuk bukti laporan dan bukti transfer. Jika dikosongkan, aplikasi memakai Laravel standar `storage/app/private`. Jika server memakai deploy yang menghapus folder project, isi dengan path writable milik akun hosting, misalnya `/home/USERNAME/kamerakita_uploads/evidence`.
 - `QUEUE_CONNECTION`: koneksi queue.
 - `CACHE_STORE`: store cache.
 - `MEMCACHED_HOST`: host memcached jika dipakai.
@@ -1171,7 +1171,9 @@ Catatan deployment production:
 
 - File upload user tidak pernah ikut Git dan memang harus begitu.
 - Jangan deploy dengan cara yang menghapus folder upload.
-- Set `EVIDENCE_STORAGE_PATH` ke folder permanen di luar folder repo jika server memakai auto-deploy yang mengganti isi project.
+- Jika ingin alur seperti ONFIX/Laravel standar, kosongkan `EVIDENCE_STORAGE_PATH` dan biarkan file masuk ke `storage/app/private`.
+- Set `EVIDENCE_STORAGE_PATH` hanya kalau server memakai auto-deploy yang mengganti isi project.
+- Jangan pakai contoh literal `/home/account/...`; ganti `account` dengan username hosting yang asli, misalnya dari prompt shell `u361393239`.
 - Backup database saja tidak cukup; backup juga folder `EVIDENCE_STORAGE_PATH`.
 
 Run test:
