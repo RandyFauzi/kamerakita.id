@@ -26,9 +26,22 @@
                         </div>
 
                         <!-- Submitted Duration -->
-                        <div>
-                            <label for="submitted_duration_minutes" class="block text-sm font-semibold text-gray-700 mb-1">Total Durasi Kerja (Menit) <span class="text-red-500">*</span></label>
-                            <input type="number" name="submitted_duration_minutes" id="submitted_duration_minutes" value="{{ old('submitted_duration_minutes') }}" min="1" placeholder="Cth: 120" required class="block w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        <div x-data="{
+                            hours: '{{ old('submitted_duration_minutes') ? floor(old('submitted_duration_minutes') / 60) : '' }}',
+                            minutes: '{{ old('submitted_duration_minutes') ? (old('submitted_duration_minutes') % 60) : '' }}'
+                        }">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Total Durasi Kerja <span class="text-red-500">*</span></label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="relative">
+                                    <input type="number" x-model="hours" min="0" max="24" placeholder="0" class="block w-full pr-12 pl-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-400 pointer-events-none">Jam</span>
+                                </div>
+                                <div class="relative">
+                                    <input type="number" x-model="minutes" min="0" max="59" placeholder="0" class="block w-full pr-14 pl-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-400 pointer-events-none">Menit</span>
+                                </div>
+                            </div>
+                            <input type="hidden" name="submitted_duration_minutes" :value="(parseInt(hours) || 0) * 60 + (parseInt(minutes) || 0)">
                             @error('submitted_duration_minutes') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
                     </div>
