@@ -87,4 +87,36 @@ class VerifyVideoWorkReportController extends Controller
 
         return redirect()->route('video-submissions.qc-room')->with('success', 'Laporan video berhasil dihapus dari sistem.');
     }
+
+    public function exportPdf(Request $request)
+    {
+        $search = $request->input('search');
+        $status = $request->input('status', 'all');
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+
+        $reports = VideoWorkReport::query()
+            ->with(['partner'])
+            ->when($status !== 'all', function ($query) use ($status) {
+                $query->where('qc_status', $status);
+            })
+            ->when($startDate, function ($query, $startDate) {
+                $query->where('submission_date', '>=', $startDate);
+            })
+            ->when($endDate, function ($query, $endDate) {
+                $query->where('submission_date', '<=', $endDate);
+            })
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->whereHas('partner', function ($sub) use ($search) {
+                        $sub->where('full_name', 'like', "%{$search}%")
+                            ->orWhere('mitra_id', 'like', "%{$search}%");
+                    })->orWhere('id', 'like', "%{$search}%");
+                });
+            })
+            ->orderBy('submission_date', 'desc')
+            ->get(); // get all filtered reports for printing (no pagination)
+
+        return view('video-submissions.export-pdf', compact('reports', 'status', 'startDate', 'endDate'));
+    }
 }

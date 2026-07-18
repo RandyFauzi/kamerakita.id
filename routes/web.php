@@ -39,6 +39,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/qc-room', [VerifyVideoWorkReportController::class, 'index'])
         ->middleware('role:superadmin,admin,finance')
         ->name('video-submissions.qc-room');
+    Route::get('/qc-room/export-pdf', [VerifyVideoWorkReportController::class, 'exportPdf'])
+        ->middleware('role:superadmin,admin,finance')
+        ->name('video-submissions.export-pdf');
     Route::post('/qc-room/{report}/verify', [VerifyVideoWorkReportController::class, 'verify'])
         ->middleware('role:superadmin,admin,finance')
         ->name('video-submissions.verify');
