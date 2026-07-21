@@ -16,6 +16,8 @@
                 color: black !important;
                 padding: 1.2cm !important;
                 margin: 0 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
             .page-card {
                 break-inside: avoid !important;
@@ -23,6 +25,8 @@
                 border: 1px solid #e2e8f0 !important;
                 margin-bottom: 1rem !important;
                 background-color: white !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
         }
         @page {
@@ -32,6 +36,10 @@
         .page-card {
             break-inside: avoid;
             page-break-inside: avoid;
+        }
+        * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
     </style>
 </head>
@@ -99,18 +107,18 @@
                             </span>
                         </div>
                         
-                        <div class="grid grid-cols-2 gap-x-2 gap-y-1 text-[10px] font-mono text-gray-600">
+                        <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-[10px] font-mono text-gray-600 pt-1">
                             <div class="flex items-center">Date: <span class="ml-1 font-bold text-gray-800">{{ $report->submission_date->format('d/m/Y') }}</span></div>
                             
                             <!-- Submitted Duration Highlight (High Contrast Inline CSS) -->
-                            <div>
+                            <div class="flex items-center">
                                 <span style="background-color: #f59e0b; color: #0f172a; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 900; font-family: monospace; display: inline-block; text-transform: uppercase; border: 1px solid #d97706;">
                                     Duration: {{ $report->submitted_duration_formatted }}
                                 </span>
                             </div>
                             
-                            <div class="col-span-2">
-                                QC Status: 
+                            <div class="flex items-center gap-1">
+                                <span>QC Status:</span> 
                                 @if($report->qc_status === 'pending')
                                     <span class="text-yellow-600 font-bold uppercase">Pending</span>
                                 @elseif($report->qc_status === 'on_review')
