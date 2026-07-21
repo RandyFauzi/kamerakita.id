@@ -150,73 +150,45 @@
                     </h1>
 
                     <!-- Hero Call to Action Button -->
-                    <div class="pt-2 space-y-6">
-                        <div>
-                            @auth
-                                <a href="{{ route('dashboard') }}" class="btn-evermos-white inline-block px-9 py-4 text-base font-extrabold shadow-xl">
-                                    Buka Dashboard Mitra
-                                </a>
-                            @else
-                                <a href="{{ route('register') }}" class="btn-evermos-white inline-block px-9 py-4 text-base font-extrabold shadow-xl">
-                                    Gabung Sekarang
-                                </a>
-                            @endauth
-                        </div>
-
-                        <!-- App Store & Play Store Badges (Evermos Style) -->
-                        <div class="flex items-center gap-4 pt-2">
-                            <!-- Google Play Badge Mock -->
-                            <a href="{{ route('register') }}" class="bg-slate-900 border border-slate-700 hover:border-slate-500 rounded-xl px-4 py-2 flex items-center gap-3 transition">
-                                <svg class="w-6 h-6 text-sky-400" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M3 20.5v-17l14.5 8.5L3 20.5z"/>
-                                </svg>
-                                <div class="text-left leading-tight">
-                                    <span class="text-[9px] uppercase font-bold text-slate-400 block">GET IT ON</span>
-                                    <span class="text-xs font-bold text-white block">Google Play</span>
-                                </div>
+                    <div class="pt-2">
+                        @auth
+                            <a href="{{ route('dashboard') }}" class="btn-evermos-white inline-block px-10 py-4 text-base font-extrabold shadow-xl">
+                                Masuk ke Dashboard →
                             </a>
-
-                            <!-- App Store Badge Mock -->
-                            <a href="{{ route('register') }}" class="bg-slate-900 border border-slate-700 hover:border-slate-500 rounded-xl px-4 py-2 flex items-center gap-3 transition">
-                                <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.61-.74 1.03-1.77.91-2.8-.88.04-1.95.59-2.58 1.32-.57.65-1.07 1.71-.93 2.72 1 .08 2-.5 2.6-1.24z"/>
-                                </svg>
-                                <div class="text-left leading-tight">
-                                    <span class="text-[9px] uppercase font-bold text-slate-400 block">Download on the</span>
-                                    <span class="text-xs font-bold text-white block">App Store</span>
-                                </div>
+                        @else
+                            <a href="{{ route('login') }}" class="btn-evermos-white inline-block px-10 py-4 text-base font-extrabold shadow-xl">
+                                Daftar Sekarang
                             </a>
-                        </div>
-
+                        @endauth
                     </div>
 
                 </div>
 
-                <!-- Right Hero Image Column (Blob Backdrop & Image Placeholder) -->
-                <div class="lg:col-span-5 relative flex justify-center items-center min-h-[420px]">
+                <!-- Right Hero Image Column (Blob Backdrop & Large Hero Image) -->
+                <div class="lg:col-span-5 relative flex justify-center items-center min-h-[460px] lg:min-h-[520px]">
                     
                     <!-- SVG Organic Blob Backdrop (Evermos Style Cloud Shape) -->
                     <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <svg class="w-[110%] h-[110%] text-[#02649b] opacity-80 animate-float" viewBox="0 0 500 500" fill="currentColor">
+                        <svg class="w-[125%] h-[125%] text-[#02649b] opacity-85 animate-float" viewBox="0 0 500 500" fill="currentColor">
                             <path d="M410,310Q370,370,305,405Q240,440,175,410Q110,380,85,315Q60,250,90,185Q120,120,185,85Q250,50,315,85Q380,120,415,185Q450,250,410,310Z" />
                         </svg>
                     </div>
 
-                    <!-- Hero Main Image Container -->
-                    <div class="relative z-10 w-full max-w-md mx-auto flex flex-col items-center justify-center group">
+                    <!-- Hero Main Image Container (Larger Scale matching Evermos Screenshot) -->
+                    <div class="relative z-10 w-full max-w-lg mx-auto flex flex-col items-center justify-center group">
                         
                         <!-- Floating Decorative Money/Reward Badges (Evermos Style) -->
-                        <div class="absolute -top-4 -right-2 z-20 bg-emerald-500 text-white font-extrabold text-xs px-3.5 py-2 rounded-full shadow-xl border border-emerald-300 animate-bounce">
+                        <div class="absolute -top-2 -right-1 z-20 bg-emerald-500 text-white font-extrabold text-xs sm:text-sm px-4 py-2 rounded-full shadow-xl border border-emerald-300 animate-bounce">
                             💸 Rp 1.850.000 / Minggu
                         </div>
-                        <div class="absolute -bottom-4 -left-2 z-20 bg-amber-400 text-slate-900 font-extrabold text-xs px-4 py-2 rounded-full shadow-xl border border-amber-300">
+                        <div class="absolute -bottom-2 -left-1 z-20 bg-amber-400 text-slate-900 font-extrabold text-xs sm:text-sm px-4 py-2 rounded-full shadow-xl border border-amber-300">
                             ✨ 100% Verified QC
                         </div>
 
-                        <!-- Real Hero PNG WebP Image -->
+                        <!-- Real Hero PNG WebP Image (Prominent & Large) -->
                         <img src="{{ asset('images/Assest/Hero png.webp') }}" 
                              alt="Mitra KAMERAKITA AI" 
-                             class="w-full h-auto max-h-[480px] sm:max-h-[540px] object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-300">
+                             class="w-full h-auto max-h-[520px] sm:max-h-[600px] lg:max-h-[660px] object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-300 scale-105 sm:scale-110">
 
                     </div>
 
