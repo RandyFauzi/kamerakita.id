@@ -190,6 +190,19 @@
         </div>
     </section>
 
+    <!-- Highlight Value Banner Section (Exact Evermos Style directly below Hero) -->
+    <section class="bg-[#dcfce7] sm:bg-[#e0f2fe] py-10 sm:py-14 px-4 sm:px-6 relative overflow-hidden border-b border-sky-200/60">
+        <!-- Background Organic Swirl Illustrations -->
+        <div class="absolute -left-12 -bottom-12 w-48 h-48 rounded-full border-[24px] border-sky-300/30 pointer-events-none"></div>
+        <div class="absolute -right-12 -top-12 w-56 h-56 rounded-full border-[28px] border-sky-300/30 pointer-events-none"></div>
+
+        <div class="max-w-5xl mx-auto text-center relative z-10">
+            <p class="text-slate-800 text-lg sm:text-2xl lg:text-3xl font-medium leading-relaxed sm:leading-snug tracking-tight">
+                Dengan jadi <span class="text-pink-600 font-extrabold">mitra kontributor</span> KAMERAKITA AI, Anda bisa punya <span class="font-extrabold text-slate-900">penghasilan tambahan</span> lewat <span class="font-extrabold text-slate-900">rekam <span class="text-pink-600 font-extrabold">video</span> tugas harian tanpa modal!</span> Di sini Anda bisa dapat komisi mingguan rutin, <span class="font-extrabold text-slate-900">sistem QC transparan</span>, & bimbingan langsung dari <span class="font-extrabold text-slate-900">tim verifikator berpengalaman</span>.
+            </p>
+        </div>
+    </section>
+
     <!-- 3. Keunggulan Section (Clean White Background & Deep Blue Cards) -->
     <section id="keunggulan" class="py-20 bg-slate-50 border-b border-slate-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
