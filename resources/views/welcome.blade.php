@@ -136,7 +136,7 @@
 
     <!-- 2. Hero Section (Clean, Neat & Perfectly Proportioned Evermos Layout) -->
     <section class="bg-hero-solid text-white py-12 lg:py-16 overflow-hidden relative">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto pl-4 sm:pl-6 lg:pl-8 pr-0 overflow-visible">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                 
                 <!-- Left Hero Content Column -->
@@ -164,23 +164,23 @@
 
                 </div>
 
-                <!-- Right Hero Image Column (Flush to Bottom Right Corner) -->
-                <div class="lg:col-span-5 relative flex justify-end items-end self-end h-full pt-4">
+                <!-- Right Hero Image Column (Flush to Absolute Right Screen Edge) -->
+                <div class="lg:col-span-5 relative flex justify-end items-end self-end h-full pt-4 pr-0 overflow-visible">
                     
                     <!-- SVG Organic Blob Backdrop (Evermos Style Cloud Shape) -->
-                    <div class="absolute inset-0 flex items-center justify-end pointer-events-none translate-y-6 translate-x-4">
-                        <svg class="w-[125%] h-[125%] text-[#02649b] opacity-85 animate-float" viewBox="0 0 500 500" fill="currentColor">
+                    <div class="absolute inset-0 flex items-center justify-end pointer-events-none translate-y-6 translate-x-12">
+                        <svg class="w-[135%] h-[135%] text-[#02649b] opacity-85 animate-float" viewBox="0 0 500 500" fill="currentColor">
                             <path d="M410,310Q370,370,305,405Q240,440,175,410Q110,380,85,315Q60,250,90,185Q120,120,185,85Q250,50,315,85Q380,120,415,185Q450,250,410,310Z" />
                         </svg>
                     </div>
 
-                    <!-- Hero Main Image Container (Mentok Kanan Bawah) -->
-                    <div class="relative z-10 w-full max-w-md ml-auto mr-0 flex justify-end items-end">
+                    <!-- Hero Main Image Container (Mentok Rapat Ke Kanan & Bawah) -->
+                    <div class="relative z-10 w-full max-w-lg ml-auto mr-0 pr-0 flex justify-end items-end">
                         
-                        <!-- Real Hero PNG WebP Image (Flush to Bottom & Right Edge) -->
+                        <!-- Real Hero PNG WebP Image (Flush to Right & Bottom Edge) -->
                         <img src="{{ asset('images/Assest/Hero png.webp') }}?v={{ filemtime(public_path('images/Assest/Hero png.webp')) }}" 
                              alt="Mitra KAMERAKITA AI" 
-                             class="w-full h-auto max-h-[440px] sm:max-h-[480px] lg:max-h-[520px] object-contain object-bottom object-right block -mb-12 lg:-mb-16 -mr-4 lg:-mr-8 drop-shadow-xl">
+                             class="w-full h-auto max-h-[440px] sm:max-h-[480px] lg:max-h-[540px] object-contain object-bottom object-right block -mb-12 lg:-mb-16 translate-x-6 sm:translate-x-10 lg:translate-x-16 xl:translate-x-20 drop-shadow-xl">
 
                     </div>
 
