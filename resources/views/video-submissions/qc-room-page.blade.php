@@ -208,22 +208,25 @@
             <!-- Filtered Stats Summary (Sleek Professional Bar) -->
             <div class="bg-white rounded-2xl p-4 border border-gray-150 shadow-sm flex flex-wrap items-center justify-between gap-4 mb-6">
                 <div class="flex items-center gap-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-indigo-650 animate-pulse"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-indigo-600 animate-pulse"></span>
                     <span class="text-xs font-bold uppercase tracking-wider text-slate-500 font-mono">Filtered Summary</span>
                 </div>
                 <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs font-semibold text-slate-500">
-                    <div>
-                        Filtered Reports: <strong class="text-slate-800 font-bold ml-1">{{ $reports->total() }}</strong>
+                    <div class="flex items-center gap-2">
+                        <span class="text-slate-400 font-normal">Filtered Reports:</span>
+                        <span class="text-slate-800 font-bold font-mono">{{ $reports->total() }}</span>
                     </div>
-                    <div class="h-4 w-px bg-gray-200 hidden sm:block"></div>
-                    <div class="flex items-center gap-1.5 font-mono">
-                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                        <span>Total Submitted: <strong class="text-slate-800 font-black ml-1">{{ $filteredSubmittedDuration }}</strong></span>
+                    <div class="h-4 w-px bg-gray-200 hidden md:block"></div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-amber-500 shrink-0"></span>
+                        <span class="text-slate-400 font-normal">Total Submitted:</span>
+                        <span class="text-slate-800 font-bold font-mono">{{ $filteredSubmittedDuration }}</span>
                     </div>
-                    <div class="h-4 w-px bg-gray-200 hidden sm:block"></div>
-                    <div class="flex items-center gap-1.5 font-mono">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                        <span>Total Approved: <strong class="text-slate-800 font-black ml-1">{{ $filteredApprovedDuration }}</strong></span>
+                    <div class="h-4 w-px bg-gray-200 hidden md:block"></div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
+                        <span class="text-slate-400 font-normal">Total Approved:</span>
+                        <span class="text-slate-800 font-bold font-mono">{{ $filteredApprovedDuration }}</span>
                     </div>
                 </div>
             </div>
