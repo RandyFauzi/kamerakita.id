@@ -60,10 +60,13 @@
     <div class="max-w-5xl mx-auto space-y-4">
         <!-- Print Header -->
         <div class="border-b-2 border-gray-900 pb-3 flex justify-between items-end">
-            <div class="space-y-0.5">
-                <h2 class="text-xl font-black tracking-tight text-gray-900">KAMERAKITA<span class="text-indigo-650">.AI</span></h2>
-                <p class="text-[10px] font-bold uppercase tracking-widest text-indigo-650 font-mono">Video QC Verification Recapitulation Report</p>
-                <p class="text-[9px] text-gray-400">Printed at: {{ date('d F Y H:i:s') }}</p>
+            <div class="flex items-center gap-3">
+                <img src="{{ asset('images/Logo.webp') }}" class="w-10 h-10 object-contain shrink-0" alt="Logo">
+                <div class="space-y-0.5">
+                    <h2 class="text-xl font-black tracking-tight text-gray-900">KAMERAKITA <span class="text-indigo-650">AI</span></h2>
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-indigo-650 font-mono">Video QC Verification Recapitulation Report</p>
+                    <p class="text-[9px] text-gray-400">Printed at: {{ date('d F Y H:i:s') }}</p>
+                </div>
             </div>
             <div class="text-right text-[10px] text-gray-500 font-medium space-y-0.5 font-mono">
                 <div>Filter Status: <strong class="text-gray-900 uppercase">{{ $status }}</strong></div>
@@ -89,9 +92,9 @@
                             <span class="text-[10px] font-normal text-gray-400">({{ $report->partner->mitra_id }})</span>
                         </div>
                         
-                        <!-- Worker Registered Email Highlight -->
+                        <!-- Worker Registered Email Highlight (High Contrast) -->
                         <div>
-                            <span class="inline-flex items-center px-2 py-0.5 bg-indigo-50 border border-indigo-100 text-indigo-750 font-black text-[10px] rounded-lg tracking-wide uppercase font-mono">
+                            <span class="inline-flex items-center px-2 py-0.5 bg-indigo-650 text-white font-extrabold text-[10px] rounded-lg tracking-wide uppercase font-mono">
                                 Email: {{ $report->partner->email }}
                             </span>
                         </div>
@@ -99,9 +102,9 @@
                         <div class="grid grid-cols-2 gap-x-2 gap-y-1 text-[10px] font-mono text-gray-600">
                             <div class="flex items-center">Date: <span class="ml-1 font-bold text-gray-800">{{ $report->submission_date->format('d/m/Y') }}</span></div>
                             
-                            <!-- Submitted Duration Highlight -->
+                            <!-- Submitted Duration Highlight (High Contrast) -->
                             <div>
-                                <span class="inline-flex items-center bg-amber-50 border border-amber-200 text-amber-900 px-2 py-0.5 rounded font-black text-[10px] uppercase font-mono">
+                                <span class="inline-flex items-center bg-amber-500 text-slate-950 px-2 py-0.5 rounded font-black text-[10px] uppercase font-mono">
                                     Duration: {{ $report->submitted_duration_formatted }}
                                 </span>
                             </div>
