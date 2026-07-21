@@ -38,8 +38,8 @@ class VerifyVideoWorkReportController extends Controller
                 });
             });
 
-        // Clone base query to calculate dynamic stats (excluding rejected from total submitted)
-        $totalSubmittedMin = (clone $query)->where('qc_status', '!=', 'rejected')->sum('submitted_duration_minutes');
+        // Clone base query to calculate dynamic stats matching active filter query
+        $totalSubmittedMin = (clone $query)->sum('submitted_duration_minutes');
         $totalApprovedMin = (clone $query)->sum('approved_duration_minutes');
         $totalRejectedMin = (clone $query)->where('qc_status', 'rejected')->sum('submitted_duration_minutes');
 

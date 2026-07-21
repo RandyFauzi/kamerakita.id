@@ -205,34 +205,66 @@
                 </form>
             </div>
 
-            <!-- Filtered Stats Summary (Sleek Horizontal Badges Row) -->
+            <!-- Filtered Stats Summary (Context-Aware Dynamic Badges) -->
             <div class="flex flex-wrap items-center gap-3 mb-6">
-                <!-- Badge 1: Filtered Reports -->
+                <!-- Badge 1: Filtered Reports Count -->
                 <div class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 flex items-center gap-2 shadow-xs">
                     <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono">Filtered Reports:</span>
                     <span class="text-sm font-black text-slate-800 font-mono">{{ $reports->total() }}</span>
                 </div>
 
-                <!-- Badge 2: Total Submitted -->
-                <div class="bg-amber-50 border border-amber-200 rounded-xl px-4 py-2.5 flex items-center gap-2 shadow-xs">
-                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-amber-800 font-mono">Total Submitted:</span>
-                    <span class="text-sm font-black text-amber-700 font-mono">{{ $filteredSubmittedDuration }}</span>
-                </div>
+                @if($status === 'all')
+                    <!-- All Tab: Show Overview -->
+                    <div class="bg-amber-50 border border-amber-200 rounded-xl px-4 py-2.5 flex items-center gap-2 shadow-xs">
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-amber-800 font-mono">Total Submitted:</span>
+                        <span class="text-sm font-black text-amber-700 font-mono">{{ $filteredSubmittedDuration }}</span>
+                    </div>
 
-                <!-- Badge 3: Total Approved -->
-                <div class="bg-emerald-50 border border-emerald-250 rounded-xl px-4 py-2.5 flex items-center gap-2 shadow-xs">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-800 font-mono">Total Approved:</span>
-                    <span class="text-sm font-black text-emerald-700 font-mono">{{ $filteredApprovedDuration }}</span>
-                </div>
+                    <div class="bg-emerald-50 border border-emerald-250 rounded-xl px-4 py-2.5 flex items-center gap-2 shadow-xs">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-800 font-mono">Total Approved:</span>
+                        <span class="text-sm font-black text-emerald-700 font-mono">{{ $filteredApprovedDuration }}</span>
+                    </div>
 
-                <!-- Badge 4: Total Rejected -->
-                <div class="bg-rose-50 border border-rose-200 rounded-xl px-4 py-2.5 flex items-center gap-2 shadow-xs">
-                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-rose-800 font-mono">Total Rejected:</span>
-                    <span class="text-sm font-black text-rose-700 font-mono">{{ $filteredRejectedDuration }}</span>
-                </div>
+                    <div class="bg-rose-50 border border-rose-200 rounded-xl px-4 py-2.5 flex items-center gap-2 shadow-xs">
+                        <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-rose-800 font-mono">Total Rejected:</span>
+                        <span class="text-sm font-black text-rose-700 font-mono">{{ $filteredRejectedDuration }}</span>
+                    </div>
+
+                @elseif($status === 'pending')
+                    <!-- Pending Tab -->
+                    <div class="bg-yellow-50 border border-yellow-250 rounded-xl px-4 py-2.5 flex items-center gap-2 shadow-xs">
+                        <span class="w-1.5 h-1.5 rounded-full bg-yellow-600"></span>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-yellow-800 font-mono">Total Pending Duration:</span>
+                        <span class="text-sm font-black text-yellow-800 font-mono">{{ $filteredSubmittedDuration }}</span>
+                    </div>
+
+                @elseif($status === 'on_review')
+                    <!-- On Review Tab -->
+                    <div class="bg-blue-50 border border-blue-200 rounded-xl px-4 py-2.5 flex items-center gap-2 shadow-xs">
+                        <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-blue-800 font-mono">Total On Review Duration:</span>
+                        <span class="text-sm font-black text-blue-800 font-mono">{{ $filteredSubmittedDuration }}</span>
+                    </div>
+
+                @elseif($status === 'approved')
+                    <!-- Approved Tab -->
+                    <div class="bg-emerald-50 border border-emerald-250 rounded-xl px-4 py-2.5 flex items-center gap-2 shadow-xs">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-800 font-mono">Total Approved Duration:</span>
+                        <span class="text-sm font-black text-emerald-700 font-mono">{{ $filteredApprovedDuration }}</span>
+                    </div>
+
+                @elseif($status === 'rejected')
+                    <!-- Rejected Tab -->
+                    <div class="bg-rose-50 border border-rose-200 rounded-xl px-4 py-2.5 flex items-center gap-2 shadow-xs">
+                        <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-rose-800 font-mono">Total Rejected Duration:</span>
+                        <span class="text-sm font-black text-rose-700 font-mono">{{ $filteredRejectedDuration }}</span>
+                    </div>
+                @endif
             </div>
 
             <!-- Table Card -->
