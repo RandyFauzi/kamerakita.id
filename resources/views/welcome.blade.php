@@ -105,20 +105,76 @@
         .logo-ticker img:hover {
             opacity: 1;
         }
+
+        /* 1. Interactive Tech Texture Layer */
+        .tech-texture-layer {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+            background-size: 24px 24px;
+            animation: techGridPan 60s linear infinite;
+        }
+
+        /* 2. Slow Diagonal Panning Animation */
+        @keyframes techGridPan {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: 480px 480px;
+            }
+        }
+
+        /* 3. Alpine.js Interactive Mouse Spotlight */
+        .mouse-spotlight {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.35) 0%, rgba(6, 182, 212, 0.2) 35%, transparent 70%);
+            mix-blend-mode: screen;
+            pointer-events: none;
+            z-index: 3;
+            transform: translate(-50%, -50%);
+            will-change: transform, left, top;
+            transition: opacity 0.3s ease;
+        }
     </style>
 </head>
 <body class="antialiased selection:bg-indigo-500 selection:text-white">
 
-    <!-- HERO SECTION WITH 3D ANIMATED MESH GRADIENT -->
-    <div class="relative min-h-screen flex flex-col justify-between overflow-hidden">
+    <!-- HERO SECTION WITH 3D ANIMATED MESH GRADIENT & INTERACTIVE TECH TEXTURE -->
+    <div class="relative min-h-screen flex flex-col justify-between overflow-hidden"
+         x-data="{ 
+            mouseX: 0, 
+            mouseY: 0,
+            hasMoved: false,
+            handleMouse(e) {
+                const rect = $el.getBoundingClientRect();
+                this.mouseX = e.clientX - rect.left;
+                this.mouseY = e.clientY - rect.top;
+                this.hasMoved = true;
+            }
+         }"
+         @mousemove="handleMouse($event)"
+         @mouseleave="hasMoved = false">
         
-        <!-- Interactive 3D Canvas Background -->
+        <!-- 1. Interactive 3D Canvas Mesh Blob Background (z-0) -->
         <canvas id="hero-canvas"></canvas>
-        
-        <!-- Dark Gradient Overlay for Readability -->
-        <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-[#0b0d14] z-2 pointer-events-none"></div>
 
-        <!-- 1. Top Glassmorphic Navigation Bar (Exact Centific Header Layout) -->
+        <!-- 2. Interactive Tech Dot Texture Layer with Infinite Diagonal Panning (z-2) -->
+        <div class="tech-texture-layer"></div>
+
+        <!-- 3. Alpine.js Interactive Mouse Spotlight Glow (z-3) -->
+        <div class="mouse-spotlight"
+             :style="{ left: mouseX + 'px', top: mouseY + 'px', opacity: hasMoved ? '1' : '0' }"></div>
+
+        <!-- 4. Dark Gradient Overlay for Readability (z-4) -->
+        <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-[#0b0d14] z-4 pointer-events-none"></div>
+
+        <!-- 5. Top Glassmorphic Navigation Bar (Exact Centific Header Layout - z-10) -->
         <header x-data="{ mobileOpen: false }" class="hero-content-layer w-full pt-4 pb-2 px-4 sm:px-8">
             <div class="max-w-7xl mx-auto flex items-center justify-between">
                 
