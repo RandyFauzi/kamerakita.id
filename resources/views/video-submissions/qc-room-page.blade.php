@@ -205,29 +205,26 @@
                 </form>
             </div>
 
-            <!-- Filtered Stats Summary (Sleek Professional Bar) -->
-            <div class="bg-white rounded-2xl p-4 border border-gray-150 shadow-sm flex flex-wrap items-center justify-between gap-4 mb-6">
-                <div class="flex items-center gap-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-indigo-600 animate-pulse"></span>
-                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500 font-mono">Filtered Summary</span>
+            <!-- Filtered Stats Summary (Sleek Horizontal Badges Row) -->
+            <div class="flex flex-wrap items-center gap-3 mb-6">
+                <!-- Badge 1: Filtered Reports -->
+                <div class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 flex items-center gap-2 shadow-xs">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono">Filtered Reports:</span>
+                    <span class="text-sm font-black text-slate-800 font-mono">{{ $reports->total() }}</span>
                 </div>
-                <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs font-semibold text-slate-500">
-                    <div class="flex items-center gap-2">
-                        <span class="text-slate-400 font-normal">Filtered Reports:</span>
-                        <span class="text-slate-800 font-bold font-mono">{{ $reports->total() }}</span>
-                    </div>
-                    <div class="h-4 w-px bg-gray-200 hidden md:block"></div>
-                    <div class="flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-amber-500 shrink-0"></span>
-                        <span class="text-slate-400 font-normal">Total Submitted:</span>
-                        <span class="text-slate-800 font-bold font-mono">{{ $filteredSubmittedDuration }}</span>
-                    </div>
-                    <div class="h-4 w-px bg-gray-200 hidden md:block"></div>
-                    <div class="flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
-                        <span class="text-slate-400 font-normal">Total Approved:</span>
-                        <span class="text-slate-800 font-bold font-mono">{{ $filteredApprovedDuration }}</span>
-                    </div>
+
+                <!-- Badge 2: Total Submitted -->
+                <div class="bg-amber-50 border border-amber-200 rounded-xl px-4 py-2.5 flex items-center gap-2 shadow-xs">
+                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-amber-800 font-mono">Total Submitted:</span>
+                    <span class="text-sm font-black text-amber-700 font-mono">{{ $filteredSubmittedDuration }}</span>
+                </div>
+
+                <!-- Badge 3: Total Approved -->
+                <div class="bg-emerald-50 border border-emerald-250 rounded-xl px-4 py-2.5 flex items-center gap-2 shadow-xs">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-800 font-mono">Total Approved:</span>
+                    <span class="text-sm font-black text-emerald-700 font-mono">{{ $filteredApprovedDuration }}</span>
                 </div>
             </div>
 
