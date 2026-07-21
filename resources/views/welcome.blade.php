@@ -177,18 +177,10 @@
                     <!-- Hero Main Image Container (Aligned to bottom edge) -->
                     <div class="relative z-10 w-full max-w-xl mx-auto flex flex-col items-center justify-end">
                         
-                        <!-- Floating Decorative Money/Reward Badges (Evermos Style) -->
-                        <div class="absolute top-4 -right-2 sm:right-2 z-20 bg-emerald-500 text-white font-extrabold text-xs sm:text-sm px-4 py-2 rounded-full shadow-xl border border-emerald-300 animate-bounce">
-                            💸 Rp 1.850.000 / Minggu
-                        </div>
-                        <div class="absolute bottom-12 -left-2 sm:left-2 z-20 bg-amber-400 text-slate-900 font-extrabold text-xs sm:text-sm px-4 py-2 rounded-full shadow-xl border border-amber-300">
-                            ✨ 100% Verified QC
-                        </div>
-
                         <!-- Real Hero PNG WebP Image (Flush to Hero Section Bottom) -->
                         <img src="{{ asset('images/Assest/Hero png.webp') }}" 
                              alt="Mitra KAMERAKITA AI" 
-                             class="w-full h-auto max-h-[580px] sm:max-h-[660px] lg:max-h-[720px] object-contain object-bottom block -mb-1 drop-shadow-2xl hover:scale-105 transition-transform duration-300 scale-110 lg:scale-125 origin-bottom">
+                             class="w-full h-auto max-h-[580px] sm:max-h-[660px] lg:max-h-[720px] object-contain object-bottom block -mb-1 drop-shadow-2xl scale-110 lg:scale-125 origin-bottom">
 
                     </div>
 
