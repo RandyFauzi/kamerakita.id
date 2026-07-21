@@ -335,9 +335,16 @@
                 <div class="bg-white rounded-3xl max-w-4xl w-full shadow-2xl overflow-hidden border border-gray-100 animate-in fade-in zoom-in-95 duration-200 flex flex-col my-8">
                     <!-- Modal Header -->
                     <div class="px-6 py-4 bg-slate-950 text-white flex justify-between items-center">
-                        <div>
-                            <span class="text-xs uppercase font-bold text-slate-400 tracking-wider">Review Laporan Kerja Video</span>
-                            <h3 class="text-lg font-black" x-text="'Laporan: ' + activeReport.id.substring(0, 8) + '...'"></h3>
+                        <div class="flex items-center gap-4">
+                            <div>
+                                <span class="text-xs uppercase font-bold text-slate-400 tracking-wider">Review Laporan Kerja Video</span>
+                                <h3 class="text-lg font-black" x-text="'Laporan: ' + (activeReport.id ? activeReport.id.substring(0, 8) + '...' : '')"></h3>
+                            </div>
+                            <!-- All-Time Cumulative Minutes Badge -->
+                            <div class="bg-indigo-900 border border-indigo-800 px-3 py-1 rounded-xl flex flex-col items-center">
+                                <span class="text-[8px] font-black uppercase text-indigo-300 font-mono tracking-wider">Database Cumulative</span>
+                                <span class="text-xs font-black text-white font-mono mt-0.5" x-text="(activeReport.partner_total_submitted_minutes || 0) + ' Mins'"></span>
+                            </div>
                         </div>
                         <button @click="showVerifyModal = false" class="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

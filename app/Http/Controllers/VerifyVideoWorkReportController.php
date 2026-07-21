@@ -61,6 +61,17 @@ class VerifyVideoWorkReportController extends Controller
             ->paginate(15)
             ->withQueryString();
 
+        // Calculate all-time submitted minutes for each unique partner on the current page
+        $partnerIds = $reports->pluck('partner_id')->unique();
+        $partnerTotals = VideoWorkReport::whereIn('partner_id', $partnerIds)
+            ->select('partner_id', \DB::raw('SUM(submitted_duration_minutes) as total_submitted'))
+            ->groupBy('partner_id')
+            ->pluck('total_submitted', 'partner_id');
+
+        $reports->each(function ($report) use ($partnerTotals) {
+            $report->setAttribute('partner_total_submitted_minutes', $partnerTotals[$report->partner_id] ?? 0);
+        });
+
         // Calculate statistics for stat cards
         $totalPendingCount = VideoWorkReport::where('qc_status', 'pending')->count();
         $totalOnReviewCount = VideoWorkReport::where('qc_status', 'on_review')->count();
