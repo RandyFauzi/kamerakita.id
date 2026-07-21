@@ -81,10 +81,25 @@
                     <span class="block text-xs text-slate-400 font-medium mt-1">Total durasi data terkumpul di agensi Kamerakita.ai</span>
                     
                     <!-- Queue Status Durations Breakdown -->
-                    <div class="mt-4 pt-4 border-t border-slate-900/10 flex flex-wrap gap-x-6 gap-y-2 text-xs text-slate-600 font-semibold font-mono">
-                        <div>Pending Queue: <span class="text-yellow-600 font-extrabold">{{ $metrics['global_pending_submitted_hours_formatted'] }}</span></div>
-                        <div>On Review Queue: <span class="text-blue-600 font-extrabold">{{ $metrics['global_on_review_submitted_hours_formatted'] }}</span></div>
-                        <div>Rejected Queue: <span class="text-rose-600 font-extrabold">{{ $metrics['global_rejected_submitted_hours_formatted'] }}</span></div>
+                    <div class="mt-5 pt-4 border-t border-slate-900/10">
+                        <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono mb-2">QC Queues Workload Breakdown</span>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <!-- Pending -->
+                            <div class="bg-yellow-500/10 border border-yellow-200 rounded-xl p-3 flex flex-col">
+                                <span class="text-[9px] font-bold uppercase tracking-wider text-yellow-800 font-mono">Pending</span>
+                                <span class="text-base font-black text-yellow-700 font-mono mt-0.5">{{ $metrics['global_pending_submitted_hours_formatted'] }}</span>
+                            </div>
+                            <!-- On Review -->
+                            <div class="bg-blue-500/10 border border-blue-200 rounded-xl p-3 flex flex-col">
+                                <span class="text-[9px] font-bold uppercase tracking-wider text-blue-800 font-mono">On Review</span>
+                                <span class="text-base font-black text-blue-700 font-mono mt-0.5">{{ $metrics['global_on_review_submitted_hours_formatted'] }}</span>
+                            </div>
+                            <!-- Rejected -->
+                            <div class="bg-rose-500/10 border border-rose-200 rounded-xl p-3 flex flex-col">
+                                <span class="text-[9px] font-bold uppercase tracking-wider text-rose-800 font-mono">Rejected</span>
+                                <span class="text-base font-black text-rose-700 font-mono mt-0.5">{{ $metrics['global_rejected_submitted_hours_formatted'] }}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
