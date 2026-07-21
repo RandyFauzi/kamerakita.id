@@ -164,23 +164,23 @@
 
                 </div>
 
-                <!-- Right Hero Image Column (Clean Proportioned Fit) -->
-                <div class="lg:col-span-5 relative flex justify-center items-center">
+                <!-- Right Hero Image Column (Flush to Bottom Right Corner) -->
+                <div class="lg:col-span-5 relative flex justify-end items-end self-end h-full pt-4">
                     
                     <!-- SVG Organic Blob Backdrop (Evermos Style Cloud Shape) -->
-                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <svg class="w-[115%] h-[115%] text-[#02649b] opacity-85 animate-float" viewBox="0 0 500 500" fill="currentColor">
+                    <div class="absolute inset-0 flex items-center justify-end pointer-events-none translate-y-6 translate-x-4">
+                        <svg class="w-[125%] h-[125%] text-[#02649b] opacity-85 animate-float" viewBox="0 0 500 500" fill="currentColor">
                             <path d="M410,310Q370,370,305,405Q240,440,175,410Q110,380,85,315Q60,250,90,185Q120,120,185,85Q250,50,315,85Q380,120,415,185Q450,250,410,310Z" />
                         </svg>
                     </div>
 
-                    <!-- Hero Main Image Container (Neat, Un-clipped, Beautiful Proportion) -->
-                    <div class="relative z-10 w-full max-w-md mx-auto flex justify-center items-center">
+                    <!-- Hero Main Image Container (Mentok Kanan Bawah) -->
+                    <div class="relative z-10 w-full max-w-md ml-auto mr-0 flex justify-end items-end">
                         
-                        <!-- Real Hero PNG WebP Image (Clean & Entire Person Visible) -->
+                        <!-- Real Hero PNG WebP Image (Flush to Bottom & Right Edge) -->
                         <img src="{{ asset('images/Assest/Hero png.webp') }}?v={{ filemtime(public_path('images/Assest/Hero png.webp')) }}" 
                              alt="Mitra KAMERAKITA AI" 
-                             class="w-full h-auto max-h-[420px] sm:max-h-[460px] lg:max-h-[480px] object-contain drop-shadow-xl">
+                             class="w-full h-auto max-h-[440px] sm:max-h-[480px] lg:max-h-[520px] object-contain object-bottom object-right block -mb-12 lg:-mb-16 -mr-4 lg:-mr-8 drop-shadow-xl">
 
                     </div>
 
