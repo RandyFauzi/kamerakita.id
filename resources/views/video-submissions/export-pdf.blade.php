@@ -96,10 +96,14 @@
                                 QC Status: 
                                 @if($report->qc_status === 'pending')
                                     <span class="text-yellow-600 font-bold uppercase">Pending</span>
+                                @elseif($report->qc_status === 'on_review')
+                                    <span class="text-blue-600 font-bold uppercase">On Review</span>
                                 @elseif($report->qc_status === 'approved')
                                     <span class="text-emerald-600 font-bold uppercase">Approved ({{ $report->approved_duration_minutes }}m)</span>
-                                @else
+                                @elseif($report->qc_status === 'rejected')
                                     <span class="text-rose-600 font-bold uppercase">Rejected</span>
+                                @else
+                                    <span class="text-gray-600 font-bold uppercase">{{ $report->qc_status }}</span>
                                 @endif
                             </div>
                         </div>
