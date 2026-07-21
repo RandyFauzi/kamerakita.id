@@ -7,7 +7,7 @@
     
     <!-- Meta Description -->
     <meta name="description" content="We help model labs and enterprises build, train, deploy, and govern intelligent systems through high-quality video datasets, human expertise, and end-to-end QC platforms.">
-    <link rel="icon" href="{{ asset('Logo.webp') }}" type="image/webp">
+    <link rel="icon" href="{{ asset('images/Logo.webp') }}" type="image/webp">
 
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -124,12 +124,11 @@
                 
                 <!-- Logo -->
                 <a href="/" class="flex items-center gap-3 group">
-                    <div class="w-8 h-8 rounded-xl bg-white/10 backdrop-blur-md p-1 border border-white/20 flex items-center justify-center">
-                        <img src="{{ asset('Logo.webp') }}" alt="Logo" class="w-full h-full object-contain">
+                    <div class="w-10 h-10 rounded-2xl bg-slate-900/90 border border-slate-700/80 p-1.5 flex items-center justify-center overflow-hidden shadow-lg shadow-black/50">
+                        <img src="{{ asset('images/Logo.webp') }}" alt="KAMERAKITA AI Logo" class="w-full h-full object-contain rounded-xl">
                     </div>
-                    <span class="text-lg font-black tracking-tight text-white flex items-center gap-1">
-                        <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-                        KAMERAKITA<span class="text-slate-300 font-light">AI</span>
+                    <span class="text-xl font-black tracking-tight text-white flex items-center gap-1 font-mono">
+                        KAMERAKITA<span class="text-emerald-400 font-extrabold">AI</span>
                     </span>
                 </a>
 
@@ -409,8 +408,8 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
             
             <div class="space-y-3">
-                <div class="flex items-center gap-2">
-                    <img src="{{ asset('Logo.webp') }}" alt="Logo" class="w-6 h-6">
+                <div class="flex items-center gap-2.5">
+                    <img src="{{ asset('images/Logo.webp') }}" alt="Logo" class="w-7 h-7 rounded-lg object-contain">
                     <span class="text-sm font-black text-white font-mono">KAMERAKITA AI</span>
                 </div>
                 <p class="text-slate-500 text-xs leading-relaxed">
