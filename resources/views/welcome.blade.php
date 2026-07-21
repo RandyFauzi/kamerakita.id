@@ -134,29 +134,29 @@
         </div>
     </header>
 
-    <!-- 2. Hero Section (Optimized Perfect Fit for 16:9 Windows Landscape Monitors) -->
-    <section class="bg-hero-solid text-white pt-8 lg:pt-12 pb-0 overflow-hidden relative min-h-[calc(100vh-80px)] flex flex-col justify-end">
-        <div class="w-full max-w-[1920px] mx-auto pl-4 sm:pl-8 lg:pl-16 pr-0 overflow-visible my-auto">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end">
+    <!-- 2. Hero Section (Clean, Neat & Perfectly Proportioned Evermos Layout) -->
+    <section class="bg-hero-solid text-white py-12 lg:py-16 overflow-hidden relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                 
                 <!-- Left Hero Content Column -->
-                <div class="lg:col-span-6 xl:col-span-5 space-y-6 lg:space-y-8 text-left z-10 pb-12 lg:pb-20">
+                <div class="lg:col-span-7 space-y-6 text-left z-10 py-4">
                     
-                    <!-- Headline H1 (Optimized Typography for 16:9 Viewports) -->
-                    <h1 class="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-white tracking-tight leading-[1.14]">
+                    <!-- Headline H1 (Clean, Bold & Readable Typography) -->
+                    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-[1.18]">
                         Saatnya Anda jadi <br/>
                         <span class="text-[#FDE047] italic font-serif font-normal">andalan keluarga</span> <br/>
                         lewat penghasilan tambahan
                     </h1>
 
                     <!-- Hero Call to Action Button -->
-                    <div class="pt-1 sm:pt-2">
+                    <div class="pt-2">
                         @auth
-                            <a href="{{ route('dashboard') }}" class="btn-evermos-white inline-block px-9 sm:px-10 py-3.5 sm:py-4 text-sm sm:text-base font-extrabold shadow-xl">
+                            <a href="{{ route('dashboard') }}" class="btn-evermos-white inline-block px-8 py-3.5 text-sm sm:text-base font-extrabold shadow-lg">
                                 Gabung sekarang →
                             </a>
                         @else
-                            <a href="{{ route('login') }}" class="btn-evermos-white inline-block px-9 sm:px-10 py-3.5 sm:py-4 text-sm sm:text-base font-extrabold shadow-xl">
+                            <a href="{{ route('login') }}" class="btn-evermos-white inline-block px-8 py-3.5 text-sm sm:text-base font-extrabold shadow-lg">
                                 Gabung sekarang →
                             </a>
                         @endauth
@@ -164,23 +164,23 @@
 
                 </div>
 
-                <!-- Right Hero Image Column (Flush to 16:9 Right & Bottom Edge) -->
-                <div class="lg:col-span-6 xl:col-span-7 relative flex justify-end items-end self-end z-10 pr-0">
+                <!-- Right Hero Image Column (Clean Proportioned Fit) -->
+                <div class="lg:col-span-5 relative flex justify-center items-center">
                     
-                    <!-- SVG Organic Blob Backdrop -->
-                    <div class="absolute inset-0 flex items-center justify-end pointer-events-none mb-4">
-                        <svg class="w-[135%] h-[135%] text-[#02649b] opacity-85 animate-float translate-x-12" viewBox="0 0 500 500" fill="currentColor">
+                    <!-- SVG Organic Blob Backdrop (Evermos Style Cloud Shape) -->
+                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <svg class="w-[115%] h-[115%] text-[#02649b] opacity-85 animate-float" viewBox="0 0 500 500" fill="currentColor">
                             <path d="M410,310Q370,370,305,405Q240,440,175,410Q110,380,85,315Q60,250,90,185Q120,120,185,85Q250,50,315,85Q380,120,415,185Q450,250,410,310Z" />
                         </svg>
                     </div>
 
-                    <!-- Hero Main Image Container (Responsive 16:9 Landscape Fit) -->
-                    <div class="relative z-10 w-full max-w-2xl ml-auto mr-0 pr-0 flex flex-col items-end justify-end">
+                    <!-- Hero Main Image Container (Neat, Un-clipped, Beautiful Proportion) -->
+                    <div class="relative z-10 w-full max-w-md mx-auto flex justify-center items-center">
                         
-                        <!-- Real Hero PNG WebP Image (Flush Right & Bottom for Windows 16:9) -->
+                        <!-- Real Hero PNG WebP Image (Clean & Entire Person Visible) -->
                         <img src="{{ asset('images/Assest/Hero png.webp') }}?v={{ filemtime(public_path('images/Assest/Hero png.webp')) }}" 
                              alt="Mitra KAMERAKITA AI" 
-                             class="w-full h-auto max-h-[480px] sm:max-h-[580px] lg:max-h-[660px] xl:max-h-[740px] object-contain object-bottom object-right block -mb-1 translate-x-4 sm:translate-x-10 lg:translate-x-14 scale-105 sm:scale-110 lg:scale-120 origin-bottom-right drop-shadow-2xl">
+                             class="w-full h-auto max-h-[420px] sm:max-h-[460px] lg:max-h-[480px] object-contain drop-shadow-xl">
 
                     </div>
 
