@@ -142,8 +142,8 @@
                 <!-- Left Hero Content Column -->
                 <div class="lg:col-span-7 space-y-6 text-left z-10 py-4">
                     
-                    <!-- Headline H1 (Clean, Bold & Readable Typography) -->
-                    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-[1.18]">
+                    <!-- Headline H1 (Larger & Clean Line Breaks) -->
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.14]">
                         Saatnya Anda jadi <br/>
                         <span class="text-[#FDE047] italic font-serif font-normal">andalan keluarga</span> <br/>
                         lewat penghasilan tambahan
