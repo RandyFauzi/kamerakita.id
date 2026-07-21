@@ -226,6 +226,13 @@
                     <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-800 font-mono">Total Approved:</span>
                     <span class="text-sm font-black text-emerald-700 font-mono">{{ $filteredApprovedDuration }}</span>
                 </div>
+
+                <!-- Badge 4: Total Rejected -->
+                <div class="bg-rose-50 border border-rose-200 rounded-xl px-4 py-2.5 flex items-center gap-2 shadow-xs">
+                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-rose-800 font-mono">Total Rejected:</span>
+                    <span class="text-sm font-black text-rose-700 font-mono">{{ $filteredRejectedDuration }}</span>
+                </div>
             </div>
 
             <!-- Table Card -->

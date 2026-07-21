@@ -38,9 +38,10 @@ class VerifyVideoWorkReportController extends Controller
                 });
             });
 
-        // Clone base query to calculate dynamic stats
-        $totalSubmittedMin = (clone $query)->sum('submitted_duration_minutes');
+        // Clone base query to calculate dynamic stats (excluding rejected from total submitted)
+        $totalSubmittedMin = (clone $query)->where('qc_status', '!=', 'rejected')->sum('submitted_duration_minutes');
         $totalApprovedMin = (clone $query)->sum('approved_duration_minutes');
+        $totalRejectedMin = (clone $query)->where('qc_status', 'rejected')->sum('submitted_duration_minutes');
 
         // Helper to format minutes to a clean "Xh Ym" string.
         $formatDur = function (int $minutes) {
@@ -54,6 +55,7 @@ class VerifyVideoWorkReportController extends Controller
 
         $filteredSubmittedDuration = $formatDur($totalSubmittedMin);
         $filteredApprovedDuration = $formatDur($totalApprovedMin);
+        $filteredRejectedDuration = $formatDur($totalRejectedMin);
 
         $reports = $query->orderBy('submission_date', 'desc')
             ->paginate(15)
@@ -80,7 +82,8 @@ class VerifyVideoWorkReportController extends Controller
             'totalApprovedCountToday',
             'totalRejectedCountToday',
             'filteredSubmittedDuration',
-            'filteredApprovedDuration'
+            'filteredApprovedDuration',
+            'filteredRejectedDuration'
         ));
     }
 
