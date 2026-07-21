@@ -3,208 +3,241 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>KAMERAKITA AI — Powering Computer Vision & Multimodal AI Models</title>
+    <title>Powering Model Labs & Enterprise AI | KAMERAKITA AI</title>
     
-    <!-- Meta Description & SEO -->
-    <meta name="description" content="KAMERAKITA AI menyediakan dataset video berkualitas tinggi yang dikumpulkan oleh ribuan mitra terverifikasi, divalidasi dengan sistem QC presisi untuk AI Labs & Enterprise Computer Vision.">
+    <!-- Meta Description -->
+    <meta name="description" content="KAMERAKITA AI helps enterprises build and scale AI with production-ready video datasets, secure data operations, and human-in-the-loop QC verification.">
     <link rel="icon" href="{{ asset('Logo.webp') }}" type="image/webp">
 
-    <!-- Google Fonts -->
+    <!-- Google Fonts: Inter & Geist Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
-    <!-- Styles & Scripts -->
-    @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @else
-        <script src="https://cdn.tailwindcss.com"></script>
-    @endif
+    <!-- Tailwind CSS via CDN for 100% Guaranteed Production Reliability -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        centific: {
+                            green: '#1a7954',
+                            greenLight: '#eef8f3',
+                            greenBorder: '#d1e9dc',
+                            black: '#121212',
+                            darkCard: '#1c1c1c',
+                            grayBg: '#f8fafc',
+                            border: '#e2e8f0',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <style>
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+            color: #121212;
+            -webkit-font-smoothing: antialiased;
         }
-        .font-mono-tech {
-            font-family: 'JetBrains Mono', monospace;
+        .bg-grid-subtle {
+            background-image: radial-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+            background-size: 24px 24px;
         }
-        .bg-grid-pattern {
-            background-image: radial-gradient(rgba(99, 102, 241, 0.15) 1px, transparent 1px);
-            background-size: 32px 32px;
+        .centific-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 24px;
+            transition: all 0.25s ease;
         }
-        .glow-indigo {
-            box-shadow: 0 0 50px -10px rgba(99, 102, 241, 0.35);
+        .centific-card:hover {
+            border-color: #cbd5e1;
+            box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.06);
+            transform: translateY(-2px);
         }
-        .glow-cyan {
-            box-shadow: 0 0 50px -10px rgba(6, 182, 212, 0.35);
+        .badge-green {
+            background-color: rgba(26, 121, 84, 0.08);
+            color: #1a7954;
+            border: 1px solid rgba(26, 121, 84, 0.2);
         }
-        .glass-panel {
-            background: rgba(15, 23, 42, 0.75);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+        .pill-btn-black {
+            background-color: #121212;
+            color: #ffffff;
+            border-radius: 9999px;
+            transition: all 0.2s ease;
         }
-        .glass-card {
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+        .pill-btn-black:hover {
+            background-color: #2a2a2a;
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.25);
         }
-        .glass-card:hover {
-            border-color: rgba(99, 102, 241, 0.4);
-            box-shadow: 0 20px 40px -15px rgba(99, 102, 241, 0.2);
+        .pill-btn-ghost {
+            background-color: #f1f5f9;
+            color: #0f172a;
+            border-radius: 9999px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s ease;
+        }
+        .pill-btn-ghost:hover {
+            background-color: #e2e8f0;
+            color: #000000;
         }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 antialiased selection:bg-indigo-500 selection:text-white overflow-x-hidden">
+<body class="antialiased selection:bg-slate-900 selection:text-white">
 
-    <!-- 1. Top Announcement Bar (News Bar) -->
-    <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 border-b border-indigo-900/40 text-xs py-2.5 px-4 text-center relative z-50">
-        <div class="max-w-7xl mx-auto flex items-center justify-center gap-2 flex-wrap">
-            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                <span class="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse mr-1.5"></span>
+    <!-- 1. Top News / Announcement Bar (Centific Style) -->
+    <div class="bg-[#1c1c1c] text-white text-xs py-2.5 px-4 text-center font-medium border-b border-zinc-800">
+        <div class="max-w-7xl mx-auto flex items-center justify-center gap-3 flex-wrap">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-semibold bg-emerald-950/80 text-emerald-400 border border-emerald-800/60">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse mr-2"></span>
                 KAMERAKITA AI V2.0
             </span>
-            <span class="text-slate-300 font-medium">Powering Next-Gen Vision AI Datasets Across Indonesia & Southeast Asia</span>
-            <a href="#solutions" class="text-indigo-400 font-bold hover:text-indigo-300 inline-flex items-center gap-1 transition-colors ml-1">
-                Explore Enterprise Solutions 
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            <span class="text-zinc-300">Connect with KAMERAKITA AI to discover what's next in Vision AI Datasets.</span>
+            <a href="#solutions" class="text-white font-semibold underline underline-offset-4 hover:text-emerald-400 transition-colors inline-flex items-center gap-1">
+                See where to meet us →
             </a>
         </div>
     </div>
 
-    <!-- 2. Glassmorphic Navigation Header -->
-    <header x-data="{ mobileMenuOpen: false, scrolled: false }" 
-            @scroll.window="scrolled = (window.pageYOffset > 20)"
-            :class="scrolled ? 'bg-slate-950/90 backdrop-blur-xl border-b border-slate-800/80 shadow-2xl py-3.5' : 'bg-transparent py-5'"
-            class="sticky top-0 z-40 transition-all duration-300">
+    <!-- 2. Header & Floating Glass Navigation -->
+    <header x-data="{ mobileOpen: false, scrolled: false }"
+            @scroll.window="scrolled = (window.pageYOffset > 15)"
+            :class="scrolled ? 'bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs py-3.5' : 'bg-white py-5'"
+            class="sticky top-0 z-50 transition-all duration-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-            <!-- Brand Logo -->
-            <a href="/" class="flex items-center gap-3 group">
-                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 via-violet-600 to-cyan-400 p-0.5 shadow-lg shadow-indigo-500/30 transition-transform group-hover:scale-105">
-                    <div class="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center overflow-hidden">
-                        <img src="{{ asset('Logo.webp') }}" alt="KAMERAKITA AI Logo" class="w-6 h-6 object-contain">
-                    </div>
+            
+            <!-- Centific Style Logo -->
+            <a href="/" class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-slate-950 p-1.5 flex items-center justify-center shrink-0">
+                    <img src="{{ asset('Logo.webp') }}" alt="KAMERAKITA AI Logo" class="w-full h-full object-contain">
                 </div>
-                <div>
-                    <span class="text-lg font-black tracking-wider text-white flex items-center gap-1 font-mono-tech">
-                        KAMERAKITA <span class="bg-gradient-to-r from-indigo-400 via-violet-400 to-cyan-400 bg-clip-text text-transparent">AI</span>
+                <div class="flex flex-col">
+                    <span class="text-base font-extrabold tracking-tight text-slate-950 uppercase leading-none font-mono">
+                        KAMERAKITA <span class="text-emerald-600">AI</span>
                     </span>
-                    <span class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest -mt-1 font-mono-tech">Dataset Engine</span>
+                    <span class="text-[9px] font-semibold text-slate-500 uppercase tracking-widest mt-0.5">Enterprise Vision Data</span>
                 </div>
             </a>
 
-            <!-- Desktop Nav Links -->
-            <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-300">
-                <a href="#about" class="hover:text-indigo-400 transition-colors">Platform</a>
-                <a href="#capabilities" class="hover:text-indigo-400 transition-colors">Capabilities</a>
-                <a href="#qc-engine" class="hover:text-indigo-400 transition-colors">QC Engine</a>
-                <a href="#contributors" class="hover:text-indigo-400 transition-colors">Contributor Network</a>
-                <a href="#use-cases" class="hover:text-indigo-400 transition-colors">Use Cases</a>
+            <!-- Desktop Menu Links -->
+            <nav class="hidden md:flex items-center gap-8 text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                <a href="#platform" class="hover:text-black transition-colors">Platform</a>
+                <a href="#solutions" class="hover:text-black transition-colors">Solutions</a>
+                <a href="#qc-engine" class="hover:text-black transition-colors">QC Engine</a>
+                <a href="#contributors" class="hover:text-black transition-colors">Contributor Network</a>
+                <a href="#use-cases" class="hover:text-black transition-colors">Use Cases</a>
             </nav>
 
             <!-- Action CTAs -->
             <div class="hidden md:flex items-center gap-3">
+                <a href="#solutions" class="px-4 py-2 text-xs font-semibold text-slate-700 hover:text-black border border-slate-200 rounded-full hover:bg-slate-50 transition">
+                    Multilingual AI
+                </a>
                 @auth
-                    <a href="{{ route('dashboard') }}" class="px-5 py-2.5 rounded-xl font-bold text-xs bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 transition shadow-sm">
-                        Go to Dashboard
+                    <a href="{{ route('dashboard') }}" class="pill-btn-black px-5 py-2.5 text-xs font-bold uppercase tracking-wider inline-flex items-center gap-2">
+                        Dashboard →
                     </a>
                 @else
-                    <a href="{{ route('login') }}" class="px-4 py-2.5 rounded-xl font-bold text-xs text-slate-300 hover:text-white hover:bg-slate-800/80 transition">
+                    <a href="{{ route('login') }}" class="px-4 py-2 text-xs font-semibold text-slate-700 hover:text-black transition">
                         Sign In
                     </a>
-                    <a href="{{ route('register') }}" class="px-5 py-2.5 rounded-xl font-bold text-xs bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white shadow-lg shadow-indigo-600/30 hover:shadow-indigo-500/50 transition-all hover:scale-102">
-                        Join as Contributor
+                    <a href="{{ route('register') }}" class="pill-btn-black px-5 py-2.5 text-xs font-bold uppercase tracking-wider inline-flex items-center gap-2">
+                        Book a demo
                     </a>
                 @endauth
             </div>
 
-            <!-- Mobile Menu Toggle Button -->
-            <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden p-2 text-slate-400 hover:text-white">
+            <!-- Mobile Toggle -->
+            <button @click="mobileOpen = !mobileOpen" class="md:hidden p-2 text-slate-700 hover:text-black">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
             </button>
         </div>
 
         <!-- Mobile Drawer -->
-        <div x-show="mobileMenuOpen" x-collapse class="md:hidden bg-slate-900 border-b border-slate-800 px-4 py-4 space-y-3">
-            <a href="#about" @click="mobileMenuOpen = false" class="block text-sm font-semibold text-slate-300 py-1">Platform</a>
-            <a href="#capabilities" @click="mobileMenuOpen = false" class="block text-sm font-semibold text-slate-300 py-1">Capabilities</a>
-            <a href="#qc-engine" @click="mobileMenuOpen = false" class="block text-sm font-semibold text-slate-300 py-1">QC Engine</a>
-            <a href="#contributors" @click="mobileMenuOpen = false" class="block text-sm font-semibold text-slate-300 py-1">Contributor Network</a>
-            <a href="#use-cases" @click="mobileMenuOpen = false" class="block text-sm font-semibold text-slate-300 py-1">Use Cases</a>
-            <div class="pt-3 border-t border-slate-800 flex flex-col gap-2">
+        <div x-show="mobileOpen" x-collapse class="md:hidden bg-white border-b border-slate-200 px-4 py-4 space-y-3">
+            <a href="#platform" @click="mobileOpen = false" class="block text-sm font-semibold text-slate-700 py-1">Platform</a>
+            <a href="#solutions" @click="mobileOpen = false" class="block text-sm font-semibold text-slate-700 py-1">Solutions</a>
+            <a href="#qc-engine" @click="mobileOpen = false" class="block text-sm font-semibold text-slate-700 py-1">QC Engine</a>
+            <a href="#contributors" @click="mobileOpen = false" class="block text-sm font-semibold text-slate-700 py-1">Contributor Network</a>
+            <a href="#use-cases" @click="mobileOpen = false" class="block text-sm font-semibold text-slate-700 py-1">Use Cases</a>
+            <div class="pt-3 border-t border-slate-100 flex flex-col gap-2">
                 @auth
-                    <a href="{{ route('dashboard') }}" class="w-full text-center px-4 py-2.5 rounded-xl font-bold text-xs bg-indigo-600 text-white">Dashboard</a>
+                    <a href="{{ route('dashboard') }}" class="w-full text-center pill-btn-black py-2.5 text-xs font-bold uppercase">Dashboard</a>
                 @else
-                    <a href="{{ route('login') }}" class="w-full text-center px-4 py-2 rounded-xl font-bold text-xs bg-slate-800 text-white">Sign In</a>
-                    <a href="{{ route('register') }}" class="w-full text-center px-4 py-2.5 rounded-xl font-bold text-xs bg-indigo-600 text-white">Join as Contributor</a>
+                    <a href="{{ route('login') }}" class="w-full text-center py-2 text-xs font-semibold text-slate-700 border border-slate-200 rounded-full">Sign In</a>
+                    <a href="{{ route('register') }}" class="w-full text-center pill-btn-black py-2.5 text-xs font-bold uppercase">Book a demo</a>
                 @endauth
             </div>
         </div>
     </header>
 
-    <!-- 3. Hero Section (Centific Blueprint Format) -->
-    <section id="about" class="relative pt-12 pb-24 lg:pt-20 lg:pb-32 bg-grid-pattern overflow-hidden">
-        <!-- Glow Orbs in Background -->
-        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-indigo-600/20 rounded-full blur-[140px] pointer-events-none"></div>
-        <div class="absolute top-1/3 right-10 w-[400px] h-[300px] bg-cyan-500/15 rounded-full blur-[120px] pointer-events-none"></div>
-
+    <!-- 3. Centific Hero Section Blueprint -->
+    <section id="platform" class="relative pt-16 pb-20 lg:pt-24 lg:pb-32 bg-grid-subtle overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
                 
-                <!-- Left Hero Text Column -->
-                <div class="lg:col-span-7 space-y-8 text-center lg:text-left">
+                <!-- Left Hero Content -->
+                <div class="lg:col-span-7 space-y-8 text-left">
                     
-                    <!-- Eyebrow Pill Badge -->
-                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/90 border border-indigo-500/30 text-indigo-300 text-xs font-bold font-mono-tech shadow-inner">
-                        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
-                        POWERING TOMORROW'S AI WITH REAL-WORLD VISION DATASETS
+                    <!-- Centific Eyebrow Pill Badge -->
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full badge-green text-xs font-bold font-mono tracking-wide">
+                        <span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+                        POWERING TOMORROW'S AI WITH HUMAN-TRAINED EXPERTISE
                     </div>
 
-                    <!-- Main H1 Headline -->
-                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.1]">
-                        Built for Companies Building the Future of <span class="bg-gradient-to-r from-indigo-400 via-violet-400 to-cyan-400 bg-clip-text text-transparent">Vision AI</span>
+                    <!-- Centific Massive Headline H1 -->
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-950 tracking-tight leading-[1.08]">
+                        Built for Companies Building the Future of <span class="text-emerald-700 underline decoration-emerald-300 decoration-wavy decoration-2">Vision AI</span>
                     </h1>
 
-                    <!-- Subheadline -->
-                    <p class="text-base sm:text-lg text-slate-400 font-normal leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                        KAMERAKITA AI is the hidden infrastructure behind world-class Computer Vision models. We generate, refine, and operationalize real-world video datasets across Indonesia through a distributed contributor network and multi-stage human QC.
+                    <!-- Centific Body Paragraph -->
+                    <p class="text-base sm:text-lg text-slate-600 font-normal leading-relaxed max-w-2xl">
+                        KAMERAKITA AI builds the data engines behind frontier models. We generate, refine, and operationalize real-world video signals across Indonesia through production-ready datasets, human feedback, and automated QC verification.
                     </p>
 
-                    <!-- Dual CTAs -->
-                    <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
-                        <a href="#solutions" class="w-full sm:w-auto px-8 py-4 rounded-2xl font-black text-sm bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white shadow-xl shadow-indigo-600/30 hover:shadow-indigo-500/50 transition-all transform hover:-translate-y-0.5 text-center">
-                            Minta Akses Dataset / Book Demo
+                    <!-- Centific Dual Pill Buttons -->
+                    <div class="flex flex-col sm:flex-row items-center gap-4 pt-2">
+                        <a href="#solutions" class="pill-btn-black w-full sm:w-auto px-8 py-4 text-xs font-bold uppercase tracking-wider text-center">
+                            Book a demo
                         </a>
-                        <a href="{{ route('register') }}" class="w-full sm:w-auto px-7 py-4 rounded-2xl font-bold text-sm bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 hover:border-indigo-500/50 transition text-center">
-                            Gabung Jadi Mitra Kontributor →
+                        <a href="{{ route('register') }}" class="pill-btn-ghost w-full sm:w-auto px-7 py-4 text-xs font-bold uppercase tracking-wider text-center">
+                            Join our Expert Network →
                         </a>
                     </div>
 
-                    <!-- Key Highlights Bullet List -->
-                    <div class="pt-6 border-t border-slate-800/80 grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
-                        <div class="flex items-center gap-2.5 text-xs font-semibold text-slate-300">
-                            <span class="p-1 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                    <!-- Centific Checkmarks List -->
+                    <div class="pt-6 border-t border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        <div class="flex items-center gap-3 text-xs font-semibold text-slate-800">
+                            <span class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                             </span>
                             Global data pipelines for training at scale
                         </div>
-                        <div class="flex items-center gap-2.5 text-xs font-semibold text-slate-300">
-                            <span class="p-1 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                        <div class="flex items-center gap-3 text-xs font-semibold text-slate-800">
+                            <span class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                             </span>
                             Automated labeling, curation & QC evidence
                         </div>
-                        <div class="flex items-center gap-2.5 text-xs font-semibold text-slate-300">
-                            <span class="p-1 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                        <div class="flex items-center gap-3 text-xs font-semibold text-slate-800">
+                            <span class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                             </span>
                             Human feedback for model alignment & safety
                         </div>
-                        <div class="flex items-center gap-2.5 text-xs font-semibold text-slate-300">
-                            <span class="p-1 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                        <div class="flex items-center gap-3 text-xs font-semibold text-slate-800">
+                            <span class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                             </span>
                             Continuous data loops for production AI
                         </div>
@@ -212,51 +245,48 @@
 
                 </div>
 
-                <!-- Right Hero Visual Showcase (QC Command Center Mockup) -->
-                <div class="lg:col-span-5 relative">
-                    <div class="glass-card rounded-3xl p-6 shadow-2xl relative glow-indigo border border-indigo-500/30 space-y-6">
+                <!-- Right Hero Feature Display (QC Command Center Preview) -->
+                <div class="lg:col-span-5">
+                    <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-2xl shadow-slate-200/80 space-y-6">
                         
-                        <!-- Top Card Header -->
-                        <div class="flex items-center justify-between border-b border-slate-800 pb-4">
-                            <div class="flex items-center gap-3">
-                                <div class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></div>
-                                <span class="text-xs font-black uppercase tracking-wider text-slate-300 font-mono-tech">QC COMMAND CENTER LIVE</span>
+                        <!-- Top Header inside Card -->
+                        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                <span class="text-xs font-extrabold uppercase tracking-wider text-slate-900 font-mono">QC COMMAND CENTER</span>
                             </div>
-                            <span class="text-[10px] font-mono-tech px-2 py-1 bg-indigo-950 border border-indigo-800 rounded-lg text-indigo-300">SYSTEM ACTIVE</span>
+                            <span class="text-[10px] font-mono px-2.5 py-1 bg-slate-100 text-slate-700 font-bold rounded-lg border border-slate-200">SYSTEM ACTIVE</span>
                         </div>
 
-                        <!-- Live Metrics Bar inside Card -->
+                        <!-- Live Metrics Grid -->
                         <div class="grid grid-cols-2 gap-3">
-                            <div class="bg-slate-900/90 rounded-2xl p-3.5 border border-slate-800">
-                                <span class="text-[10px] uppercase font-bold text-slate-500 block font-mono-tech">TOTAL VERIFIED</span>
-                                <span class="text-xl font-black text-white font-mono-tech">48j 37m</span>
+                            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-150">
+                                <span class="text-[10px] uppercase font-bold text-slate-500 block font-mono">TOTAL VERIFIED</span>
+                                <span class="text-2xl font-black text-slate-950 font-mono mt-1 block">48j 37m</span>
                             </div>
-                            <div class="bg-slate-900/90 rounded-2xl p-3.5 border border-slate-800">
-                                <span class="text-[10px] uppercase font-bold text-slate-500 block font-mono-tech">QC ACCURACY</span>
-                                <span class="text-xl font-black text-emerald-400 font-mono-tech">99.8%</span>
+                            <div class="bg-emerald-50 rounded-2xl p-4 border border-emerald-150">
+                                <span class="text-[10px] uppercase font-bold text-emerald-800 block font-mono">QC ACCURACY</span>
+                                <span class="text-2xl font-black text-emerald-700 font-mono mt-1 block">99.8%</span>
                             </div>
                         </div>
 
-                        <!-- Mockup Evidence Inspection Box -->
-                        <div class="bg-slate-950 rounded-2xl p-4 border border-slate-800 space-y-3">
+                        <!-- Evidence Review Mockup Box -->
+                        <div class="bg-slate-950 rounded-2xl p-4 text-white space-y-3 shadow-md">
                             <div class="flex justify-between items-center text-xs">
-                                <span class="font-bold text-indigo-400">Mitra: KMK-018 (Muhammad)</span>
-                                <span class="bg-emerald-500/20 text-emerald-300 font-bold px-2 py-0.5 rounded text-[10px]">VERIFIED QC</span>
+                                <span class="font-bold text-indigo-300">Mitra: KMK-018 (Muhammad)</span>
+                                <span class="bg-emerald-500/20 text-emerald-400 font-bold px-2.5 py-0.5 rounded-full text-[10px] border border-emerald-500/30">VERIFIED</span>
                             </div>
-                            <div class="aspect-video bg-slate-900 rounded-xl border border-slate-800 flex items-center justify-center relative overflow-hidden group">
-                                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80 z-10"></div>
-                                <img src="{{ asset('Logo.webp') }}" alt="Evidence Sample" class="w-12 h-12 opacity-30 group-hover:scale-110 transition-transform">
-                                <div class="absolute bottom-3 left-3 z-20 text-[11px] font-mono-tech text-slate-300">
-                                    <span>Duration: 61 Menit</span> • <span class="text-cyan-400">Database Cumulative: 183 Mins</span>
+                            <div class="aspect-video bg-slate-900 rounded-xl border border-slate-800 flex items-center justify-center relative overflow-hidden">
+                                <img src="{{ asset('Logo.webp') }}" alt="Evidence Sample" class="w-10 h-10 opacity-40">
+                                <div class="absolute bottom-3 left-3 text-[11px] font-mono text-slate-300 bg-slate-950/80 backdrop-blur-xs px-2.5 py-1 rounded-md border border-slate-800">
+                                    <span>Submitted: 61 Menit</span> • <span class="text-emerald-400 font-bold">Cumulative: 183 Mins</span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Footer indicator -->
-                        <div class="text-center">
-                            <span class="text-[11px] text-slate-400 font-mono-tech">
-                                Real-Time Evidence Verification & Multi-Layer Audit Trail
-                            </span>
+                        <!-- Card Footer -->
+                        <div class="text-center text-xs font-semibold text-slate-500">
+                            Side-by-side evidence inspection & automated bulk payroll audit
                         </div>
 
                     </div>
@@ -266,175 +296,164 @@
         </div>
     </section>
 
-    <!-- 4. Interactive Capability Cards (Solutions & Products) -->
-    <section id="capabilities" class="py-24 bg-slate-900/50 border-y border-slate-800/80 relative">
+    <!-- 4. Capability Cards Grid Section ("Tomorrow's AI Requires Data That Is...") -->
+    <section id="solutions" class="py-24 bg-slate-50 border-y border-slate-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             
-            <!-- Section Header -->
-            <div class="max-w-3xl mx-auto text-center space-y-4 mb-16">
-                <span class="text-xs font-bold font-mono-tech uppercase tracking-widest text-indigo-400 bg-indigo-950/80 border border-indigo-800/80 px-3.5 py-1.5 rounded-full inline-block">
-                    ENTERPRISE CAPABILITIES
-                </span>
-                <h2 class="text-3xl sm:text-4xl font-black text-white tracking-tight">
-                    Tomorrow's AI Requires Data That Reflects the Real World
+            <div class="max-w-3xl space-y-4 mb-16">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full badge-green text-xs font-bold font-mono">
+                    EXPERT SOLUTIONS
+                </div>
+                <h2 class="text-3xl sm:text-4xl font-black text-slate-950 tracking-tight">
+                    Tomorrow's AI Requires Data That Is Production-Ready
                 </h2>
-                <p class="text-slate-400 text-sm sm:text-base leading-relaxed">
-                    AI doesn't fail because of models; it fails because of data that doesn't capture real-world variance. Explore our suite of dataset acquisition, QC validation, and contributor management engines.
+                <p class="text-slate-600 text-base leading-relaxed">
+                    AI doesn't fail because of models; it fails because of data that doesn't reflect the real world. KAMERAKITA AI's data products and human feedback services bridge the gap between raw video and reliable AI.
                 </p>
             </div>
 
-            <!-- 4 Grid Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 
-                <!-- Card 1 -->
-                <div class="glass-card rounded-3xl p-6 flex flex-col justify-between space-y-6 transition-all">
+                <!-- Solution Card 1 -->
+                <div class="centific-card p-6 flex flex-col justify-between space-y-6">
                     <div class="space-y-4">
-                        <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center font-bold text-lg">
+                            01
                         </div>
-                        <h3 class="text-lg font-black text-white">Custom Video Dataset Acquisition</h3>
-                        <p class="text-xs text-slate-400 leading-relaxed">
-                            We orchestrate structured video dataset collection across 34 provinces in Indonesia covering vision, action recognition, speech, and human interaction.
+                        <h3 class="text-lg font-bold text-slate-950">Custom Video Collection</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            We generate and orchestrate multi-angle video datasets across vision, action recognition, speech, and human interaction across 34 provinces.
                         </p>
                     </div>
-                    <span class="text-xs font-bold text-indigo-400 font-mono-tech inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                        Explore Collection →
-                    </span>
+                    <a href="#contact" class="text-xs font-bold text-slate-950 font-mono inline-flex items-center gap-1 hover:text-emerald-700">
+                        Learn more →
+                    </a>
                 </div>
 
-                <!-- Card 2 -->
-                <div class="glass-card rounded-3xl p-6 flex flex-col justify-between space-y-6 transition-all">
+                <!-- Solution Card 2 -->
+                <div class="centific-card p-6 flex flex-col justify-between space-y-6">
                     <div class="space-y-4">
-                        <div class="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-700 border border-blue-200 flex items-center justify-center font-bold text-lg">
+                            02
                         </div>
-                        <h3 class="text-lg font-black text-white">Human-in-the-Loop QC Validation</h3>
-                        <p class="text-xs text-slate-400 leading-relaxed">
-                            Every video submission is verified side-by-side against app screenshots, duration logs, and quality factors by our dedicated verifier team.
+                        <h3 class="text-lg font-bold text-slate-950">Human-in-the-Loop QC</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Turn raw video into trusted AI data. We power QC pipelines at scale combining expert verifiers, screenshot alignment, and safety frameworks.
                         </p>
                     </div>
-                    <span class="text-xs font-bold text-cyan-400 font-mono-tech inline-flex items-center gap-1">
-                        View QC Room →
-                    </span>
+                    <a href="#qc-engine" class="text-xs font-bold text-slate-950 font-mono inline-flex items-center gap-1 hover:text-blue-700">
+                        Learn more →
+                    </a>
                 </div>
 
-                <!-- Card 3 -->
-                <div class="glass-card rounded-3xl p-6 flex flex-col justify-between space-y-6 transition-all">
+                <!-- Solution Card 3 -->
+                <div class="centific-card p-6 flex flex-col justify-between space-y-6">
                     <div class="space-y-4">
-                        <div class="w-12 h-12 rounded-2xl bg-violet-500/10 border border-violet-500/30 flex items-center justify-center text-violet-400">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/></svg>
+                        <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-700 border border-indigo-200 flex items-center justify-center font-bold text-lg">
+                            03
                         </div>
-                        <h3 class="text-lg font-black text-white">Dataset Marketplace & Bulk Export</h3>
-                        <p class="text-xs text-slate-400 leading-relaxed">
-                            Access production-ready datasets with instant CSV exports, metadata annotations, and bank bulk payout integration.
+                        <h3 class="text-lg font-bold text-slate-950">AI Data Marketplace</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Your gateway to enterprise-grade video datasets. Instant CSV exports, duration summaries, and automated bank bulk transfer integration.
                         </p>
                     </div>
-                    <span class="text-xs font-bold text-violet-400 font-mono-tech inline-flex items-center gap-1">
-                        Browse Marketplace →
-                    </span>
+                    <a href="#contact" class="text-xs font-bold text-slate-950 font-mono inline-flex items-center gap-1 hover:text-indigo-700">
+                        Learn more →
+                    </a>
                 </div>
 
-                <!-- Card 4 -->
-                <div class="glass-card rounded-3xl p-6 flex flex-col justify-between space-y-6 transition-all">
+                <!-- Solution Card 4 -->
+                <div class="centific-card p-6 flex flex-col justify-between space-y-6">
                     <div class="space-y-4">
-                        <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                        <div class="w-12 h-12 rounded-2xl bg-violet-50 text-violet-700 border border-violet-200 flex items-center justify-center font-bold text-lg">
+                            04
                         </div>
-                        <h3 class="text-lg font-black text-white">Distributed Contributor Network</h3>
-                        <p class="text-xs text-slate-400 leading-relaxed">
-                            Thousands of verified partner creators logged into our mobile ecosystem, ready to deliver targeted multi-scenario video footage.
+                        <h3 class="text-lg font-bold text-slate-950">Multimodal Localization</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Train AI that understands regional context, culture, and gesture nuance across Southeast Asia with specialized contributor pools.
                         </p>
                     </div>
-                    <span class="text-xs font-bold text-emerald-400 font-mono-tech inline-flex items-center gap-1">
-                        Join Network →
-                    </span>
+                    <a href="#contact" class="text-xs font-bold text-slate-950 font-mono inline-flex items-center gap-1 hover:text-violet-700">
+                        Learn more →
+                    </a>
                 </div>
 
             </div>
+
         </div>
     </section>
 
-    <!-- 5. Real-Time Stats Bar (Trust Indicators) -->
-    <section class="py-16 bg-slate-950 border-b border-slate-800">
+    <!-- 5. Real-Time Stats Row (Centific Dark Accent) -->
+    <section class="py-16 bg-[#121212] text-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
                 <div class="space-y-1">
-                    <span class="text-3xl sm:text-4xl font-black text-white font-mono-tech">50,000+</span>
-                    <span class="block text-xs uppercase font-bold text-slate-400 tracking-wider font-mono-tech">Verified Video Hours</span>
+                    <span class="text-3xl sm:text-4xl font-black text-white font-mono">50,000+</span>
+                    <span class="block text-xs uppercase font-bold text-slate-400 tracking-wider font-mono">Verified Video Hours</span>
                 </div>
                 <div class="space-y-1">
-                    <span class="text-3xl sm:text-4xl font-black text-indigo-400 font-mono-tech">1,200+</span>
-                    <span class="block text-xs uppercase font-bold text-slate-400 tracking-wider font-mono-tech">Active Contributor Partners</span>
+                    <span class="text-3xl sm:text-4xl font-black text-emerald-400 font-mono">1,200+</span>
+                    <span class="block text-xs uppercase font-bold text-slate-400 tracking-wider font-mono">Active Contributors</span>
                 </div>
                 <div class="space-y-1">
-                    <span class="text-3xl sm:text-4xl font-black text-emerald-400 font-mono-tech">99.8%</span>
-                    <span class="block text-xs uppercase font-bold text-slate-400 tracking-wider font-mono-tech">QC Verification Accuracy</span>
+                    <span class="text-3xl sm:text-4xl font-black text-blue-400 font-mono">99.8%</span>
+                    <span class="block text-xs uppercase font-bold text-slate-400 tracking-wider font-mono">QC Precision Rate</span>
                 </div>
                 <div class="space-y-1">
-                    <span class="text-3xl sm:text-4xl font-black text-cyan-400 font-mono-tech">34</span>
-                    <span class="block text-xs uppercase font-bold text-slate-400 tracking-wider font-mono-tech">Provinces Covered</span>
+                    <span class="text-3xl sm:text-4xl font-black text-amber-400 font-mono">34</span>
+                    <span class="block text-xs uppercase font-bold text-slate-400 tracking-wider font-mono">Provinces Covered</span>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 6. Enterprise Use-Cases Showcase (Computer Vision & AI Labs) -->
-    <section id="use-cases" class="py-24 bg-slate-900/30">
+    <!-- 6. Expert Network Showcase (Centific Style) -->
+    <section id="contributors" class="py-24 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             
-            <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
-                <div class="space-y-3">
-                    <span class="text-xs font-bold font-mono-tech uppercase tracking-widest text-cyan-400 bg-cyan-950/80 border border-cyan-800/80 px-3.5 py-1.5 rounded-full inline-block">
-                        AI MODEL APPLICATIONS
-                    </span>
-                    <h2 class="text-3xl sm:text-4xl font-black text-white tracking-tight">
-                        Powering Frontier Models Across Domains
-                    </h2>
-                </div>
-                <p class="text-slate-400 text-sm max-w-md">
-                    From autonomous perception to gesture analytics, our video datasets feed continuous training loops for enterprise AI teams.
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
                 
-                <!-- Use Case 1 -->
-                <div class="glass-card rounded-3xl p-8 space-y-4 relative overflow-hidden group">
-                    <span class="text-xs font-bold font-mono-tech text-indigo-400 uppercase">COMPUTER VISION</span>
-                    <h3 class="text-xl font-black text-white">Action Recognition & Gesture Analytics</h3>
-                    <p class="text-xs text-slate-400 leading-relaxed">
-                        Multi-angle videos capturing human movement, gesture sequences, and activity classification under real-world lighting conditions.
-                    </p>
-                    <div class="pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-300 font-mono-tech">
-                        <span>Dataset Size: 12,000+ Hrs</span>
-                        <span class="text-indigo-400 group-hover:translate-x-1 transition-transform">Details →</span>
+                <div class="lg:col-span-5 space-y-6">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full badge-green text-xs font-bold font-mono">
+                        GLOBAL EXPERT NETWORK
                     </div>
+                    <h2 class="text-3xl sm:text-4xl font-black text-slate-950 tracking-tight leading-tight">
+                        Help Shape the Next Generation of Intelligence
+                    </h2>
+                    <p class="text-slate-600 text-sm sm:text-base leading-relaxed">
+                        Join our network of verified contributor partners, domain raters, and data collectors across Indonesia. Work flexibly, record quality evidence, and get paid weekly.
+                    </p>
+                    <a href="{{ route('register') }}" class="pill-btn-black inline-flex items-center gap-2 px-7 py-3.5 text-xs font-bold uppercase tracking-wider">
+                        Join our network →
+                    </a>
                 </div>
 
-                <!-- Use Case 2 -->
-                <div class="glass-card rounded-3xl p-8 space-y-4 relative overflow-hidden group">
-                    <span class="text-xs font-bold font-mono-tech text-cyan-400 uppercase">MULTIMODAL AI</span>
-                    <h3 class="text-xl font-black text-white">Facial Liveness & Security Verification</h3>
-                    <p class="text-xs text-slate-400 leading-relaxed">
-                        High-resolution facial video captures across diverse demographic profiles to train anti-spoofing and bio-authentication models.
-                    </p>
-                    <div class="pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-300 font-mono-tech">
-                        <span>Dataset Size: 8,500+ Hrs</span>
-                        <span class="text-cyan-400 group-hover:translate-x-1 transition-transform">Details →</span>
+                <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-2">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 font-mono">VISION SPECIALIST</span>
+                        <h4 class="text-base font-bold text-slate-950">Action & Motion Collector</h4>
+                        <p class="text-xs text-slate-500">Record structured human motion datasets under natural environments.</p>
                     </div>
-                </div>
 
-                <!-- Use Case 3 -->
-                <div class="glass-card rounded-3xl p-8 space-y-4 relative overflow-hidden group">
-                    <span class="text-xs font-bold font-mono-tech text-emerald-400 uppercase">ROBOTICS & PERCEPTION</span>
-                    <h3 class="text-xl font-black text-white">Spatial Environment & Object Interaction</h3>
-                    <p class="text-xs text-slate-400 leading-relaxed">
-                        First-person (egocentric) and third-person video recordings of everyday object handling for embodied AI and robotics.
-                    </p>
-                    <div class="pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-300 font-mono-tech">
-                        <span>Dataset Size: 15,000+ Hrs</span>
-                        <span class="text-emerald-400 group-hover:translate-x-1 transition-transform">Details →</span>
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-2">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-blue-700 font-mono">EVALUATION RATER</span>
+                        <h4 class="text-base font-bold text-slate-950">Quality & Duration Verifier</h4>
+                        <p class="text-xs text-slate-500">Audit submitted app screenshots and validate cumulative duration logs.</p>
                     </div>
+
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-2">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-700 font-mono">MULTIMODAL ANNOTATOR</span>
+                        <h4 class="text-base font-bold text-slate-950">Facial & Liveness Specialist</h4>
+                        <p class="text-xs text-slate-500">Collect demographic-diverse facial samples for anti-spoofing models.</p>
+                    </div>
+
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-2">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-violet-700 font-mono">FIELD OPERATOR</span>
+                        <h4 class="text-base font-bold text-slate-950">Regional Scenario Lead</h4>
+                        <p class="text-xs text-slate-500">Manage local contributor pools across major cities and provinces.</p>
+                    </div>
+
                 </div>
 
             </div>
@@ -442,29 +461,29 @@
         </div>
     </section>
 
-    <!-- 7. High-Impact Final CTA Banner -->
-    <section id="solutions" class="py-20 relative overflow-hidden">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="glass-card rounded-3xl p-10 sm:p-14 text-center space-y-8 relative overflow-hidden border border-indigo-500/40 glow-indigo">
+    <!-- 7. Bottom High-Impact CTA Banner (Centific Style) -->
+    <section id="contact" class="py-20 bg-slate-50 border-t border-slate-200">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-[#121212] text-white rounded-3xl p-10 sm:p-14 text-center space-y-8 shadow-2xl">
                 
-                <span class="text-xs font-bold font-mono-tech uppercase tracking-widest text-indigo-300 bg-indigo-950/90 border border-indigo-800 px-4 py-1.5 rounded-full inline-block">
-                    READY TO SCALE YOUR AI DATA?
+                <span class="text-xs font-bold font-mono uppercase tracking-widest text-emerald-400 bg-emerald-950/80 border border-emerald-800 px-4 py-1.5 rounded-full inline-block">
+                    GET STARTED TODAY
                 </span>
 
                 <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
-                    Turn Raw Video Into Production-Grade AI Datasets Today
+                    Turn Data Into AI That Works
                 </h2>
 
-                <p class="text-slate-300 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
-                    Connect with our data operations team to request custom video acquisition, inspect dataset samples, or join our growing network of contributors.
+                <p class="text-slate-400 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
+                    Connect with our team to explore custom dataset acquisitions, get a live walkthrough of the QC Command Center, or join our contributor network.
                 </p>
 
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-                    <a href="mailto:contact@kamerakitaid.site" class="w-full sm:w-auto px-8 py-4 rounded-2xl font-black text-sm bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white shadow-xl shadow-indigo-600/40 transition">
-                        Hubungi Tim Enterprise / Minta Demo
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
+                    <a href="mailto:contact@kamerakitaid.site" class="bg-white text-slate-950 hover:bg-slate-100 px-8 py-4 rounded-full text-xs font-bold uppercase tracking-wider shadow-lg transition">
+                        Get a live walkthrough
                     </a>
-                    <a href="{{ route('register') }}" class="w-full sm:w-auto px-8 py-4 rounded-2xl font-bold text-sm bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 transition">
-                        Daftar Sebagai Kontributor
+                    <a href="{{ route('register') }}" class="bg-zinc-800 text-white hover:bg-zinc-700 px-8 py-4 rounded-full text-xs font-bold uppercase tracking-wider border border-zinc-700 transition">
+                        Talk to our team →
                     </a>
                 </div>
 
@@ -472,14 +491,14 @@
         </div>
     </section>
 
-    <!-- 8. Footer -->
-    <footer class="bg-slate-950 border-t border-slate-800/80 py-12 text-slate-400 text-xs">
+    <!-- 8. Footer (Centific Style) -->
+    <footer class="bg-white border-t border-slate-200 py-12 text-slate-600 text-xs">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
             
             <div class="space-y-3">
                 <div class="flex items-center gap-2">
                     <img src="{{ asset('Logo.webp') }}" alt="Logo" class="w-6 h-6">
-                    <span class="text-sm font-black text-white font-mono-tech">KAMERAKITA AI</span>
+                    <span class="text-sm font-black text-slate-950 font-mono">KAMERAKITA AI</span>
                 </div>
                 <p class="text-slate-500 text-xs leading-relaxed">
                     The Enterprise Platform for Vision AI Datasets, QC Operations, & Contributor Network in Indonesia.
@@ -487,37 +506,37 @@
             </div>
 
             <div class="space-y-2">
-                <span class="block text-white font-bold uppercase tracking-wider text-[11px] font-mono-tech">Solutions</span>
-                <ul class="space-y-1.5">
-                    <li><a href="#capabilities" class="hover:text-indigo-400 transition">Video Data Collection</a></li>
-                    <li><a href="#capabilities" class="hover:text-indigo-400 transition">Human QC Validation</a></li>
-                    <li><a href="#capabilities" class="hover:text-indigo-400 transition">Dataset Marketplace</a></li>
+                <span class="block text-slate-950 font-bold uppercase tracking-wider text-[11px] font-mono">Products</span>
+                <ul class="space-y-2">
+                    <li><a href="#solutions" class="hover:text-black transition">Custom Video Collection</a></li>
+                    <li><a href="#solutions" class="hover:text-black transition">Human QC Command Center</a></li>
+                    <li><a href="#solutions" class="hover:text-black transition">AI Data Marketplace</a></li>
                 </ul>
             </div>
 
             <div class="space-y-2">
-                <span class="block text-white font-bold uppercase tracking-wider text-[11px] font-mono-tech">Platform</span>
-                <ul class="space-y-1.5">
-                    <li><a href="{{ route('login') }}" class="hover:text-indigo-400 transition">QC Room Login</a></li>
-                    <li><a href="{{ route('register') }}" class="hover:text-indigo-400 transition">Contributor Register</a></li>
-                    <li><a href="{{ route('dashboard') }}" class="hover:text-indigo-400 transition">Dashboard Admin</a></li>
+                <span class="block text-slate-950 font-bold uppercase tracking-wider text-[11px] font-mono">Quick Links</span>
+                <ul class="space-y-2">
+                    <li><a href="{{ route('login') }}" class="hover:text-black transition">QC Room Login</a></li>
+                    <li><a href="{{ route('register') }}" class="hover:text-black transition">Contributor Register</a></li>
+                    <li><a href="{{ route('dashboard') }}" class="hover:text-black transition">Dashboard Admin</a></li>
                 </ul>
             </div>
 
             <div class="space-y-2">
-                <span class="block text-white font-bold uppercase tracking-wider text-[11px] font-mono-tech">Company</span>
-                <p class="text-slate-500">Official Domain: <span class="text-indigo-400 font-mono-tech">kamerakitaid.site</span></p>
-                <p class="text-slate-500">PT Kamerakita AI Indonesia</p>
+                <span class="block text-slate-950 font-bold uppercase tracking-wider text-[11px] font-mono">Company</span>
+                <p class="text-slate-500">Official Site: <span class="text-slate-950 font-semibold font-mono">kamerakitaid.site</span></p>
+                <p class="text-slate-500">PT KAMERAKITA AI Indonesia</p>
             </div>
 
         </div>
 
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-slate-900 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-[11px] font-mono-tech text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-slate-100 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-[11px] text-slate-500">
             <p>© 2026 KAMERAKITA AI. All rights reserved.</p>
-            <div class="flex items-center gap-6">
-                <a href="#" class="hover:text-slate-300">Privacy Policy</a>
-                <a href="#" class="hover:text-slate-300">Terms of Use</a>
-                <a href="#" class="hover:text-slate-300">Security & QC Standards</a>
+            <div class="flex items-center gap-6 font-medium">
+                <a href="#" class="hover:text-slate-900">Privacy Policy</a>
+                <a href="#" class="hover:text-slate-900">Terms of Use</a>
+                <a href="#" class="hover:text-slate-900">Cookie Policy</a>
             </div>
         </div>
     </footer>
