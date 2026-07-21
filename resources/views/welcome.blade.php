@@ -202,28 +202,21 @@
                         </svg>
                     </div>
 
-                    <!-- Hero Main Image / Placeholder Container -->
-                    <div class="relative z-10 w-full max-w-sm mx-auto aspect-[4/5] rounded-3xl bg-[#0369a1]/40 backdrop-blur-md border-2 border-white/20 shadow-2xl flex flex-col items-center justify-center p-6 text-center group overflow-hidden">
+                    <!-- Hero Main Image Container -->
+                    <div class="relative z-10 w-full max-w-md mx-auto flex flex-col items-center justify-center group">
                         
                         <!-- Floating Decorative Money/Reward Badges (Evermos Style) -->
-                        <div class="absolute -top-3 -right-3 bg-emerald-500 text-white font-extrabold text-xs px-3 py-1.5 rounded-full shadow-lg border border-emerald-400 animate-bounce">
+                        <div class="absolute -top-4 -right-2 z-20 bg-emerald-500 text-white font-extrabold text-xs px-3.5 py-2 rounded-full shadow-xl border border-emerald-300 animate-bounce">
                             💸 Rp 1.850.000 / Minggu
                         </div>
-                        <div class="absolute -bottom-3 -left-3 bg-sky-500 text-white font-extrabold text-xs px-3.5 py-1.5 rounded-full shadow-lg border border-sky-400">
+                        <div class="absolute -bottom-4 -left-2 z-20 bg-amber-400 text-slate-900 font-extrabold text-xs px-4 py-2 rounded-full shadow-xl border border-amber-300">
                             ✨ 100% Verified QC
                         </div>
 
-                        <!-- Image Placeholder Box -->
-                        <div class="w-full h-full rounded-2xl border-2 border-dashed border-slate-500/80 flex flex-col items-center justify-center p-6 bg-slate-900/60 hover:bg-slate-900/80 transition cursor-pointer">
-                            <div class="w-16 h-16 rounded-2xl bg-sky-500/20 text-sky-400 flex items-center justify-center mb-3 text-3xl font-bold">
-                                📸
-                            </div>
-                            <span class="text-sm font-extrabold text-white block">PLACEHOLDER GAMBAR MITRA</span>
-                            <span class="text-xs text-slate-400 mt-1">Siap diganti dengan foto mitra / ilustrasi pilihan Anda</span>
-                            <span class="text-[10px] font-mono text-sky-400 bg-sky-950/80 border border-sky-800 px-2.5 py-1 rounded-md mt-3">
-                                Format: PNG / WebP Transparent
-                            </span>
-                        </div>
+                        <!-- Real Hero PNG WebP Image -->
+                        <img src="{{ asset('images/Assest/Hero png.webp') }}" 
+                             alt="Mitra KAMERAKITA AI" 
+                             class="w-full h-auto max-h-[480px] sm:max-h-[540px] object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-300">
 
                     </div>
 
