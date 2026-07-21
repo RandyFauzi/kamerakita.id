@@ -145,7 +145,7 @@
                     <!-- Headline H1 (Matching Evermos Layout & Typography) -->
                     <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.15]">
                         Saatnya Anda jadi <br/>
-                        <span class="text-lime-300 italic font-serif font-normal">andalan keluarga</span> <br/>
+                        <span class="text-[#FDE047] italic font-serif font-normal">andalan keluarga</span> <br/>
                         lewat penghasilan tambahan
                     </h1>
 
@@ -153,11 +153,11 @@
                     <div class="pt-2">
                         @auth
                             <a href="{{ route('dashboard') }}" class="btn-evermos-white inline-block px-10 py-4 text-base font-extrabold shadow-xl">
-                                Masuk ke Dashboard →
+                                Gabung sekarang →
                             </a>
                         @else
                             <a href="{{ route('login') }}" class="btn-evermos-white inline-block px-10 py-4 text-base font-extrabold shadow-xl">
-                                Daftar Sekarang
+                                Gabung sekarang →
                             </a>
                         @endauth
                     </div>
