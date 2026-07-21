@@ -164,23 +164,23 @@
 
                 </div>
 
-                <!-- Right Hero Image Column (Flush to bottom) -->
-                <div class="lg:col-span-5 relative flex justify-center items-end self-end z-10">
+                <!-- Right Hero Image Column (Flush to bottom & right) -->
+                <div class="lg:col-span-5 relative flex justify-end items-end self-end z-10 pr-0">
                     
                     <!-- SVG Organic Blob Backdrop (Evermos Style Cloud Shape) -->
-                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none mb-6">
-                        <svg class="w-[135%] h-[135%] text-[#02649b] opacity-85 animate-float" viewBox="0 0 500 500" fill="currentColor">
+                    <div class="absolute inset-0 flex items-center justify-end pointer-events-none mb-6">
+                        <svg class="w-[140%] h-[140%] text-[#02649b] opacity-85 animate-float translate-x-10" viewBox="0 0 500 500" fill="currentColor">
                             <path d="M410,310Q370,370,305,405Q240,440,175,410Q110,380,85,315Q60,250,90,185Q120,120,185,85Q250,50,315,85Q380,120,415,185Q450,250,410,310Z" />
                         </svg>
                     </div>
 
-                    <!-- Hero Main Image Container (Aligned to bottom edge) -->
-                    <div class="relative z-10 w-full max-w-xl mx-auto flex flex-col items-center justify-end">
+                    <!-- Hero Main Image Container (Aligned flush to right & bottom edge) -->
+                    <div class="relative z-10 w-full max-w-xl ml-auto mr-0 flex flex-col items-end justify-end">
                         
-                        <!-- Real Hero PNG WebP Image (Flush to Hero Section Bottom) -->
+                        <!-- Real Hero PNG WebP Image (Flush to Right & Bottom Edge) -->
                         <img src="{{ asset('images/Assest/Hero png.webp') }}" 
                              alt="Mitra KAMERAKITA AI" 
-                             class="w-full h-auto max-h-[580px] sm:max-h-[660px] lg:max-h-[720px] object-contain object-bottom block -mb-1 drop-shadow-2xl scale-110 lg:scale-125 origin-bottom">
+                             class="w-full h-auto max-h-[580px] sm:max-h-[660px] lg:max-h-[740px] object-contain object-bottom object-right block -mb-1 drop-shadow-2xl scale-110 lg:scale-130 origin-bottom-right translate-x-4 lg:translate-x-12">
 
                     </div>
 
