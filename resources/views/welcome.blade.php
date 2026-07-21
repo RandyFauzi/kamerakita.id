@@ -51,12 +51,12 @@
         }
 
         .bg-hero-solid {
-            background-color: #082545;
+            background-color: #0284c7;
         }
 
         .btn-evermos-white {
             background-color: #ffffff;
-            color: #082545;
+            color: #0284c7;
             font-weight: 800;
             border-radius: 12px;
             transition: all 0.2s ease;
@@ -69,14 +69,14 @@
         }
 
         .btn-brand-navy {
-            background-color: #082545;
+            background-color: #0284c7;
             color: #ffffff;
             font-weight: 700;
             border-radius: 12px;
             transition: all 0.2s ease;
         }
         .btn-brand-navy:hover {
-            background-color: #05182e;
+            background-color: #0369a1;
         }
 
         /* Floating blob animation for right hero image */
@@ -145,7 +145,7 @@
                     <!-- Headline H1 (Matching Evermos Layout & Typography) -->
                     <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.15]">
                         Saatnya Anda jadi <br/>
-                        <span class="text-sky-300 italic font-serif font-normal">andalan keluarga</span> <br/>
+                        <span class="text-lime-300 italic font-serif font-normal">andalan keluarga</span> <br/>
                         lewat penghasilan tambahan
                     </h1>
 
@@ -197,13 +197,13 @@
                     
                     <!-- SVG Organic Blob Backdrop (Evermos Style Cloud Shape) -->
                     <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <svg class="w-[110%] h-[110%] text-[#0e3660] opacity-90 animate-float" viewBox="0 0 500 500" fill="currentColor">
+                        <svg class="w-[110%] h-[110%] text-[#02649b] opacity-80 animate-float" viewBox="0 0 500 500" fill="currentColor">
                             <path d="M410,310Q370,370,305,405Q240,440,175,410Q110,380,85,315Q60,250,90,185Q120,120,185,85Q250,50,315,85Q380,120,415,185Q450,250,410,310Z" />
                         </svg>
                     </div>
 
                     <!-- Hero Main Image / Placeholder Container -->
-                    <div class="relative z-10 w-full max-w-sm mx-auto aspect-[4/5] rounded-3xl bg-slate-800/80 border-2 border-slate-700/80 shadow-2xl flex flex-col items-center justify-center p-6 text-center group overflow-hidden">
+                    <div class="relative z-10 w-full max-w-sm mx-auto aspect-[4/5] rounded-3xl bg-[#0369a1]/40 backdrop-blur-md border-2 border-white/20 shadow-2xl flex flex-col items-center justify-center p-6 text-center group overflow-hidden">
                         
                         <!-- Floating Decorative Money/Reward Badges (Evermos Style) -->
                         <div class="absolute -top-3 -right-3 bg-emerald-500 text-white font-extrabold text-xs px-3 py-1.5 rounded-full shadow-lg border border-emerald-400 animate-bounce">
