@@ -61,7 +61,7 @@
         <!-- Print Header -->
         <div class="border-b-2 border-gray-900 pb-3 flex justify-between items-end">
             <div class="flex items-center gap-3">
-                <img src="{{ asset('images/Logo.webp') }}" class="w-10 h-10 object-contain shrink-0" alt="Logo">
+                <img src="{{ asset('images/Logo.webp') }}" style="width: 40px; height: 40px; object-fit: contain; flex-shrink: 0;" alt="Logo">
                 <div class="space-y-0.5">
                     <h2 class="text-xl font-black tracking-tight text-gray-900">KAMERAKITA <span class="text-indigo-650">AI</span></h2>
                     <p class="text-[10px] font-bold uppercase tracking-widest text-indigo-650 font-mono">Video QC Verification Recapitulation Report</p>
