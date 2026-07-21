@@ -135,12 +135,12 @@
     </header>
 
     <!-- 2. Hero Section (Exact Evermos Layout & Solid Deep Blue Background) -->
-    <section class="bg-hero-solid text-white py-16 lg:py-24 overflow-hidden relative">
+    <section class="bg-hero-solid text-white pt-12 lg:pt-16 pb-0 overflow-hidden relative">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
                 
                 <!-- Left Hero Content Column -->
-                <div class="lg:col-span-7 space-y-8 text-left z-10">
+                <div class="lg:col-span-7 space-y-8 text-left z-10 pb-16 lg:pb-24">
                     
                     <!-- Headline H1 (Matching Evermos Layout & Typography) -->
                     <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.15]">
@@ -164,31 +164,31 @@
 
                 </div>
 
-                <!-- Right Hero Image Column (Blob Backdrop & Large Hero Image) -->
-                <div class="lg:col-span-5 relative flex justify-center items-center min-h-[460px] lg:min-h-[520px]">
+                <!-- Right Hero Image Column (Flush to bottom) -->
+                <div class="lg:col-span-5 relative flex justify-center items-end self-end z-10">
                     
                     <!-- SVG Organic Blob Backdrop (Evermos Style Cloud Shape) -->
-                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <svg class="w-[125%] h-[125%] text-[#02649b] opacity-85 animate-float" viewBox="0 0 500 500" fill="currentColor">
+                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none mb-6">
+                        <svg class="w-[135%] h-[135%] text-[#02649b] opacity-85 animate-float" viewBox="0 0 500 500" fill="currentColor">
                             <path d="M410,310Q370,370,305,405Q240,440,175,410Q110,380,85,315Q60,250,90,185Q120,120,185,85Q250,50,315,85Q380,120,415,185Q450,250,410,310Z" />
                         </svg>
                     </div>
 
-                    <!-- Hero Main Image Container (Larger Scale matching Evermos Screenshot) -->
-                    <div class="relative z-10 w-full max-w-lg mx-auto flex flex-col items-center justify-center group">
+                    <!-- Hero Main Image Container (Aligned to bottom edge) -->
+                    <div class="relative z-10 w-full max-w-xl mx-auto flex flex-col items-center justify-end">
                         
                         <!-- Floating Decorative Money/Reward Badges (Evermos Style) -->
-                        <div class="absolute -top-2 -right-1 z-20 bg-emerald-500 text-white font-extrabold text-xs sm:text-sm px-4 py-2 rounded-full shadow-xl border border-emerald-300 animate-bounce">
+                        <div class="absolute top-4 -right-2 sm:right-2 z-20 bg-emerald-500 text-white font-extrabold text-xs sm:text-sm px-4 py-2 rounded-full shadow-xl border border-emerald-300 animate-bounce">
                             💸 Rp 1.850.000 / Minggu
                         </div>
-                        <div class="absolute -bottom-2 -left-1 z-20 bg-amber-400 text-slate-900 font-extrabold text-xs sm:text-sm px-4 py-2 rounded-full shadow-xl border border-amber-300">
+                        <div class="absolute bottom-12 -left-2 sm:left-2 z-20 bg-amber-400 text-slate-900 font-extrabold text-xs sm:text-sm px-4 py-2 rounded-full shadow-xl border border-amber-300">
                             ✨ 100% Verified QC
                         </div>
 
-                        <!-- Real Hero PNG WebP Image (Prominent & Large) -->
+                        <!-- Real Hero PNG WebP Image (Flush to Hero Section Bottom) -->
                         <img src="{{ asset('images/Assest/Hero png.webp') }}" 
                              alt="Mitra KAMERAKITA AI" 
-                             class="w-full h-auto max-h-[520px] sm:max-h-[600px] lg:max-h-[660px] object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-300 scale-105 sm:scale-110">
+                             class="w-full h-auto max-h-[580px] sm:max-h-[660px] lg:max-h-[720px] object-contain object-bottom block -mb-1 drop-shadow-2xl hover:scale-105 transition-transform duration-300 scale-110 lg:scale-125 origin-bottom">
 
                     </div>
 
