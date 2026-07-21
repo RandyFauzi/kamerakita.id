@@ -55,6 +55,19 @@ class VerifyVideoWorkReportAction
             return "Laporan {$report->id} ditolak dengan alasan: " . $data['verifier_notes'];
         }
 
+        if ($action === 'revert') {
+            if ($report->payment_status === 'paid') {
+                throw new \Exception("Laporan yang sudah dibayar (Paid) tidak dapat dikembalikan statusnya. Silakan batalkan pembayaran terlebih dahulu.");
+            }
+            $report->update([
+                'approved_duration_minutes' => 0,
+                'qc_status' => 'pending',
+                'verified_by' => null,
+                'verified_at' => null,
+            ]);
+            return "Status laporan {$report->id} berhasil dikembalikan ke PENDING.";
+        }
+
         throw new \InvalidArgumentException("Aksi verifikasi tidak valid.");
     }
 }

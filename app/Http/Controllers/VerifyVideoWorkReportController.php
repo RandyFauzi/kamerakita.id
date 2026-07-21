@@ -67,17 +67,19 @@ class VerifyVideoWorkReportController extends Controller
     public function verify(Request $request, VideoWorkReport $report, \App\Actions\VerifyVideoWorkReportAction $verifyAction)
     {
         $validated = $request->validate([
-            'action' => 'required|in:approve_full,approve_partial,reject,start_review',
+            'action' => 'required|in:approve_full,approve_partial,reject,start_review,revert',
             'approved_duration_minutes' => 'nullable|integer|min:0|max:' . $report->submitted_duration_minutes,
             'verifier_notes' => 'required_if:action,reject,approve_partial|nullable|string|max:1000',
         ], [
             'verifier_notes.required_if' => 'Alasan wajib diisi jika laporan ditolak atau disetujui sebagian.',
         ]);
 
-        $msg = $verifyAction->execute($report, $validated, Auth::id());
-
-        // Redirect to the same status view the user was looking at
-        return redirect()->route('video-submissions.qc-room', ['status' => $report->qc_status])->with('success', $msg);
+        try {
+            $msg = $verifyAction->execute($report, $validated, Auth::id());
+            return redirect()->route('video-submissions.qc-room', ['status' => $report->qc_status])->with('success', $msg);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 
     public function destroy(VideoWorkReport $report)
