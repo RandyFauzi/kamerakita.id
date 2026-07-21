@@ -136,11 +136,11 @@
 
     <!-- 2. Hero Section (Exact Evermos Layout & Solid Deep Blue Background) -->
     <section class="bg-hero-solid text-white pt-12 lg:pt-16 pb-0 overflow-hidden relative">
-        <div class="max-w-7xl mx-auto pl-4 sm:pl-6 lg:pl-8 pr-0 overflow-visible">
+        <div class="w-full max-w-[1920px] mx-auto pl-4 sm:pl-8 lg:pl-16 pr-0 overflow-visible">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end">
                 
                 <!-- Left Hero Content Column -->
-                <div class="lg:col-span-6 space-y-8 text-left z-10 pb-16 lg:pb-24 pr-4">
+                <div class="lg:col-span-6 space-y-8 text-left z-10 pb-16 lg:pb-24">
                     
                     <!-- Headline H1 (Matching Evermos Layout & Typography) -->
                     <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.15]">
@@ -164,23 +164,23 @@
 
                 </div>
 
-                <!-- Right Hero Image Column (Flush to bottom & right screen edge) -->
+                <!-- Right Hero Image Column (Mentok Rapat ke Tepi Kanan Layar Window) -->
                 <div class="lg:col-span-6 relative flex justify-end items-end self-end z-10 pr-0">
                     
                     <!-- SVG Organic Blob Backdrop (Evermos Style Cloud Shape) -->
                     <div class="absolute inset-0 flex items-center justify-end pointer-events-none mb-6">
-                        <svg class="w-[150%] h-[150%] text-[#02649b] opacity-85 animate-float translate-x-16" viewBox="0 0 500 500" fill="currentColor">
+                        <svg class="w-[150%] h-[150%] text-[#02649b] opacity-85 animate-float translate-x-20" viewBox="0 0 500 500" fill="currentColor">
                             <path d="M410,310Q370,370,305,405Q240,440,175,410Q110,380,85,315Q60,250,90,185Q120,120,185,85Q250,50,315,85Q380,120,415,185Q450,250,410,310Z" />
                         </svg>
                     </div>
 
-                    <!-- Hero Main Image Container (Aligned flush to right & bottom edge) -->
-                    <div class="relative z-10 w-full max-w-2xl ml-auto mr-0 pr-0 flex flex-col items-end justify-end">
+                    <!-- Hero Main Image Container (Full Right Flush Desktop View) -->
+                    <div class="relative z-10 w-full max-w-3xl ml-auto mr-0 pr-0 flex flex-col items-end justify-end">
                         
-                        <!-- Real Hero PNG WebP Image (Flush to Right & Bottom Edge) -->
+                        <!-- Real Hero PNG WebP Image (Mentok Pas Kanan & Bawah Layar Desktop) -->
                         <img src="{{ asset('images/Assest/Hero png.webp') }}" 
                              alt="Mitra KAMERAKITA AI" 
-                             class="w-full h-auto max-h-[600px] sm:max-h-[700px] lg:max-h-[780px] object-contain object-bottom object-right block -mb-1 -mr-2 sm:-mr-4 lg:-mr-10 drop-shadow-2xl scale-110 lg:scale-135 origin-bottom-right">
+                             class="w-full h-auto max-h-[620px] sm:max-h-[720px] lg:max-h-[820px] object-contain object-bottom object-right block -mb-1 translate-x-6 sm:translate-x-12 lg:translate-x-20 scale-110 lg:scale-135 origin-bottom-right drop-shadow-2xl">
 
                     </div>
 
