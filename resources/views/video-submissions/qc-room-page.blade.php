@@ -8,6 +8,7 @@
     <div class="py-8" x-data="{ 
         showVerifyModal: false,
         showDeleteModal: false,
+        showRevertModal: false,
         activeReport: {},
         actionType: 'approve_full',
         approvedMinutes: '',
@@ -26,6 +27,11 @@
         openDelete(report) {
             this.activeReport = report;
             this.showDeleteModal = true;
+        },
+        openRevert(report) {
+            this.activeReport = report;
+            this.showRevertModal = true;
+            this.showVerifyModal = false;
         }
     }">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
@@ -476,16 +482,12 @@
                                             </span>
                                         </template>
                                         <template x-if="activeReport.payment_status !== 'paid'">
-                                            <form :action="'/qc-room/' + activeReport.id + '/verify'" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan status verifikasi laporan ini dan mengembalikannya ke status antrean Pending?')">
-                                                @csrf
-                                                <input type="hidden" name="action" value="revert">
-                                                <button type="submit" class="inline-flex items-center gap-1.5 px-4 py-2 bg-amber-50 hover:bg-amber-100 border border-amber-150 text-amber-800 rounded-xl text-xs font-bold transition duration-200">
-                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 6H16"/>
-                                                    </svg>
-                                                    Kembalikan ke Pending
-                                                </button>
-                                            </form>
+                                            <button type="button" @click="openRevert(activeReport)" class="inline-flex items-center gap-1.5 px-4 py-2 bg-amber-50 hover:bg-amber-100 border border-amber-150 text-amber-800 rounded-xl text-xs font-bold transition duration-200">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 6H16"/>
+                                                </svg>
+                                                Kembalikan ke Pending
+                                            </button>
                                         </template>
                                     </div>
                                     <button type="button" @click="showVerifyModal = false" class="inline-flex items-center justify-center px-5 py-2.5 bg-gray-900 hover:bg-gray-800 text-white rounded-xl font-semibold text-sm transition">
@@ -528,6 +530,41 @@
                         </button>
                         <button type="submit" class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-2xl shadow-sm transition">
                             Hapus Permanen
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </template>
+
+        <!-- Custom Premium Revert Confirmation Modal -->
+        <template x-if="showRevertModal">
+            <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+                <div class="bg-white rounded-[32px] max-w-md w-full shadow-2xl p-6 border border-gray-100 animate-in fade-in zoom-in-95 duration-200">
+                    <div class="flex items-center gap-4 text-amber-600 mb-4">
+                        <div class="p-3 bg-amber-50 rounded-2xl">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 6H16"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-black text-slate-900 leading-tight">Batalkan Verifikasi?</h3>
+                            <p class="text-xs text-gray-400 font-medium">Kembalikan ke antrean Pending</p>
+                        </div>
+                    </div>
+
+                    <p class="text-sm text-gray-550 leading-relaxed mb-6">
+                        Apakah Anda yakin ingin membatalkan status verifikasi laporan video dengan ID <strong class="text-slate-800 font-bold" x-text="activeReport.id ? activeReport.id.substring(0, 8) + '...' : ''"></strong> dan mengembalikannya ke status antrean **Pending**?
+                    </p>
+
+                    <!-- Modal Actions -->
+                    <form :action="'/qc-room/' + activeReport.id + '/verify'" method="POST" class="flex justify-end gap-3 border-t border-gray-100 pt-4">
+                        @csrf
+                        <input type="hidden" name="action" value="revert">
+                        <button type="button" @click="showRevertModal = false" class="px-5 py-2.5 bg-white border border-gray-200 text-gray-700 font-bold text-xs rounded-2xl hover:bg-gray-50 transition">
+                            Batalkan
+                        </button>
+                        <button type="submit" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-655 text-white font-bold text-xs rounded-2xl shadow-sm transition">
+                            Ya, Kembalikan ke Pending
                         </button>
                     </form>
                 </div>
