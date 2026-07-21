@@ -205,6 +205,34 @@
                 </form>
             </div>
 
+            <!-- Filtered Stats Summary Bar -->
+            <div class="bg-gray-900 text-white rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4 shadow-sm border border-gray-950/20 mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span class="text-xs font-mono font-bold uppercase tracking-wider text-gray-300">Live Filtered Summary</span>
+                </div>
+                <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs font-semibold">
+                    <div>
+                        <span class="text-gray-400 font-normal">Filtered Reports:</span>
+                        <span class="text-white font-black ml-1">{{ $reports->total() }}</span>
+                    </div>
+                    <div class="h-4 w-px bg-gray-800 hidden sm:block"></div>
+                    <div>
+                        <span class="text-gray-400 font-normal">Total Submitted Duration:</span>
+                        <span class="bg-slate-950 border border-slate-800 text-amber-400 px-2 py-0.5 rounded font-black font-mono ml-1">
+                            {{ $filteredSubmittedDuration }}
+                        </span>
+                    </div>
+                    <div class="h-4 w-px bg-gray-800 hidden sm:block"></div>
+                    <div>
+                        <span class="text-gray-400 font-normal">Total Approved Duration:</span>
+                        <span class="bg-slate-950 border border-slate-800 text-emerald-400 px-2 py-0.5 rounded font-black font-mono ml-1">
+                            {{ $filteredApprovedDuration }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
             <!-- Table Card -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-2xl border border-gray-100">
                 <div class="overflow-x-auto">

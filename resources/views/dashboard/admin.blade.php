@@ -79,6 +79,13 @@
                         <span class="text-xs text-slate-500 font-bold uppercase font-mono">Approved</span>
                     </div>
                     <span class="block text-xs text-slate-400 font-medium mt-1">Total durasi data terkumpul di agensi Kamerakita.ai</span>
+                    
+                    <!-- Queue Status Durations Breakdown -->
+                    <div class="mt-4 pt-4 border-t border-slate-900/10 flex flex-wrap gap-x-6 gap-y-2 text-xs text-slate-600 font-semibold font-mono">
+                        <div>Pending Queue: <span class="text-yellow-600 font-extrabold">{{ $metrics['global_pending_submitted_hours_formatted'] }}</span></div>
+                        <div>On Review Queue: <span class="text-blue-600 font-extrabold">{{ $metrics['global_on_review_submitted_hours_formatted'] }}</span></div>
+                        <div>Rejected Queue: <span class="text-rose-600 font-extrabold">{{ $metrics['global_rejected_submitted_hours_formatted'] }}</span></div>
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6 relative z-10">

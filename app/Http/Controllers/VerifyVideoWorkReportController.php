@@ -15,7 +15,7 @@ class VerifyVideoWorkReportController extends Controller
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
 
-        $reports = VideoWorkReport::query()
+        $query = VideoWorkReport::query()
             ->with(['partner'])
             // Status filter
             ->when($status !== 'all', function ($query) use ($status) {
@@ -36,8 +36,26 @@ class VerifyVideoWorkReportController extends Controller
                             ->orWhere('mitra_id', 'like', "%{$search}%");
                     })->orWhere('id', 'like', "%{$search}%");
                 });
-            })
-            ->orderBy('submission_date', 'desc')
+            });
+
+        // Clone base query to calculate dynamic stats
+        $totalSubmittedMin = (clone $query)->sum('submitted_duration_minutes');
+        $totalApprovedMin = (clone $query)->sum('approved_duration_minutes');
+
+        // Helper to format minutes to a clean "Xh Ym" string.
+        $formatDur = function (int $minutes) {
+            $hours = floor($minutes / 60);
+            $remaining = $minutes % 60;
+            if ($hours > 0) {
+                return "{$hours}j {$remaining}m";
+            }
+            return "{$remaining}m";
+        };
+
+        $filteredSubmittedDuration = $formatDur($totalSubmittedMin);
+        $filteredApprovedDuration = $formatDur($totalApprovedMin);
+
+        $reports = $query->orderBy('submission_date', 'desc')
             ->paginate(15)
             ->withQueryString();
 
@@ -60,7 +78,9 @@ class VerifyVideoWorkReportController extends Controller
             'totalPendingCount',
             'totalOnReviewCount',
             'totalApprovedCountToday',
-            'totalRejectedCountToday'
+            'totalRejectedCountToday',
+            'filteredSubmittedDuration',
+            'filteredApprovedDuration'
         ));
     }
 

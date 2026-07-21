@@ -139,6 +139,10 @@ class CalculatePartnerMetricsService
         $paid = $approvedReports->where('payment_status', 'paid')->sum('approved_duration_minutes');
         $pending = $approvedReports->where('payment_status', 'unpaid')->sum('approved_duration_minutes');
 
+        $pendingMinutesSum = VideoWorkReport::where('qc_status', 'pending')->sum('submitted_duration_minutes');
+        $onReviewMinutesSum = VideoWorkReport::where('qc_status', 'on_review')->sum('submitted_duration_minutes');
+        $rejectedMinutesSum = VideoWorkReport::where('qc_status', 'rejected')->sum('submitted_duration_minutes');
+
         // Fetch live USD to IDR rate (cached daily until midnight 00:00 for optimal server performance)
         $usdToIdrRate = cache()->remember('usd_to_idr_rate', now()->endOfDay(), function() {
             try {
@@ -195,6 +199,9 @@ class CalculatePartnerMetricsService
             'global_all_time_hours_formatted' => $this->formatMinutes($allTime),
             'global_paid_hours_formatted' => $this->formatMinutes($paid),
             'global_pending_hours_formatted' => $this->formatMinutes($pending),
+            'global_pending_submitted_hours_formatted' => $this->formatMinutes($pendingMinutesSum),
+            'global_on_review_submitted_hours_formatted' => $this->formatMinutes($onReviewMinutesSum),
+            'global_rejected_submitted_hours_formatted' => $this->formatMinutes($rejectedMinutesSum),
 
             // Financial Projections (IDR)
             'client_paid_amount' => $clientPaidAmount,
