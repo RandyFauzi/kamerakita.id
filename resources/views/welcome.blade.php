@@ -194,10 +194,48 @@
         <!-- 3. Centific Hero Content (Identical Layout to Screenshot) -->
         <main class="hero-content-layer max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-left py-12 lg:py-20 my-auto space-y-8">
             
-            <!-- Headline H1 -->
-            <h1 class="text-5xl sm:text-6xl lg:text-7xl font-semibold text-white tracking-tight leading-[1.06] max-w-4xl">
+            <!-- Headline H1 with Centific Typewriter Cursor Animation -->
+            <h1 class="text-5xl sm:text-6xl lg:text-7xl font-semibold text-white tracking-tight leading-[1.06] max-w-4xl"
+                x-data="{
+                    phrases: [
+                        'World-Class Vision Data',
+                        'Human-Trained Expertise',
+                        'Real-World Video Signals',
+                        'Verified Quality Control',
+                        'Production-Grade Datasets'
+                    ],
+                    currentText: '',
+                    phraseIndex: 0,
+                    charIndex: 0,
+                    isDeleting: false,
+                    type() {
+                        const target = this.phrases[this.phraseIndex];
+                        if (this.isDeleting) {
+                            this.currentText = target.substring(0, this.charIndex - 1);
+                            this.charIndex--;
+                        } else {
+                            this.currentText = target.substring(0, this.charIndex + 1);
+                            this.charIndex++;
+                        }
+
+                        let speed = this.isDeleting ? 40 : 80;
+
+                        if (!this.isDeleting && this.charIndex === target.length) {
+                            speed = 2500; // Pause at full phrase
+                            this.isDeleting = true;
+                        } else if (this.isDeleting && this.charIndex === 0) {
+                            this.isDeleting = false;
+                            this.phraseIndex = (this.phraseIndex + 1) % this.phrases.length;
+                            speed = 400;
+                        }
+                        setTimeout(() => this.type(), speed);
+                    }
+                }"
+                x-init="type()">
                 Powering Tomorrow's AI with <br class="hidden sm:block"/>
-                <span class="font-normal text-slate-200">World-Class Vision Data</span>
+                <span class="font-normal text-slate-100 inline-flex items-center min-h-[1.2em]">
+                    <span x-text="currentText"></span><span class="w-[3px] h-[0.85em] bg-white ml-1 inline-block animate-pulse shrink-0"></span>
+                </span>
             </h1>
 
             <!-- Subheadline Paragraph -->
