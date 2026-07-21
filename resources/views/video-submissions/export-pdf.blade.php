@@ -92,9 +92,9 @@
                             <span class="text-[10px] font-normal text-gray-400">({{ $report->partner->mitra_id }})</span>
                         </div>
                         
-                        <!-- Worker Registered Email Highlight (High Contrast) -->
-                        <div>
-                            <span class="inline-flex items-center px-2 py-0.5 bg-indigo-650 text-white font-extrabold text-[10px] rounded-lg tracking-wide uppercase font-mono">
+                        <!-- Worker Registered Email Highlight (High Contrast Inline CSS) -->
+                        <div class="mt-1">
+                            <span style="background-color: #1e40af; color: #ffffff; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; font-family: monospace; display: inline-block; text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid #1d4ed8;">
                                 Email: {{ $report->partner->email }}
                             </span>
                         </div>
@@ -102,9 +102,9 @@
                         <div class="grid grid-cols-2 gap-x-2 gap-y-1 text-[10px] font-mono text-gray-600">
                             <div class="flex items-center">Date: <span class="ml-1 font-bold text-gray-800">{{ $report->submission_date->format('d/m/Y') }}</span></div>
                             
-                            <!-- Submitted Duration Highlight (High Contrast) -->
+                            <!-- Submitted Duration Highlight (High Contrast Inline CSS) -->
                             <div>
-                                <span class="inline-flex items-center bg-amber-500 text-slate-950 px-2 py-0.5 rounded font-black text-[10px] uppercase font-mono">
+                                <span style="background-color: #f59e0b; color: #0f172a; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 900; font-family: monospace; display: inline-block; text-transform: uppercase; border: 1px solid #d97706;">
                                     Duration: {{ $report->submitted_duration_formatted }}
                                 </span>
                             </div>
