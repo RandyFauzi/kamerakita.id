@@ -205,44 +205,25 @@
                 </form>
             </div>
 
-            <!-- Filtered Stats Summary Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <!-- Card 1: Reports Count -->
-                <div class="bg-white rounded-2xl p-5 border border-gray-150 shadow-sm flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-600 shrink-0 border border-slate-100">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <span class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider font-mono">Filtered Reports</span>
-                        <span class="block text-lg font-black text-slate-800 tracking-tight mt-0.5">{{ $reports->total() }} Laporan</span>
-                    </div>
+            <!-- Filtered Stats Summary (Sleek Professional Bar) -->
+            <div class="bg-white rounded-2xl p-4 border border-gray-150 shadow-sm flex flex-wrap items-center justify-between gap-4 mb-6">
+                <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-indigo-650 animate-pulse"></span>
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500 font-mono">Filtered Summary</span>
                 </div>
-
-                <!-- Card 2: Submitted Duration -->
-                <div class="bg-white rounded-2xl p-5 border border-gray-150 shadow-sm flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600 shrink-0 border border-amber-105">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </div>
+                <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs font-semibold text-slate-500">
                     <div>
-                        <span class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider font-mono">Total Submitted Duration</span>
-                        <span class="block text-lg font-black text-amber-600 tracking-tight font-mono mt-0.5">{{ $filteredSubmittedDuration }}</span>
+                        Filtered Reports: <strong class="text-slate-800 font-bold ml-1">{{ $reports->total() }}</strong>
                     </div>
-                </div>
-
-                <!-- Card 3: Approved Duration -->
-                <div class="bg-white rounded-2xl p-5 border border-gray-150 shadow-sm flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 shrink-0 border border-emerald-105">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
+                    <div class="h-4 w-px bg-gray-200 hidden sm:block"></div>
+                    <div class="flex items-center gap-1.5 font-mono">
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                        <span>Total Submitted: <strong class="text-slate-800 font-black ml-1">{{ $filteredSubmittedDuration }}</strong></span>
                     </div>
-                    <div>
-                        <span class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider font-mono">Total Approved Duration</span>
-                        <span class="block text-lg font-black text-emerald-600 tracking-tight font-mono mt-0.5">{{ $filteredApprovedDuration }}</span>
+                    <div class="h-4 w-px bg-gray-200 hidden sm:block"></div>
+                    <div class="flex items-center gap-1.5 font-mono">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        <span>Total Approved: <strong class="text-slate-800 font-black ml-1">{{ $filteredApprovedDuration }}</strong></span>
                     </div>
                 </div>
             </div>
