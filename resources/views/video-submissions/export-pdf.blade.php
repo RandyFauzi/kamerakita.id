@@ -40,18 +40,18 @@
     <!-- Top floating navigation bar (Hidden in Print) -->
     <div class="no-print max-w-5xl mx-auto mb-6 bg-white border border-gray-200 rounded-3xl p-4 flex justify-between items-center shadow-sm">
         <div class="space-y-0.5">
-            <h4 class="font-bold text-gray-800 text-sm">Mode Pratinjau Cetak A4</h4>
-            <p class="text-xs text-gray-400">Tekan cetak untuk menyimpan laporan sebagai file PDF.</p>
+            <h4 class="font-bold text-gray-800 text-sm">A4 Print Preview Mode</h4>
+            <p class="text-xs text-gray-400">Press print to save the report as a PDF file.</p>
         </div>
         <div class="flex gap-2">
             <a href="{{ route('video-submissions.qc-room') }}" class="px-4 py-2 border border-gray-200 text-gray-700 font-bold text-xs rounded-xl hover:bg-gray-50 transition">
-                Kembali
+                Back
             </a>
             <button onclick="window.print()" class="px-5 py-2.5 bg-indigo-650 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-sm transition flex items-center gap-1.5">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
                 </svg>
-                Cetak / Simpan PDF
+                Print / Save PDF
             </button>
         </div>
     </div>
@@ -62,15 +62,15 @@
         <div class="border-b-2 border-gray-900 pb-3 flex justify-between items-end">
             <div class="space-y-0.5">
                 <h2 class="text-xl font-black tracking-tight text-gray-900">KAMERAKITA<span class="text-indigo-650">.AI</span></h2>
-                <p class="text-[10px] font-bold uppercase tracking-widest text-indigo-650 font-mono">Laporan Rekapitulasi Verifikasi QC Video</p>
-                <p class="text-[9px] text-gray-400">Dicetak pada: {{ date('d F Y H:i:s') }}</p>
+                <p class="text-[10px] font-bold uppercase tracking-widest text-indigo-650 font-mono">Video QC Verification Recapitulation Report</p>
+                <p class="text-[9px] text-gray-400">Printed at: {{ date('d F Y H:i:s') }}</p>
             </div>
             <div class="text-right text-[10px] text-gray-500 font-medium space-y-0.5 font-mono">
-                <div>Status Filter: <strong class="text-gray-900 uppercase">{{ $status }}</strong></div>
+                <div>Filter Status: <strong class="text-gray-900 uppercase">{{ $status }}</strong></div>
                 @if($startDate || $endDate)
-                    <div>Periode: <strong>{{ $startDate ?? 'Mulai Awal' }}</strong> s/d <strong>{{ $endDate ?? 'Hari Ini' }}</strong></div>
+                    <div>Period: <strong>{{ $startDate ?? 'Beginning' }}</strong> to <strong>{{ $endDate ?? 'Today' }}</strong></div>
                 @endif
-                <div>Total Laporan: <strong class="text-gray-900">{{ $reports->count() }} Laporan</strong></div>
+                <div>Total Reports: <strong class="text-gray-900">{{ $reports->count() }} {{ Str::plural('Report', $reports->count()) }}</strong></div>
             </div>
         </div>
 
@@ -81,7 +81,7 @@
                     <!-- Left: Metadata (compact) -->
                     <div class="flex-1 min-w-[280px] space-y-1.5">
                         <div class="flex items-center gap-2">
-                            <span class="text-[9px] font-black uppercase bg-indigo-50 border border-indigo-100 text-indigo-700 px-2 py-0.5 rounded-md font-mono">NO. {{ $index + 1 }}</span>
+                            <span class="text-[9px] font-black uppercase bg-indigo-50 border border-indigo-100 text-indigo-750 px-2 py-0.5 rounded-md font-mono">NO. {{ $index + 1 }}</span>
                             <span class="text-[10px] font-mono text-gray-400">ID: {{ substr($report->id, 0, 18) }}...</span>
                         </div>
                         <div class="text-xs font-bold text-gray-900">
@@ -89,9 +89,23 @@
                             <span class="text-[10px] font-normal text-gray-400">({{ $report->partner->mitra_id }})</span>
                         </div>
                         
-                        <div class="grid grid-cols-2 gap-x-2 gap-y-0.5 text-[10px] font-mono text-gray-600">
-                            <div>Tanggal: <span class="font-bold text-gray-800">{{ $report->submission_date->format('d/m/Y') }}</span></div>
-                            <div>Kirim: <span class="font-bold text-gray-800">{{ $report->submitted_duration_formatted }}</span></div>
+                        <!-- Worker Registered Email Highlight -->
+                        <div>
+                            <span class="inline-flex items-center px-2 py-0.5 bg-indigo-50 border border-indigo-100 text-indigo-750 font-black text-[10px] rounded-lg tracking-wide uppercase font-mono">
+                                Email: {{ $report->partner->email }}
+                            </span>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-x-2 gap-y-1 text-[10px] font-mono text-gray-600">
+                            <div class="flex items-center">Date: <span class="ml-1 font-bold text-gray-800">{{ $report->submission_date->format('d/m/Y') }}</span></div>
+                            
+                            <!-- Submitted Duration Highlight -->
+                            <div>
+                                <span class="inline-flex items-center bg-amber-50 border border-amber-200 text-amber-900 px-2 py-0.5 rounded font-black text-[10px] uppercase font-mono">
+                                    Duration: {{ $report->submitted_duration_formatted }}
+                                </span>
+                            </div>
+                            
                             <div class="col-span-2">
                                 QC Status: 
                                 @if($report->qc_status === 'pending')
@@ -118,22 +132,22 @@
                     <!-- Right: Compact Images (side-by-side) with strict inline dimensions -->
                     <div class="flex gap-3 shrink-0">
                         <div class="text-center">
-                            <span class="block text-[8px] font-black text-gray-400 uppercase font-mono mb-1">1. Bukti Email</span>
+                            <span class="block text-[8px] font-black text-gray-400 uppercase font-mono mb-1">1. Email Evidence</span>
                             <div style="width: 110px; height: 150px;" class="bg-white rounded-lg overflow-hidden border border-gray-200 flex items-center justify-center shrink-0">
                                 @if($report->evidence_email_image_url)
-                                    <img src="{{ $report->evidence_email_image_url }}" style="width: 100%; height: 100%; object-fit: contain;" class="bg-white" alt="Bukti Email">
+                                    <img src="{{ $report->evidence_email_image_url }}" style="width: 100%; height: 100%; object-fit: contain;" class="bg-white" alt="Email Evidence">
                                 @else
-                                    <span class="text-[9px] text-gray-300 font-mono">Tidak ada</span>
+                                    <span class="text-[9px] text-gray-300 font-mono">None</span>
                                 @endif
                             </div>
                         </div>
                         <div class="text-center">
-                            <span class="block text-[8px] font-black text-gray-400 uppercase font-mono mb-1">2. Bukti Kualitas</span>
+                            <span class="block text-[8px] font-black text-gray-400 uppercase font-mono mb-1">2. Quality Evidence</span>
                             <div style="width: 110px; height: 150px;" class="bg-white rounded-lg overflow-hidden border border-gray-200 flex items-center justify-center shrink-0">
                                 @if($report->evidence_app_quality_image_url)
-                                    <img src="{{ $report->evidence_app_quality_image_url }}" style="width: 100%; height: 100%; object-fit: contain;" class="bg-white" alt="Bukti Kualitas">
+                                    <img src="{{ $report->evidence_app_quality_image_url }}" style="width: 100%; height: 100%; object-fit: contain;" class="bg-white" alt="Quality Evidence">
                                 @else
-                                    <span class="text-[9px] text-gray-300 font-mono">Tidak ada</span>
+                                    <span class="text-[9px] text-gray-300 font-mono">None</span>
                                 @endif
                             </div>
                         </div>
@@ -141,7 +155,7 @@
                 </div>
             @empty
                 <div class="text-center py-12 text-gray-400 text-sm">
-                    Tidak ada data laporan video yang cocok dengan filter cetak ini.
+                    No video reports match this print filter.
                 </div>
             @endforelse
         </div>
