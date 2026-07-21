@@ -178,7 +178,7 @@
                     <div class="relative z-10 w-full max-w-3xl ml-auto mr-0 pr-0 flex flex-col items-end justify-end">
                         
                         <!-- Real Hero PNG WebP Image (Mentok Pas Kanan & Bawah Layar Desktop) -->
-                        <img src="{{ asset('images/Assest/Hero png.webp') }}" 
+                        <img src="{{ asset('images/Assest/Hero png.webp') }}?v={{ filemtime(public_path('images/Assest/Hero png.webp')) }}" 
                              alt="Mitra KAMERAKITA AI" 
                              class="w-full h-auto max-h-[620px] sm:max-h-[720px] lg:max-h-[820px] object-contain object-bottom object-right block -mb-1 translate-x-6 sm:translate-x-12 lg:translate-x-20 scale-110 lg:scale-135 origin-bottom-right drop-shadow-2xl">
 
