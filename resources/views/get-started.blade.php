@@ -117,20 +117,34 @@
     <div
         x-data="{
             active: 0,
+            animating: false,
             slides: @js($slides),
+            transitionTo(index) {
+                if (this.animating || index === this.active) return;
+
+                this.animating = true;
+
+                window.setTimeout(() => {
+                    this.active = index;
+
+                    window.setTimeout(() => {
+                        this.animating = false;
+                    }, 60);
+                }, 180);
+            },
             next() {
                 if (this.active < this.slides.length - 1) {
-                    this.active++;
+                    this.transitionTo(this.active + 1);
                     return;
                 }
 
                 window.location.href = '{{ route('register') }}';
             },
             prev() {
-                if (this.active > 0) this.active--;
+                if (this.active > 0) this.transitionTo(this.active - 1);
             },
             go(index) {
-                this.active = index;
+                this.transitionTo(index);
             },
             cardAt(offset) {
                 return (this.active + offset + this.slides.length) % this.slides.length;
@@ -173,7 +187,7 @@
                     <template x-for="offset in [-1, 0, 1]" :key="offset">
                         <article
                             class="reveal-card flex h-[540px] w-[300px] flex-col rounded-[34px] bg-white p-6 shadow-card transition-all duration-500 ease-out"
-                            :class="offset === 0 ? 'z-10 scale-105 opacity-100 blur-0 hover:-translate-y-2' : 'translate-y-7 scale-[.88] opacity-45 blur-[1px]'"
+                            :class="[offset === 0 ? 'z-10 scale-105 opacity-100 blur-0 hover:-translate-y-2' : 'translate-y-7 scale-[.88] opacity-45 blur-[1px]', animating ? 'opacity-0 translate-y-10 scale-[.96] blur-[2px]' : '']"
                         >
                             <div class="flex flex-1 flex-col">
                                 <div class="h-56">
@@ -260,16 +274,16 @@
 
                             <div class="mt-8 flex justify-center gap-1.5" x-show="offset === 0">
                                 <template x-for="(slide, index) in slides" :key="index">
-                                    <button type="button" @click="go(index)" class="h-1.5 rounded-full transition-all" :class="active === index ? 'w-7 bg-slate-950' : 'w-1.5 bg-slate-200'" :aria-label="'Buka step ' + (index + 1)"></button>
+                                    <button type="button" @click="go(index)" :disabled="animating" class="h-1.5 rounded-full transition-all disabled:cursor-not-allowed" :class="active === index ? 'w-7 bg-slate-950' : 'w-1.5 bg-slate-200'" :aria-label="'Buka step ' + (index + 1)"></button>
                                 </template>
                             </div>
 
                             <div class="mt-7 grid grid-cols-[44px_1fr] items-center gap-3" x-show="offset === 0">
-                                <button type="button" @click="prev()" class="flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 text-slate-700 transition hover:bg-slate-50" :class="active === 0 ? 'invisible' : ''" aria-label="Sebelumnya">
+                                <button type="button" @click="prev()" :disabled="animating" class="flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-70" :class="active === 0 ? 'invisible' : ''" aria-label="Sebelumnya">
                                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
                                 </button>
                                 <div class="grid gap-2" :class="isLast() ? 'grid-cols-2' : 'grid-cols-1'">
-                                    <button type="button" @click="next()" class="min-h-11 rounded-full bg-slate-950 px-5 py-3 text-xs font-black text-white transition hover:bg-slate-800" x-text="isLast() ? 'Daftar' : 'Next'"></button>
+                                    <button type="button" @click="next()" :disabled="animating" class="min-h-11 rounded-full bg-slate-950 px-5 py-3 text-xs font-black text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70" x-text="isLast() ? 'Daftar' : 'Next'"></button>
                                     <a x-show="isLast()" x-cloak href="{{ $whatsappUrl }}" target="_blank" class="inline-flex min-h-11 items-center justify-center whitespace-nowrap rounded-full border border-slate-200 px-4 py-3 text-center text-xs font-black text-slate-950 transition hover:bg-slate-50">WA Code</a>
                                 </div>
                             </div>
@@ -280,11 +294,9 @@
                 <div class="mx-auto max-w-sm lg:hidden">
                     <article class="reveal-card flex min-h-[590px] flex-col rounded-[34px] bg-white p-6 shadow-card">
                         <div
-                            class="h-64"
+                            class="h-64 transition-all duration-300 ease-out"
                             :key="'mobile-art-' + active"
-                            x-transition:enter="transition ease-out duration-300"
-                            x-transition:enter-start="opacity-0 translate-y-4 scale-95"
-                            x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                            :class="animating ? 'opacity-0 translate-y-3 scale-[.98] blur-[1px]' : 'opacity-100 translate-y-0 scale-100 blur-0'"
                         >
                             <template x-if="slides[active].art === 'phone'">
                                 <svg viewBox="0 0 220 180" class="h-full w-full" fill="none"><path d="M68 66c-18 3-31 17-28 34 3 21 28 28 45 21l34-13c17-7 21-27 9-40-14-15-37-6-60-2z" fill="#DDF7F1"/><rect x="72" y="33" width="70" height="116" rx="18" fill="#2563EB"/><rect x="84" y="47" width="46" height="77" rx="10" fill="#DBEAFE"/><path d="M52 117c16-18 32-22 47-8l20 18c8 7 6 20-4 25-22 11-53 1-71-16-8-8-1-9 8-19z" fill="#1D4ED8"/><path d="M151 45l13 13m0-13l-13 13M46 47l9 9m0-9l-9 9" stroke="#111827" stroke-width="3" stroke-linecap="round"/></svg>
@@ -307,8 +319,9 @@
                         </div>
 
                         <div
-                            class="fade-rise mt-auto text-center"
+                            class="fade-rise mt-auto text-center transition-all duration-300 ease-out"
                             :key="'mobile-copy-' + active"
+                            :class="animating ? 'opacity-0 translate-y-3 scale-[.98] blur-[1px]' : 'opacity-100 translate-y-0 scale-100 blur-0'"
                         >
                             <span class="text-[10px] font-black uppercase tracking-[0.24em]" :style="`color: ${slides[active].accent}`" x-text="slides[active].kicker"></span>
                             <h2 class="mx-auto mt-3 max-w-[270px] text-2xl font-black leading-tight text-slate-950" x-text="slides[active].title"></h2>
@@ -317,15 +330,15 @@
 
                         <div class="mt-8 flex justify-center gap-1.5">
                             <template x-for="(slide, index) in slides" :key="index">
-                                <button type="button" @click="go(index)" class="h-1.5 rounded-full transition-all" :class="active === index ? 'w-7 bg-slate-950' : 'w-1.5 bg-slate-200'" :aria-label="'Buka step ' + (index + 1)"></button>
+                                <button type="button" @click="go(index)" :disabled="animating" class="h-1.5 rounded-full transition-all disabled:cursor-not-allowed" :class="active === index ? 'w-7 bg-slate-950' : 'w-1.5 bg-slate-200'" :aria-label="'Buka step ' + (index + 1)"></button>
                             </template>
                         </div>
 
                         <div class="mt-7 grid grid-cols-[44px_1fr_44px] items-center gap-3">
-                            <button type="button" @click="prev()" class="flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 text-slate-700 transition hover:bg-slate-50" :class="active === 0 ? 'invisible' : ''" aria-label="Sebelumnya">
+                            <button type="button" @click="prev()" :disabled="animating" class="flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-70" :class="active === 0 ? 'invisible' : ''" aria-label="Sebelumnya">
                                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
                             </button>
-                            <button type="button" @click="next()" class="min-h-11 rounded-full bg-slate-950 px-5 py-3 text-xs font-black text-white transition hover:bg-slate-800" x-text="isLast() ? 'Daftar' : 'Next'"></button>
+                            <button type="button" @click="next()" :disabled="animating" class="min-h-11 rounded-full bg-slate-950 px-5 py-3 text-xs font-black text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70" x-text="isLast() ? 'Daftar' : 'Next'"></button>
                             <span aria-hidden="true"></span>
                         </div>
 
