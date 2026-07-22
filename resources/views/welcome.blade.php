@@ -203,6 +203,101 @@
         </div>
     </section>
 
+    <!-- Visual Benefit Mosaic Section -->
+    <section class="bg-white py-16 sm:py-20 px-4 sm:px-6 border-b border-slate-200">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center max-w-3xl mx-auto mb-10 sm:mb-12">
+                <span class="text-xs font-bold uppercase tracking-widest text-sky-700 bg-sky-100 px-3.5 py-1 rounded-full inline-block">
+                    ALASAN BERGABUNG
+                </span>
+                <h2 class="mt-4 text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                    Kenapa kamu cocok jadi Kontributor KameraKita AI?
+                </h2>
+                <p class="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed">
+                    Pekerjaan lebih jelas, laporan tercatat, dan pendapatan bisa dipantau dari dashboard yang transparan.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-5">
+                <article class="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-sky-50 to-cyan-100 p-7 min-h-[260px] md:col-span-3 lg:col-span-4 shadow-sm border border-sky-100">
+                    <div class="relative z-10 max-w-[230px]">
+                        <h3 class="text-2xl font-extrabold leading-tight text-slate-900">
+                            Tidak perlu stok, packing, atau kirim barang
+                        </h3>
+                        <p class="mt-3 text-sm leading-6 text-slate-600">
+                            Fokus kerjakan tugas rekam video sesuai panduan dari HP pribadi.
+                        </p>
+                    </div>
+                    <div class="absolute bottom-0 right-3 h-36 w-32 rounded-t-[48px] bg-white/55 border border-white/70"></div>
+                    <div class="absolute bottom-6 right-12 h-20 w-20 rounded-full bg-sky-500/85"></div>
+                    <div class="absolute bottom-0 right-16 h-24 w-28 rounded-t-full bg-slate-900/90"></div>
+                </article>
+
+                <article class="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-emerald-50 to-lime-100 p-7 min-h-[260px] md:col-span-3 lg:col-span-4 shadow-sm border border-emerald-100">
+                    <div class="relative z-10 max-w-[220px]">
+                        <h3 class="text-2xl font-extrabold leading-tight text-slate-900">
+                            Komisi dihitung dari durasi yang disetujui
+                        </h3>
+                        <p class="mt-3 text-sm leading-6 text-slate-600">
+                            Setiap menit approved masuk rekap dan bisa dilihat transparan.
+                        </p>
+                    </div>
+                    <div class="absolute right-7 top-8 flex h-24 w-24 items-center justify-center rounded-full bg-white/70 text-3xl font-black text-emerald-600">
+                        Rp
+                    </div>
+                    <div class="absolute -bottom-8 right-8 h-40 w-40 rounded-full bg-emerald-300/35"></div>
+                </article>
+
+                <article class="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-indigo-50 to-violet-100 p-7 min-h-[260px] md:col-span-6 lg:col-span-4 lg:row-span-2 shadow-sm border border-indigo-100">
+                    <div class="relative z-10 max-w-[260px]">
+                        <h3 class="text-2xl font-extrabold leading-tight text-slate-900">
+                            Dibantu tim admin dan verifikator
+                        </h3>
+                        <p class="mt-3 text-sm leading-6 text-slate-600">
+                            Ada arahan untuk laporan, catatan QC, dan perbaikan bila data belum sesuai.
+                        </p>
+                    </div>
+                    <div class="absolute bottom-0 left-8 right-8 h-52 rounded-t-[90px] bg-white/60 border border-white/70"></div>
+                    <div class="absolute bottom-16 left-12 h-24 w-24 rounded-full bg-indigo-300/80"></div>
+                    <div class="absolute bottom-12 left-28 h-28 w-28 rounded-full bg-sky-400/75"></div>
+                    <div class="absolute bottom-14 right-14 h-24 w-24 rounded-full bg-violet-400/75"></div>
+                    <div class="absolute bottom-0 left-10 h-28 w-28 rounded-t-full bg-slate-900/90"></div>
+                    <div class="absolute bottom-0 left-32 h-32 w-32 rounded-t-full bg-indigo-700/85"></div>
+                    <div class="absolute bottom-0 right-12 h-28 w-28 rounded-t-full bg-slate-800/85"></div>
+                </article>
+
+                <article class="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-amber-50 to-orange-100 p-7 min-h-[230px] md:col-span-3 lg:col-span-4 shadow-sm border border-orange-100">
+                    <div class="relative z-10 max-w-[210px]">
+                        <h3 class="text-2xl font-extrabold leading-tight text-slate-900">
+                            Cukup ikuti panduan kerja harian
+                        </h3>
+                        <p class="mt-3 text-sm leading-6 text-slate-600">
+                            Tutorial dan manual book membantu worker baru mulai lebih tenang.
+                        </p>
+                    </div>
+                    <div class="absolute bottom-7 right-8 h-24 w-24 rounded-3xl bg-white/70 rotate-6"></div>
+                    <div class="absolute bottom-12 right-14 h-10 w-14 rounded-full bg-orange-400/80"></div>
+                    <div class="absolute bottom-6 right-20 h-16 w-20 rounded-t-full bg-slate-900/90"></div>
+                </article>
+
+                <article class="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-rose-50 to-pink-100 p-7 min-h-[230px] md:col-span-3 lg:col-span-4 shadow-sm border border-rose-100">
+                    <div class="relative z-10 max-w-[220px]">
+                        <h3 class="text-2xl font-extrabold leading-tight text-slate-900">
+                            Pembayaran manual lebih aman
+                        </h3>
+                        <p class="mt-3 text-sm leading-6 text-slate-600">
+                            Admin memproses transfer berdasarkan rekap approved yang sudah diverifikasi.
+                        </p>
+                    </div>
+                    <div class="absolute bottom-6 right-8 rounded-2xl bg-white/75 px-5 py-4 shadow-sm">
+                        <div class="text-xs font-bold uppercase tracking-wider text-slate-400">Rekap</div>
+                        <div class="mt-1 text-2xl font-black text-rose-600">Paid</div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
     <!-- 3. Keunggulan Section (Clean White Background & Deep Blue Cards) -->
     <section id="keunggulan" class="py-20 bg-slate-50 border-b border-slate-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
