@@ -486,7 +486,7 @@
                     </div>
 
                     <!-- Earnings Output Box -->
-                    <div class="relative overflow-hidden rounded-3xl bg-slate-950 p-7 sm:p-8 text-white shadow-xl space-y-6 text-center lg:text-left">
+                    <div class="relative overflow-hidden rounded-3xl bg-hero-solid p-7 sm:p-8 text-white shadow-xl space-y-6 text-center lg:text-left">
                         <div>
                             <span class="inline-flex rounded-full bg-white/10 px-3 py-1 text-[11px] font-black uppercase tracking-widest text-sky-200">Estimasi utama</span>
                             <span class="mt-5 text-sm font-semibold uppercase tracking-widest text-slate-400 block">Potensi mingguan</span>
