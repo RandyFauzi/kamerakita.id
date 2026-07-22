@@ -186,8 +186,8 @@
                 <div class="hidden items-center justify-center gap-7 lg:flex">
                     <template x-for="offset in [-1, 0, 1]" :key="offset">
                         <article
-                            class="reveal-card flex h-[540px] w-[300px] flex-col rounded-[34px] bg-white p-6 shadow-card transition-all duration-500 ease-out hover:-translate-y-2"
-                            :class="offset === 0 ? 'scale-105 opacity-100' : 'scale-95 opacity-70'"
+                            class="reveal-card flex h-[540px] w-[300px] flex-col rounded-[34px] bg-white p-6 shadow-card transition-all duration-500 ease-out"
+                            :class="offset === 0 ? 'z-10 scale-105 opacity-100 blur-0 hover:-translate-y-2' : 'translate-y-8 scale-[.92] opacity-45 blur-[1.5px]'"
                         >
                             <div class="flex flex-1 flex-col">
                                 <div class="h-56">
@@ -278,9 +278,13 @@
                                 </template>
                             </div>
 
-                            <div class="mt-7 grid gap-3" :class="isLast() ? 'grid-cols-2' : 'grid-cols-1'" x-show="offset === 0">
+                            <div class="mt-7 grid gap-3" :class="isLast() ? 'grid-cols-[44px_1fr_1fr]' : 'grid-cols-[44px_1fr_44px]'" x-show="offset === 0">
+                                <button type="button" @click="prev()" class="flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 text-slate-700 transition hover:bg-slate-50" :class="active === 0 ? 'invisible' : ''" aria-label="Sebelumnya">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+                                </button>
                                 <button type="button" @click="next()" class="rounded-full bg-slate-950 px-5 py-3 text-xs font-black text-white transition hover:bg-slate-800" x-text="isLast() ? 'Daftar' : 'Next'"></button>
                                 <a x-show="isLast()" x-cloak href="{{ $whatsappUrl }}" target="_blank" class="rounded-full border border-slate-200 px-5 py-3 text-center text-xs font-black text-slate-950 transition hover:bg-slate-50">WA Code</a>
+                                <span x-show="!isLast()" aria-hidden="true"></span>
                             </div>
                         </article>
                     </template>
