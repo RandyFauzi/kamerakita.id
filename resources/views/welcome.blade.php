@@ -696,12 +696,27 @@
     </section>
 
     <!-- 8. Final CTA Banner -->
-    <section class="relative min-h-[420px] overflow-hidden bg-slate-100">
-        <img src="{{ asset('images/Assest/CTA.webp') }}?v={{ filemtime(public_path('images/Assest/CTA.webp')) }}" alt="Gabung menjadi kontributor KameraKita AI" class="absolute inset-0 h-full w-full object-cover object-center">
-        <div class="absolute inset-y-0 left-0 w-[62%] bg-gradient-to-r from-white via-white/90 to-transparent"></div>
-        <div class="absolute -left-10 -top-10 h-32 w-32 rounded-full bg-lime-300/70 blur-sm"></div>
+    <section class="relative overflow-hidden bg-slate-100 md:min-h-[420px]">
+        <div class="md:hidden">
+            <img src="{{ asset('images/Assest/CTA.webp') }}?v={{ filemtime(public_path('images/Assest/CTA.webp')) }}" alt="Gabung menjadi kontributor KameraKita AI" class="h-[270px] w-full object-cover object-right-top">
+            <div class="bg-white px-4 py-8">
+                <div class="mx-auto max-w-sm space-y-5">
+                    <h2 class="text-3xl font-black tracking-tight leading-tight text-[#064e5f]">
+                        Gimana, siap mulai jadi kontributor andalan?
+                    </h2>
 
-        <div class="relative mx-auto flex min-h-[420px] max-w-7xl items-center px-4 sm:px-6 lg:px-8">
+                    <a href="{{ route('get-started') }}" class="inline-flex w-full items-center justify-center rounded-xl bg-[#064e5f] px-8 py-4 text-sm font-black text-white shadow-lg transition hover:bg-[#043f4d]">
+                        Gabung sekarang
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <img src="{{ asset('images/Assest/CTA.webp') }}?v={{ filemtime(public_path('images/Assest/CTA.webp')) }}" alt="Gabung menjadi kontributor KameraKita AI" class="absolute inset-0 hidden h-full w-full object-cover object-center md:block">
+        <div class="absolute inset-y-0 left-0 hidden w-[62%] bg-gradient-to-r from-white via-white/90 to-transparent md:block"></div>
+        <div class="absolute -left-10 -top-10 hidden h-32 w-32 rounded-full bg-lime-300/70 blur-sm md:block"></div>
+
+        <div class="relative mx-auto hidden min-h-[420px] max-w-7xl items-center px-4 sm:px-6 lg:px-8 md:flex">
             <div class="max-w-xl space-y-7 py-16">
                 <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight text-[#064e5f]">
                     Gimana, siap mulai jadi kontributor andalan?
