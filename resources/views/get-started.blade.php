@@ -264,13 +264,14 @@
                                 </template>
                             </div>
 
-                            <div class="mt-7 grid gap-3" :class="isLast() ? 'grid-cols-[44px_1fr_1fr]' : 'grid-cols-[44px_1fr_44px]'" x-show="offset === 0">
+                            <div class="mt-7 grid grid-cols-[44px_1fr] items-center gap-3" x-show="offset === 0">
                                 <button type="button" @click="prev()" class="flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 text-slate-700 transition hover:bg-slate-50" :class="active === 0 ? 'invisible' : ''" aria-label="Sebelumnya">
                                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
                                 </button>
-                                <button type="button" @click="next()" class="rounded-full bg-slate-950 px-5 py-3 text-xs font-black text-white transition hover:bg-slate-800" x-text="isLast() ? 'Daftar' : 'Next'"></button>
-                                <a x-show="isLast()" x-cloak href="{{ $whatsappUrl }}" target="_blank" class="rounded-full border border-slate-200 px-5 py-3 text-center text-xs font-black text-slate-950 transition hover:bg-slate-50">WA Code</a>
-                                <span x-show="!isLast()" aria-hidden="true"></span>
+                                <div class="grid gap-2" :class="isLast() ? 'grid-cols-2' : 'grid-cols-1'">
+                                    <button type="button" @click="next()" class="min-h-11 rounded-full bg-slate-950 px-5 py-3 text-xs font-black text-white transition hover:bg-slate-800" x-text="isLast() ? 'Daftar' : 'Next'"></button>
+                                    <a x-show="isLast()" x-cloak href="{{ $whatsappUrl }}" target="_blank" class="inline-flex min-h-11 items-center justify-center whitespace-nowrap rounded-full border border-slate-200 px-4 py-3 text-center text-xs font-black text-slate-950 transition hover:bg-slate-50">WA Code</a>
+                                </div>
                             </div>
                         </article>
                     </template>
@@ -320,11 +321,11 @@
                             </template>
                         </div>
 
-                        <div class="mt-7 grid grid-cols-[44px_1fr_44px] gap-3">
-                            <button type="button" @click="prev()" class="flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 text-slate-700" :class="active === 0 ? 'invisible' : ''" aria-label="Sebelumnya">
+                        <div class="mt-7 grid grid-cols-[44px_1fr_44px] items-center gap-3">
+                            <button type="button" @click="prev()" class="flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 text-slate-700 transition hover:bg-slate-50" :class="active === 0 ? 'invisible' : ''" aria-label="Sebelumnya">
                                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
                             </button>
-                            <button type="button" @click="next()" class="rounded-full bg-slate-950 px-5 py-3 text-xs font-black text-white transition hover:bg-slate-800" x-text="isLast() ? 'Daftar' : 'Next'"></button>
+                            <button type="button" @click="next()" class="min-h-11 rounded-full bg-slate-950 px-5 py-3 text-xs font-black text-white transition hover:bg-slate-800" x-text="isLast() ? 'Daftar' : 'Next'"></button>
                             <span aria-hidden="true"></span>
                         </div>
 
