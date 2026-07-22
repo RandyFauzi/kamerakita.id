@@ -33,6 +33,49 @@
         [x-cloak] {
             display: none !important;
         }
+
+        @keyframes cardReveal {
+            from {
+                opacity: 0;
+                transform: translateY(18px) scale(.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes softFloat {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes fadeRise {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .reveal-card {
+            animation: cardReveal .55s cubic-bezier(.16, 1, .3, 1) both;
+        }
+
+        .float-art {
+            animation: softFloat 4.5s ease-in-out infinite;
+        }
+
+        .fade-rise {
+            animation: fadeRise .5s cubic-bezier(.16, 1, .3, 1) both;
+        }
     </style>
 </head>
 <body class="min-h-screen overflow-x-hidden bg-[#f7f7f6] text-slate-950">
@@ -143,13 +186,13 @@
                 <div class="hidden items-center justify-center gap-7 lg:flex">
                     <template x-for="offset in [-1, 0, 1]" :key="offset">
                         <article
-                            class="flex h-[540px] w-[300px] flex-col rounded-[34px] bg-white p-6 shadow-card transition-all duration-300"
+                            class="reveal-card flex h-[540px] w-[300px] flex-col rounded-[34px] bg-white p-6 shadow-card transition-all duration-500 ease-out hover:-translate-y-2"
                             :class="offset === 0 ? 'scale-105 opacity-100' : 'scale-95 opacity-70'"
                         >
                             <div class="flex flex-1 flex-col">
                                 <div class="h-56">
                                     <template x-if="slides[cardAt(offset)].art === 'phone'">
-                                        <div class="flex h-full items-center justify-center">
+                                        <div class="float-art flex h-full items-center justify-center">
                                             <svg viewBox="0 0 220 180" class="h-full w-full" fill="none">
                                                 <path d="M68 66c-18 3-31 17-28 34 3 21 28 28 45 21l34-13c17-7 21-27 9-40-14-15-37-6-60-2z" fill="#DDF7F1"/>
                                                 <rect x="72" y="33" width="70" height="116" rx="18" fill="#2563EB"/>
@@ -160,7 +203,7 @@
                                         </div>
                                     </template>
                                     <template x-if="slides[cardAt(offset)].art === 'mail'">
-                                        <div class="flex h-full items-center justify-center">
+                                        <div class="float-art flex h-full items-center justify-center">
                                             <svg viewBox="0 0 220 180" class="h-full w-full" fill="none">
                                                 <circle cx="150" cy="52" r="32" fill="#99F6E4"/>
                                                 <path d="M62 71h98v68H62z" fill="#06B6D4"/>
@@ -171,7 +214,7 @@
                                         </div>
                                     </template>
                                     <template x-if="slides[cardAt(offset)].art === 'dashboard'">
-                                        <div class="flex h-full items-center justify-center">
+                                        <div class="float-art flex h-full items-center justify-center">
                                             <svg viewBox="0 0 220 180" class="h-full w-full" fill="none">
                                                 <rect x="46" y="36" width="128" height="96" rx="22" fill="#EDE9FE"/>
                                                 <rect x="62" y="54" width="96" height="60" rx="12" fill="#8B5CF6"/>
@@ -184,7 +227,7 @@
                                         </div>
                                     </template>
                                     <template x-if="slides[cardAt(offset)].art === 'minute'">
-                                        <div class="flex h-full items-center justify-center">
+                                        <div class="float-art flex h-full items-center justify-center">
                                             <svg viewBox="0 0 220 180" class="h-full w-full" fill="none">
                                                 <rect x="98" y="32" width="58" height="110" rx="16" fill="#111827"/>
                                                 <rect x="106" y="45" width="42" height="78" rx="8" fill="#FFEDD5"/>
@@ -198,7 +241,7 @@
                                         </div>
                                     </template>
                                     <template x-if="slides[cardAt(offset)].art === 'code'">
-                                        <div class="flex h-full items-center justify-center">
+                                        <div class="float-art flex h-full items-center justify-center">
                                             <svg viewBox="0 0 220 180" class="h-full w-full" fill="none">
                                                 <circle cx="132" cy="62" r="34" fill="#A7F3D0"/>
                                                 <path d="M119 62l10 10 22-27" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
@@ -209,7 +252,7 @@
                                         </div>
                                     </template>
                                     <template x-if="slides[cardAt(offset)].art === 'report'">
-                                        <div class="flex h-full items-center justify-center">
+                                        <div class="float-art flex h-full items-center justify-center">
                                             <svg viewBox="0 0 220 180" class="h-full w-full" fill="none">
                                                 <rect x="75" y="34" width="84" height="112" rx="22" fill="#111827"/>
                                                 <rect x="88" y="52" width="58" height="76" rx="10" fill="#F8FAFC"/>
@@ -222,7 +265,7 @@
                                     </template>
                                 </div>
 
-                                <div class="mt-auto text-center">
+                                <div class="fade-rise mt-auto text-center">
                                     <span class="text-[10px] font-black uppercase tracking-[0.24em]" :style="`color: ${slides[cardAt(offset)].accent}`" x-text="slides[cardAt(offset)].kicker"></span>
                                     <h2 class="mx-auto mt-3 max-w-[230px] text-2xl font-black leading-tight text-slate-950" x-text="slides[cardAt(offset)].title"></h2>
                                     <p class="mx-auto mt-3 max-w-[230px] text-xs leading-5 text-slate-500" x-text="slides[cardAt(offset)].body"></p>
@@ -245,13 +288,14 @@
                 </div>
 
                 <div class="mx-auto max-w-sm lg:hidden">
-                    <article class="flex min-h-[620px] flex-col rounded-[34px] bg-white p-6 shadow-card">
-                        <div class="flex justify-between text-xs font-black text-slate-950">
-                            <span>9:41</span>
-                            <span>KAMERAKITA</span>
-                        </div>
-
-                        <div class="mt-7 h-60">
+                    <article class="reveal-card flex min-h-[590px] flex-col rounded-[34px] bg-white p-6 shadow-card">
+                        <div
+                            class="h-64"
+                            :key="'mobile-art-' + active"
+                            x-transition:enter="transition ease-out duration-300"
+                            x-transition:enter-start="opacity-0 translate-y-4 scale-95"
+                            x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                        >
                             <template x-if="slides[active].art === 'phone'">
                                 <svg viewBox="0 0 220 180" class="h-full w-full" fill="none"><path d="M68 66c-18 3-31 17-28 34 3 21 28 28 45 21l34-13c17-7 21-27 9-40-14-15-37-6-60-2z" fill="#DDF7F1"/><rect x="72" y="33" width="70" height="116" rx="18" fill="#2563EB"/><rect x="84" y="47" width="46" height="77" rx="10" fill="#DBEAFE"/><path d="M52 117c16-18 32-22 47-8l20 18c8 7 6 20-4 25-22 11-53 1-71-16-8-8-1-9 8-19z" fill="#1D4ED8"/><path d="M151 45l13 13m0-13l-13 13M46 47l9 9m0-9l-9 9" stroke="#111827" stroke-width="3" stroke-linecap="round"/></svg>
                             </template>
@@ -272,7 +316,10 @@
                             </template>
                         </div>
 
-                        <div class="mt-auto text-center">
+                        <div
+                            class="fade-rise mt-auto text-center"
+                            :key="'mobile-copy-' + active"
+                        >
                             <span class="text-[10px] font-black uppercase tracking-[0.24em]" :style="`color: ${slides[active].accent}`" x-text="slides[active].kicker"></span>
                             <h2 class="mx-auto mt-3 max-w-[270px] text-2xl font-black leading-tight text-slate-950" x-text="slides[active].title"></h2>
                             <p class="mx-auto mt-3 max-w-[270px] text-xs leading-5 text-slate-500" x-text="slides[active].body"></p>
