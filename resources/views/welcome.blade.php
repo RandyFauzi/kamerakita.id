@@ -515,52 +515,72 @@
     </section>
 
     <!-- 5. Cara Kerja Section -->
-    <section id="cara-kerja" class="py-20 bg-slate-50 border-y border-slate-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="cara-kerja" class="py-20 bg-slate-50 border-y border-slate-200 relative overflow-hidden">
+        <div class="absolute left-0 top-20 h-64 w-64 rounded-full bg-sky-100 blur-3xl"></div>
+        <div class="absolute right-0 bottom-10 h-72 w-72 rounded-full bg-emerald-100 blur-3xl"></div>
+
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             
-            <div class="text-center max-w-3xl mx-auto space-y-3 mb-16">
+            <div class="text-center max-w-3xl mx-auto space-y-3 mb-14">
                 <span class="text-xs font-bold uppercase tracking-widest text-sky-700 bg-sky-100 px-3.5 py-1 rounded-full inline-block">
                     CARA KERJA
                 </span>
                 <h2 class="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-                    Gimana Cara Kerjanya? 4 Langkah Mudah
+                    Mulai kerja dengan alur yang jelas
                 </h2>
+                <p class="text-sm sm:text-base text-slate-600 leading-7">
+                    Dari pendaftaran sampai pembayaran, semuanya dibuat ringkas agar kontributor baru tidak bingung di tengah jalan.
+                </p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="relative">
+                <div class="hidden lg:block absolute left-[12%] right-[12%] top-12 h-px bg-gradient-to-r from-transparent via-sky-200 to-transparent"></div>
                 
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 text-center space-y-3">
-                    <div class="w-10 h-10 rounded-full bg-sky-600 text-white font-extrabold flex items-center justify-center mx-auto text-sm">
-                        1
-                    </div>
-                    <h4 class="text-base font-extrabold text-slate-900">Daftar Akun Gratis</h4>
-                    <p class="text-xs text-slate-500">Isi pendaftaran mitra tanpa biaya sepeser pun.</p>
-                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                    <article class="relative bg-white border border-slate-200 rounded-[1.75rem] p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg">
+                        <div class="flex items-center justify-between gap-4">
+                            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-sky-50 text-sky-700">
+                                <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM4 21a8 8 0 0116 0"/></svg>
+                            </div>
+                            <span class="flex h-9 w-9 items-center justify-center rounded-full bg-sky-600 text-xs font-black text-white">01</span>
+                        </div>
+                        <h4 class="mt-6 text-lg font-extrabold text-slate-900">Daftar akun</h4>
+                        <p class="mt-2 text-sm leading-6 text-slate-500">Buat akun gratis, isi data diri, lalu siapkan email kerja dan kode referral dari admin.</p>
+                    </article>
 
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 text-center space-y-3">
-                    <div class="w-10 h-10 rounded-full bg-sky-600 text-white font-extrabold flex items-center justify-center mx-auto text-sm">
-                        2
-                    </div>
-                    <h4 class="text-base font-extrabold text-slate-900">Rekam Video</h4>
-                    <p class="text-xs text-slate-500">Ikuti panduan mudah rekam video sesuai instruksi.</p>
-                </div>
+                    <article class="relative bg-white border border-slate-200 rounded-[1.75rem] p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg">
+                        <div class="flex items-center justify-between gap-4">
+                            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-700">
+                                <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15 10l4.55-2.28A1 1 0 0121 8.62v6.76a1 1 0 01-1.45.9L15 14M5 6h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2z"/></svg>
+                            </div>
+                            <span class="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-xs font-black text-white">02</span>
+                        </div>
+                        <h4 class="mt-6 text-lg font-extrabold text-slate-900">Rekam video</h4>
+                        <p class="mt-2 text-sm leading-6 text-slate-500">Ikuti panduan, gunakan perangkat yang sesuai, dan rekam video dengan posisi landscape.</p>
+                    </article>
 
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 text-center space-y-3">
-                    <div class="w-10 h-10 rounded-full bg-sky-600 text-white font-extrabold flex items-center justify-center mx-auto text-sm">
-                        3
-                    </div>
-                    <h4 class="text-base font-extrabold text-slate-900">Kirim Laporan & Bukti</h4>
-                    <p class="text-xs text-slate-500">Upload screenshot durasi kerja ke QC Room.</p>
-                </div>
+                    <article class="relative bg-white border border-slate-200 rounded-[1.75rem] p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg">
+                        <div class="flex items-center justify-between gap-4">
+                            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700">
+                                <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M7 16a4 4 0 01.88-7.9A5 5 0 0117.9 9H18a3 3 0 010 6h-1m-5-4v8m0 0l-3-3m3 3l3-3"/></svg>
+                            </div>
+                            <span class="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-600 text-xs font-black text-white">03</span>
+                        </div>
+                        <h4 class="mt-6 text-lg font-extrabold text-slate-900">Kirim laporan</h4>
+                        <p class="mt-2 text-sm leading-6 text-slate-500">Upload screenshot total durasi dan kualitas aplikasi agar laporan masuk antrean QC.</p>
+                    </article>
 
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 text-center space-y-3">
-                    <div class="w-10 h-10 rounded-full bg-sky-600 text-white font-extrabold flex items-center justify-center mx-auto text-sm">
-                        4
-                    </div>
-                    <h4 class="text-base font-extrabold text-slate-900">Terima Transferan</h4>
-                    <p class="text-xs text-slate-500">Hasil verifikasi disetujui & cair otomatis tiap Rabu.</p>
+                    <article class="relative bg-white border border-slate-200 rounded-[1.75rem] p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg">
+                        <div class="flex items-center justify-between gap-4">
+                            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700">
+                                <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a2 2 0 002-2V7a2 2 0 00-2-2H6a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                            </div>
+                            <span class="flex h-9 w-9 items-center justify-center rounded-full bg-cyan-600 text-xs font-black text-white">04</span>
+                        </div>
+                        <h4 class="mt-6 text-lg font-extrabold text-slate-900">Terima pembayaran</h4>
+                        <p class="mt-2 text-sm leading-6 text-slate-500">Jam approved direkap, lalu admin memproses pembayaran manual lewat transfer bank.</p>
+                    </article>
                 </div>
-
             </div>
 
         </div>
