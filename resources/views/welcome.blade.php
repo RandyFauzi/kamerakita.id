@@ -412,13 +412,13 @@
 
     <!-- 4. Interactive Income Calculator (Evermos Slider Style) -->
     <section id="kalkulator" class="py-20 bg-white" x-data="{
-        daysPerWeek: 5,
+        hoursPerDay: 2,
         dailyRate: 50000,
-        get weeklyEarnings() {
-            return this.daysPerWeek * this.dailyRate;
+        get dailyEarnings() {
+            return this.dailyRate;
         },
         get monthlyEarnings() {
-            return this.weeklyEarnings * 4;
+            return this.dailyEarnings * 30;
         },
         formatRupiah(number) {
             return 'Rp ' + number.toLocaleString('id-ID');
@@ -448,7 +448,7 @@
                     <div class="flex flex-col justify-between gap-6 rounded-3xl border border-slate-200 bg-slate-50/80 p-6 sm:p-7">
                         
                         <div class="rounded-2xl bg-white p-5 border border-slate-200 shadow-sm">
-                            <span class="text-[11px] font-black uppercase tracking-widest text-slate-400">Acuan harian</span>
+                            <span class="text-[11px] font-black uppercase tracking-widest text-slate-400">Acuan kerja</span>
                             <div class="mt-2 flex items-end justify-between gap-4">
                                 <div>
                                     <div class="text-3xl font-black tracking-tight text-slate-950" x-text="formatRupiah(dailyRate)"></div>
@@ -462,21 +462,21 @@
 
                         <div class="space-y-4">
                             <div class="flex items-center justify-between gap-4">
-                                <span class="text-sm font-extrabold text-slate-900">Hari aktif per minggu</span>
-                                <span class="rounded-full bg-sky-100 px-3 py-1 text-sm font-black text-sky-700" x-text="daysPerWeek + ' hari'"></span>
+                                <span class="text-sm font-extrabold text-slate-900">Jam kerja per hari</span>
+                                <span class="rounded-full bg-sky-100 px-3 py-1 text-sm font-black text-sky-700" x-text="hoursPerDay + ' jam'"></span>
                             </div>
-                            <input type="range" min="1" max="7" x-model.number="daysPerWeek" class="w-full accent-sky-600 cursor-pointer">
+                            <input type="range" min="1" max="8" x-model.number="hoursPerDay" class="w-full accent-sky-600 cursor-pointer">
                             <div class="flex justify-between text-[11px] text-slate-400 font-bold">
-                                <span>1 Hari</span>
-                                <span>4 Hari</span>
-                                <span>7 Hari</span>
+                                <span>1 Jam</span>
+                                <span>4 Jam</span>
+                                <span>8 Jam</span>
                             </div>
                         </div>
 
                         <div class="grid grid-cols-2 gap-3">
                             <div class="rounded-2xl bg-white p-4 border border-slate-200">
-                                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Mingguan</span>
-                                <div class="mt-1 text-lg font-black text-slate-950" x-text="formatRupiah(weeklyEarnings)"></div>
+                                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Harian</span>
+                                <div class="mt-1 text-lg font-black text-slate-950" x-text="formatRupiah(dailyEarnings)"></div>
                             </div>
                             <div class="rounded-2xl bg-white p-4 border border-slate-200">
                                 <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Bulanan</span>
@@ -489,10 +489,10 @@
                     <div class="relative overflow-hidden rounded-3xl bg-hero-solid p-7 sm:p-8 text-white shadow-xl space-y-6 text-center lg:text-left">
                         <div>
                             <span class="inline-flex rounded-full bg-white/10 px-3 py-1 text-[11px] font-black uppercase tracking-widest text-sky-200">Estimasi utama</span>
-                            <span class="mt-5 text-sm font-semibold uppercase tracking-widest text-slate-400 block">Potensi mingguan</span>
-                            <span class="text-4xl sm:text-5xl font-black mt-2 block text-white" x-text="formatRupiah(weeklyEarnings)"></span>
+                            <span class="mt-5 text-sm font-semibold uppercase tracking-widest text-slate-400 block">Potensi harian</span>
+                            <span class="text-4xl sm:text-5xl font-black mt-2 block text-white" x-text="formatRupiah(dailyEarnings)"></span>
                             <p class="mt-3 text-sm leading-6 text-slate-300">
-                                Dengan <span class="font-bold text-white" x-text="daysPerWeek + ' hari aktif'"></span> dan acuan <span class="font-bold text-white">Rp50.000/hari</span>.
+                                    Dengan <span class="font-bold text-white" x-text="hoursPerDay + ' jam kerja per hari'"></span> dan acuan <span class="font-bold text-white">Rp50.000/hari</span>.
                             </p>
                         </div>
                         <div class="pt-4 border-t border-white/20">
