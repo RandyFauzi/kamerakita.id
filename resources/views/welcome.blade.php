@@ -695,24 +695,22 @@
         </div>
     </section>
 
-    <!-- 8. Final Banner -->
-    <section class="py-16 bg-hero-solid text-white">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
-            
-            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight">
-                Gimana, Siap Wujudkan Mimpi Buat Jadi Andalan Keluarga?
-            </h2>
+    <!-- 8. Final CTA Banner -->
+    <section class="relative min-h-[420px] overflow-hidden bg-slate-100">
+        <img src="{{ asset('images/Assest/CTA.webp') }}?v={{ filemtime(public_path('images/Assest/CTA.webp')) }}" alt="Gabung menjadi kontributor KameraKita AI" class="absolute inset-0 h-full w-full object-cover object-center">
+        <div class="absolute inset-0 bg-gradient-to-r from-white via-white/80 to-white/10"></div>
+        <div class="absolute -left-10 -top-10 h-32 w-32 rounded-full bg-lime-300/70 blur-sm"></div>
 
-            <p class="text-sky-200 text-sm sm:text-base max-w-2xl mx-auto">
-                Bergabunglah bersama ribuan mitra kontributor terverifikasi di seluruh Indonesia sekarang juga.
-            </p>
+        <div class="relative mx-auto flex min-h-[420px] max-w-7xl items-center px-4 sm:px-6 lg:px-8">
+            <div class="max-w-xl space-y-7 py-16">
+                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight text-[#064e5f]">
+                    Gimana, siap mulai jadi kontributor andalan?
+                </h2>
 
-            <div class="pt-2">
-                <a href="{{ route('get-started') }}" class="btn-evermos-white px-9 py-4 text-xs font-black uppercase tracking-wider shadow-xl inline-block">
-                    Gabung Sekarang →
+                <a href="{{ route('get-started') }}" class="inline-flex min-w-[260px] items-center justify-center rounded-xl bg-[#064e5f] px-8 py-4 text-sm font-black text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-[#043f4d]">
+                    Gabung sekarang
                 </a>
             </div>
-
         </div>
     </section>
 
