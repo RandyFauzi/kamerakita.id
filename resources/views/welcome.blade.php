@@ -156,7 +156,7 @@
                                 Gabung sekarang →
                             </a>
                         @else
-                            <a href="{{ route('login') }}" class="btn-evermos-white inline-block px-8 py-3.5 text-sm sm:text-base font-extrabold shadow-lg">
+                            <a href="{{ route('get-started') }}" class="btn-evermos-white inline-block px-8 py-3.5 text-sm sm:text-base font-extrabold shadow-lg">
                                 Gabung sekarang →
                             </a>
                         @endauth
@@ -346,7 +346,7 @@
                             <span class="text-xs uppercase font-semibold text-sky-200 block">ESTIMASI TOTAL BULANAN</span>
                             <span class="text-2xl font-extrabold font-mono mt-1 block text-white" x-text="formatRupiah(monthlyEarnings)"></span>
                         </div>
-                        <a href="{{ route('register') }}" class="btn-evermos-white w-full block py-3.5 text-xs uppercase text-center shadow-md">
+                        <a href="{{ route('get-started') }}" class="btn-evermos-white w-full block py-3.5 text-xs uppercase text-center shadow-md">
                             Daftar Sekarang & Mulai Hasilkan Komisi →
                         </a>
                     </div>
@@ -528,7 +528,7 @@
             </p>
 
             <div class="pt-2">
-                <a href="{{ route('register') }}" class="btn-evermos-white px-9 py-4 text-xs font-black uppercase tracking-wider shadow-xl inline-block">
+                <a href="{{ route('get-started') }}" class="btn-evermos-white px-9 py-4 text-xs font-black uppercase tracking-wider shadow-xl inline-block">
                     Gabung Sekarang →
                 </a>
             </div>
@@ -563,7 +563,7 @@
                 <span class="block text-white font-bold uppercase tracking-wider text-[11px]">Akses Akun</span>
                 <ul class="space-y-2">
                     <li><a href="{{ route('login') }}" class="hover:text-sky-400 transition">Masuk / Daftar</a></li>
-                    <li><a href="{{ route('register') }}" class="hover:text-sky-400 transition">Daftar Kontributor Baru</a></li>
+                    <li><a href="{{ route('get-started') }}" class="hover:text-sky-400 transition">Daftar Kontributor Baru</a></li>
                     <li><a href="{{ route('dashboard') }}" class="hover:text-sky-400 transition">Dashboard Admin QC</a></li>
                 </ul>
             </div>
