@@ -166,7 +166,9 @@
                 <span class="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl bg-sky-700 shadow-sm">
                     <img src="{{ asset('images/Logo.webp') }}" alt="KAMERAKITA AI" class="h-full w-full object-contain">
                 </span>
-                <span class="text-sm font-black tracking-tight sm:text-base">KAMERAKITA<span class="text-indigo-600">.AI</span></span>
+                <span class="leading-none tracking-[-0.03em]">
+                    <span class="text-base font-black text-slate-950 sm:text-lg">KameraKita</span><span class="ml-0.5 bg-gradient-to-r from-sky-500 to-indigo-600 bg-clip-text text-base font-black text-transparent sm:text-lg">AI</span>
+                </span>
             </a>
             <div class="flex items-center gap-2">
                 <a href="{{ route('login') }}" class="rounded-full bg-white px-4 py-2 text-xs font-black text-slate-700 shadow-sm transition hover:bg-slate-50">Masuk</a>

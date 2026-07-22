@@ -14,7 +14,7 @@
                 <span class="w-8 h-8 rounded-lg overflow-hidden shrink-0 flex items-center justify-center bg-white">
                     <img src="{{ asset('images/Logo.webp') }}" alt="Kamerakita.ai" class="max-h-8 max-w-8 object-contain">
                 </span>
-                <span class="text-sm font-black tracking-wide text-slate-950 whitespace-nowrap">KAMERAKITA<span class="text-indigo-600">.AI</span></span>
+                <span class="whitespace-nowrap text-sm font-black tracking-[-0.02em] text-slate-950">KameraKita<span class="ml-0.5 bg-gradient-to-r from-sky-500 to-indigo-600 bg-clip-text text-transparent">AI</span></span>
             </a>
             <!-- Mobile Close Button (X) -->
             <button type="button" aria-label="Tutup menu navigasi" class="w-10 h-10 shrink-0 inline-flex items-center justify-center rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-50 md:hidden focus:outline-none" onclick="

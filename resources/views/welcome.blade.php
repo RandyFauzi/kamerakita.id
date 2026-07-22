@@ -100,8 +100,8 @@
                 <div class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-700 p-1 flex items-center justify-center overflow-hidden">
                     <img src="{{ asset('images/Logo.webp') }}" alt="KAMERAKITA AI Logo" class="w-full h-full object-contain rounded-lg">
                 </div>
-                <span class="text-xl font-black text-slate-900 tracking-tight font-mono">
-                    KAMERAKITA<span class="text-sky-600">AI</span>
+                <span class="text-xl font-black tracking-[-0.03em] text-slate-900">
+                    KameraKita<span class="ml-0.5 bg-gradient-to-r from-sky-500 to-indigo-600 bg-clip-text text-transparent">AI</span>
                 </span>
             </a>
 
