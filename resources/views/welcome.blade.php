@@ -586,65 +586,88 @@
         </div>
     </section>
 
-    <!-- 6. Cerita Mitra Testimonials -->
+    <!-- 6. Testimony Section -->
     <section id="mitra" class="py-20 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             
-            <div class="text-center max-w-3xl mx-auto space-y-3 mb-16">
+            <div class="text-center max-w-3xl mx-auto space-y-3 mb-12">
                 <span class="text-xs font-bold uppercase tracking-widest text-sky-700 bg-sky-100 px-3.5 py-1 rounded-full inline-block">
-                    CERITA MITRA SUKSES
+                    TESTIMONY
                 </span>
-                <h2 class="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-                    Ini Dia Cerita Mitra yang Sukses Tambah Penghasilan
+                <h2 class="text-2xl sm:text-4xl font-extrabold text-[#064e5f] tracking-tight leading-tight">
+                    Cerita kontributor yang mulai punya penghasilan tambahan
                 </h2>
+                <p class="text-sm sm:text-base text-slate-500 leading-7">
+                    Beberapa pengalaman yang menggambarkan bagaimana alur kerja, QC, dan pembayaran dijalankan dengan lebih rapi.
+                </p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                
-                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 space-y-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-sky-600 text-white font-bold flex items-center justify-center text-xs">
-                            SR
-                        </div>
-                        <div>
-                            <span class="text-sm font-extrabold text-slate-900 block">Siti Rahmawati</span>
-                            <span class="text-xs text-slate-500">Ibu Rumah Tangga - Bandung</span>
-                        </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                <article class="group relative min-h-[210px] overflow-hidden rounded-[1.65rem] bg-slate-900 shadow-sm">
+                    <div class="absolute inset-0 bg-gradient-to-br from-sky-300 via-sky-700 to-slate-950"></div>
+                    <div class="absolute left-0 bottom-0 h-40 w-40 rounded-tr-[80px] bg-white/20"></div>
+                    <div class="absolute bottom-0 left-8 h-36 w-28 rounded-t-full bg-white/25"></div>
+                    <div class="absolute inset-0 bg-gradient-to-r from-slate-950/15 via-slate-950/45 to-slate-950/75"></div>
+                    <div class="relative flex h-full min-h-[210px] flex-col justify-end p-6 text-white">
+                        <h3 class="max-w-[230px] text-2xl font-black leading-tight">Laporan rapi, pembayaran jadi lebih tenang</h3>
+                        <p class="mt-3 text-sm font-semibold text-white/80">Siti Rahmawati</p>
                     </div>
-                    <p class="text-xs text-slate-600 leading-relaxed italic">
-                        "Alhamdulillah sejak join jadi mitra kontributor KAMERAKITA AI, saya bisa nambah uang belanja tanpa mengganggu waktu urus anak. Tiap hari Rabu selalu tepat waktu transferannya!"
-                    </p>
-                </div>
+                </article>
 
-                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 space-y-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-xs">
-                            AP
-                        </div>
-                        <div>
-                            <span class="text-sm font-extrabold text-slate-900 block">Agus Prasetyo</span>
-                            <span class="text-xs text-slate-500">Mahasiswa - Surabaya</span>
-                        </div>
+                <article class="group relative min-h-[210px] overflow-hidden rounded-[1.65rem] bg-slate-900 shadow-sm">
+                    <div class="absolute inset-0 bg-gradient-to-br from-emerald-200 via-teal-600 to-slate-950"></div>
+                    <div class="absolute -left-5 bottom-0 h-44 w-44 rounded-tr-[90px] bg-white/25"></div>
+                    <div class="absolute bottom-0 left-12 h-36 w-28 rounded-t-full bg-white/25"></div>
+                    <div class="absolute inset-0 bg-gradient-to-r from-slate-950/10 via-slate-950/40 to-slate-950/80"></div>
+                    <div class="relative flex h-full min-h-[210px] flex-col justify-end p-6 text-white">
+                        <h3 class="max-w-[230px] text-2xl font-black leading-tight">Awalnya ragu, setelah rutin submit mulai terasa hasilnya</h3>
+                        <p class="mt-3 text-sm font-semibold text-white/80">Agus Prasetyo</p>
                     </div>
-                    <p class="text-xs text-slate-600 leading-relaxed italic">
-                        "Sistem rekap durasinya sangat transparan di QC Room. Saya bisa pantau mana laporan yang approved dan berapa jam yang cair. Mantap banget!"
-                    </p>
-                </div>
+                </article>
 
-                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 space-y-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center text-xs">
-                            DR
-                        </div>
-                        <div>
-                            <span class="text-sm font-extrabold text-slate-900 block">Dedi Rahmat</span>
-                            <span class="text-xs text-slate-500">Pekerja Freelance - Jakarta</span>
-                        </div>
+                <article class="group relative min-h-[210px] overflow-hidden rounded-[1.65rem] bg-slate-900 shadow-sm">
+                    <div class="absolute inset-0 bg-gradient-to-br from-indigo-200 via-indigo-700 to-slate-950"></div>
+                    <div class="absolute -left-6 bottom-0 h-44 w-48 rounded-tr-[90px] bg-white/20"></div>
+                    <div class="absolute bottom-0 left-16 h-36 w-28 rounded-t-full bg-white/25"></div>
+                    <div class="absolute inset-0 bg-gradient-to-r from-slate-950/10 via-slate-950/45 to-slate-950/80"></div>
+                    <div class="relative flex h-full min-h-[210px] flex-col justify-end p-6 text-white">
+                        <h3 class="max-w-[230px] text-2xl font-black leading-tight">QC jelas, jadi tahu laporan mana yang perlu diperbaiki</h3>
+                        <p class="mt-3 text-sm font-semibold text-white/80">Dedi Rahmat</p>
                     </div>
-                    <p class="text-xs text-slate-600 leading-relaxed italic">
-                        "Proses verifikasinya adil dan jelas. Begitu bukti disetujui, pembayarannya langsung masuk rekap mingguan. Sangat merekomendasikan!"
-                    </p>
-                </div>
+                </article>
+
+                <article class="group relative min-h-[210px] overflow-hidden rounded-[1.65rem] bg-slate-900 shadow-sm">
+                    <div class="absolute inset-0 bg-gradient-to-br from-cyan-200 via-sky-700 to-slate-950"></div>
+                    <div class="absolute -left-5 bottom-0 h-44 w-48 rounded-tr-[90px] bg-white/20"></div>
+                    <div class="absolute bottom-0 left-10 h-36 w-28 rounded-t-full bg-white/25"></div>
+                    <div class="absolute inset-0 bg-gradient-to-r from-slate-950/10 via-slate-950/40 to-slate-950/80"></div>
+                    <div class="relative flex h-full min-h-[210px] flex-col justify-end p-6 text-white">
+                        <h3 class="max-w-[230px] text-2xl font-black leading-tight">Modal HP dan waktu luang, bisa mulai dari rumah</h3>
+                        <p class="mt-3 text-sm font-semibold text-white/80">Nadia Putri</p>
+                    </div>
+                </article>
+
+                <article class="group relative min-h-[210px] overflow-hidden rounded-[1.65rem] bg-slate-900 shadow-sm">
+                    <div class="absolute inset-0 bg-gradient-to-br from-violet-200 via-violet-700 to-slate-950"></div>
+                    <div class="absolute -left-5 bottom-0 h-44 w-48 rounded-tr-[90px] bg-white/20"></div>
+                    <div class="absolute bottom-0 left-14 h-36 w-28 rounded-t-full bg-white/25"></div>
+                    <div class="absolute inset-0 bg-gradient-to-r from-slate-950/10 via-slate-950/45 to-slate-950/80"></div>
+                    <div class="relative flex h-full min-h-[210px] flex-col justify-end p-6 text-white">
+                        <h3 class="max-w-[230px] text-2xl font-black leading-tight">Dashboard bantu pantau semua status laporan</h3>
+                        <p class="mt-3 text-sm font-semibold text-white/80">Rizky Maulana</p>
+                    </div>
+                </article>
+
+                <article class="group relative min-h-[210px] overflow-hidden rounded-[1.65rem] bg-slate-900 shadow-sm">
+                    <div class="absolute inset-0 bg-gradient-to-br from-sky-200 via-blue-700 to-slate-950"></div>
+                    <div class="absolute -left-5 bottom-0 h-44 w-48 rounded-tr-[90px] bg-white/20"></div>
+                    <div class="absolute bottom-0 left-12 h-36 w-28 rounded-t-full bg-white/25"></div>
+                    <div class="absolute inset-0 bg-gradient-to-r from-slate-950/10 via-slate-950/45 to-slate-950/80"></div>
+                    <div class="relative flex h-full min-h-[210px] flex-col justify-end p-6 text-white">
+                        <h3 class="max-w-[230px] text-2xl font-black leading-tight">Catatan admin bikin submit ulang lebih terarah</h3>
+                        <p class="mt-3 text-sm font-semibold text-white/80">Maya Lestari</p>
+                    </div>
+                </article>
 
             </div>
 
