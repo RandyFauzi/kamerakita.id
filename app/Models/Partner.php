@@ -12,6 +12,10 @@ class Partner extends Model
 {
     use HasUuids, HasFactory;
 
+    public const STATUS_ACTIVE = 'active';
+    public const STATUS_INACTIVE = 'inactive';
+    public const STATUS_SUSPENDED = 'suspended';
+
     protected $fillable = [
         'partner_role',       // worker, mitra
         'mitra_parent_id',    // referencing the parent Mitra
@@ -36,6 +40,26 @@ class Partner extends Model
     protected $casts = [
         'has_headstrap' => 'boolean',
     ];
+
+    public function statusLabel(): string
+    {
+        return match ($this->status) {
+            self::STATUS_ACTIVE => 'Active',
+            self::STATUS_INACTIVE => 'Inactive',
+            self::STATUS_SUSPENDED => 'Suspended',
+            default => ucfirst((string) $this->status),
+        };
+    }
+
+    public function statusBadgeClasses(): string
+    {
+        return match ($this->status) {
+            self::STATUS_ACTIVE => 'bg-green-50 text-green-700 border-green-200',
+            self::STATUS_INACTIVE => 'bg-amber-50 text-amber-700 border-amber-200',
+            self::STATUS_SUSPENDED => 'bg-red-50 text-red-700 border-red-200',
+            default => 'bg-gray-50 text-gray-600 border-gray-200',
+        };
+    }
 
     public function user(): BelongsTo
     {

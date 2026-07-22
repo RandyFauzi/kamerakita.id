@@ -134,6 +134,7 @@
                         <select name="status" id="status" class="block w-full py-2.5 px-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
                             <option value="">Semua Status</option>
                             <option value="active" {{ $status == 'active' ? 'selected' : '' }}>Active</option>
+                            <option value="inactive" {{ $status == 'inactive' ? 'selected' : '' }}>Inactive</option>
                             <option value="suspended" {{ $status == 'suspended' ? 'selected' : '' }}>Suspended</option>
                         </select>
                     </div>
@@ -202,14 +203,8 @@
                                         {{ $partner->mitraParent->full_name ?? '-' }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        @php
-                                            $statusColors = [
-                                                'active' => 'bg-green-50 text-green-700 border-green-200',
-                                                'suspended' => 'bg-red-50 text-red-700 border-red-200',
-                                            ];
-                                        @endphp
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border {{ $statusColors[$partner->status] }}">
-                                            {{ ucfirst($partner->status) }}
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border {{ $partner->statusBadgeClasses() }}">
+                                            {{ $partner->statusLabel() }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

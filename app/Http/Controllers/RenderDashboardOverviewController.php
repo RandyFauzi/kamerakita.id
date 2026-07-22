@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Partner;
 use App\Models\VideoWorkReport;
 use App\Services\CalculatePartnerMetricsService;
+use App\Services\PartnerActivityStatusService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -25,6 +26,8 @@ class RenderDashboardOverviewController extends Controller
         $partner = Partner::where('user_id', $user->id)->first();
 
         if ($partner) {
+            $partner = app(PartnerActivityStatusService::class)->syncPartner($partner);
+
             if ($partner->partner_role === 'worker') {
                 $metrics = $this->metricsService->getWorkerMetrics($partner);
                 

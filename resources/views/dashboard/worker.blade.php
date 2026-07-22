@@ -123,8 +123,8 @@
                         </svg>
                     </div>
                     <span class="block text-xs font-bold text-gray-800">Status Kemitraan</span>
-                    <span class="bg-rose-50 border border-rose-100 text-rose-700 text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">
-                        {{ $partner->status }}
+                    <span class="border text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider {{ $partner->statusBadgeClasses() }}">
+                        {{ $partner->statusLabel() }}
                     </span>
                 </div>
             </div>

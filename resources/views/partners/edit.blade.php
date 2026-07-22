@@ -182,8 +182,10 @@
                             <label for="status" class="block text-sm font-semibold text-gray-700 mb-1">Status Kemitraan <span class="text-red-500">*</span></label>
                             <select name="status" id="status" required class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                                 <option value="active" {{ old('status', $partner->status) == 'active' ? 'selected' : '' }}>Active</option>
+                                <option value="inactive" {{ old('status', $partner->status) == 'inactive' ? 'selected' : '' }}>Inactive</option>
                                 <option value="suspended" {{ old('status', $partner->status) == 'suspended' ? 'selected' : '' }}>Suspended</option>
                             </select>
+                            <p class="text-xs text-gray-400 mt-1">Inactive otomatis jika tidak ada laporan selama 2 hari berturut. Suspended tetap manual oleh admin.</p>
                             @error('status') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
                     </div>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Partner;
 use App\Models\VideoWorkReport;
 use App\Services\EvidenceFileBackupService;
+use App\Services\PartnerActivityStatusService;
 use App\Services\StoreEvidenceImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -73,6 +74,8 @@ class SubmitVideoWorkReportController extends Controller
                 $backup = app(EvidenceFileBackupService::class);
                 $backup->backup($emailPath);
                 $backup->backup($qualityPath);
+
+                app(PartnerActivityStatusService::class)->markActiveAfterReport($partner);
             });
         } catch (Throwable $exception) {
             foreach ([$emailPath, $qualityPath] as $path) {

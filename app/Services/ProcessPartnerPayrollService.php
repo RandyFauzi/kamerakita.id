@@ -49,7 +49,7 @@ class ProcessPartnerPayrollService
      */
     public function executeAll(): array
     {
-        $partners = Partner::where('status', 'active')->get();
+        $partners = Partner::whereIn('status', [Partner::STATUS_ACTIVE, Partner::STATUS_INACTIVE])->get();
         $results = [];
 
         foreach ($partners as $partner) {

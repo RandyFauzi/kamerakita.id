@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Partner;
 use App\Models\User;
+use App\Services\PartnerActivityStatusService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -14,6 +15,8 @@ class ManagePartnerDemographicsController extends Controller
 {
     public function index(Request $request)
     {
+        app(PartnerActivityStatusService::class)->syncAllIfDue();
+
         $search = $request->input('search');
         $role = $request->input('role');
         $status = $request->input('status');
@@ -88,7 +91,7 @@ class ManagePartnerDemographicsController extends Controller
             'bank_account_owner' => 'nullable|string|max:255',
             'smartphone_type' => 'nullable|string|max:100',
             'has_headstrap' => 'required|boolean',
-            'status' => 'required|in:active,suspended',
+            'status' => 'required|in:active,inactive,suspended',
             'base_hourly_rate' => 'required|numeric|min:0',
         ]);
 
@@ -149,7 +152,7 @@ class ManagePartnerDemographicsController extends Controller
             'bank_account_owner' => 'nullable|string|max:255',
             'smartphone_type' => 'nullable|string|max:100',
             'has_headstrap' => 'required|boolean',
-            'status' => 'required|in:active,suspended',
+            'status' => 'required|in:active,inactive,suspended',
             'base_hourly_rate' => 'required|numeric|min:0',
         ]);
 
