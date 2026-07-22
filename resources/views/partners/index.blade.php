@@ -43,7 +43,7 @@
                 </div>
             @endif
 
-            <section class="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4" aria-label="Ringkasan akun kemitraan">
+            <section class="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-6 lg:gap-4" aria-label="Ringkasan akun kemitraan">
                 <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-5">
                     <div class="flex items-start justify-between gap-3">
                         <div>
@@ -88,6 +88,36 @@
                         </span>
                     </div>
                 </div>
+
+                <a href="{{ route('partners.index', array_merge(request()->except('page'), ['status' => 'active'])) }}" class="rounded-2xl border border-emerald-100 bg-white p-4 shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50/30 sm:p-5">
+                    <div class="flex items-start justify-between gap-3">
+                        <div>
+                            <span class="block text-[10px] font-black uppercase tracking-widest text-gray-400">Akun Aktif</span>
+                            <strong class="mt-2 block text-2xl font-black text-emerald-700 sm:text-3xl">{{ number_format($summary['total_active'], 0, ',', '.') }}</strong>
+                            <span class="mt-1 block text-xs text-gray-400">Mengirim laporan rutin</span>
+                        </div>
+                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </span>
+                    </div>
+                </a>
+
+                <a href="{{ route('partners.index', array_merge(request()->except('page'), ['status' => 'inactive'])) }}" class="rounded-2xl border border-amber-100 bg-white p-4 shadow-sm transition hover:border-amber-200 hover:bg-amber-50/30 sm:p-5">
+                    <div class="flex items-start justify-between gap-3">
+                        <div>
+                            <span class="block text-[10px] font-black uppercase tracking-widest text-gray-400">Akun Inactive</span>
+                            <strong class="mt-2 block text-2xl font-black text-amber-700 sm:text-3xl">{{ number_format($summary['total_inactive'], 0, ',', '.') }}</strong>
+                            <span class="mt-1 block text-xs text-gray-400">Tidak laporan 2 hari</span>
+                        </div>
+                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 2m6-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </span>
+                    </div>
+                </a>
 
                 <div class="rounded-2xl border border-rose-100 bg-white p-4 shadow-sm sm:p-5">
                     <div class="flex items-start justify-between gap-3">

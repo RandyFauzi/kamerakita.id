@@ -25,6 +25,8 @@ class ManagePartnerDemographicsController extends Controller
             ->selectRaw('COUNT(*) as total_users')
             ->selectRaw("SUM(CASE WHEN partner_role = 'worker' THEN 1 ELSE 0 END) as total_workers")
             ->selectRaw("SUM(CASE WHEN partner_role = 'mitra' THEN 1 ELSE 0 END) as total_mitra")
+            ->selectRaw("SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) as total_active")
+            ->selectRaw("SUM(CASE WHEN status = 'inactive' THEN 1 ELSE 0 END) as total_inactive")
             ->selectRaw("SUM(CASE WHEN status = 'suspended' THEN 1 ELSE 0 END) as total_suspended")
             ->first();
 
@@ -32,6 +34,8 @@ class ManagePartnerDemographicsController extends Controller
             'total_users' => (int) $summaryRow->total_users,
             'total_workers' => (int) $summaryRow->total_workers,
             'total_mitra' => (int) $summaryRow->total_mitra,
+            'total_active' => (int) $summaryRow->total_active,
+            'total_inactive' => (int) $summaryRow->total_inactive,
             'total_suspended' => (int) $summaryRow->total_suspended,
         ];
 
