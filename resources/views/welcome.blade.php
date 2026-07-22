@@ -412,11 +412,10 @@
 
     <!-- 4. Interactive Income Calculator (Evermos Slider Style) -->
     <section id="kalkulator" class="py-20 bg-white" x-data="{
-        hoursPerDay: 2,
         daysPerWeek: 5,
-        ratePerHour: 45000,
+        dailyRate: 50000,
         get weeklyEarnings() {
-            return this.hoursPerDay * this.daysPerWeek * this.ratePerHour;
+            return this.daysPerWeek * this.dailyRate;
         },
         get monthlyEarnings() {
             return this.weeklyEarnings * 4;
@@ -425,70 +424,87 @@
             return 'Rp ' + number.toLocaleString('id-ID');
         }
     }">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             
-            <div class="bg-white border-2 border-slate-200 rounded-3xl p-8 sm:p-12 shadow-xl">
+            <div class="relative overflow-hidden bg-white border border-slate-200 rounded-[2rem] p-6 sm:p-10 lg:p-12 shadow-[0_24px_70px_rgba(15,23,42,0.10)]">
+                <div class="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-sky-100 blur-3xl"></div>
+                <div class="absolute -left-20 bottom-0 h-56 w-56 rounded-full bg-emerald-100 blur-3xl"></div>
                 
-                <div class="text-center space-y-3 mb-10">
+                <div class="relative text-center space-y-3 mb-10">
                     <span class="text-xs font-bold uppercase tracking-widest text-sky-700 bg-sky-100 px-3.5 py-1 rounded-full inline-block">
-                        KALKULATOR ESTIMASI PENGHASILAN
+                        SIMULASI PENDAPATAN
                     </span>
                     <h2 class="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-                        Hitung Target Komisi Biar Makin Yakin Berikhtiar
+                        Lihat gambaran penghasilan dengan target harian
                     </h2>
-                    <p class="text-slate-600 text-xs sm:text-sm">
-                        Geser simulasi jam kerja di bawah untuk melihat potensi komisi mingguan dan bulanan yang bisa Anda dapatkan!
+                    <p class="text-slate-600 text-sm sm:text-base max-w-2xl mx-auto leading-7">
+                        Estimasi dibuat sederhana dengan acuan Rp50.000 per hari aktif. Hasil akhir tetap mengikuti laporan yang lolos QC.
                     </p>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center pt-4">
+                <div class="relative grid grid-cols-1 lg:grid-cols-[1fr_1.05fr] gap-8 items-stretch pt-2">
                     
-                    <!-- Sliders Input -->
-                    <div class="space-y-6 bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                    <!-- Input Panel -->
+                    <div class="flex flex-col justify-between gap-6 rounded-3xl border border-slate-200 bg-slate-50/80 p-6 sm:p-7">
                         
-                        <!-- Slider 1 -->
-                        <div class="space-y-2">
-                            <div class="flex justify-between text-xs font-bold text-slate-800">
-                                <span>Jam Kerja per Hari:</span>
-                                <span class="text-sky-700 font-mono font-extrabold text-sm" x-text="hoursPerDay + ' Jam'"></span>
-                            </div>
-                            <input type="range" min="1" max="8" x-model="hoursPerDay" class="w-full accent-sky-600 cursor-pointer">
-                            <div class="flex justify-between text-[10px] text-slate-400 font-bold">
-                                <span>1 Jam</span>
-                                <span>4 Jam</span>
-                                <span>8 Jam</span>
+                        <div class="rounded-2xl bg-white p-5 border border-slate-200 shadow-sm">
+                            <span class="text-[11px] font-black uppercase tracking-widest text-slate-400">Acuan harian</span>
+                            <div class="mt-2 flex items-end justify-between gap-4">
+                                <div>
+                                    <div class="text-3xl font-black tracking-tight text-slate-950" x-text="formatRupiah(dailyRate)"></div>
+                                    <p class="mt-1 text-xs leading-5 text-slate-500">Per hari aktif dengan laporan yang sesuai panduan.</p>
+                                </div>
+                                <div class="hidden h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 sm:flex">
+                                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 8c-2.2 0-4 .9-4 2s1.8 2 4 2 4 .9 4 2-1.8 2-4 2m0-10v12"/></svg>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Slider 2 -->
-                        <div class="space-y-2">
-                            <div class="flex justify-between text-xs font-bold text-slate-800">
-                                <span>Hari Kerja per Minggu:</span>
-                                <span class="text-sky-700 font-mono font-extrabold text-sm" x-text="daysPerWeek + ' Hari'"></span>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between gap-4">
+                                <span class="text-sm font-extrabold text-slate-900">Hari aktif per minggu</span>
+                                <span class="rounded-full bg-sky-100 px-3 py-1 text-sm font-black text-sky-700" x-text="daysPerWeek + ' hari'"></span>
                             </div>
-                            <input type="range" min="1" max="7" x-model="daysPerWeek" class="w-full accent-sky-600 cursor-pointer">
-                            <div class="flex justify-between text-[10px] text-slate-400 font-bold">
+                            <input type="range" min="1" max="7" x-model.number="daysPerWeek" class="w-full accent-sky-600 cursor-pointer">
+                            <div class="flex justify-between text-[11px] text-slate-400 font-bold">
                                 <span>1 Hari</span>
-                                <span>5 Hari</span>
+                                <span>4 Hari</span>
                                 <span>7 Hari</span>
                             </div>
                         </div>
 
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="rounded-2xl bg-white p-4 border border-slate-200">
+                                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Mingguan</span>
+                                <div class="mt-1 text-lg font-black text-slate-950" x-text="formatRupiah(weeklyEarnings)"></div>
+                            </div>
+                            <div class="rounded-2xl bg-white p-4 border border-slate-200">
+                                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Bulanan</span>
+                                <div class="mt-1 text-lg font-black text-slate-950" x-text="formatRupiah(monthlyEarnings)"></div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Earnings Output Box -->
-                    <div class="bg-hero-solid text-white p-8 rounded-2xl shadow-lg space-y-6 text-center lg:text-left">
+                    <div class="relative overflow-hidden rounded-3xl bg-slate-950 p-7 sm:p-8 text-white shadow-xl space-y-6 text-center lg:text-left">
                         <div>
-                            <span class="text-xs uppercase font-semibold text-sky-200 block">ESTIMASI PENGHASILAN MINGGUAN (DITRANSFER TIAP RABU)</span>
-                            <span class="text-3xl sm:text-4xl font-black font-mono mt-1 block text-sky-300" x-text="formatRupiah(weeklyEarnings)"></span>
+                            <span class="inline-flex rounded-full bg-white/10 px-3 py-1 text-[11px] font-black uppercase tracking-widest text-sky-200">Estimasi utama</span>
+                            <span class="mt-5 text-sm font-semibold uppercase tracking-widest text-slate-400 block">Potensi mingguan</span>
+                            <span class="text-4xl sm:text-5xl font-black mt-2 block text-white" x-text="formatRupiah(weeklyEarnings)"></span>
+                            <p class="mt-3 text-sm leading-6 text-slate-300">
+                                Dengan <span class="font-bold text-white" x-text="daysPerWeek + ' hari aktif'"></span> dan acuan <span class="font-bold text-white">Rp50.000/hari</span>.
+                            </p>
                         </div>
                         <div class="pt-4 border-t border-white/20">
-                            <span class="text-xs uppercase font-semibold text-sky-200 block">ESTIMASI TOTAL BULANAN</span>
-                            <span class="text-2xl font-extrabold font-mono mt-1 block text-white" x-text="formatRupiah(monthlyEarnings)"></span>
+                            <span class="text-xs uppercase font-semibold text-slate-400 block">ESTIMASI TOTAL BULANAN</span>
+                            <span class="text-2xl font-extrabold mt-1 block text-sky-300" x-text="formatRupiah(monthlyEarnings)"></span>
                         </div>
                         <a href="{{ route('get-started') }}" class="btn-evermos-white w-full block py-3.5 text-xs uppercase text-center shadow-md">
-                            Daftar Sekarang & Mulai Hasilkan Komisi →
+                            Mulai dari tutorial singkat ->
                         </a>
+                        <p class="text-center text-[11px] leading-5 text-slate-400">
+                            Simulasi bukan jaminan pendapatan. Nominal mengikuti laporan approved dan ketentuan operasional.
+                        </p>
                     </div>
 
                 </div>
