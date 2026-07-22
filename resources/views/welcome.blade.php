@@ -90,6 +90,9 @@
     </style>
 </head>
 <body class="antialiased selection:bg-sky-500 selection:text-white">
+    @php
+        $whatsappJoinUrl = 'https://wa.me/6287886272647?text='.rawurlencode('Halo Admin KameraKita AI, saya ingin gabung grup WA pendaftaran kontributor.');
+    @endphp
 
     <!-- 1. Top Navbar (Clean White background, exact Evermos layout) -->
     <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
@@ -114,7 +117,7 @@
                     Kalkulator <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </a>
                 <a href="#cara-kerja" class="hover:text-sky-600 transition">Cara Kerja</a>
-                <a href="#mitra" class="hover:text-sky-600 transition">Cerita Mitra</a>
+                <a href="#mitra" class="hover:text-sky-600 transition">Testimony</a>
                 <a href="#faq" class="hover:text-sky-600 transition">FAQ</a>
             </nav>
 
@@ -144,10 +147,13 @@
                     
                     <!-- Headline H1 (Larger & Clean Line Breaks) -->
                     <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.14]">
-                        Saatnya Anda jadi <br/>
-                        <span class="text-[#FDE047] italic font-serif font-normal">andalan keluarga</span> <br/>
-                        lewat penghasilan tambahan
+                        Kerja rumah <br/>
+                        jadi <span class="text-[#FDE047] italic font-serif font-normal">cuan!</span>
                     </h1>
+
+                    <p class="max-w-2xl text-base sm:text-xl leading-8 text-sky-50/90">
+                        Sambil ngepel, nyuci piring, atau beres-beres rumah, kamu bisa dapat penghasilan tambahan sampai jutaan rupiah sebulan. Tanpa modal, cukup rekam pakai HP-mu.
+                    </p>
 
                     <!-- Hero Call to Action Button -->
                     <div class="pt-2">
@@ -156,8 +162,8 @@
                                 Gabung sekarang →
                             </a>
                         @else
-                            <a href="{{ route('get-started') }}" class="btn-evermos-white inline-block px-8 py-3.5 text-sm sm:text-base font-extrabold shadow-lg">
-                                Gabung sekarang →
+                            <a href="{{ $whatsappJoinUrl }}" target="_blank" class="btn-evermos-white inline-block px-8 py-3.5 text-sm sm:text-base font-extrabold shadow-lg">
+                                Gabung Grup WA
                             </a>
                         @endauth
                     </div>
@@ -198,23 +204,23 @@
 
         <div class="max-w-5xl mx-auto text-center relative z-10">
             <p class="text-slate-800 text-lg sm:text-2xl lg:text-3xl font-medium leading-relaxed sm:leading-snug tracking-tight">
-                Dengan jadi <span class="text-pink-600 font-extrabold">mitra kontributor</span> KAMERAKITA AI, Anda bisa punya <span class="font-extrabold text-slate-900">penghasilan tambahan</span> lewat <span class="font-extrabold text-slate-900">rekam <span class="text-pink-600 font-extrabold">video</span> tugas harian tanpa modal!</span> Di sini Anda bisa dapat komisi mingguan rutin, <span class="font-extrabold text-slate-900">sistem QC transparan</span>, & bimbingan langsung dari <span class="font-extrabold text-slate-900">tim verifikator berpengalaman</span>.
+                Dengan jadi <span class="text-pink-600 font-extrabold">kontributor</span> KAMERAKITA AI, aktivitas rumah yang biasa kamu lakukan bisa jadi <span class="font-extrabold text-slate-900">peluang penghasilan tambahan</span>. Cukup rekam pakai HP, ikuti panduan, lalu durasi yang lolos QC masuk ke <span class="font-extrabold text-slate-900">rekap cuan mingguan</span>.
             </p>
         </div>
     </section>
 
     <!-- Visual Benefit Mosaic Section -->
-    <section class="bg-white py-16 sm:py-20 px-4 sm:px-6 border-b border-slate-200">
+    <section id="keunggulan" class="bg-white py-16 sm:py-20 px-4 sm:px-6 border-b border-slate-200">
         <div class="max-w-6xl mx-auto">
             <div class="text-center max-w-3xl mx-auto mb-10 sm:mb-12">
                 <span class="text-xs font-bold uppercase tracking-widest text-sky-700 bg-sky-100 px-3.5 py-1 rounded-full inline-block">
-                    ALASAN BERGABUNG
+                    KENAPA HARUS GABUNG?
                 </span>
                 <h2 class="mt-4 text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
-                    Kenapa kamu cocok jadi Kontributor KameraKita AI?
+                    Kerja simpel, hasil maksimal!
                 </h2>
                 <p class="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed">
-                    Pekerjaan lebih jelas, laporan tercatat, dan pendapatan bisa dipantau dari dashboard yang transparan.
+                    Kamu cukup rekam aktivitas harian dari rumah. Laporan yang lolos approved akan masuk rekap pendapatan secara transparan.
                 </p>
             </div>
 
@@ -222,10 +228,10 @@
                 <article class="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-sky-50 to-cyan-100 p-7 min-h-[260px] md:col-span-3 lg:col-span-4 shadow-sm border border-sky-100">
                     <div class="relative z-10 max-w-[230px]">
                         <h3 class="text-2xl font-extrabold leading-tight text-slate-900">
-                            Tidak perlu stok, packing, atau kirim barang
+                            Gak perlu stok dan packing
                         </h3>
                         <p class="mt-3 text-sm leading-6 text-slate-600">
-                            Fokus kerjakan tugas rekam video sesuai panduan dari HP pribadi.
+                            Cukup rekam aktivitas harianmu dari HP, gak perlu pusing jualan barang.
                         </p>
                     </div>
                     <div class="absolute bottom-0 right-3 h-36 w-32 rounded-t-[48px] bg-white/55 border border-white/70"></div>
@@ -236,10 +242,10 @@
                 <article class="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-emerald-50 to-lime-100 p-7 min-h-[260px] md:col-span-3 lg:col-span-4 shadow-sm border border-emerald-100">
                     <div class="relative z-10 max-w-[220px]">
                         <h3 class="text-2xl font-extrabold leading-tight text-slate-900">
-                            Komisi dihitung dari durasi yang disetujui
+                            Dibayar dari durasi video
                         </h3>
                         <p class="mt-3 text-sm leading-6 text-slate-600">
-                            Setiap menit approved masuk rekap dan bisa dilihat transparan.
+                            Setiap durasi rekaman yang lolos approved langsung dihitung ke estimasi cuan.
                         </p>
                     </div>
                     <div class="absolute right-7 top-8 flex h-24 w-24 items-center justify-center rounded-full bg-white/70 text-3xl font-black text-emerald-600">
@@ -251,10 +257,10 @@
                 <article class="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-indigo-50 to-violet-100 p-7 min-h-[260px] md:col-span-6 lg:col-span-4 lg:row-span-2 shadow-sm border border-indigo-100">
                     <div class="relative z-10 max-w-[260px]">
                         <h3 class="text-2xl font-extrabold leading-tight text-slate-900">
-                            Dibantu tim admin dan verifikator
+                            Bantu AI bikin pintar
                         </h3>
                         <p class="mt-3 text-sm leading-6 text-slate-600">
-                            Ada arahan untuk laporan, catatan QC, dan perbaikan bila data belum sesuai.
+                            Rekamanmu dipakai untuk membantu AI memahami aktivitas rumah tangga dengan lebih baik.
                         </p>
                     </div>
                     <div class="absolute bottom-0 left-8 right-8 h-52 rounded-t-[90px] bg-white/60 border border-white/70"></div>
@@ -269,10 +275,10 @@
                 <article class="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-amber-50 to-orange-100 p-7 min-h-[230px] md:col-span-3 lg:col-span-4 shadow-sm border border-orange-100">
                     <div class="relative z-10 max-w-[210px]">
                         <h3 class="text-2xl font-extrabold leading-tight text-slate-900">
-                            Cukup ikuti panduan kerja harian
+                            Panduan super simpel
                         </h3>
                         <p class="mt-3 text-sm leading-6 text-slate-600">
-                            Tutorial dan manual book membantu worker baru mulai lebih tenang.
+                            Ada tutorial ringkas dari admin, jadi pemula pun bisa mulai dengan alur yang jelas.
                         </p>
                     </div>
                     <div class="absolute bottom-7 right-8 h-24 w-24 rounded-3xl bg-white/70 rotate-6"></div>
@@ -283,10 +289,10 @@
                 <article class="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-rose-50 to-pink-100 p-7 min-h-[230px] md:col-span-3 lg:col-span-4 shadow-sm border border-rose-100">
                     <div class="relative z-10 max-w-[220px]">
                         <h3 class="text-2xl font-extrabold leading-tight text-slate-900">
-                            Pembayaran manual lebih aman
+                            Rekap aman dan transparan
                         </h3>
                         <p class="mt-3 text-sm leading-6 text-slate-600">
-                            Admin memproses transfer berdasarkan rekap approved yang sudah diverifikasi.
+                            Jam approved tercatat rapi, lalu pembayaran diproses sesuai jadwal operasional.
                         </p>
                     </div>
                     <div class="absolute bottom-6 right-8 rounded-2xl bg-white/75 px-5 py-4 shadow-sm">
@@ -299,7 +305,7 @@
     </section>
 
     <!-- 3. Brand / Partner Logo Section -->
-    <section id="keunggulan" class="py-16 sm:py-20 bg-slate-50 border-b border-slate-200">
+    <section class="py-16 sm:py-20 bg-slate-50 border-b border-slate-200">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-3xl mx-auto">
                 <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#064e5f] tracking-tight leading-tight">
@@ -414,11 +420,19 @@
     <section id="kalkulator" class="py-20 bg-white" x-data="{
         hoursPerDay: 2,
         hourlyRate: 50000,
+        presets: [
+            { hours: 2, label: 'Santai', tone: 'Mulai pelan, tetap produktif' },
+            { hours: 4, label: 'Fokus', tone: 'Lebih rutin, hasil lebih terasa' },
+            { hours: 6, label: 'Gacor Ketua!!!', tone: 'Mode serius cari cuan' },
+        ],
+        get weeklyEarnings() {
+            return this.hoursPerDay * this.hourlyRate * 7;
+        },
         get dailyEarnings() {
             return this.hoursPerDay * this.hourlyRate;
         },
         get monthlyEarnings() {
-            return this.dailyEarnings * 30;
+            return this.weeklyEarnings * 4;
         },
         formatRupiah(number) {
             return 'Rp ' + number.toLocaleString('id-ID');
@@ -432,13 +446,13 @@
                 
                 <div class="relative text-center space-y-3 mb-10">
                     <span class="text-xs font-bold uppercase tracking-widest text-sky-700 bg-sky-100 px-3.5 py-1 rounded-full inline-block">
-                        SIMULASI PENDAPATAN
+                        SIMULASI CUAN MINGGUAN
                     </span>
                     <h2 class="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-                        Lihat gambaran penghasilan dengan target harian
+                        Pilih ritme kerja yang paling cocok
                     </h2>
                     <p class="text-slate-600 text-sm sm:text-base max-w-2xl mx-auto leading-7">
-                        Estimasi dibuat sederhana dengan acuan Rp50.000 per jam kerja. Hasil akhir tetap mengikuti laporan yang lolos QC.
+                        Rate dasar Rp50.000 per jam rekaman bersih. Simulasi ini membantu kamu membayangkan potensi cuan mingguan sebelum mulai.
                     </p>
                 </div>
 
@@ -460,17 +474,19 @@
                             </div>
                         </div>
 
-                        <div class="space-y-4">
-                            <div class="flex items-center justify-between gap-4">
-                                <span class="text-sm font-extrabold text-slate-900">Jam kerja per hari</span>
-                                <span class="rounded-full bg-sky-100 px-3 py-1 text-sm font-black text-sky-700" x-text="hoursPerDay + ' jam'"></span>
-                            </div>
-                            <input type="range" min="1" max="8" x-model.number="hoursPerDay" class="w-full accent-sky-600 cursor-pointer">
-                            <div class="flex justify-between text-[11px] text-slate-400 font-bold">
-                                <span>1 Jam</span>
-                                <span>4 Jam</span>
-                                <span>8 Jam</span>
-                            </div>
+                        <div class="space-y-3">
+                            <span class="text-sm font-extrabold text-slate-900">Pilih simulasi kerja</span>
+                            <template x-for="preset in presets" :key="preset.hours">
+                                <button type="button" @click="hoursPerDay = preset.hours" class="w-full rounded-2xl border p-4 text-left transition hover:-translate-y-0.5 hover:shadow-sm" :class="hoursPerDay === preset.hours ? 'border-sky-300 bg-sky-50' : 'border-slate-200 bg-white'">
+                                    <span class="flex items-center justify-between gap-4">
+                                        <span>
+                                            <span class="block text-base font-black text-slate-950" x-text="preset.label"></span>
+                                            <span class="mt-1 block text-xs font-semibold text-slate-500" x-text="preset.tone"></span>
+                                        </span>
+                                        <span class="rounded-full bg-white px-3 py-1 text-sm font-black text-sky-700 shadow-sm" x-text="preset.hours + ' jam/hari'"></span>
+                                    </span>
+                                </button>
+                            </template>
                         </div>
 
                         <div class="grid grid-cols-2 gap-3">
@@ -489,18 +505,18 @@
                     <div class="relative overflow-hidden rounded-3xl bg-hero-solid p-7 sm:p-8 text-white shadow-xl space-y-6 text-center lg:text-left">
                         <div>
                             <span class="inline-flex rounded-full bg-white/10 px-3 py-1 text-[11px] font-black uppercase tracking-widest text-sky-200">Estimasi utama</span>
-                            <span class="mt-5 text-sm font-semibold uppercase tracking-widest text-slate-400 block">Potensi harian</span>
-                            <span class="text-4xl sm:text-5xl font-black mt-2 block text-white" x-text="formatRupiah(dailyEarnings)"></span>
+                            <span class="mt-5 text-sm font-semibold uppercase tracking-widest text-slate-400 block">Potensi mingguan</span>
+                            <span class="text-4xl sm:text-5xl font-black mt-2 block text-white" x-text="'~ ' + formatRupiah(weeklyEarnings)"></span>
                             <p class="mt-3 text-sm leading-6 text-slate-300">
-                                    Dengan <span class="font-bold text-white" x-text="hoursPerDay + ' jam kerja per hari'"></span> dan acuan <span class="font-bold text-white">Rp50.000/jam</span>.
+                                    Dengan <span class="font-bold text-white" x-text="hoursPerDay + ' jam/hari'"></span> dan rate dasar <span class="font-bold text-white">Rp50.000/jam</span>.
                             </p>
                         </div>
                         <div class="pt-4 border-t border-white/20">
                             <span class="text-xs uppercase font-semibold text-slate-400 block">ESTIMASI TOTAL BULANAN</span>
                             <span class="text-2xl font-extrabold mt-1 block text-sky-300" x-text="formatRupiah(monthlyEarnings)"></span>
                         </div>
-                        <a href="{{ route('get-started') }}" class="btn-evermos-white w-full block py-3.5 text-xs uppercase text-center shadow-md">
-                            Mulai dari tutorial singkat ->
+                        <a href="{{ $whatsappJoinUrl }}" target="_blank" class="btn-evermos-white w-full block py-3.5 text-xs uppercase text-center shadow-md">
+                            Gabung Grup WA
                         </a>
                         <p class="text-center text-[11px] leading-5 text-slate-400">
                             Simulasi bukan jaminan pendapatan. Nominal mengikuti laporan approved dan ketentuan operasional.
@@ -526,17 +542,17 @@
                     CARA KERJA
                 </span>
                 <h2 class="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-                    Mulai kerja dengan alur yang jelas
+                    Alur pendaftaran mudah dan cepat
                 </h2>
                 <p class="text-sm sm:text-base text-slate-600 leading-7">
-                    Dari pendaftaran sampai pembayaran, semuanya dibuat ringkas agar kontributor baru tidak bingung di tengah jalan.
+                    Mulai dari grup WhatsApp, briefing, sampai setor video. Semua langkah dibuat ringkas agar kamu tahu harus mulai dari mana.
                 </p>
             </div>
 
             <div class="relative">
-                <div class="hidden lg:block absolute left-[12%] right-[12%] top-12 h-px bg-gradient-to-r from-transparent via-sky-200 to-transparent"></div>
+                <div class="hidden lg:block absolute left-[10%] right-[10%] top-12 h-px bg-gradient-to-r from-transparent via-sky-200 to-transparent"></div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5">
                     <article class="relative bg-white border border-slate-200 rounded-[1.75rem] p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg">
                         <div class="flex items-center justify-between gap-4">
                             <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-sky-50 text-sky-700">
@@ -544,8 +560,8 @@
                             </div>
                             <span class="flex h-9 w-9 items-center justify-center rounded-full bg-sky-600 text-xs font-black text-white">01</span>
                         </div>
-                        <h4 class="mt-6 text-lg font-extrabold text-slate-900">Daftar akun</h4>
-                        <p class="mt-2 text-sm leading-6 text-slate-500">Buat akun gratis, isi data diri, lalu siapkan email kerja dan kode referral dari admin.</p>
+                        <h4 class="mt-6 text-lg font-extrabold text-slate-900">Masuk Grup WhatsApp</h4>
+                        <p class="mt-2 text-sm leading-6 text-slate-500">Klik gabung, lalu admin akan arahkan kamu ke grup koordinasi pendaftaran KameraKita AI.</p>
                     </article>
 
                     <article class="relative bg-white border border-slate-200 rounded-[1.75rem] p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg">
@@ -555,8 +571,8 @@
                             </div>
                             <span class="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-xs font-black text-white">02</span>
                         </div>
-                        <h4 class="mt-6 text-lg font-extrabold text-slate-900">Rekam video</h4>
-                        <p class="mt-2 text-sm leading-6 text-slate-500">Ikuti panduan, gunakan perangkat yang sesuai, dan rekam video dengan posisi landscape.</p>
+                        <h4 class="mt-6 text-lg font-extrabold text-slate-900">Briefing dan alat</h4>
+                        <p class="mt-2 text-sm leading-6 text-slate-500">Ikuti penjelasan singkat. Kebutuhan headstrap akan dijelaskan admin sesuai ketentuan.</p>
                     </article>
 
                     <article class="relative bg-white border border-slate-200 rounded-[1.75rem] p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg">
@@ -566,8 +582,8 @@
                             </div>
                             <span class="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-600 text-xs font-black text-white">03</span>
                         </div>
-                        <h4 class="mt-6 text-lg font-extrabold text-slate-900">Kirim laporan</h4>
-                        <p class="mt-2 text-sm leading-6 text-slate-500">Upload screenshot total durasi dan kualitas aplikasi agar laporan masuk antrean QC.</p>
+                        <h4 class="mt-6 text-lg font-extrabold text-slate-900">Rekam kegiatan rumah</h4>
+                        <p class="mt-2 text-sm leading-6 text-slate-500">Rekam aktivitas seperti beres-beres, nyapu, atau rutinitas rumah lain memakai HP.</p>
                     </article>
 
                     <article class="relative bg-white border border-slate-200 rounded-[1.75rem] p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg">
@@ -577,8 +593,19 @@
                             </div>
                             <span class="flex h-9 w-9 items-center justify-center rounded-full bg-cyan-600 text-xs font-black text-white">04</span>
                         </div>
-                        <h4 class="mt-6 text-lg font-extrabold text-slate-900">Terima pembayaran</h4>
-                        <p class="mt-2 text-sm leading-6 text-slate-500">Jam approved direkap, lalu admin memproses pembayaran manual lewat transfer bank.</p>
+                        <h4 class="mt-6 text-lg font-extrabold text-slate-900">Setor dan verifikasi</h4>
+                        <p class="mt-2 text-sm leading-6 text-slate-500">Unggah rekaman atau laporan sesuai arahan. Tim akan mengecek hasilnya lewat proses QC.</p>
+                    </article>
+
+                    <article class="relative bg-white border border-slate-200 rounded-[1.75rem] p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg">
+                        <div class="flex items-center justify-between gap-4">
+                            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-teal-50 text-teal-700">
+                                <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 8c-2.2 0-4 .9-4 2s1.8 2 4 2 4 .9 4 2-1.8 2-4 2m0-10v12M4 6h16M6 18h12"/></svg>
+                            </div>
+                            <span class="flex h-9 w-9 items-center justify-center rounded-full bg-teal-600 text-xs font-black text-white">05</span>
+                        </div>
+                        <h4 class="mt-6 text-lg font-extrabold text-slate-900">Terima cuan mingguan</h4>
+                        <p class="mt-2 text-sm leading-6 text-slate-500">Durasi approved masuk rekap, lalu pembayaran diproses ke rekening atau e-wallet sesuai jadwal.</p>
                     </article>
                 </div>
             </div>
@@ -686,7 +713,7 @@
                         <span x-text="activeFaq === 2 ? '−' : '+'" class="text-lg font-bold text-sky-600"></span>
                     </div>
                     <div x-show="activeFaq === 2" x-collapse class="pt-3 text-xs text-slate-600 leading-relaxed">
-                        Pencairan komisi dilakukan secara berkala setiap minggunya pada **hari Rabu** secara otomatis ke rekening bank yang terdaftar.
+                        Pencairan komisi diproses manual oleh admin sesuai jadwal operasional berdasarkan rekap durasi yang sudah approved.
                     </div>
                 </div>
 
@@ -702,11 +729,14 @@
             <div class="bg-white px-4 py-8">
                 <div class="mx-auto max-w-sm space-y-5">
                     <h2 class="text-3xl font-black tracking-tight leading-tight text-[#064e5f]">
-                        Gimana, siap mulai jadi kontributor andalan?
+                        Siap ubah kerja rumah jadi cuan sampingan?
                     </h2>
+                    <p class="text-sm leading-6 text-slate-600">
+                        Kuota mitra terbatas di tiap wilayah. Jangan lewatkan kesempatan jadi perintis KameraKita AI.
+                    </p>
 
-                    <a href="{{ route('get-started') }}" class="inline-flex w-full items-center justify-center rounded-xl bg-[#064e5f] px-8 py-4 text-sm font-black text-white shadow-lg transition hover:bg-[#043f4d]">
-                        Gabung sekarang
+                    <a href="{{ $whatsappJoinUrl }}" target="_blank" class="inline-flex w-full items-center justify-center rounded-xl bg-[#064e5f] px-8 py-4 text-sm font-black text-white shadow-lg transition hover:bg-[#043f4d]">
+                        Gabung Grup WA Pendaftaran ->
                     </a>
                 </div>
             </div>
@@ -719,11 +749,14 @@
         <div class="relative mx-auto hidden min-h-[420px] max-w-7xl items-center px-4 sm:px-6 lg:px-8 md:flex">
             <div class="max-w-xl space-y-7 py-16">
                 <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight text-[#064e5f]">
-                    Gimana, siap mulai jadi kontributor andalan?
+                    Siap ubah kerja rumah jadi cuan sampingan?
                 </h2>
+                <p class="max-w-lg text-base leading-7 text-slate-600">
+                    Kuota mitra terbatas di tiap wilayah. Jangan lewatkan kesempatan jadi perintis KameraKita AI.
+                </p>
 
-                <a href="{{ route('get-started') }}" class="inline-flex min-w-[260px] items-center justify-center rounded-xl bg-[#064e5f] px-8 py-4 text-sm font-black text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-[#043f4d]">
-                    Gabung sekarang
+                <a href="{{ $whatsappJoinUrl }}" target="_blank" class="inline-flex min-w-[260px] items-center justify-center rounded-xl bg-[#064e5f] px-8 py-4 text-sm font-black text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-[#043f4d]">
+                    Gabung Grup WA Pendaftaran ->
                 </a>
             </div>
         </div>
