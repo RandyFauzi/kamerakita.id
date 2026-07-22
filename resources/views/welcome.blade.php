@@ -413,9 +413,9 @@
     <!-- 4. Interactive Income Calculator (Evermos Slider Style) -->
     <section id="kalkulator" class="py-20 bg-white" x-data="{
         hoursPerDay: 2,
-        dailyRate: 50000,
+        hourlyRate: 50000,
         get dailyEarnings() {
-            return this.dailyRate;
+            return this.hoursPerDay * this.hourlyRate;
         },
         get monthlyEarnings() {
             return this.dailyEarnings * 30;
@@ -438,7 +438,7 @@
                         Lihat gambaran penghasilan dengan target harian
                     </h2>
                     <p class="text-slate-600 text-sm sm:text-base max-w-2xl mx-auto leading-7">
-                        Estimasi dibuat sederhana dengan acuan Rp50.000 per hari aktif. Hasil akhir tetap mengikuti laporan yang lolos QC.
+                        Estimasi dibuat sederhana dengan acuan Rp50.000 per jam kerja. Hasil akhir tetap mengikuti laporan yang lolos QC.
                     </p>
                 </div>
 
@@ -448,11 +448,11 @@
                     <div class="flex flex-col justify-between gap-6 rounded-3xl border border-slate-200 bg-slate-50/80 p-6 sm:p-7">
                         
                         <div class="rounded-2xl bg-white p-5 border border-slate-200 shadow-sm">
-                            <span class="text-[11px] font-black uppercase tracking-widest text-slate-400">Acuan kerja</span>
+                            <span class="text-[11px] font-black uppercase tracking-widest text-slate-400">Rate per jam</span>
                             <div class="mt-2 flex items-end justify-between gap-4">
                                 <div>
-                                    <div class="text-3xl font-black tracking-tight text-slate-950" x-text="formatRupiah(dailyRate)"></div>
-                                    <p class="mt-1 text-xs leading-5 text-slate-500">Per hari aktif dengan laporan yang sesuai panduan.</p>
+                                    <div class="text-3xl font-black tracking-tight text-slate-950" x-text="formatRupiah(hourlyRate)"></div>
+                                    <p class="mt-1 text-xs leading-5 text-slate-500">Dikalikan jam kerja harian yang laporan videonya lolos QC.</p>
                                 </div>
                                 <div class="hidden h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 sm:flex">
                                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 8c-2.2 0-4 .9-4 2s1.8 2 4 2 4 .9 4 2-1.8 2-4 2m0-10v12"/></svg>
@@ -492,7 +492,7 @@
                             <span class="mt-5 text-sm font-semibold uppercase tracking-widest text-slate-400 block">Potensi harian</span>
                             <span class="text-4xl sm:text-5xl font-black mt-2 block text-white" x-text="formatRupiah(dailyEarnings)"></span>
                             <p class="mt-3 text-sm leading-6 text-slate-300">
-                                    Dengan <span class="font-bold text-white" x-text="hoursPerDay + ' jam kerja per hari'"></span> dan acuan <span class="font-bold text-white">Rp50.000/hari</span>.
+                                    Dengan <span class="font-bold text-white" x-text="hoursPerDay + ' jam kerja per hari'"></span> dan acuan <span class="font-bold text-white">Rp50.000/jam</span>.
                             </p>
                         </div>
                         <div class="pt-4 border-t border-white/20">
