@@ -278,10 +278,9 @@
                                 </template>
                             </div>
 
-                            <div class="mt-7 grid grid-cols-2 gap-3" x-show="offset === 0">
+                            <div class="mt-7 grid gap-3" :class="isLast() ? 'grid-cols-2' : 'grid-cols-1'" x-show="offset === 0">
                                 <button type="button" @click="next()" class="rounded-full bg-slate-950 px-5 py-3 text-xs font-black text-white transition hover:bg-slate-800" x-text="isLast() ? 'Daftar' : 'Next'"></button>
                                 <a x-show="isLast()" x-cloak href="{{ $whatsappUrl }}" target="_blank" class="rounded-full border border-slate-200 px-5 py-3 text-center text-xs font-black text-slate-950 transition hover:bg-slate-50">WA Code</a>
-                                <button x-show="!isLast()" x-cloak type="button" @click="go(slides.length - 1)" class="rounded-full border border-slate-200 px-5 py-3 text-xs font-black text-slate-950 transition hover:bg-slate-50">Skip</button>
                             </div>
                         </article>
                     </template>
@@ -336,9 +335,7 @@
                                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
                             </button>
                             <button type="button" @click="next()" class="rounded-full bg-slate-950 px-5 py-3 text-xs font-black text-white transition hover:bg-slate-800" x-text="isLast() ? 'Daftar' : 'Next'"></button>
-                            <button type="button" @click="go(slides.length - 1)" class="flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 text-slate-700" aria-label="Lewati">
-                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 5l7 7-7 7M5 5l7 7-7 7"/></svg>
-                            </button>
+                            <span aria-hidden="true"></span>
                         </div>
 
                         <a href="{{ $whatsappUrl }}" target="_blank" class="mt-4 text-center text-xs font-black text-emerald-700">Minta referral code via WhatsApp</a>
