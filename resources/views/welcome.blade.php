@@ -698,7 +698,7 @@
     <!-- 8. Final CTA Banner -->
     <section class="relative min-h-[420px] overflow-hidden bg-slate-100">
         <img src="{{ asset('images/Assest/CTA.webp') }}?v={{ filemtime(public_path('images/Assest/CTA.webp')) }}" alt="Gabung menjadi kontributor KameraKita AI" class="absolute inset-0 h-full w-full object-cover object-center">
-        <div class="absolute inset-0 bg-gradient-to-r from-white via-white/80 to-white/10"></div>
+        <div class="absolute inset-y-0 left-0 w-[62%] bg-gradient-to-r from-white via-white/90 to-transparent"></div>
         <div class="absolute -left-10 -top-10 h-32 w-32 rounded-full bg-lime-300/70 blur-sm"></div>
 
         <div class="relative mx-auto flex min-h-[420px] max-w-7xl items-center px-4 sm:px-6 lg:px-8">
