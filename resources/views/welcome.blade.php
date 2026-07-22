@@ -303,7 +303,7 @@
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-3xl mx-auto">
                 <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#064e5f] tracking-tight leading-tight">
-                    Beberapa hal yang akrab di alur kerja kami
+                    Dibangun untuk alur kerja yang lebih rapi
                 </h2>
                 <p class="mt-5 text-base sm:text-lg leading-8 text-slate-500">
                     Dari aplikasi, perangkat, sampai proses validasi, semuanya dibuat agar kontributor bisa bekerja dengan alur yang lebih jelas.
