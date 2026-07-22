@@ -298,8 +298,53 @@
         </div>
     </section>
 
-    <!-- 3. Keunggulan Section (Clean White Background & Deep Blue Cards) -->
-    <section id="keunggulan" class="py-20 bg-slate-50 border-b border-slate-200">
+    <!-- 3. Brand / Partner Logo Section -->
+    <section id="keunggulan" class="py-16 sm:py-20 bg-slate-50 border-b border-slate-200">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto">
+                <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#064e5f] tracking-tight leading-tight">
+                    Brand dan platform pendukung ada di sini
+                </h2>
+                <p class="mt-5 text-base sm:text-lg leading-8 text-slate-500">
+                    Ekosistem kerja rekam video, validasi data, aplikasi pendukung, perangkat, dan kebutuhan operasional kontributor.
+                </p>
+            </div>
+
+            @php
+                $brandLogos = [
+                    'Minute',
+                    'KameraKita AI',
+                    'Mail.tm',
+                    'Headstrap',
+                    'Dashboard QC',
+                    'Payroll',
+                    'Mobile Device',
+                    'Video Data',
+                    'Quality Check',
+                    'Transfer Bank',
+                ];
+            @endphp
+
+            <div class="mt-12 grid grid-cols-2 gap-x-8 gap-y-8 sm:grid-cols-3 lg:grid-cols-5">
+                @foreach ($brandLogos as $brandLogo)
+                    <div class="group flex h-16 items-center justify-center">
+                        <div class="flex h-14 min-w-[132px] items-center justify-center rounded-2xl border border-slate-200/70 bg-white px-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-sky-200 hover:shadow-md">
+                            <span class="text-center text-sm font-black tracking-tight text-slate-400 transition group-hover:text-sky-700">
+                                {{ $brandLogo }}
+                            </span>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+
+            <p class="mt-8 text-center text-xs font-semibold text-slate-400">
+                Logo asli bisa dimasukkan nanti ke folder asset brand dan menggantikan placeholder teks ini.
+            </p>
+        </div>
+    </section>
+
+    <!-- 3. Keunggulan Section (Legacy, hidden) -->
+    <section class="hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             
             <div class="text-center max-w-3xl mx-auto space-y-3 mb-16">
