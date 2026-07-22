@@ -475,12 +475,12 @@
 
                         <div class="grid grid-cols-2 gap-3">
                             <div class="rounded-2xl bg-white p-4 border border-slate-200">
-                                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Harian</span>
-                                <div class="mt-1 text-lg font-black text-slate-950" x-text="formatRupiah(dailyEarnings)"></div>
+                                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Dasar hitung</span>
+                                <div class="mt-1 text-lg font-black text-slate-950">Jam approved</div>
                             </div>
                             <div class="rounded-2xl bg-white p-4 border border-slate-200">
-                                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Bulanan</span>
-                                <div class="mt-1 text-lg font-black text-slate-950" x-text="formatRupiah(monthlyEarnings)"></div>
+                                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Verifikasi</span>
+                                <div class="mt-1 text-lg font-black text-slate-950">Lewat QC</div>
                             </div>
                         </div>
                     </div>
