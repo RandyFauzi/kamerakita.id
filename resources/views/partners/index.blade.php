@@ -32,7 +32,7 @@
         }"
         @keydown.escape.window="closeDeleteModal()"
     >
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        <div class="w-full max-w-none mx-auto space-y-6">
             
             @if(session('success'))
                 <div class="p-4 text-sm text-green-800 rounded-xl bg-green-50 border border-green-100 flex items-center gap-2 animate-bounce" role="alert">
