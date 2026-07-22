@@ -602,72 +602,53 @@
                 </p>
             </div>
 
+            @php
+                $testimonials = [
+                    [
+                        'title' => 'Laporan rapi, pembayaran jadi lebih tenang',
+                        'name' => 'Siti Rahmawati',
+                        'image' => 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=900&q=80',
+                    ],
+                    [
+                        'title' => 'Awalnya ragu, setelah rutin submit mulai terasa hasilnya',
+                        'name' => 'Agus Prasetyo',
+                        'image' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=900&q=80',
+                    ],
+                    [
+                        'title' => 'QC jelas, jadi tahu laporan mana yang perlu diperbaiki',
+                        'name' => 'Dedi Rahmat',
+                        'image' => 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=900&q=80',
+                    ],
+                    [
+                        'title' => 'Modal HP dan waktu luang, bisa mulai dari rumah',
+                        'name' => 'Nadia Putri',
+                        'image' => 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80',
+                    ],
+                    [
+                        'title' => 'Dashboard bantu pantau semua status laporan',
+                        'name' => 'Rizky Maulana',
+                        'image' => 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=900&q=80',
+                    ],
+                    [
+                        'title' => 'Catatan admin bikin submit ulang lebih terarah',
+                        'name' => 'Maya Lestari',
+                        'image' => 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=900&q=80',
+                    ],
+                ];
+            @endphp
+
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                <article class="group relative min-h-[210px] overflow-hidden rounded-[1.65rem] bg-slate-900 shadow-sm">
-                    <div class="absolute inset-0 bg-gradient-to-br from-sky-300 via-sky-700 to-slate-950"></div>
-                    <div class="absolute left-0 bottom-0 h-40 w-40 rounded-tr-[80px] bg-white/20"></div>
-                    <div class="absolute bottom-0 left-8 h-36 w-28 rounded-t-full bg-white/25"></div>
-                    <div class="absolute inset-0 bg-gradient-to-r from-slate-950/15 via-slate-950/45 to-slate-950/75"></div>
-                    <div class="relative flex h-full min-h-[210px] flex-col justify-end p-6 text-white">
-                        <h3 class="max-w-[230px] text-2xl font-black leading-tight">Laporan rapi, pembayaran jadi lebih tenang</h3>
-                        <p class="mt-3 text-sm font-semibold text-white/80">Siti Rahmawati</p>
-                    </div>
-                </article>
-
-                <article class="group relative min-h-[210px] overflow-hidden rounded-[1.65rem] bg-slate-900 shadow-sm">
-                    <div class="absolute inset-0 bg-gradient-to-br from-emerald-200 via-teal-600 to-slate-950"></div>
-                    <div class="absolute -left-5 bottom-0 h-44 w-44 rounded-tr-[90px] bg-white/25"></div>
-                    <div class="absolute bottom-0 left-12 h-36 w-28 rounded-t-full bg-white/25"></div>
-                    <div class="absolute inset-0 bg-gradient-to-r from-slate-950/10 via-slate-950/40 to-slate-950/80"></div>
-                    <div class="relative flex h-full min-h-[210px] flex-col justify-end p-6 text-white">
-                        <h3 class="max-w-[230px] text-2xl font-black leading-tight">Awalnya ragu, setelah rutin submit mulai terasa hasilnya</h3>
-                        <p class="mt-3 text-sm font-semibold text-white/80">Agus Prasetyo</p>
-                    </div>
-                </article>
-
-                <article class="group relative min-h-[210px] overflow-hidden rounded-[1.65rem] bg-slate-900 shadow-sm">
-                    <div class="absolute inset-0 bg-gradient-to-br from-indigo-200 via-indigo-700 to-slate-950"></div>
-                    <div class="absolute -left-6 bottom-0 h-44 w-48 rounded-tr-[90px] bg-white/20"></div>
-                    <div class="absolute bottom-0 left-16 h-36 w-28 rounded-t-full bg-white/25"></div>
-                    <div class="absolute inset-0 bg-gradient-to-r from-slate-950/10 via-slate-950/45 to-slate-950/80"></div>
-                    <div class="relative flex h-full min-h-[210px] flex-col justify-end p-6 text-white">
-                        <h3 class="max-w-[230px] text-2xl font-black leading-tight">QC jelas, jadi tahu laporan mana yang perlu diperbaiki</h3>
-                        <p class="mt-3 text-sm font-semibold text-white/80">Dedi Rahmat</p>
-                    </div>
-                </article>
-
-                <article class="group relative min-h-[210px] overflow-hidden rounded-[1.65rem] bg-slate-900 shadow-sm">
-                    <div class="absolute inset-0 bg-gradient-to-br from-cyan-200 via-sky-700 to-slate-950"></div>
-                    <div class="absolute -left-5 bottom-0 h-44 w-48 rounded-tr-[90px] bg-white/20"></div>
-                    <div class="absolute bottom-0 left-10 h-36 w-28 rounded-t-full bg-white/25"></div>
-                    <div class="absolute inset-0 bg-gradient-to-r from-slate-950/10 via-slate-950/40 to-slate-950/80"></div>
-                    <div class="relative flex h-full min-h-[210px] flex-col justify-end p-6 text-white">
-                        <h3 class="max-w-[230px] text-2xl font-black leading-tight">Modal HP dan waktu luang, bisa mulai dari rumah</h3>
-                        <p class="mt-3 text-sm font-semibold text-white/80">Nadia Putri</p>
-                    </div>
-                </article>
-
-                <article class="group relative min-h-[210px] overflow-hidden rounded-[1.65rem] bg-slate-900 shadow-sm">
-                    <div class="absolute inset-0 bg-gradient-to-br from-violet-200 via-violet-700 to-slate-950"></div>
-                    <div class="absolute -left-5 bottom-0 h-44 w-48 rounded-tr-[90px] bg-white/20"></div>
-                    <div class="absolute bottom-0 left-14 h-36 w-28 rounded-t-full bg-white/25"></div>
-                    <div class="absolute inset-0 bg-gradient-to-r from-slate-950/10 via-slate-950/45 to-slate-950/80"></div>
-                    <div class="relative flex h-full min-h-[210px] flex-col justify-end p-6 text-white">
-                        <h3 class="max-w-[230px] text-2xl font-black leading-tight">Dashboard bantu pantau semua status laporan</h3>
-                        <p class="mt-3 text-sm font-semibold text-white/80">Rizky Maulana</p>
-                    </div>
-                </article>
-
-                <article class="group relative min-h-[210px] overflow-hidden rounded-[1.65rem] bg-slate-900 shadow-sm">
-                    <div class="absolute inset-0 bg-gradient-to-br from-sky-200 via-blue-700 to-slate-950"></div>
-                    <div class="absolute -left-5 bottom-0 h-44 w-48 rounded-tr-[90px] bg-white/20"></div>
-                    <div class="absolute bottom-0 left-12 h-36 w-28 rounded-t-full bg-white/25"></div>
-                    <div class="absolute inset-0 bg-gradient-to-r from-slate-950/10 via-slate-950/45 to-slate-950/80"></div>
-                    <div class="relative flex h-full min-h-[210px] flex-col justify-end p-6 text-white">
-                        <h3 class="max-w-[230px] text-2xl font-black leading-tight">Catatan admin bikin submit ulang lebih terarah</h3>
-                        <p class="mt-3 text-sm font-semibold text-white/80">Maya Lestari</p>
-                    </div>
-                </article>
+                @foreach ($testimonials as $testimonial)
+                    <article class="group relative min-h-[230px] overflow-hidden rounded-[1.65rem] bg-slate-900 shadow-sm">
+                        <img src="{{ $testimonial['image'] }}" alt="{{ $testimonial['name'] }}" loading="lazy" referrerpolicy="no-referrer" class="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105">
+                        <div class="absolute inset-0 bg-gradient-to-r from-slate-950/10 via-slate-950/45 to-slate-950/85"></div>
+                        <div class="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-slate-950/80 to-transparent"></div>
+                        <div class="relative flex h-full min-h-[230px] flex-col justify-end p-6 text-white">
+                            <h3 class="max-w-[250px] text-2xl font-black leading-tight drop-shadow-sm">{{ $testimonial['title'] }}</h3>
+                            <p class="mt-3 text-sm font-semibold text-white/85">{{ $testimonial['name'] }}</p>
+                        </div>
+                    </article>
+                @endforeach
 
             </div>
 
