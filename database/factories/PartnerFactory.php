@@ -25,6 +25,7 @@ class PartnerFactory extends Factory
             'bank_name' => $this->faker->randomElement(['BCA', 'Mandiri', 'BRI', 'BNI', 'GoPay']),
             'account_number' => $this->faker->numerify('###########'),
             'account_owner_name' => $fullName,
+            'has_headstrap' => $this->faker->boolean(35),
             'status' => $this->faker->randomElement(['active', 'active', 'active', 'suspended']),
             'base_hourly_rate' => 54000,
             'user_id' => User::factory(),

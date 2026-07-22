@@ -67,6 +67,7 @@ class RegisteredUserController extends Controller
             'full_name' => $user->name,
             'whatsapp_number' => '08' . rand(100000000, 999999999),
             'email' => $user->email,
+            'has_headstrap' => false,
             'status' => 'active',
             'base_hourly_rate' => 50000, // default rate in IDR
             'user_id' => $user->id,

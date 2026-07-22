@@ -49,6 +49,7 @@ class ProfileController extends Controller
                     'bank_account_number',
                     'bank_account_owner',
                     'smartphone_type',
+                    'has_headstrap',
                 ])
                 ->all();
 

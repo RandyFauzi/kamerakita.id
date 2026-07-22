@@ -29,6 +29,7 @@ class ProfileUpdateRequest extends FormRequest
                 'bank_account_number' => ['nullable', 'string', 'max:50'],
                 'bank_account_owner' => ['nullable', 'string', 'max:255'],
                 'smartphone_type' => ['nullable', 'string', 'max:100'],
+                'has_headstrap' => ['required', 'boolean'],
             ]);
         }
 

@@ -27,9 +27,14 @@ class Partner extends Model
         'account_number',     // legacy fallback support
         'account_owner_name', // legacy fallback support
         'smartphone_type',
+        'has_headstrap',
         'status',
         'base_hourly_rate',
         'user_id',
+    ];
+
+    protected $casts = [
+        'has_headstrap' => 'boolean',
     ];
 
     public function user(): BelongsTo

@@ -87,6 +87,7 @@ class ManagePartnerDemographicsController extends Controller
             'bank_account_number' => 'nullable|string|max:50',
             'bank_account_owner' => 'nullable|string|max:255',
             'smartphone_type' => 'nullable|string|max:100',
+            'has_headstrap' => 'required|boolean',
             'status' => 'required|in:active,suspended',
             'base_hourly_rate' => 'required|numeric|min:0',
         ]);
@@ -147,6 +148,7 @@ class ManagePartnerDemographicsController extends Controller
             'bank_account_number' => 'nullable|string|max:50',
             'bank_account_owner' => 'nullable|string|max:255',
             'smartphone_type' => 'nullable|string|max:100',
+            'has_headstrap' => 'required|boolean',
             'status' => 'required|in:active,suspended',
             'base_hourly_rate' => 'required|numeric|min:0',
         ]);

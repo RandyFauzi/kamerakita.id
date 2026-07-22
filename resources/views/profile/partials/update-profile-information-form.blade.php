@@ -70,6 +70,15 @@
                         <input id="smartphone_type" name="smartphone_type" type="text" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" value="{{ old('smartphone_type', $partner->smartphone_type) }}">
                         <x-input-error class="mt-2" :messages="$errors->get('smartphone_type')" />
                     </div>
+
+                    <div>
+                        <label for="has_headstrap" class="block text-sm font-semibold text-gray-700 mb-1">Memiliki Headstrap <span class="text-red-500">*</span></label>
+                        <select id="has_headstrap" name="has_headstrap" required class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="0" {{ old('has_headstrap', $partner->has_headstrap ? '1' : '0') === '0' ? 'selected' : '' }}>Belum</option>
+                            <option value="1" {{ old('has_headstrap', $partner->has_headstrap ? '1' : '0') === '1' ? 'selected' : '' }}>Sudah</option>
+                        </select>
+                        <x-input-error class="mt-2" :messages="$errors->get('has_headstrap')" />
+                    </div>
                 </div>
 
                 <div>

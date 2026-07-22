@@ -162,6 +162,7 @@
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Nama Lengkap</th>
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Peran (Role)</th>
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Nominal/Jam</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Headstrap</th>
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">WhatsApp</th>
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Mitra Atasan</th>
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
@@ -188,6 +189,11 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-800">
                                         Rp{{ number_format($partner->base_hourly_rate ?? 0, 0, ',', '.') }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border {{ $partner->has_headstrap ? 'bg-sky-50 text-sky-700 border-sky-200' : 'bg-gray-50 text-gray-500 border-gray-200' }}">
+                                            {{ $partner->has_headstrap ? 'Sudah' : 'Belum' }}
+                                        </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-650">
                                         {{ $partner->whatsapp_number }}
@@ -234,7 +240,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="9" class="px-6 py-12 text-center text-gray-500">
+                                    <td colspan="10" class="px-6 py-12 text-center text-gray-500">
                                         <span class="text-sm">Tidak ada data mitra atau worker ditemukan.</span>
                                     </td>
                                 </tr>
