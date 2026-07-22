@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+    .shadow-card {
+        box-shadow: 0 24px 70px rgba(15, 23, 42, 0.10);
+    }
+}
+
 [x-cloak] {
     display: none !important;
 }

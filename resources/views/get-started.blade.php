@@ -9,22 +9,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Plus Jakarta Sans', 'sans-serif'],
-                    },
-                    boxShadow: {
-                        card: '0 24px 70px rgba(15, 23, 42, 0.10)',
-                    }
-                }
-            }
-        }
-    </script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
@@ -187,7 +173,7 @@
                     <template x-for="offset in [-1, 0, 1]" :key="offset">
                         <article
                             class="reveal-card flex h-[540px] w-[300px] flex-col rounded-[34px] bg-white p-6 shadow-card transition-all duration-500 ease-out"
-                            :class="offset === 0 ? 'z-10 scale-105 opacity-100 blur-0 hover:-translate-y-2' : 'translate-y-8 scale-[.92] opacity-45 blur-[1.5px]'"
+                            :class="offset === 0 ? 'z-10 scale-105 opacity-100 blur-0 hover:-translate-y-2' : 'translate-y-7 scale-[.88] opacity-45 blur-[1px]'"
                         >
                             <div class="flex flex-1 flex-col">
                                 <div class="h-56">
