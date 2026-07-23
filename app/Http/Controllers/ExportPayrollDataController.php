@@ -86,15 +86,21 @@ class ExportPayrollDataController extends Controller
     /**
      * Export all approved video work reports into custom Hourly Tracker Excel format.
      */
-    public function exportHourlyTrackerExcel()
+    public function exportHourlyTrackerExcel(Request $request)
     {
-        $reports = VideoWorkReport::with('partner')
-            ->where('qc_status', 'approved')
-            ->orderBy('submission_date', 'asc')
-            ->get();
+        $status = $request->query('status', 'approved');
+
+        $query = VideoWorkReport::with('partner')->orderBy('submission_date', 'asc');
+        
+        if ($status !== 'all') {
+            $query->where('qc_status', $status);
+        }
+
+        $reports = $query->get();
 
         if ($reports->isEmpty()) {
-            return redirect()->route('dashboard')->with('error', 'Tidak ada data laporan video (approved) yang dapat diekspor.');
+            $statusName = $status === 'all' ? 'apa pun' : $status;
+            return redirect()->route('dashboard')->with('error', "Tidak ada data laporan video dengan status ({$statusName}) yang dapat diekspor.");
         }
 
         $templatePath = public_path('Assets/Team Nanda Hourly tracker & Participant Information Indonesia.xlsx');
