@@ -7,6 +7,9 @@ use App\Models\VideoWorkReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use Throwable;
 
 class ExportPayrollDataController extends Controller
 {
@@ -100,9 +103,17 @@ class ExportPayrollDataController extends Controller
             return redirect()->route('dashboard')->with('error', 'Berkas template Excel tidak ditemukan di folder public/Assets.');
         }
 
+        if (! class_exists(IOFactory::class)) {
+            Log::error('Hourly Tracker Excel Export Error: PhpSpreadsheet dependency is not installed.');
+
+            return redirect()
+                ->route('dashboard')
+                ->with('error', 'Fitur ekspor Excel belum siap karena dependency spreadsheet belum terpasang. Jalankan composer install di server.');
+        }
+
         try {
             // Load template using native PhpSpreadsheet
-            $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($templatePath);
+            $spreadsheet = IOFactory::load($templatePath);
             $sheet = $spreadsheet->getActiveSheet();
 
             // Fill data starting from row 3
@@ -144,7 +155,7 @@ class ExportPayrollDataController extends Controller
                 $row++;
             }
 
-            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
+            $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
             $filename = 'Hourly_Tracker_Indonesia_' . date('Y-m-d_H-i-s') . '.xlsx';
 
             return response()->streamDownload(function() use ($writer) {
@@ -154,8 +165,11 @@ class ExportPayrollDataController extends Controller
                 'Cache-Control' => 'max-age=0',
             ]);
 
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Native Excel Export Error: ' . $e->getMessage());
+        } catch (Throwable $e) {
+            Log::error('Native Excel Export Error: ' . $e->getMessage(), [
+                'exception' => $e,
+            ]);
+
             return redirect()->route('dashboard')->with('error', 'Gagal memproses ekspor Excel: ' . $e->getMessage());
         }
     }
