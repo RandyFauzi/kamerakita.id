@@ -94,63 +94,70 @@ class ExportPayrollDataController extends Controller
             return redirect()->route('dashboard')->with('error', 'Tidak ada data laporan video (approved) yang dapat diekspor.');
         }
 
-        $data = [];
-        foreach ($reports as $report) {
-            $partner = $report->partner;
-            if (!$partner) continue;
+        $templatePath = public_path('Assets/Team Nanda Hourly tracker & Participant Information Indonesia.xlsx');
 
-            $totalMinutes = $report->approved_duration_minutes;
-            // Fallback to submitted minutes if approved is 0 but it is approved
-            if ($totalMinutes <= 0) {
-                $totalMinutes = $report->submitted_duration_minutes;
-            }
-
-            $hours = floor($totalMinutes / 60);
-            $minutes = $totalMinutes % 60;
-            $seconds = 0;
-
-            $type = 'Residential';
-            if ($partner->smartphone_type && (
-                str_contains(strtolower($partner->smartphone_type), 'comm') || 
-                str_contains(strtolower($partner->smartphone_type), 'bisnis') || 
-                str_contains(strtolower($partner->smartphone_type), 'kantor')
-            )) {
-                $type = 'Commercial';
-            }
-
-            $data[] = [
-                'date_added' => $report->submission_date ? $report->submission_date->format('Y-m-d') : $report->created_at->format('Y-m-d'),
-                'full_name' => $partner->full_name,
-                'email' => $partner->email,
-                'type' => $type,
-                'hours' => (int)$hours,
-                'minutes' => (int)$minutes,
-                'seconds' => (int)$seconds,
-            ];
+        if (!file_exists($templatePath)) {
+            return redirect()->route('dashboard')->with('error', 'Berkas template Excel tidak ditemukan di folder public/Assets.');
         }
 
-        // Write to temp file
-        $tempJson = tempnam(sys_get_temp_dir(), 'kmk_excel_');
-        file_put_contents($tempJson, json_encode($data));
+        try {
+            // Load template using native PhpSpreadsheet
+            $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($templatePath);
+            $sheet = $spreadsheet->getActiveSheet();
 
-        $tempOutputXlsx = tempnam(sys_get_temp_dir(), 'kmk_out_') . '.xlsx';
+            // Fill data starting from row 3
+            $row = 3;
+            foreach ($reports as $report) {
+                $partner = $report->partner;
+                if (!$partner) {
+                    continue;
+                }
 
-        // Run python script
-        $scriptPath = base_path('app/Scripts/export_excel.py');
-        $command = "python " . escapeshellarg($scriptPath) . " " . escapeshellarg($tempJson) . " " . escapeshellarg($tempOutputXlsx);
-        
-        exec($command, $output, $returnCode);
+                $totalMinutes = $report->approved_duration_minutes;
+                if ($totalMinutes <= 0) {
+                    $totalMinutes = $report->submitted_duration_minutes;
+                }
 
-        // Delete temp JSON
-        @unlink($tempJson);
+                $hours = floor($totalMinutes / 60);
+                $minutes = $totalMinutes % 60;
+                $seconds = 0;
 
-        if ($returnCode !== 0 || !file_exists($tempOutputXlsx)) {
-            \Illuminate\Support\Facades\Log::error("Excel export failed with exit code $returnCode. Output: " . implode("\n", $output));
-            return redirect()->route('dashboard')->with('error', 'Gagal memproses ekspor Excel menggunakan Python. Pastikan python dan openpyxl terinstall.');
+                $type = 'Residential';
+                if ($partner->smartphone_type && (
+                    str_contains(strtolower($partner->smartphone_type), 'comm') || 
+                    str_contains(strtolower($partner->smartphone_type), 'bisnis') || 
+                    str_contains(strtolower($partner->smartphone_type), 'kantor')
+                )) {
+                    $type = 'Commercial';
+                }
+
+                $dateStr = $report->submission_date ? $report->submission_date->format('Y-m-d') : $report->created_at->format('Y-m-d');
+
+                $sheet->setCellValue('A' . $row, $dateStr);
+                $sheet->setCellValue('B' . $row, $partner->full_name);
+                $sheet->setCellValue('C' . $row, $partner->email);
+                $sheet->setCellValue('D' . $row, $type);
+                $sheet->setCellValue('E' . $row, (int)$hours);
+                $sheet->setCellValue('F' . $row, (int)$minutes);
+                $sheet->setCellValue('G' . $row, (int)$seconds);
+
+                $row++;
+            }
+
+            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
+            $filename = 'Hourly_Tracker_Indonesia_' . date('Y-m-d_H-i-s') . '.xlsx';
+
+            return response()->streamDownload(function() use ($writer) {
+                $writer->save('php://output');
+            }, $filename, [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'Cache-Control' => 'max-age=0',
+            ]);
+
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Native Excel Export Error: ' . $e->getMessage());
+            return redirect()->route('dashboard')->with('error', 'Gagal memproses ekspor Excel: ' . $e->getMessage());
         }
-
-        // Return download response and delete temp file after sending
-        return response()->download($tempOutputXlsx, 'Hourly_Tracker_Indonesia_' . date('Y-m-d_H-i-s') . '.xlsx')->deleteFileAfterSend(true);
     }
 
     /**
