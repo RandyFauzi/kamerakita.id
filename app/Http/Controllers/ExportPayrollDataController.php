@@ -90,17 +90,16 @@ class ExportPayrollDataController extends Controller
     {
         $status = $request->query('status', 'approved');
 
-        $query = VideoWorkReport::with('partner')->orderBy('submission_date', 'asc');
-        
-        if ($status !== 'all') {
-            $query->where('qc_status', $status);
-        }
+        $partners = Partner::where('status', 'active')
+            ->with(['videoWorkReports' => function ($query) use ($status) {
+                if ($status !== 'all') {
+                    $query->where('qc_status', $status);
+                }
+            }])
+            ->get();
 
-        $reports = $query->get();
-
-        if ($reports->isEmpty()) {
-            $statusName = $status === 'all' ? 'apa pun' : $status;
-            return redirect()->route('dashboard')->with('error', "Tidak ada data laporan video dengan status ({$statusName}) yang dapat diekspor.");
+        if ($partners->isEmpty()) {
+            return redirect()->route('dashboard')->with('error', "Tidak ada data user aktif yang dapat diekspor.");
         }
 
         $templatePath = public_path('Assets/Team Nanda Hourly tracker & Participant Information Indonesia.xlsx');
@@ -124,15 +123,17 @@ class ExportPayrollDataController extends Controller
 
             // Fill data starting from row 3
             $row = 3;
-            foreach ($reports as $report) {
-                $partner = $report->partner;
-                if (!$partner) {
-                    continue;
-                }
+            $exportDate = date('Y-m-d');
 
-                $totalMinutes = $report->approved_duration_minutes;
-                if ($totalMinutes <= 0) {
-                    $totalMinutes = $report->submitted_duration_minutes;
+            foreach ($partners as $partner) {
+                $totalMinutes = 0;
+
+                foreach ($partner->videoWorkReports as $report) {
+                    $mins = $report->approved_duration_minutes;
+                    if ($mins <= 0) {
+                        $mins = $report->submitted_duration_minutes;
+                    }
+                    $totalMinutes += $mins;
                 }
 
                 $hours = floor($totalMinutes / 60);
@@ -148,11 +149,9 @@ class ExportPayrollDataController extends Controller
                     $type = 'Commercial';
                 }
 
-                $dateStr = $report->submission_date ? $report->submission_date->format('Y-m-d') : $report->created_at->format('Y-m-d');
-
-                $sheet->setCellValue('A' . $row, $dateStr);
+                $sheet->setCellValue('A' . $row, $exportDate);
                 $sheet->setCellValue('B' . $row, $partner->full_name);
-                $sheet->setCellValue('C' . $row, $partner->email);
+                $sheet->setCellValue('C' . $row, $partner->email ?? '-');
                 $sheet->setCellValue('D' . $row, $type);
                 $sheet->setCellValue('E' . $row, (int)$hours);
                 $sheet->setCellValue('F' . $row, (int)$minutes);
