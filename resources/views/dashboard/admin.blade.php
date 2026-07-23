@@ -82,9 +82,12 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6 relative z-10">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6 relative z-10">
                     <a href="{{ route('payroll.export-csv') }}" class="flex items-center justify-center gap-2 py-3.5 bg-white hover:bg-gray-50 text-gray-800 font-bold text-xs rounded-2xl shadow-sm transition">
                         Ekspor CSV Payroll
+                    </a>
+                    <a href="{{ route('payroll.export-hourly-tracker-excel') }}" class="flex items-center justify-center gap-2 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-2xl shadow-sm transition">
+                        📊 Ekspor Excel Tracker
                     </a>
                     <a href="{{ route('video-submissions.qc-room') }}" class="flex items-center justify-center gap-2 py-3.5 bg-white/60 hover:bg-white/80 text-gray-800 font-bold text-xs rounded-2xl shadow-sm transition">
                         Buka QC Room

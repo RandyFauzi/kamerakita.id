@@ -76,6 +76,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/payroll/export-csv', [ExportPayrollDataController::class, 'exportCsv'])
         ->middleware('role:superadmin,admin,finance')
         ->name('payroll.export-csv');
+    Route::get('/payroll/export-hourly-tracker-excel', [ExportPayrollDataController::class, 'exportHourlyTrackerExcel'])
+        ->middleware('role:superadmin,admin,finance')
+        ->name('payroll.export-hourly-tracker-excel');
     Route::post('/payroll/mark-as-paid', [ExportPayrollDataController::class, 'markAsPaid'])
         ->middleware('role:superadmin,admin,finance')
         ->name('payroll.mark-as-paid');
