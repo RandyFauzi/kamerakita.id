@@ -202,4 +202,38 @@ class ManagePartnerDemographicsController extends Controller
 
         return redirect()->route('partners.index')->with('success', 'Mitra/Worker berhasil dihapus dari sistem.');
     }
+
+    public function exportContacts(Request $request)
+    {
+        $search = $request->input('search');
+        $role = $request->input('role');
+        $status = $request->input('status');
+
+        $partners = Partner::query()
+            ->with(['user'])
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('full_name', 'like', "%{$search}%")
+                        ->orWhere('mitra_id', 'like', "%{$search}%")
+                        ->orWhere('whatsapp_number', 'like', "%{$search}%");
+                });
+            })
+            ->when($role, function ($query, $role) {
+                $query->where('partner_role', $role);
+            })
+            ->when($status, function ($query, $status) {
+                $query->where('status', $status);
+            })
+            ->orderBy('mitra_id', 'asc')
+            ->get();
+
+        $output = "";
+        foreach ($partners as $partner) {
+            $email = $partner->user?->email ?? 'Tidak ada email';
+            $output .= "{$partner->full_name} ({$email})\n";
+        }
+
+        return response($output, 200)
+            ->header('Content-Type', 'text/plain');
+    }
 }

@@ -19,6 +19,9 @@
             showDeleteModal: false,
             deleteTarget: {},
             deleting: false,
+            showCopyModal: false,
+            copyData: '',
+            fetchingContacts: false,
             openDeleteModal(target) {
                 this.deleteTarget = target;
                 this.deleting = false;
@@ -28,9 +31,41 @@
                 this.showDeleteModal = false;
                 this.deleteTarget = {};
                 this.deleting = false;
+            },
+            openCopyModal() {
+                this.showCopyModal = true;
+                this.fetchingContacts = true;
+                this.copyData = 'Sedang memuat data kontak...';
+                
+                const search = document.getElementById('search').value || '';
+                const role = document.getElementById('role').value || '';
+                const status = document.getElementById('status').value || '';
+                
+                const params = new URLSearchParams({ search, role, status });
+                
+                fetch('{{ route('partners.export-contacts') }}?' + params.toString())
+                    .then(res => res.text())
+                    .then(text => {
+                        this.copyData = text || 'Tidak ada data.';
+                        this.fetchingContacts = false;
+                    })
+                    .catch(err => {
+                        this.copyData = 'Gagal memuat data kontak.';
+                        this.fetchingContacts = false;
+                    });
+            },
+            closeCopyModal() {
+                this.showCopyModal = false;
+            },
+            copyToClipboard() {
+                navigator.clipboard.writeText(this.copyData).then(() => {
+                    alert('Data berhasil disalin!');
+                }).catch(err => {
+                    alert('Gagal menyalin, silakan block text dan copy manual.');
+                });
             }
         }"
-        @keydown.escape.window="closeDeleteModal()"
+        @keydown.escape.window="closeDeleteModal(); closeCopyModal()"
     >
         <div class="w-full max-w-none mx-auto space-y-6">
             
@@ -173,6 +208,9 @@
                         <button type="submit" class="flex-1 md:flex-none justify-center inline-flex items-center px-5 py-2.5 bg-gray-900 border border-transparent rounded-xl font-semibold text-sm text-white hover:bg-gray-800 transition">
                             Filter
                         </button>
+                        <button type="button" @click="openCopyModal()" class="flex-1 md:flex-none justify-center inline-flex items-center px-5 py-2.5 bg-indigo-600 border border-transparent rounded-xl font-semibold text-sm text-white hover:bg-indigo-700 transition" title="Salin Kontak dari Hasil Filter">
+                            📋 Salin Kontak
+                        </button>
                         @if($search || $role || $status)
                             <a href="{{ route('partners.index') }}" class="flex-1 md:flex-none justify-center inline-flex items-center px-5 py-2.5 bg-gray-100 border border-gray-200 rounded-xl font-semibold text-sm text-gray-700 hover:bg-gray-200 transition">
                                 Reset
@@ -312,24 +350,128 @@
                             <span x-text="deleteTarget.role"></span>
                         </span>
                     </div>
+            <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                    <div x-show="showDeleteModal" 
+                         x-transition:enter="ease-out duration-300" 
+                         x-transition:enter-start="opacity-0" 
+                         x-transition:enter-end="opacity-100" 
+                         x-transition:leave="ease-in duration-200" 
+                         x-transition:leave-start="opacity-100" 
+                         x-transition:leave-end="opacity-0" 
+                         class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" 
+                         @click="closeDeleteModal()"
+                         aria-hidden="true"></div>
 
-                    <p class="mt-4 text-sm leading-6 text-gray-600">
-                        Akun login dan data kemitraan pengguna ini akan dihapus secara permanen dari sistem.
-                    </p>
+                    <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
-                    <form :action="deleteTarget.url" method="POST" @submit="deleting = true" class="mt-6 flex flex-col-reverse gap-2 border-t border-gray-100 pt-4 sm:flex-row sm:justify-end sm:gap-3">
-                        @csrf
-                        @method('DELETE')
-                        <button type="button" @click="closeDeleteModal()" class="inline-flex min-h-11 items-center justify-center rounded-xl border border-gray-200 bg-white px-5 py-2.5 text-xs font-bold text-gray-700 transition hover:bg-gray-50">
-                            Batal
-                        </button>
-                        <button type="submit" :disabled="deleting" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-red-600 px-5 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-red-700 disabled:cursor-wait disabled:opacity-70">
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                            </svg>
-                            <span x-text="deleting ? 'Menghapus...' : 'Hapus Akun'">Hapus Akun</span>
-                        </button>
-                    </form>
+                    <div x-show="showDeleteModal" 
+                         x-transition:enter="ease-out duration-300" 
+                         x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" 
+                         x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" 
+                         x-transition:leave="ease-in duration-200" 
+                         x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" 
+                         x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" 
+                         class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                        
+                        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                            <div class="sm:flex sm:items-start">
+                                <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                                    <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
+                                </div>
+                                <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                                    <h3 class="text-lg leading-6 font-bold text-gray-900" id="modal-title">
+                                        Hapus Akun Mitra/Worker
+                                    </h3>
+                                    <div class="mt-2">
+                                        <p class="text-sm text-gray-500 mb-4">
+                                            Apakah Anda yakin ingin menghapus <strong x-text="deleteTarget.name" class="text-gray-900"></strong> (<span x-text="deleteTarget.role"></span>) dari sistem? 
+                                        </p>
+                                        <div class="bg-red-50 p-4 rounded-xl border border-red-100">
+                                            <p class="text-xs text-red-800 font-medium">
+                                                <strong>⚠️ Perhatian:</strong> Tindakan ini akan menghapus akun login dan seluruh data histori kerja video yang pernah dikirim oleh pengguna ini secara permanen.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-2xl">
+                            <form :action="deleteTarget.url" method="POST" @submit="deleting = true">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" :disabled="deleting" class="w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm transition disabled:opacity-50">
+                                    <span x-show="!deleting">Ya, Hapus Permanen</span>
+                                    <span x-show="deleting">Menghapus...</span>
+                                </button>
+                            </form>
+                            <button type="button" @click="closeDeleteModal()" :disabled="deleting" class="mt-3 w-full inline-flex justify-center rounded-xl border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition disabled:opacity-50">
+                                Batal
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- Copy Contacts Modal -->
+        <template x-if="showCopyModal">
+            <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                    <div x-show="showCopyModal" 
+                         x-transition:enter="ease-out duration-300" 
+                         x-transition:enter-start="opacity-0" 
+                         x-transition:enter-end="opacity-100" 
+                         x-transition:leave="ease-in duration-200" 
+                         x-transition:leave-start="opacity-100" 
+                         x-transition:leave-end="opacity-0" 
+                         class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" 
+                         @click="closeCopyModal()"
+                         aria-hidden="true"></div>
+
+                    <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+                    <div x-show="showCopyModal" 
+                         x-transition:enter="ease-out duration-300" 
+                         x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" 
+                         x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" 
+                         x-transition:leave="ease-in duration-200" 
+                         x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" 
+                         x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" 
+                         class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+                        
+                        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                            <div class="sm:flex sm:items-start">
+                                <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100 sm:mx-0 sm:h-10 sm:w-10">
+                                    <svg class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                    </svg>
+                                </div>
+                                <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                                    <h3 class="text-lg leading-6 font-bold text-gray-900" id="modal-title">
+                                        Salin Data Kontak
+                                    </h3>
+                                    <div class="mt-2">
+                                        <p class="text-sm text-gray-500 mb-4">
+                                            Berikut adalah daftar kontak hasil filter. Klik tombol Salin untuk mengcopy seluruh teks ini.
+                                        </p>
+                                        <textarea x-model="copyData" class="w-full h-64 p-3 border-gray-300 rounded-lg shadow-sm text-sm focus:ring-indigo-500 focus:border-indigo-500 font-mono" readonly></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-2xl">
+                            <button type="button" @click="copyToClipboard()" :disabled="fetchingContacts" class="w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm transition disabled:opacity-50">
+                                <span x-show="!fetchingContacts">Salin (Copy)</span>
+                                <span x-show="fetchingContacts">Memuat...</span>
+                            </button>
+                            <button type="button" @click="closeCopyModal()" class="mt-3 w-full inline-flex justify-center rounded-xl border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition">
+                                Tutup
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </template>
