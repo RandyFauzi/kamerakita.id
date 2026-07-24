@@ -11,6 +11,14 @@ class ManageReferralCodesController extends Controller
 {
     public function index()
     {
+        // Self-healing database check for old referral codes format
+        $hasOldA = ReferralCode::where('code', 'KMK-GROUP-A')->exists();
+        $hasOldB = ReferralCode::where('code', 'KMK-GROUP-B')->exists();
+        if ($hasOldA || $hasOldB) {
+            ReferralCode::where('code', 'KMK-GROUP-A')->update(['code' => 'KMK-01ASQW']);
+            ReferralCode::where('code', 'KMK-GROUP-B')->update(['code' => 'KMK-02SADN']);
+        }
+
         $codes = ReferralCode::latest()->get();
 
         // Calculate count of partners in each group
