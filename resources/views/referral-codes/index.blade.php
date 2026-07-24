@@ -32,13 +32,10 @@
                 <form method="POST" action="{{ route('referral-codes.store') }}" class="space-y-4">
                     @csrf
 
-                    <div>
-                        <label for="code" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Kode Referal</label>
-                        <input id="code" type="text" name="code" value="{{ old('code') }}" required 
-                               class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition placeholder-gray-300" 
-                               placeholder="Misal: KMK-GROUP-B">
-                        <p class="text-[10px] text-gray-400 mt-1">Hanya huruf kapital, angka, dan strip (-).</p>
-                        <x-input-error :messages="$errors->get('code')" class="mt-1" />
+                    <div class="bg-gray-50 border border-gray-150 rounded-xl p-3.5 space-y-1">
+                        <span class="block text-[10px] font-bold text-gray-405 uppercase tracking-wider font-mono">FORMAT KODE OTOMATIS</span>
+                        <span class="block text-xs text-gray-700 font-bold font-mono">KMK-[NO][HURUF ACAK]</span>
+                        <p class="text-[10px] text-gray-400">Sistem akan men-generate kode unik secara otomatis (contoh: KMK-03ASQW).</p>
                     </div>
 
                     <div>

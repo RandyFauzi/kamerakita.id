@@ -30,14 +30,14 @@ return new class extends Migration
         DB::table('referral_codes')->insert([
             [
                 'id' => $groupACodeId,
-                'code' => 'KMK-GROUP-A',
+                'code' => 'KMK-01ASQW',
                 'group_name' => 'Group A',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'id' => $groupBCodeId,
-                'code' => 'KMK-GROUP-B',
+                'code' => 'KMK-02SADN',
                 'group_name' => 'Group B',
                 'created_at' => now(),
                 'updated_at' => now(),

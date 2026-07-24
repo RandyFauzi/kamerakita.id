@@ -24,21 +24,31 @@ class ManageReferralCodesController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'code' => 'required|string|unique:referral_codes,code|max:50|regex:/^[A-Z0-9\-_]+$/i',
             'group_name' => 'required|string|max:50',
         ], [
-            'code.required' => 'Kode referal wajib diisi.',
-            'code.unique' => 'Kode referal ini sudah terdaftar.',
-            'code.regex' => 'Kode hanya boleh berupa huruf, angka, strip (-), dan garis bawah (_).',
             'group_name.required' => 'Nama grup wajib diisi.',
         ]);
 
+        // Auto-generate next index/number
+        $nextNum = ReferralCode::count() + 1;
+        $numberStr = str_pad($nextNum, 2, '0', STR_PAD_LEFT);
+
+        // Generate standard format: KMK-[NO][4 RANDOM UPPERCASE LETTERS]
+        do {
+            $randomLetters = '';
+            $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            for ($i = 0; $i < 4; $i++) {
+                $randomLetters .= $chars[rand(0, strlen($chars) - 1)];
+            }
+            $code = 'KMK-' . $numberStr . $randomLetters;
+        } while (ReferralCode::where('code', $code)->exists());
+
         ReferralCode::create([
-            'code' => strtoupper($validated['code']),
+            'code' => $code,
             'group_name' => $validated['group_name'],
         ]);
 
-        return back()->with('success', 'Kode referal baru berhasil dibuat!');
+        return back()->with('success', "Kode referal baru '{$code}' berhasil dibuat!");
     }
 
     public function destroy(ReferralCode $referralCode)
