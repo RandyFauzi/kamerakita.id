@@ -89,9 +89,7 @@ class ExportPayrollDataController extends Controller
     public function exportHourlyTrackerExcel(Request $request)
     {
         $partners = Partner::where('partner_role', 'worker')
-            ->with(['videoWorkReports' => function ($query) {
-                $query->where('qc_status', 'approved');
-            }])
+            ->with('videoWorkReports')
             ->orderBy('created_at', 'asc')
             ->get();
 
@@ -123,15 +121,8 @@ class ExportPayrollDataController extends Controller
             $exportDate = date('Y-m-d');
 
             foreach ($partners as $partner) {
-                $totalMinutes = 0;
-
-                foreach ($partner->videoWorkReports as $report) {
-                    $mins = $report->approved_duration_minutes;
-                    if ($mins <= 0) {
-                        $mins = $report->submitted_duration_minutes;
-                    }
-                    $totalMinutes += $mins;
-                }
+                // Calculate aggregated minutes from all submitted reports
+                $totalMinutes = $partner->videoWorkReports->sum('submitted_duration_minutes');
 
                 $hours = floor($totalMinutes / 60);
                 $minutes = $totalMinutes % 60;
