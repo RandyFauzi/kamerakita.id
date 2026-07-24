@@ -39,13 +39,10 @@
                     </div>
 
                     <div>
-                        <label for="group_name" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Penempatan Kelompok / Grup</label>
-                        <select id="group_name" name="group_name" required 
-                                class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition bg-white">
-                            <option value="Group A" {{ old('group_name') === 'Group A' ? 'selected' : '' }}>Group A</option>
-                            <option value="Group B" {{ old('group_name') === 'Group B' ? 'selected' : '' }}>Group B</option>
-                            <option value="Group C" {{ old('group_name') === 'Group C' ? 'selected' : '' }}>Group C</option>
-                        </select>
+                        <label for="group_name" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Nama Kelompok / Grup Baru</label>
+                        <input id="group_name" type="text" name="group_name" value="{{ old('group_name') }}" required 
+                               class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition placeholder-gray-300" 
+                               placeholder="Contoh: Group D, Group Mytron">
                         <x-input-error :messages="$errors->get('group_name')" class="mt-1" />
                     </div>
 

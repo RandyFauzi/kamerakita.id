@@ -24,9 +24,10 @@ class ManageReferralCodesController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'group_name' => 'required|string|max:50',
+            'group_name' => 'required|string|unique:referral_codes,group_name|max:50',
         ], [
             'group_name.required' => 'Nama grup wajib diisi.',
+            'group_name.unique' => 'Grup ini sudah memiliki kode referal. 1 grup hanya boleh memiliki 1 kode referal.',
         ]);
 
         // Auto-generate next index/number
