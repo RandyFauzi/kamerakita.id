@@ -88,18 +88,15 @@ class ExportPayrollDataController extends Controller
      */
     public function exportHourlyTrackerExcel(Request $request)
     {
-        $status = $request->query('status', 'approved');
-
-        $partners = Partner::where('status', 'active')
-            ->with(['videoWorkReports' => function ($query) use ($status) {
-                if ($status !== 'all') {
-                    $query->where('qc_status', $status);
-                }
+        $partners = Partner::where('partner_role', 'worker')
+            ->with(['videoWorkReports' => function ($query) {
+                $query->where('qc_status', 'approved');
             }])
+            ->orderBy('created_at', 'asc')
             ->get();
 
         if ($partners->isEmpty()) {
-            return redirect()->route('dashboard')->with('error', "Tidak ada data user aktif yang dapat diekspor.");
+            return redirect()->route('dashboard')->with('error', "Tidak ada data user (mitra) yang dapat diekspor.");
         }
 
         $templatePath = public_path('Assets/Team Nanda Hourly tracker & Participant Information Indonesia.xlsx');
