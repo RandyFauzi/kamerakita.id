@@ -34,12 +34,14 @@ class Partner extends Model
         'has_headstrap',
         'status',
         'group_name',
+        'is_client_registered',
         'base_hourly_rate',
         'user_id',
     ];
 
     protected $casts = [
         'has_headstrap' => 'boolean',
+        'is_client_registered' => 'boolean',
     ];
 
     public function statusLabel(): string

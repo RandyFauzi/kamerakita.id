@@ -194,6 +194,16 @@
                             </select>
                             @error('group_name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
+
+                        <!-- Registrasi Klien Resmi -->
+                        <div>
+                            <label for="is_client_registered" class="block text-sm font-semibold text-gray-700 mb-1">Registrasi Aplikasi Klien <span class="text-red-500">*</span></label>
+                            <select name="is_client_registered" id="is_client_registered" required class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
+                                <option value="0" {{ old('is_client_registered') === '0' ? 'selected' : '' }}>Belum Terdaftar (Unregistered)</option>
+                                <option value="1" {{ old('is_client_registered') === '1' ? 'selected' : '' }}>Sudah Terdaftar Resmi (Registered)</option>
+                            </select>
+                            @error('is_client_registered') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        </div>
                     </div>
                 </div>
 

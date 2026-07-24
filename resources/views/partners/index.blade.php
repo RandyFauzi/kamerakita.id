@@ -237,6 +237,7 @@
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Headstrap</th>
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">WhatsApp</th>
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Mitra Atasan</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Registrasi Klien</th>
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
                                 <th scope="col" class="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Aksi</th>
                             </tr>
@@ -274,6 +275,11 @@
                                         {{ $partner->mitraParent->full_name ?? '-' }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border {{ $partner->is_client_registered ? 'bg-emerald-50 text-emerald-700 border-emerald-250' : 'bg-rose-50 text-rose-700 border-rose-250' }}">
+                                            {{ $partner->is_client_registered ? 'Registered' : 'Unregistered' }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
                                         <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border {{ $partner->statusBadgeClasses() }}">
                                             {{ $partner->statusLabel() }}
                                         </span>
@@ -306,7 +312,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="10" class="px-6 py-12 text-center text-gray-500">
+                                    <td colspan="11" class="px-6 py-12 text-center text-gray-500">
                                         <span class="text-sm">Tidak ada data mitra atau worker ditemukan.</span>
                                     </td>
                                 </tr>

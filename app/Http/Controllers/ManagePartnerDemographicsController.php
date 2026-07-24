@@ -97,6 +97,7 @@ class ManagePartnerDemographicsController extends Controller
             'has_headstrap' => 'required|boolean',
             'status' => 'required|in:active,inactive,suspended',
             'group_name' => 'nullable|string|max:50',
+            'is_client_registered' => 'required|boolean',
             'base_hourly_rate' => 'required|numeric|min:0',
         ]);
 
@@ -159,6 +160,7 @@ class ManagePartnerDemographicsController extends Controller
             'has_headstrap' => 'required|boolean',
             'status' => 'required|in:active,inactive,suspended',
             'group_name' => 'nullable|string|max:50',
+            'is_client_registered' => 'required|boolean',
             'base_hourly_rate' => 'required|numeric|min:0',
         ]);
 
