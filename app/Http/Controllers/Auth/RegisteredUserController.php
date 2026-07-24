@@ -38,11 +38,17 @@ class RegisteredUserController extends Controller
                 'confirmed', 
                 Rules\Password::min(8)
             ],
+            'referral_code' => ['required', 'string', 'exists:referral_codes,code'],
         ], [
             'name.regex' => 'Nama hanya boleh mengandung huruf dan spasi.',
             'email.email' => 'Format email tidak valid atau domain tidak terdaftar.',
             'password.min' => 'Kata sandi minimal harus 8 karakter.',
+            'referral_code.required' => 'Kode referal wajib diisi.',
+            'referral_code.exists' => 'Kode referal tidak valid atau tidak terdaftar di sistem.',
         ]);
+
+        $refCode = \App\Models\ReferralCode::where('code', $request->referral_code)->first();
+        $groupName = $refCode ? $refCode->group_name : 'Group A';
 
         $user = User::create([
             'name' => $request->name,
@@ -69,6 +75,7 @@ class RegisteredUserController extends Controller
             'email' => $user->email,
             'has_headstrap' => false,
             'status' => 'active',
+            'group_name' => $groupName,
             'base_hourly_rate' => 50000, // default rate in IDR
             'user_id' => $user->id,
         ]);

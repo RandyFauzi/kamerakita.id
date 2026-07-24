@@ -8,7 +8,7 @@
         </div>
     </x-slot>
 
-    <div class="py-1 sm:py-4 space-y-4 sm:space-y-6" x-data="{ showBanner: true, showExcelModal: false }">
+    <div class="py-1 sm:py-4 space-y-4 sm:space-y-6" x-data="{ showBanner: true }">
         
         <!-- Top Banner: YOUR ACCOUNT IS ACTIVE -->
         <template x-if="showBanner">
@@ -104,9 +104,9 @@
                     <a href="{{ route('payroll.export-csv') }}" class="flex items-center justify-center gap-2 py-3.5 bg-white hover:bg-gray-50 text-gray-800 font-bold text-xs rounded-2xl shadow-sm transition">
                         Ekspor CSV Payroll
                     </a>
-                    <button type="button" @click="showExcelModal = true" class="flex items-center justify-center gap-2 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-2xl shadow-sm transition w-full">
+                    <a href="{{ route('payroll.export-hourly-tracker-excel') }}" class="flex items-center justify-center gap-2 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-2xl shadow-sm transition w-full">
                         📊 Ekspor Excel Tracker
-                    </button>
+                    </a>
                     <a href="{{ route('video-submissions.qc-room') }}" class="flex items-center justify-center gap-2 py-3.5 bg-white/60 hover:bg-white/80 text-gray-800 font-bold text-xs rounded-2xl shadow-sm transition">
                         Buka QC Room
                     </a>
@@ -192,6 +192,45 @@
                         SECURED
                     </span>
                 </div>
+            </div>
+        </div>
+
+        <!-- ADMINISTRATIVE ACTIONS Section -->
+        <div class="space-y-3">
+            <span class="block text-xs font-black tracking-widest text-slate-400 uppercase font-mono">ADMINISTRASI & GRUP</span>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+                <!-- Action 1: Kelola Kode Referal -->
+                <a href="{{ route('referral-codes.index') }}" class="bg-white rounded-2xl p-5 border border-gray-150 shadow-sm flex flex-col items-center justify-center text-center space-y-2 hover:shadow-md hover:border-indigo-200 transition">
+                    <div class="p-2.5 bg-indigo-50 text-indigo-650 rounded-xl">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
+                        </svg>
+                    </div>
+                    <span class="block text-xs font-extrabold text-gray-800">Kelola Kode Referal</span>
+                    <span class="block text-[10px] text-gray-400 font-medium">Buat & kelola grup A / B</span>
+                </a>
+
+                <!-- Action 2: Kelola Akun Admin -->
+                <a href="{{ route('admin-users.index') }}" class="bg-white rounded-2xl p-5 border border-gray-150 shadow-sm flex flex-col items-center justify-center text-center space-y-2 hover:shadow-md hover:border-indigo-200 transition">
+                    <div class="p-2.5 bg-slate-50 text-slate-700 rounded-xl">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+                        </svg>
+                    </div>
+                    <span class="block text-xs font-extrabold text-gray-800">Kelola Akun Admin</span>
+                    <span class="block text-[10px] text-gray-400 font-medium">Atur hak akses & verifikator</span>
+                </a>
+
+                <!-- Action 3: Kelola Mitra Demographics -->
+                <a href="{{ route('partners.index') }}" class="bg-white rounded-2xl p-5 border border-gray-150 shadow-sm flex flex-col items-center justify-center text-center space-y-2 hover:shadow-md hover:border-indigo-200 transition">
+                    <div class="p-2.5 bg-blue-50 text-blue-600 rounded-xl">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                    </div>
+                    <span class="block text-xs font-extrabold text-gray-800">Data Demografi Mitra</span>
+                    <span class="block text-[10px] text-gray-400 font-medium">Detail profil & ekspor kontak</span>
+                </a>
             </div>
         </div>
 
@@ -331,71 +370,5 @@
                 </table>
             </div>
         </div>
-        <!-- Export Excel Tracker Modal -->
-        <template x-if="showExcelModal">
-            <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-                <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                    <div x-show="showExcelModal" 
-                         x-transition:enter="ease-out duration-300" 
-                         x-transition:enter-start="opacity-0" 
-                         x-transition:enter-end="opacity-100" 
-                         x-transition:leave="ease-in duration-200" 
-                         x-transition:leave-start="opacity-100" 
-                         x-transition:leave-end="opacity-0" 
-                         class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" 
-                         @click="showExcelModal = false"
-                         aria-hidden="true"></div>
-
-                    <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-
-                    <div x-show="showExcelModal" 
-                         x-transition:enter="ease-out duration-300" 
-                         x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" 
-                         x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" 
-                         x-transition:leave="ease-in duration-200" 
-                         x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" 
-                         x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" 
-                         class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                        
-                        <form action="{{ route('payroll.export-hourly-tracker-excel') }}" method="GET">
-                            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                                <div class="sm:flex sm:items-start">
-                                    <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-emerald-100 sm:mx-0 sm:h-10 sm:w-10">
-                                        <svg class="h-6 w-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                        </svg>
-                                    </div>
-                                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                                        <h3 class="text-lg leading-6 font-bold text-gray-900" id="modal-title">
-                                            Ekspor Excel Tracker
-                                        </h3>
-                                        <div class="mt-2">
-                                            <p class="text-sm text-gray-500 mb-4">
-                                                Pilih status laporan yang ingin Anda unduh dalam format Excel.
-                                            </p>
-                                            <label class="block text-xs font-bold text-gray-700 mb-1" for="export_status">Status Laporan</label>
-                                            <select name="status" id="export_status" class="w-full border-gray-300 rounded-lg shadow-sm text-sm focus:ring-emerald-500 focus:border-emerald-500">
-                                                <option value="approved">Hanya Approved (Disetujui)</option>
-                                                <option value="pending">Hanya Pending (Belum Direview)</option>
-                                                <option value="rejected">Hanya Rejected (Ditolak)</option>
-                                                <option value="all">Semua Status</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-2xl">
-                                <button type="submit" class="w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-4 py-2 bg-emerald-600 text-base font-medium text-white hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 sm:ml-3 sm:w-auto sm:text-sm transition">
-                                    Unduh Sekarang
-                                </button>
-                                <button type="button" @click="showExcelModal = false" class="mt-3 w-full inline-flex justify-center rounded-xl border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition">
-                                    Batal
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </template>
     </div>
 </x-app-layout>

@@ -33,6 +33,7 @@ class Partner extends Model
         'smartphone_type',
         'has_headstrap',
         'status',
+        'group_name',
         'base_hourly_rate',
         'user_id',
     ];

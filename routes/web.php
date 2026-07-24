@@ -33,6 +33,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('partners', ManagePartnerDemographicsController::class)
         ->middleware('role:superadmin,admin');
 
+    Route::resource('referral-codes', \App\Http\Controllers\ManageReferralCodesController::class)
+        ->except(['create', 'show', 'edit', 'update'])
+        ->middleware('role:superadmin,admin');
+
     // Internal Admin Account CRUD
     Route::resource('admin-users', ManageAdminUsersController::class)
         ->parameters(['admin-users' => 'adminUser'])
