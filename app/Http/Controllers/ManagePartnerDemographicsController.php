@@ -96,6 +96,7 @@ class ManagePartnerDemographicsController extends Controller
             'smartphone_type' => 'nullable|string|max:100',
             'has_headstrap' => 'required|boolean',
             'status' => 'required|in:active,inactive,suspended',
+            'group_name' => 'nullable|string|max:50',
             'base_hourly_rate' => 'required|numeric|min:0',
         ]);
 
@@ -157,6 +158,7 @@ class ManagePartnerDemographicsController extends Controller
             'smartphone_type' => 'nullable|string|max:100',
             'has_headstrap' => 'required|boolean',
             'status' => 'required|in:active,inactive,suspended',
+            'group_name' => 'nullable|string|max:50',
             'base_hourly_rate' => 'required|numeric|min:0',
         ]);
 

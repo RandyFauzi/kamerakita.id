@@ -41,6 +41,18 @@
                             @error('mitra_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
 
+                        <!-- Kelompok / Grup -->
+                        <div>
+                            <label for="group_name" class="block text-sm font-semibold text-gray-700 mb-1">Kelompok / Grup</label>
+                            <select name="group_name" id="group_name" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
+                                <option value="" {{ is_null(old('group_name')) ? 'selected' : '' }}>-- Tanpa Grup --</option>
+                                @foreach(\App\Models\ReferralCode::select('group_name')->groupBy('group_name')->get() as $code)
+                                    <option value="{{ $code->group_name }}" {{ old('group_name') === $code->group_name ? 'selected' : '' }}>{{ $code->group_name }}</option>
+                                @endforeach
+                            </select>
+                            @error('group_name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        </div>
+
                         <!-- NIK -->
                         <div>
                             <label for="nik" class="block text-sm font-semibold text-gray-700 mb-1">NIK (Nomor Induk Kependudukan)</label>
