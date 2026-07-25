@@ -23,7 +23,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="text-gray-900 antialiased bg-[#f8f8f6]">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
+        <div class="min-h-screen flex flex-col sm:justify-center items-center py-12 px-4 sm:px-0">
             <!-- Modern Logo Header -->
             <div class="mb-4">
                 <a href="/" class="flex items-center justify-center">
