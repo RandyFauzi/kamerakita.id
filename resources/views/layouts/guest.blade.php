@@ -26,8 +26,9 @@
         <div class="min-h-screen flex flex-col sm:justify-center items-center py-12 px-4 sm:px-0">
             <!-- Modern Logo Header -->
             <div class="mb-4">
-                <a href="/" class="flex items-center justify-center">
-                    <img src="{{ asset('images/Logo.webp') }}" alt="Kamerakita.ai" class="h-14 w-auto object-contain">
+                <a href="/" class="flex items-center justify-center gap-3">
+                    <img src="{{ asset('images/Logo.webp') }}" alt="Kamerakita.ai" class="h-11 w-auto object-contain">
+                    <span class="text-xl font-black tracking-tight text-slate-800">KameraKita AI</span>
                 </a>
             </div>
 
