@@ -37,6 +37,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->except(['create', 'show', 'edit', 'update'])
         ->middleware('role:superadmin,admin');
 
+    // Fastwork Onboardings Admin routes
+    Route::get('/admin/onboardings', [\App\Http\Controllers\ManageOnboardingsController::class, 'index'])
+        ->middleware('role:superadmin,admin')
+        ->name('admin.onboardings.index');
+    Route::delete('/admin/onboardings/{onboarding}', [\App\Http\Controllers\ManageOnboardingsController::class, 'destroy'])
+        ->middleware('role:superadmin,admin')
+        ->name('admin.onboardings.destroy');
+
     // Internal Admin Account CRUD
     Route::resource('admin-users', ManageAdminUsersController::class)
         ->parameters(['admin-users' => 'adminUser'])
@@ -96,5 +104,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+// Public Fastwork Onboarding routes
+Route::get('/onboarding', [\App\Http\Controllers\FastworkOnboardingController::class, 'showForm'])->name('onboarding.form');
+Route::post('/onboarding', [\App\Http\Controllers\FastworkOnboardingController::class, 'handleSubmission'])->name('onboarding.submit');
 
 require __DIR__.'/auth.php';
