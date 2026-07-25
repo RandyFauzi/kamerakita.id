@@ -46,7 +46,6 @@
                 <option value="iPhone 14 Pro / Max" {{ old('device_type') === 'iPhone 14 Pro / Max' ? 'selected' : '' }}>iPhone 14 Pro / Max</option>
                 <option value="iPhone 15" {{ old('device_type') === 'iPhone 15' ? 'selected' : '' }}>iPhone 15</option>
                 <option value="iPhone 15 Pro / Max" {{ old('device_type') === 'iPhone 15 Pro / Max' ? 'selected' : '' }}>iPhone 15 Pro / Max</option>
-                <option value="Lainnya (iPhone XS/11/dll)" {{ old('device_type') === 'Lainnya (iPhone XS/11/dll)' ? 'selected' : '' }}>Lainnya (iPhone XS / 11 / Seri Lain)</option>
             </select>
             <x-input-error :messages="$errors->get('device_type')" class="mt-1" />
         </div>
