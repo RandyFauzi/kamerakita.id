@@ -15,7 +15,7 @@ class FastworkOnboardingTest extends TestCase
     {
         $response = $this->get('/onboarding');
         $response->assertStatus(200);
-        $response->assertSee('Portal Registrasi Mitra');
+        $response->assertSee('Portal Onboarding');
     }
 
     public function test_public_onboarding_submission_creates_record_and_redirects(): void
