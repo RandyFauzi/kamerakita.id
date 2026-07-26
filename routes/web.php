@@ -75,6 +75,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/qc-room/{report}', [VerifyVideoWorkReportController::class, 'destroy'])
         ->middleware('role:superadmin,admin')
         ->name('video-submissions.destroy');
+    Route::post('/qc-room/{report}/reject', [VerifyVideoWorkReportController::class, 'rejectReport'])
+        ->middleware('role:superadmin,admin')
+        ->name('video-submissions.reject-report');
     // Batch Payment Module
     Route::get('/payments/manage', [\App\Http\Controllers\ManagePaymentsController::class, 'index'])
         ->middleware('role:superadmin,admin,finance')

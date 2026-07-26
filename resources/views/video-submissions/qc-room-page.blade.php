@@ -275,6 +275,7 @@
                                                                 <th class="px-4 py-2 text-left text-[10px] font-bold text-slate-500 uppercase font-mono">ID Laporan</th>
                                                                 <th class="px-4 py-2 text-left text-[10px] font-bold text-slate-500 uppercase font-mono">Tanggal Kerja</th>
                                                                 <th class="px-4 py-2 text-center text-[10px] font-bold text-slate-500 uppercase font-mono">Durasi Kirim</th>
+                                                                <th class="px-4 py-2 text-center text-[10px] font-bold text-slate-500 uppercase font-mono">Status Harian</th>
                                                                 <th class="px-4 py-2 text-center text-[10px] font-bold text-slate-500 uppercase font-mono">Aksi</th>
                                                             </tr>
                                                         </thead>
@@ -291,22 +292,54 @@
                                                                         {{ $report->submitted_duration_formatted }}
                                                                     </td>
                                                                     <td class="px-4 py-2 whitespace-nowrap text-center">
-                                                                        <button type="button" 
-                                                                                @click="activeDailyReport = {{ json_encode([
-                                                                                    'id' => $report->id,
-                                                                                    'date' => $report->submission_date->translatedFormat('d F Y'),
-                                                                                    'duration' => $report->submitted_duration_formatted,
-                                                                                    'status' => $partner->approval_status === 'paid' ? 'Paid (Lunas)' : ($partner->approval_status === 'approved' ? 'Rilis (Approved)' : ($partner->approval_status === 'draft' ? 'Draf (Admin)' : 'Belum Diperiksa')),
-                                                                                    'approved_min' => $report->approved_duration_minutes,
-                                                                                    'email_img' => $report->evidence_email_image_url,
-                                                                                    'quality_img' => $report->evidence_app_quality_image_url,
-                                                                                    'device' => $report->device_type ?: '-',
-                                                                                    'headstrap' => $report->has_headstrap ? 'Ya' : 'Tidak',
-                                                                                    'notes' => $report->verifier_notes ?: 'Tidak ada catatan'
-                                                                                ]) }}; showDetailModal = true" 
-                                                                                class="inline-flex items-center px-3 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-[10px] font-bold transition shadow-xs">
-                                                                            Detail
-                                                                        </button>
+                                                                        @if($report->qc_status === 'approved')
+                                                                            <span class="inline-flex px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100">Approved ({{ $report->approved_duration_minutes }}m)</span>
+                                                                        @elseif($report->qc_status === 'rejected')
+                                                                            <span class="inline-flex px-1.5 py-0.5 rounded text-[9px] font-bold bg-rose-50 text-rose-700 border border-rose-100" title="{{ $report->verifier_notes }}">Revisi (Ditolak)</span>
+                                                                        @else
+                                                                            <span class="inline-flex px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-50 text-amber-700 border border-amber-100">Review</span>
+                                                                        @endif
+                                                                    </td>
+                                                                    <td class="px-4 py-2 whitespace-nowrap text-center">
+                                                                        <div class="flex items-center justify-center gap-1.5" @click.stop>
+                                                                            <!-- Detail button -->
+                                                                            <button type="button" 
+                                                                                    @click="activeDailyReport = {{ json_encode([
+                                                                                        'id' => $report->id,
+                                                                                        'date' => $report->submission_date->translatedFormat('d F Y'),
+                                                                                        'duration' => $report->submitted_duration_formatted,
+                                                                                        'status' => $partner->approval_status === 'paid' ? 'Paid (Lunas)' : ($partner->approval_status === 'approved' ? 'Rilis (Approved)' : ($partner->approval_status === 'draft' ? 'Draf (Admin)' : 'Belum Diperiksa')),
+                                                                                        'approved_min' => $report->approved_duration_minutes,
+                                                                                        'email_img' => $report->evidence_email_image_url,
+                                                                                        'quality_img' => $report->evidence_app_quality_image_url,
+                                                                                        'device' => $report->device_type ?: '-',
+                                                                                        'headstrap' => $report->has_headstrap ? 'Ya' : 'Tidak',
+                                                                                        'notes' => $report->verifier_notes ?: 'Tidak ada catatan'
+                                                                                    ]) }}; showDetailModal = true" 
+                                                                                    class="inline-flex items-center px-2 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-[9px] font-bold transition">
+                                                                                Detail
+                                                                            </button>
+
+                                                                            @if($partner->approval_status !== 'paid')
+                                                                                <!-- Reject/Revision Action -->
+                                                                                <form action="{{ route('video-submissions.reject-report', $report->id) }}" method="POST" class="inline" onsubmit="return confirmRejection(this)">
+                                                                                    @csrf
+                                                                                    <input type="hidden" name="reason" class="reject-reason-input">
+                                                                                    <button type="submit" class="inline-flex items-center px-2 py-1 bg-amber-55 hover:bg-amber-100 text-amber-850 rounded-lg text-[9px] font-bold border border-amber-200 transition">
+                                                                                        Revisi
+                                                                                    </button>
+                                                                                </form>
+
+                                                                                <!-- Delete Action -->
+                                                                                <form action="{{ route('video-submissions.destroy', $report->id) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus laporan harian ini secara permanen?')">
+                                                                                    @csrf
+                                                                                    @method('DELETE')
+                                                                                    <button type="submit" class="inline-flex items-center px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-800 rounded-lg text-[9px] font-bold border border-rose-200 transition">
+                                                                                        Hapus
+                                                                                    </button>
+                                                                                </form>
+                                                                            @endif
+                                                                        </div>
                                                                     </td>
                                                                 </tr>
                                                             @endforeach
@@ -417,5 +450,17 @@
                 </div>
             </div>
         </div>
+        <script>
+            function confirmRejection(form) {
+                let reason = prompt("Masukkan alasan penolakan / instruksi revisi untuk mitra:");
+                if (reason === null) return false; // Dibatalkan oleh admin
+                if (reason.trim() === "") {
+                    alert("Alasan penolakan wajib diisi!");
+                    return false;
+                }
+                form.querySelector('.reject-reason-input').value = reason;
+                return true;
+            }
+        </script>
     </div>
 </x-app-layout>

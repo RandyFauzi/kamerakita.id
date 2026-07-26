@@ -128,4 +128,46 @@ class PeriodApprovalTest extends TestCase
         $this->assertEquals('approved', $report2->qc_status);
         $this->assertEquals(60, $report2->approved_duration_minutes);
     }
+
+    public function test_admin_can_reject_daily_report()
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $partner = Partner::factory()->create();
+        $report = VideoWorkReport::factory()->create([
+            'partner_id' => $partner->id,
+            'submission_date' => '2026-07-27',
+            'submitted_duration_minutes' => 60,
+            'qc_status' => 'pending',
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->post(route('video-submissions.reject-report', $report->id), [
+                'reason' => 'Fake screenshot or typo duration',
+            ]);
+
+        $response->assertRedirect();
+        
+        $report->refresh();
+        $this->assertEquals('rejected', $report->qc_status);
+        $this->assertEquals(0, $report->approved_duration_minutes);
+        $this->assertEquals('Fake screenshot or typo duration', $report->verifier_notes);
+    }
+
+    public function test_admin_can_delete_daily_report()
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $partner = Partner::factory()->create();
+        $report = VideoWorkReport::factory()->create([
+            'partner_id' => $partner->id,
+            'submission_date' => '2026-07-27',
+            'submitted_duration_minutes' => 60,
+            'qc_status' => 'pending',
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->delete(route('video-submissions.destroy', $report->id));
+
+        $response->assertRedirect();
+        $this->assertDatabaseMissing('video_work_reports', ['id' => $report->id]);
+    }
 }

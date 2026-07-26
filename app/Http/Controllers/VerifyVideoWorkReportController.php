@@ -215,4 +215,25 @@ class VerifyVideoWorkReportController extends Controller
 
         return redirect()->back()->with('success', 'Laporan video berhasil dihapus dari sistem.');
     }
+
+    public function rejectReport(Request $request, VideoWorkReport $report)
+    {
+        if (Auth::user()->role !== 'superadmin' && Auth::user()->role !== 'admin') {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'reason' => 'required|string|max:1000',
+        ]);
+
+        $report->update([
+            'qc_status' => 'rejected',
+            'approved_duration_minutes' => 0,
+            'verifier_notes' => $validated['reason'],
+            'verified_by' => Auth::id(),
+            'verified_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Laporan video berhasil ditolak dan diminta revisi.');
+    }
 }
