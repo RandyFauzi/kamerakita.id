@@ -114,36 +114,32 @@
             <!-- Table Card -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-2xl border border-gray-100">
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-100">
-                        <thead class="bg-gray-50/50">
+                    <table class="min-w-full divide-y divide-gray-150">
+                        <thead class="bg-slate-50/70">
                             <tr>
-                                <th scope="col" class="w-10 px-4 py-4"></th>
-                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Mitra (Worker)</th>
-                                <th scope="col" class="px-6 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Dilaporkan</th>
-                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-40">Durasi Disetujui (Menit)</th>
-                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Catatan Masukan / Alasan</th>
-                                <th scope="col" class="px-6 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                                <th scope="col" class="px-6 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider w-64">Aksi</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider font-mono">Mitra (Worker)</th>
+                                <th scope="col" class="px-6 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider font-mono">Total Dilaporkan</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider font-mono">Durasi Verifikasi</th>
+                                <th scope="col" class="px-6 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider font-mono">Status</th>
+                                <th scope="col" class="px-6 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider font-mono">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-100">
                             @forelse($partners as $partner)
-                                <tr class="hover:bg-gray-50/50 transition-colors duration-150">
-                                    <!-- Toggle Accordion Button -->
-                                    <td class="px-4 py-4 text-center">
-                                        <button type="button" @click="togglePartner('{{ $partner->id }}')" class="p-1 text-gray-400 hover:text-indigo-650 hover:bg-slate-50 rounded-lg transition duration-200">
-                                            <svg class="w-5 h-5 transform transition-transform duration-200" :class="isExpanded('{{ $partner->id }}') ? 'rotate-90' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
-                                            </svg>
-                                        </button>
-                                    </td>
-                                    
+                                <tr class="hover:bg-slate-50/60 transition-colors duration-150 cursor-pointer select-none" @click="togglePartner('{{ $partner->id }}')">
                                     <!-- Partner Demographics -->
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex flex-col">
-                                            <span class="text-sm font-bold text-gray-900">{{ $partner->full_name }}</span>
-                                            <span class="text-xs text-gray-400">ID: {{ $partner->mitra_id }}</span>
-                                            <span class="text-xs text-slate-400">{{ $partner->email ?: ($partner->user?->email ?: '-') }}</span>
+                                        <div class="flex items-center gap-3">
+                                            <div class="text-gray-400">
+                                                <svg class="w-4 h-4 transform transition-transform duration-200" :class="isExpanded('{{ $partner->id }}') ? 'rotate-90 text-indigo-650' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                                                </svg>
+                                            </div>
+                                            <div class="flex flex-col">
+                                                <span class="text-sm font-bold text-slate-900">{{ $partner->full_name }}</span>
+                                                <span class="text-[10px] text-slate-400 font-mono">ID: {{ $partner->mitra_id }}</span>
+                                                <span class="text-xs text-slate-400">{{ $partner->email ?: ($partner->user?->email ?: '-') }}</span>
+                                            </div>
                                         </div>
                                     </td>
                                     
@@ -152,28 +148,18 @@
                                         {{ floor($partner->total_reported_minutes / 60) }}j {{ $partner->total_reported_minutes % 60 }}m
                                     </td>
                                     
-                                    <!-- Inline Approval & Draft Input Form -->
-                                    <td class="px-6 py-4" colspan="2">
-                                        <form id="form-{{ $partner->id }}" method="POST" class="flex items-center gap-4">
-                                            @csrf
-                                            <input type="hidden" name="partner_id" value="{{ $partner->id }}">
-                                            <input type="hidden" name="period_start_date" value="{{ $startDate->format('Y-m-d') }}">
-                                            <input type="hidden" name="period_end_date" value="{{ $endDate->format('Y-m-d') }}">
-                                            
-                                            <!-- Approved Minutes Input -->
-                                            <div class="w-32">
-                                                <input type="number" name="approved_minutes" value="{{ old('approved_minutes', $partner->input_approved_minutes) }}" required min="0" 
-                                                       {{ $partner->approval_status === 'paid' ? 'disabled' : '' }}
-                                                       class="block w-full px-2.5 py-1.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-mono text-center">
-                                            </div>
-                                            
-                                            <!-- Verifier Notes Input -->
-                                            <div class="flex-1">
-                                                <input type="text" name="verifier_notes" value="{{ old('verifier_notes', $partner->input_verifier_notes) }}" placeholder="Catatan/Alasan (opsional)..."
-                                                       {{ $partner->approval_status === 'paid' ? 'disabled' : '' }}
-                                                       class="block w-full px-3 py-1.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-                                            </div>
-                                        </form>
+                                    <!-- Verification Duration -->
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-700 font-mono">
+                                        @if($partner->approval_status !== 'none' && $partner->period_approval)
+                                            <span class="font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-lg px-2.5 py-1 text-xs">
+                                                {{ $partner->period_approval->approved_minutes }} menit
+                                            </span>
+                                            @if($partner->period_approval->verifier_notes)
+                                                <span class="block text-[10px] text-gray-500 truncate max-w-xs mt-1.5 font-sans" title="{{ $partner->period_approval->verifier_notes }}">Catatan: {{ $partner->period_approval->verifier_notes }}</span>
+                                            @endif
+                                        @else
+                                            <span class="text-gray-400 italic text-xs">Belum diperiksa</span>
+                                        @endif
                                     </td>
 
                                     <!-- Status Badge -->
@@ -197,97 +183,131 @@
                                         @endif
                                     </td>
 
-                                    <!-- Action Buttons -->
-                                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                                        @if($partner->approval_status !== 'paid')
-                                            <div class="flex items-center justify-center gap-2">
-                                                <!-- Save Draft Button -->
-                                                <button type="submit" form="form-{{ $partner->id }}" 
-                                                        x-on:click.prevent="$el.form.action='{{ route('video-submissions.save-draft') }}'; $el.form.submit()"
-                                                        class="px-3.5 py-1.5 bg-white hover:bg-slate-50 border border-gray-200 text-gray-700 font-bold text-xs uppercase tracking-wider rounded-lg transition duration-150">
-                                                    Simpan Draf
-                                                </button>
-                                                
-                                                <!-- Approve & Release Button -->
-                                                <button type="submit" form="form-{{ $partner->id }}"
-                                                        x-on:click.prevent="$el.form.action='{{ route('video-submissions.finalize') }}'; $el.form.submit()"
-                                                        class="px-3.5 py-1.5 bg-gradient-to-r from-blue-600 to-indigo-650 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs uppercase tracking-wider rounded-lg transition duration-150 shadow-sm">
-                                                    Rilis & Approve
-                                                </button>
-                                            </div>
-                                        @else
-                                            <span class="text-xs text-gray-400">Verifikasi Terkunci</span>
-                                        @endif
+                                    <!-- Action -->
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium" @click.stop>
+                                        <button type="button" @click="togglePartner('{{ $partner->id }}')" class="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition shadow-xs">
+                                            <span x-text="isExpanded('{{ $partner->id }}') ? 'Tutup' : 'Periksa Laporan'"></span>
+                                        </button>
                                     </td>
                                 </tr>
 
                                 <!-- Expanded Daily Reports Accordion Detail -->
                                 <tr x-show="isExpanded('{{ $partner->id }}')" x-cloak class="bg-slate-50/40">
-                                    <td colspan="7" class="px-6 py-4">
-                                        <div class="border border-slate-100 bg-white rounded-2xl p-4 shadow-sm">
-                                            <h4 class="text-xs font-black text-slate-500 uppercase tracking-widest mb-3 font-mono">Daftar Laporan Kerja Harian</h4>
+                                    <td colspan="5" class="px-6 py-4">
+                                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 bg-white rounded-3xl p-5 border border-slate-100 shadow-xs">
                                             
-                                            <div class="overflow-x-auto mt-2">
-                                                <table class="min-w-full divide-y divide-gray-100">
-                                                    <thead class="bg-slate-50">
-                                                        <tr>
-                                                            <th scope="col" class="px-4 py-2 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider font-mono">ID Laporan</th>
-                                                            <th scope="col" class="px-4 py-2 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider font-mono">Tanggal Kerja</th>
-                                                            <th scope="col" class="px-4 py-2 text-center text-[10px] font-bold text-slate-500 uppercase tracking-wider font-mono">Durasi Kirim</th>
-                                                            <th scope="col" class="px-4 py-2 text-center text-[10px] font-bold text-slate-500 uppercase tracking-wider font-mono">Status QC</th>
-                                                            <th scope="col" class="px-4 py-2 text-center text-[10px] font-bold text-slate-500 uppercase tracking-wider font-mono">Aksi</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody class="divide-y divide-gray-100 bg-white">
-                                                        @foreach($partner->period_reports as $report)
-                                                            <tr class="hover:bg-slate-50/50 transition-colors">
-                                                                <td class="px-4 py-2 whitespace-nowrap text-xs font-mono text-gray-500">
-                                                                    {{ substr($report->id, 0, 8) }}...
-                                                                </td>
-                                                                <td class="px-4 py-2 whitespace-nowrap text-xs font-semibold text-slate-700">
-                                                                    {{ $report->submission_date->translatedFormat('d F Y') }}
-                                                                </td>
-                                                                <td class="px-4 py-2 whitespace-nowrap text-xs text-center font-bold text-indigo-650 font-mono">
-                                                                    {{ $report->submitted_duration_formatted }}
-                                                                </td>
-                                                                <td class="px-4 py-2 whitespace-nowrap text-center">
-                                                                    @if($report->qc_status === 'approved')
-                                                                        <span class="inline-flex px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100">Approved ({{ $report->approved_duration_minutes }}m)</span>
-                                                                    @elseif($report->qc_status === 'rejected')
-                                                                        <span class="inline-flex px-2 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-100">Rejected</span>
-                                                                    @else
-                                                                        <span class="inline-flex px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-100">Review (Pending)</span>
-                                                                    @endif
-                                                                </td>
-                                                                <td class="px-4 py-2 whitespace-nowrap text-center">
-                                                                    <button type="button" 
-                                                                            @click="activeDailyReport = {{ json_encode([
-                                                                                'id' => $report->id,
-                                                                                'date' => $report->submission_date->translatedFormat('d F Y'),
-                                                                                'duration' => $report->submitted_duration_formatted,
-                                                                                'status' => $partner->approval_status === 'paid' ? 'Paid (Lunas)' : ($partner->approval_status === 'approved' ? 'Rilis (Approved)' : ($partner->approval_status === 'draft' ? 'Draf (Admin)' : 'Belum Diperiksa')),
-                                                                                'approved_min' => $report->approved_duration_minutes,
-                                                                                'email_img' => $report->evidence_email_image_url,
-                                                                                'quality_img' => $report->evidence_app_quality_image_url,
-                                                                                'device' => $report->device_type ?: '-',
-                                                                                'headstrap' => $report->has_headstrap ? 'Ya' : 'Tidak',
-                                                                                'notes' => $report->verifier_notes ?: 'Tidak ada catatan'
-                                                                            ]) }}; showDetailModal = true" 
-                                                                            class="inline-flex items-center px-3 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-[10px] font-bold transition shadow-xs">
-                                                                        Detail
-                                                                    </button>
-                                                                </td>
-                                                            </tr>
-                                                        @endforeach
-                                                    </tbody>
-                                                </table>
+                                            <!-- Left Panel (5 columns): Form Verifikasi -->
+                                            <div class="lg:col-span-5 space-y-4 pr-0 lg:pr-6 border-0 lg:border-r border-slate-100">
+                                                <h4 class="text-xs font-black text-slate-800 uppercase tracking-widest font-mono">Panel Verifikasi Periode</h4>
+                                                
+                                                <form id="form-{{ $partner->id }}" method="POST" class="space-y-4">
+                                                    @csrf
+                                                    <input type="hidden" name="partner_id" value="{{ $partner->id }}">
+                                                    <input type="hidden" name="period_start_date" value="{{ $startDate->format('Y-m-d') }}">
+                                                    <input type="hidden" name="period_end_date" value="{{ $endDate->format('Y-m-d') }}">
+                                                    
+                                                    <!-- Input Durasi Disetujui -->
+                                                    <div>
+                                                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 font-mono">Durasi yang Disetujui (Menit)</label>
+                                                        <div class="relative">
+                                                            <input type="number" name="approved_minutes" value="{{ old('approved_minutes', $partner->input_approved_minutes) }}" required min="0" 
+                                                                   {{ $partner->approval_status === 'paid' ? 'disabled' : '' }}
+                                                                   class="block w-full px-3.5 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-mono text-lg font-bold">
+                                                            <span class="absolute right-3 top-2.5 text-xs text-gray-400 font-medium">menit</span>
+                                                        </div>
+                                                        <p class="text-[10px] text-gray-400 mt-1.5 leading-relaxed">
+                                                            Maksimal durasi dilaporkan: <strong class="text-slate-700 font-bold font-mono">{{ $partner->total_reported_minutes }} menit</strong> 
+                                                            ({{ floor($partner->total_reported_minutes / 60) }}j {{ $partner->total_reported_minutes % 60 }}m).
+                                                        </p>
+                                                    </div>
+                                                    
+                                                    <!-- Input Catatan Verifikator -->
+                                                    <div>
+                                                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 font-mono">Catatan Masukan / Alasan</label>
+                                                        <textarea name="verifier_notes" rows="3" placeholder="Catatan opsional atau penyesuaian SOP..."
+                                                                  {{ $partner->approval_status === 'paid' ? 'disabled' : '' }}
+                                                                  class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 leading-relaxed">{{ old('verifier_notes', $partner->input_verifier_notes) }}</textarea>
+                                                    </div>
+
+                                                    <!-- Form Actions -->
+                                                    <div class="pt-2 border-t border-slate-100 flex items-center gap-3">
+                                                        @if($partner->approval_status !== 'paid')
+                                                            <button type="submit" form="form-{{ $partner->id }}" 
+                                                                    x-on:click.prevent="$el.form.action='{{ route('video-submissions.save-draft') }}'; $el.form.submit()"
+                                                                    class="flex-1 justify-center inline-flex items-center px-4 py-2.5 bg-white hover:bg-slate-50 border border-gray-205 text-gray-750 font-bold text-xs uppercase tracking-wider rounded-xl transition duration-150 shadow-xs">
+                                                                Simpan Draf
+                                                            </button>
+                                                            <button type="submit" form="form-{{ $partner->id }}"
+                                                                    x-on:click.prevent="$el.form.action='{{ route('video-submissions.finalize') }}'; $el.form.submit()"
+                                                                    class="flex-1 justify-center inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-650 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition duration-150 shadow-md shadow-indigo-50">
+                                                                Rilis & Approve
+                                                            </button>
+                                                        @else
+                                                            <div class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-center text-xs font-bold text-slate-500 font-mono">
+                                                                🔒 Status Terkunci (Sudah Dibayar)
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                </form>
                                             </div>
+
+                                            <!-- Right Panel (7 columns): Daftar Laporan Kerja Harian -->
+                                            <div class="lg:col-span-7 flex flex-col">
+                                                <h4 class="text-xs font-black text-slate-800 uppercase tracking-widest mb-3 font-mono">Daftar Laporan Kerja Harian</h4>
+                                                
+                                                <div class="overflow-x-auto border border-slate-100 rounded-2xl">
+                                                    <table class="min-w-full divide-y divide-gray-100">
+                                                        <thead class="bg-slate-50">
+                                                            <tr>
+                                                                <th class="px-4 py-2 text-left text-[10px] font-bold text-slate-500 uppercase font-mono">ID Laporan</th>
+                                                                <th class="px-4 py-2 text-left text-[10px] font-bold text-slate-500 uppercase font-mono">Tanggal Kerja</th>
+                                                                <th class="px-4 py-2 text-center text-[10px] font-bold text-slate-500 uppercase font-mono">Durasi Kirim</th>
+                                                                <th class="px-4 py-2 text-center text-[10px] font-bold text-slate-500 uppercase font-mono">Aksi</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody class="divide-y divide-gray-100 bg-white">
+                                                            @foreach($partner->period_reports as $report)
+                                                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                                                    <td class="px-4 py-2 whitespace-nowrap text-xs font-mono text-gray-500">
+                                                                        {{ substr($report->id, 0, 8) }}...
+                                                                    </td>
+                                                                    <td class="px-4 py-2 whitespace-nowrap text-xs font-semibold text-slate-700">
+                                                                        {{ $report->submission_date->translatedFormat('d F Y') }}
+                                                                    </td>
+                                                                    <td class="px-4 py-2 whitespace-nowrap text-xs text-center font-bold text-indigo-650 font-mono">
+                                                                        {{ $report->submitted_duration_formatted }}
+                                                                    </td>
+                                                                    <td class="px-4 py-2 whitespace-nowrap text-center">
+                                                                        <button type="button" 
+                                                                                @click="activeDailyReport = {{ json_encode([
+                                                                                    'id' => $report->id,
+                                                                                    'date' => $report->submission_date->translatedFormat('d F Y'),
+                                                                                    'duration' => $report->submitted_duration_formatted,
+                                                                                    'status' => $partner->approval_status === 'paid' ? 'Paid (Lunas)' : ($partner->approval_status === 'approved' ? 'Rilis (Approved)' : ($partner->approval_status === 'draft' ? 'Draf (Admin)' : 'Belum Diperiksa')),
+                                                                                    'approved_min' => $report->approved_duration_minutes,
+                                                                                    'email_img' => $report->evidence_email_image_url,
+                                                                                    'quality_img' => $report->evidence_app_quality_image_url,
+                                                                                    'device' => $report->device_type ?: '-',
+                                                                                    'headstrap' => $report->has_headstrap ? 'Ya' : 'Tidak',
+                                                                                    'notes' => $report->verifier_notes ?: 'Tidak ada catatan'
+                                                                                ]) }}; showDetailModal = true" 
+                                                                                class="inline-flex items-center px-3 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-[10px] font-bold transition shadow-xs">
+                                                                            Detail
+                                                                        </button>
+                                                                    </td>
+                                                                </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            
                                         </div>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="px-6 py-12 text-center text-gray-500">
+                                    <td colspan="5" class="px-6 py-12 text-center text-gray-500">
                                         <span class="text-sm">Tidak ada data pengumpulan laporan mitra untuk periode ini.</span>
                                     </td>
                                 </tr>
