@@ -253,4 +253,69 @@ class VerifyVideoWorkReportController extends Controller
 
         return redirect()->back()->with('success', 'Status penolakan laporan berhasil dibatalkan dan dikembalikan ke antrean review.');
     }
+
+    public function exportPdf(Request $request)
+    {
+        // 1. Get available periods and determine selected period
+        $periods = PeriodService::getAvailablePeriods();
+        
+        $selectedPeriodKey = $request->input('period');
+        if (!$selectedPeriodKey && !empty($periods)) {
+            $selectedPeriodKey = $periods[0]['start']->format('Y-m-d') . '|' . $periods[0]['end']->format('Y-m-d');
+        }
+
+        if ($selectedPeriodKey) {
+            $parts = explode('|', $selectedPeriodKey);
+            $startDate = Carbon::parse($parts[0])->startOfDay();
+            $endDate = Carbon::parse($parts[1])->endOfDay();
+        } else {
+            $range = PeriodService::getPeriodRange(now());
+            $startDate = $range['start'];
+            $endDate = $range['end'];
+        }
+
+        // 2. Fetch partners who submitted reports in this period
+        $partners = Partner::whereHas('videoWorkReports', function ($q) use ($startDate, $endDate) {
+            $q->whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')]);
+        })->get();
+
+        foreach ($partners as $partner) {
+            $reports = VideoWorkReport::where('partner_id', $partner->id)
+                ->whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
+                ->orderBy('submission_date', 'asc')
+                ->get();
+
+            $totalReportedMinutes = $reports->sum('submitted_duration_minutes');
+            
+            $approval = PeriodApproval::where('partner_id', $partner->id)
+                ->where('period_start_date', $startDate->format('Y-m-d'))
+                ->where('period_end_date', $endDate->format('Y-m-d'))
+                ->first();
+
+            $partner->period_reports = $reports;
+            $partner->total_reported_minutes = $totalReportedMinutes;
+            $partner->period_approval = $approval;
+            
+            // Set friendly statuses
+            $partner->approval_status = $approval ? $approval->status : 'none';
+        }
+
+        $periodLabel = '';
+        if ($selectedPeriodKey && !empty($periods)) {
+            foreach ($periods as $p) {
+                $key = $p['start']->format('Y-m-d') . '|' . $p['end']->format('Y-m-d');
+                if ($key === $selectedPeriodKey) {
+                    $periodLabel = $p['label'];
+                    break;
+                }
+            }
+        }
+
+        return view('video-submissions.export-pdf', [
+            'partners' => $partners,
+            'startDate' => $startDate->translatedFormat('d M Y'),
+            'endDate' => $endDate->translatedFormat('d M Y'),
+            'periodLabel' => $periodLabel,
+        ]);
+    }
 }

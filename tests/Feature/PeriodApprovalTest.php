@@ -192,4 +192,23 @@ class PeriodApprovalTest extends TestCase
         $this->assertEquals('on_review', $report->qc_status);
         $this->assertNull($report->verifier_notes);
     }
+
+    public function test_admin_can_export_pdf_report_for_period()
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $partner = Partner::factory()->create();
+        VideoWorkReport::factory()->create([
+            'partner_id' => $partner->id,
+            'submission_date' => '2026-07-27',
+            'submitted_duration_minutes' => 60,
+            'qc_status' => 'approved',
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->get(route('video-submissions.export-pdf', ['period' => '2026-07-25|2026-07-30']));
+
+        $response->assertOk();
+        $response->assertViewIs('video-submissions.export-pdf');
+        $response->assertSee($partner->full_name);
+    }
 }
