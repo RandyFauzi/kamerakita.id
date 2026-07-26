@@ -138,7 +138,20 @@
                                             <div class="flex flex-col">
                                                 <span class="text-sm font-bold text-slate-900">{{ $partner->full_name }}</span>
                                                 <span class="text-[10px] text-slate-400 font-mono">ID: {{ $partner->mitra_id }}</span>
-                                                <span class="text-xs text-slate-400">{{ $partner->email ?: ($partner->user?->email ?: '-') }}</span>
+                                                 <div class="flex items-center gap-1.5 mt-0.5 text-xs text-slate-400" x-data="{ copied: false }" @click.stop>
+                                                     <span class="select-all">{{ $partner->email ?: ($partner->user?->email ?: '-') }}</span>
+                                                     @if($partner->email || ($partner->user?->email))
+                                                         <button type="button" 
+                                                                 @click="navigator.clipboard.writeText('{{ $partner->email ?: $partner->user?->email }}'); copied = true; setTimeout(() => copied = false, 1500)"
+                                                                 class="text-gray-400 hover:text-indigo-650 transition p-0.5 rounded"
+                                                                 title="Salin Email">
+                                                             <svg x-show="!copied" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
+                                                             </svg>
+                                                             <span x-show="copied" class="text-[9px] font-bold text-emerald-600 font-mono" x-cloak>Tersalin!</span>
+                                                         </button>
+                                                     @endif
+                                                 </div>
                                             </div>
                                         </div>
                                     </td>
