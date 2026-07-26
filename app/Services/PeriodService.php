@@ -42,9 +42,10 @@ class PeriodService
      */
     public static function getAvailablePeriods(): array
     {
+        // 1. Fetch all submission dates in ASCENDING order (oldest first) to number them chronologically
         $dates = \App\Models\VideoWorkReport::select('submission_date')
             ->groupBy('submission_date')
-            ->orderBy('submission_date', 'desc')
+            ->orderBy('submission_date', 'asc')
             ->pluck('submission_date');
 
         $periods = [];
@@ -57,7 +58,6 @@ class PeriodService
                 $periods[$key] = [
                     'start' => $range['start'],
                     'end' => $range['end'],
-                    'label' => $range['start']->translatedFormat('d M Y') . ' - ' . $range['end']->translatedFormat('d M Y'),
                 ];
             }
         }
@@ -69,15 +69,31 @@ class PeriodService
             $periods[$currentKey] = [
                 'start' => $currentRange['start'],
                 'end' => $currentRange['end'],
-                'label' => $currentRange['start']->translatedFormat('d M Y') . ' - ' . $currentRange['end']->translatedFormat('d M Y'),
             ];
         }
 
-        // Sort descending by start date
-        usort($periods, function($a, $b) {
+        // Sort chronologically ascending to assign Periode 1, Periode 2, etc.
+        uasort($periods, function($a, $b) {
+            return $a['start']->timestamp <=> $b['start']->timestamp;
+        });
+
+        // Assign labels with Periode numbers (without emojis)
+        $numberedPeriods = [];
+        $counter = 1;
+        foreach ($periods as $key => $p) {
+            $numberedPeriods[] = [
+                'start' => $p['start'],
+                'end' => $p['end'],
+                'label' => "Periode {$counter} (" . $p['start']->translatedFormat('d M Y') . ' - ' . $p['end']->translatedFormat('d M Y') . ")",
+            ];
+            $counter++;
+        }
+
+        // Sort descending (newest first) for dropdown presentation
+        usort($numberedPeriods, function($a, $b) {
             return $b['start']->timestamp <=> $a['start']->timestamp;
         });
 
-        return $periods;
+        return $numberedPeriods;
     }
 }

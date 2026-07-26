@@ -148,7 +148,7 @@
                         @foreach($periods as $p)
                             <option value="{{ $p['start']->format('Y-m-d') . '|' . $p['end']->format('Y-m-d') }}" 
                                 {{ $selectedPeriodKey === ($p['start']->format('Y-m-d') . '|' . $p['end']->format('Y-m-d')) ? 'selected' : '' }}>
-                                📅 {{ $p['label'] }}
+                                {{ $p['label'] }}
                             </option>
                         @endforeach
                     </select>
