@@ -66,9 +66,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/qc-room/export-pdf', [VerifyVideoWorkReportController::class, 'exportPdf'])
         ->middleware('role:superadmin,admin,finance')
         ->name('video-submissions.export-pdf');
-    Route::post('/qc-room/{report}/verify', [VerifyVideoWorkReportController::class, 'verify'])
+    Route::post('/qc-room/save-draft', [VerifyVideoWorkReportController::class, 'saveDraft'])
         ->middleware('role:superadmin,admin,finance')
-        ->name('video-submissions.verify');
+        ->name('video-submissions.save-draft');
+    Route::post('/qc-room/finalize', [VerifyVideoWorkReportController::class, 'finalizeApproval'])
+        ->middleware('role:superadmin,admin,finance')
+        ->name('video-submissions.finalize');
     Route::delete('/qc-room/{report}', [VerifyVideoWorkReportController::class, 'destroy'])
         ->middleware('role:superadmin,admin')
         ->name('video-submissions.destroy');

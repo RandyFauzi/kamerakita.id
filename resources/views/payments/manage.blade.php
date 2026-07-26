@@ -140,6 +140,25 @@
                 </div>
             </div>
 
+            <!-- Dropdown Pilihan Periode Mingguan -->
+            <div class="bg-white/80 backdrop-blur-md overflow-hidden shadow-sm sm:rounded-2xl border border-gray-150 p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <form action="{{ route('payments.manage') }}" method="GET" class="w-full sm:w-auto flex items-center gap-3">
+                    <label for="period" class="shrink-0 text-xs font-bold text-gray-500 uppercase tracking-wider font-mono">Periode Pembayaran:</label>
+                    <select name="period" id="period" onchange="this.form.submit()" class="block w-full sm:w-80 px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-gray-700 font-medium">
+                        @foreach($periods as $p)
+                            <option value="{{ $p['start']->format('Y-m-d') . '|' . $p['end']->format('Y-m-d') }}" 
+                                {{ $selectedPeriodKey === ($p['start']->format('Y-m-d') . '|' . $p['end']->format('Y-m-d')) ? 'selected' : '' }}>
+                                📅 {{ $p['label'] }}
+                            </option>
+                        @endforeach
+                    </select>
+                </form>
+                
+                <div class="text-xs font-semibold text-gray-400">
+                    Rentang Laporan: <span class="text-slate-800 font-bold font-mono">{{ $startDate->translatedFormat('d M Y') }} - {{ $endDate->translatedFormat('d M Y') }}</span>
+                </div>
+            </div>
+
             <!-- Tab Switchers -->
             <div class="grid grid-cols-2 gap-1 rounded-xl border border-gray-200 bg-gray-100 p-1 sm:inline-grid sm:min-w-[430px]">
                 <button @click="currentTab = 'queue'"
@@ -380,6 +399,8 @@
                     <!-- Modal Body Form -->
                     <form :action="'/payments/manage/' + activeWorker.partner.id + '/pay'" method="POST" enctype="multipart/form-data" class="flex-1 p-6 space-y-5">
                         @csrf
+                        <input type="hidden" name="period_start_date" value="{{ $startDate->format('Y-m-d') }}">
+                        <input type="hidden" name="period_end_date" value="{{ $endDate->format('Y-m-d') }}">
                         
                         <!-- Earnings Summary Card -->
                         <div class="bg-gradient-to-br from-indigo-500 to-indigo-700 text-white rounded-2xl p-5 shadow-inner flex justify-between items-center">
@@ -424,8 +445,8 @@
 
                         <!-- Upload Proof Input -->
                         <div class="space-y-1.5">
-                            <label for="evidence_payment_proof" class="block text-xs font-bold text-gray-400 uppercase tracking-wider">Unggah Bukti Transfer <span class="text-red-500">*</span></label>
-                            <input type="file" name="evidence_payment_proof" id="evidence_payment_proof" required class="block w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition file:cursor-pointer">
+                            <label for="payment_proof" class="block text-xs font-bold text-gray-400 uppercase tracking-wider">Unggah Bukti Transfer <span class="text-red-500">*</span></label>
+                            <input type="file" name="payment_proof" id="payment_proof" required class="block w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition file:cursor-pointer">
                             <p class="text-[10px] text-gray-400">Pastikan bukti transfer mencantumkan nominal transfer yang tepat dan nama rekening tujuan yang sesuai.</p>
                         </div>
 

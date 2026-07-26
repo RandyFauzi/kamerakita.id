@@ -2,48 +2,84 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Partner;
 use App\Models\VideoWorkReport;
+use App\Models\PeriodApproval;
+use App\Services\PeriodService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class VerifyVideoWorkReportController extends Controller
 {
     public function index(Request $request)
     {
+        // 1. Get available periods and determine selected period
+        $periods = PeriodService::getAvailablePeriods();
+        
+        $selectedPeriodKey = $request->input('period');
+        if (!$selectedPeriodKey && !empty($periods)) {
+            $selectedPeriodKey = $periods[0]['start']->format('Y-m-d') . '|' . $periods[0]['end']->format('Y-m-d');
+        }
+
+        if ($selectedPeriodKey) {
+            $parts = explode('|', $selectedPeriodKey);
+            $startDate = Carbon::parse($parts[0])->startOfDay();
+            $endDate = Carbon::parse($parts[1])->endOfDay();
+        } else {
+            $range = PeriodService::getPeriodRange(now());
+            $startDate = $range['start'];
+            $endDate = $range['end'];
+        }
+
+        // 2. Fetch partners who submitted reports in this period
         $search = $request->input('search');
-        $status = $request->input('status', 'pending'); // default to pending if not specified
-        $startDate = $request->input('start_date');
-        $endDate = $request->input('end_date');
+        $query = Partner::whereHas('videoWorkReports', function ($q) use ($startDate, $endDate) {
+            $q->whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')]);
+        });
 
-        $query = VideoWorkReport::query()
-            ->with(['partner'])
-            // Status filter
-            ->when($status !== 'all', function ($query) use ($status) {
-                $query->where('qc_status', $status);
-            })
-            // Date filters
-            ->when($startDate, function ($query, $startDate) {
-                $query->where('submission_date', '>=', $startDate);
-            })
-            ->when($endDate, function ($query, $endDate) {
-                $query->where('submission_date', '<=', $endDate);
-            })
-            // Search filter
-            ->when($search, function ($query, $search) {
-                $query->where(function ($q) use ($search) {
-                    $q->whereHas('partner', function ($sub) use ($search) {
-                        $sub->where('full_name', 'like', "%{$search}%")
-                            ->orWhere('mitra_id', 'like', "%{$search}%");
-                    })->orWhere('id', 'like', "%{$search}%");
-                });
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('full_name', 'like', "%{$search}%")
+                  ->orWhere('mitra_id', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
             });
+        }
 
-        // Clone base query to calculate dynamic stats matching active filter query
-        $totalSubmittedMin = (clone $query)->sum('submitted_duration_minutes');
-        $totalApprovedMin = (clone $query)->sum('approved_duration_minutes');
-        $totalRejectedMin = (clone $query)->where('qc_status', 'rejected')->sum('submitted_duration_minutes');
+        $partners = $query->paginate(15)->withQueryString();
 
-        // Helper to format minutes to a clean "Xh Ym" string.
+        // 3. For each partner, load their reports in this period and their period approval status
+        foreach ($partners as $partner) {
+            $reports = VideoWorkReport::where('partner_id', $partner->id)
+                ->whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
+                ->orderBy('submission_date', 'asc')
+                ->get();
+
+            $totalReportedMinutes = $reports->sum('submitted_duration_minutes');
+            
+            // Get period approval
+            $approval = PeriodApproval::where('partner_id', $partner->id)
+                ->where('period_start_date', $startDate->format('Y-m-d'))
+                ->where('period_end_date', $endDate->format('Y-m-d'))
+                ->first();
+
+            $partner->period_reports = $reports;
+            $partner->total_reported_minutes = $totalReportedMinutes;
+            $partner->period_approval = $approval;
+            
+            // Default input values
+            $partner->input_approved_minutes = $approval ? $approval->approved_minutes : $totalReportedMinutes;
+            $partner->input_verifier_notes = $approval ? $approval->verifier_notes : '';
+            $partner->approval_status = $approval ? $approval->status : 'none'; // none, draft, approved, paid
+        }
+
+        // Stats summary for the selected period
+        $periodReportedMin = VideoWorkReport::whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])->sum('submitted_duration_minutes');
+        $periodApprovedMin = VideoWorkReport::whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
+            ->where('qc_status', 'approved')
+            ->sum('approved_duration_minutes');
+
         $formatDur = function (int $minutes) {
             $hours = floor($minutes / 60);
             $remaining = $minutes % 60;
@@ -53,67 +89,120 @@ class VerifyVideoWorkReportController extends Controller
             return "{$remaining}m";
         };
 
-        $filteredSubmittedDuration = $formatDur($totalSubmittedMin);
-        $filteredApprovedDuration = $formatDur($totalApprovedMin);
-        $filteredRejectedDuration = $formatDur($totalRejectedMin);
+        $filteredSubmittedDuration = $formatDur($periodReportedMin);
+        $filteredApprovedDuration = $formatDur($periodApprovedMin);
 
-        $reports = $query->orderBy('submission_date', 'desc')
-            ->paginate(15)
-            ->withQueryString();
-
-        // Calculate all-time submitted minutes for each unique partner on the current page
-        $partnerIds = $reports->pluck('partner_id')->unique();
-        $partnerTotals = VideoWorkReport::whereIn('partner_id', $partnerIds)
-            ->select('partner_id', \DB::raw('SUM(submitted_duration_minutes) as total_submitted'))
-            ->groupBy('partner_id')
-            ->pluck('total_submitted', 'partner_id');
-
-        $reports->each(function ($report) use ($partnerTotals) {
-            $report->setAttribute('partner_total_submitted_minutes', $partnerTotals[$report->partner_id] ?? 0);
-        });
-
-        // Calculate statistics for stat cards
+        // General stats for badge counts
         $totalPendingCount = VideoWorkReport::where('qc_status', 'pending')->count();
         $totalOnReviewCount = VideoWorkReport::where('qc_status', 'on_review')->count();
-        $totalApprovedCountToday = VideoWorkReport::where('qc_status', 'approved')
-            ->whereDate('verified_at', today())
-            ->count();
-        $totalRejectedCountToday = VideoWorkReport::where('qc_status', 'rejected')
-            ->whereDate('verified_at', today())
-            ->count();
 
         return view('video-submissions.qc-room', compact(
-            'reports', 
-            'search',
-            'status',
+            'partners',
+            'periods',
+            'selectedPeriodKey',
             'startDate',
             'endDate',
+            'search',
             'totalPendingCount',
             'totalOnReviewCount',
-            'totalApprovedCountToday',
-            'totalRejectedCountToday',
             'filteredSubmittedDuration',
-            'filteredApprovedDuration',
-            'filteredRejectedDuration'
+            'filteredApprovedDuration'
         ));
     }
 
-    public function verify(Request $request, VideoWorkReport $report, \App\Actions\VerifyVideoWorkReportAction $verifyAction)
+    /**
+     * Save draft verification minutes for a period (admin only sees it, not released to worker)
+     */
+    public function saveDraft(Request $request)
     {
         $validated = $request->validate([
-            'action' => 'required|in:approve_full,approve_partial,reject,start_review,revert',
-            'approved_duration_minutes' => 'nullable|integer|min:0|max:' . $report->submitted_duration_minutes,
-            'verifier_notes' => 'required_if:action,reject,approve_partial|nullable|string|max:1000',
-        ], [
-            'verifier_notes.required_if' => 'Alasan wajib diisi jika laporan ditolak atau disetujui sebagian.',
+            'partner_id' => 'required|exists:partners,id',
+            'period_start_date' => 'required|date',
+            'period_end_date' => 'required|date',
+            'approved_minutes' => 'required|integer|min:0',
+            'verifier_notes' => 'nullable|string|max:1000',
         ]);
 
-        try {
-            $msg = $verifyAction->execute($report, $validated, Auth::id());
-            return redirect()->route('video-submissions.qc-room', ['status' => $report->qc_status])->with('success', $msg);
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
-        }
+        $approval = PeriodApproval::updateOrCreate([
+            'partner_id' => $validated['partner_id'],
+            'period_start_date' => $validated['period_start_date'],
+            'period_end_date' => $validated['period_end_date'],
+        ], [
+            'approved_minutes' => $validated['approved_minutes'],
+            'verifier_notes' => $validated['verifier_notes'],
+            'status' => 'draft',
+        ]);
+
+        // Keep daily reports as on_review or pending when draft is saved
+        VideoWorkReport::where('partner_id', $validated['partner_id'])
+            ->whereBetween('submission_date', [$validated['period_start_date'], $validated['period_end_date']])
+            ->update(['qc_status' => 'on_review']);
+
+        return redirect()->back()->with('success', 'Draf durasi persetujuan periode berhasil disimpan.');
+    }
+
+    /**
+     * Finalize and release approval to worker (marks reports as approved and releases to payroll)
+     */
+    public function finalizeApproval(Request $request)
+    {
+        $validated = $request->validate([
+            'partner_id' => 'required|exists:partners,id',
+            'period_start_date' => 'required|date',
+            'period_end_date' => 'required|date',
+            'approved_minutes' => 'required|integer|min:0',
+            'verifier_notes' => 'nullable|string|max:1000',
+        ]);
+
+        $partnerId = $validated['partner_id'];
+        $startDate = $validated['period_start_date'];
+        $endDate = $validated['period_end_date'];
+        $approvedMinutes = $validated['approved_minutes'];
+
+        DB::transaction(function () use ($partnerId, $startDate, $endDate, $approvedMinutes, $validated) {
+            // 1. Update or create period approval record as approved
+            PeriodApproval::updateOrCreate([
+                'partner_id' => $partnerId,
+                'period_start_date' => $startDate,
+                'period_end_date' => $endDate,
+            ], [
+                'approved_minutes' => $approvedMinutes,
+                'verifier_notes' => $validated['verifier_notes'],
+                'status' => 'approved',
+            ]);
+
+            // 2. Fetch all work reports in this period for the partner
+            $reports = VideoWorkReport::where('partner_id', $partnerId)
+                ->whereBetween('submission_date', [$startDate, $endDate])
+                ->get();
+
+            $totalReported = $reports->sum('submitted_duration_minutes');
+            
+            // 3. Distribute minutes proportionally and set to approved
+            $distributed = 0;
+            foreach ($reports as $index => $report) {
+                if ($totalReported == 0) {
+                    $appDur = 0;
+                } else {
+                    if ($index === count($reports) - 1) {
+                        $appDur = $approvedMinutes - $distributed;
+                    } else {
+                        $appDur = round(($report->submitted_duration_minutes / $totalReported) * $approvedMinutes);
+                        $distributed += $appDur;
+                    }
+                }
+
+                $report->update([
+                    'qc_status' => 'approved',
+                    'approved_duration_minutes' => $appDur,
+                    'verified_by' => Auth::id(),
+                    'verified_at' => now(),
+                    'verifier_notes' => $validated['verifier_notes'],
+                ]);
+            }
+        });
+
+        return redirect()->back()->with('success', 'Persetujuan periode berhasil difinalisasi dan dirilis ke mitra.');
     }
 
     public function destroy(VideoWorkReport $report)
@@ -124,38 +213,6 @@ class VerifyVideoWorkReportController extends Controller
         
         $report->delete();
 
-        return redirect()->route('video-submissions.qc-room')->with('success', 'Laporan video berhasil dihapus dari sistem.');
-    }
-
-    public function exportPdf(Request $request)
-    {
-        $search = $request->input('search');
-        $status = $request->input('status', 'all');
-        $startDate = $request->input('start_date');
-        $endDate = $request->input('end_date');
-
-        $reports = VideoWorkReport::query()
-            ->with(['partner'])
-            ->when($status !== 'all', function ($query) use ($status) {
-                $query->where('qc_status', $status);
-            })
-            ->when($startDate, function ($query, $startDate) {
-                $query->where('submission_date', '>=', $startDate);
-            })
-            ->when($endDate, function ($query, $endDate) {
-                $query->where('submission_date', '<=', $endDate);
-            })
-            ->when($search, function ($query, $search) {
-                $query->where(function ($q) use ($search) {
-                    $q->whereHas('partner', function ($sub) use ($search) {
-                        $sub->where('full_name', 'like', "%{$search}%")
-                            ->orWhere('mitra_id', 'like', "%{$search}%");
-                    })->orWhere('id', 'like', "%{$search}%");
-                });
-            })
-            ->orderBy('submission_date', 'desc')
-            ->get(); // get all filtered reports for printing (no pagination)
-
-        return view('video-submissions.export-pdf', compact('reports', 'status', 'startDate', 'endDate'));
+        return redirect()->back()->with('success', 'Laporan video berhasil dihapus dari sistem.');
     }
 }
