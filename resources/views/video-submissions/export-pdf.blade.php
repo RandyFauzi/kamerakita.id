@@ -197,18 +197,18 @@
                                 <div class="flex flex-col gap-1 shrink-0 ml-4">
                                     @if($report->evidence_email_image_url)
                                         <a href="{{ $report->evidence_email_image_url }}" target="_blank" class="inline-flex items-center justify-center px-3 py-1.5 border border-indigo-200 text-indigo-750 bg-indigo-50 hover:bg-indigo-100 rounded-lg text-[9px] font-bold font-mono transition" style="text-decoration: none;">
-                                            Email Proof ↗
+                                            Email Register ↗
                                         </a>
                                     @else
-                                        <span class="text-[9px] text-gray-400 font-mono text-right">No Email Proof</span>
+                                        <span class="text-[9px] text-gray-400 font-mono text-right">No Email Register</span>
                                     @endif
 
                                     @if($report->evidence_app_quality_image_url)
                                         <a href="{{ $report->evidence_app_quality_image_url }}" target="_blank" class="inline-flex items-center justify-center px-3 py-1.5 border border-gray-200 text-gray-750 bg-gray-50 hover:bg-gray-100 rounded-lg text-[9px] font-bold font-mono transition" style="text-decoration: none;">
-                                            Quality Proof ↗
+                                            Video Quality ↗
                                         </a>
                                     @else
-                                        <span class="text-[9px] text-gray-400 font-mono text-right">No Quality Proof</span>
+                                        <span class="text-[9px] text-gray-400 font-mono text-right">No Video Quality</span>
                                     @endif
                                 </div>
                             </div>
