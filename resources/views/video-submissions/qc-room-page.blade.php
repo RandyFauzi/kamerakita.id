@@ -251,19 +251,28 @@
                                                     </div>
 
                                                     <!-- Form Actions -->
-                                                    <div class="pt-2 border-t border-slate-100 flex items-center gap-3">
-                                                        @if($partner->approval_status !== 'paid')
-                                                            <button type="submit" form="form-{{ $partner->id }}" 
-                                                                    x-on:click.prevent="$el.form.action='{{ route('video-submissions.save-draft') }}'; $el.form.submit()"
-                                                                    class="flex-1 justify-center inline-flex items-center px-4 py-2.5 bg-white hover:bg-slate-50 border border-gray-205 text-gray-750 font-bold text-xs uppercase tracking-wider rounded-xl transition duration-150 shadow-xs">
-                                                                Simpan Draf
-                                                            </button>
+                                                    <div class="pt-2 border-t border-slate-100 space-y-2">
+                                                        <div class="flex items-center gap-3">
+                                                            @if($partner->approval_status !== 'paid')
+                                                                <button type="submit" form="form-{{ $partner->id }}" 
+                                                                        x-on:click.prevent="$el.form.action='{{ route('video-submissions.save-draft') }}'; $el.form.submit()"
+                                                                        class="flex-1 justify-center inline-flex items-center px-4 py-2.5 bg-white hover:bg-slate-50 border border-gray-205 text-gray-750 font-bold text-xs uppercase tracking-wider rounded-xl transition duration-150 shadow-xs">
+                                                                    Simpan Draf
+                                                                </button>
+                                                                <button type="submit" form="form-{{ $partner->id }}"
+                                                                        x-on:click.prevent="$el.form.action='{{ route('video-submissions.finalize') }}'; $el.form.submit()"
+                                                                        class="flex-1 justify-center inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-650 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition duration-150 shadow-md shadow-indigo-50 font-bold">
+                                                                    Rilis & Approve
+                                                                </button>
+                                                            @endif
+                                                        </div>
+                                                        @if($partner->approval_status !== 'paid' && in_array($partner->approval_status, ['approved', 'draft']))
                                                             <button type="submit" form="form-{{ $partner->id }}"
-                                                                    x-on:click.prevent="$el.form.action='{{ route('video-submissions.finalize') }}'; $el.form.submit()"
-                                                                    class="flex-1 justify-center inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-650 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition duration-150 shadow-md shadow-indigo-50">
-                                                                Rilis & Approve
+                                                                    x-on:click.prevent="if(confirm('Apakah Anda yakin ingin membatalkan status persetujuan periode ini? Seluruh laporan kerja harian mitra akan kembali ke status review.')) { $el.form.action='{{ route('video-submissions.revert-period') }}'; $el.form.submit() }"
+                                                                    class="w-full justify-center inline-flex items-center px-4 py-2 bg-rose-50 hover:bg-rose-100 border border-rose-250 text-rose-800 font-bold text-xs uppercase tracking-wider rounded-xl transition duration-150 shadow-xs">
+                                                                Batalkan & Reset Persetujuan
                                                             </button>
-                                                        @else
+                                                        @elseif($partner->approval_status === 'paid')
                                                             <div class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-center text-xs font-bold text-slate-500 font-mono">
                                                                 🔒 Status Terkunci (Sudah Dibayar)
                                                             </div>

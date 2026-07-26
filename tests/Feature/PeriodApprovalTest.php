@@ -211,4 +211,41 @@ class PeriodApprovalTest extends TestCase
         $response->assertViewIs('video-submissions.export-pdf');
         $response->assertSee($partner->full_name);
     }
+
+    public function test_admin_can_revert_period_approval()
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $partner = Partner::factory()->create();
+        
+        $report = VideoWorkReport::factory()->create([
+            'partner_id' => $partner->id,
+            'submission_date' => '2026-07-27',
+            'submitted_duration_minutes' => 60,
+            'qc_status' => 'approved',
+            'approved_duration_minutes' => 60,
+        ]);
+
+        $approval = PeriodApproval::create([
+            'partner_id' => $partner->id,
+            'period_start_date' => '2026-07-25',
+            'period_end_date' => '2026-07-30',
+            'approved_minutes' => 60,
+            'status' => 'approved',
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->post(route('video-submissions.revert-period'), [
+                'partner_id' => $partner->id,
+                'period_start_date' => '2026-07-25',
+                'period_end_date' => '2026-07-30',
+            ]);
+
+        $response->assertRedirect();
+        
+        $this->assertDatabaseMissing('period_approvals', ['id' => $approval->id]);
+        
+        $report->refresh();
+        $this->assertEquals('on_review', $report->qc_status);
+        $this->assertEquals(0, $report->approved_duration_minutes);
+    }
 }

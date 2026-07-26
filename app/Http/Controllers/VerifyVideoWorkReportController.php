@@ -318,4 +318,50 @@ class VerifyVideoWorkReportController extends Controller
             'periodLabel' => $periodLabel,
         ]);
     }
+
+    public function revertPeriodApproval(Request $request)
+    {
+        if (Auth::user()->role !== 'superadmin' && Auth::user()->role !== 'admin') {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'partner_id' => 'required|exists:partners,id',
+            'period_start_date' => 'required|date',
+            'period_end_date' => 'required|date',
+        ]);
+
+        $partnerId = $validated['partner_id'];
+        $startDateObj = \Carbon\Carbon::parse($validated['period_start_date'])->startOfDay();
+        $endDateObj = \Carbon\Carbon::parse($validated['period_end_date'])->startOfDay();
+
+        $approval = PeriodApproval::where('partner_id', $partnerId)
+            ->where('period_start_date', $startDateObj)
+            ->where('period_end_date', $endDateObj)
+            ->first();
+
+        if (!$approval) {
+            return redirect()->back()->with('error', 'Persetujuan periode tidak ditemukan.');
+        }
+
+        if ($approval->status === 'paid') {
+            return redirect()->back()->with('error', 'Tidak bisa membatalkan persetujuan periode yang sudah dibayar (Lunas).');
+        }
+
+        DB::transaction(function () use ($approval, $partnerId, $startDateObj, $endDateObj) {
+            $approval->delete();
+
+            VideoWorkReport::where('partner_id', $partnerId)
+                ->whereBetween('submission_date', [$startDateObj->format('Y-m-d'), $endDateObj->format('Y-m-d')])
+                ->update([
+                    'qc_status' => 'on_review',
+                    'approved_duration_minutes' => 0,
+                    'verified_by' => null,
+                    'verified_at' => null,
+                    'verifier_notes' => null,
+                ]);
+        });
+
+        return redirect()->back()->with('success', 'Persetujuan periode berhasil dibatalkan dan status laporan harian dikembalikan ke antrean review.');
+    }
 }

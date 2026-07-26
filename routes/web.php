@@ -81,6 +81,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/qc-room/{report}/restore', [VerifyVideoWorkReportController::class, 'restoreReport'])
         ->middleware('role:superadmin,admin')
         ->name('video-submissions.restore-report');
+    Route::post('/qc-room/revert-period', [VerifyVideoWorkReportController::class, 'revertPeriodApproval'])
+        ->middleware('role:superadmin,admin')
+        ->name('video-submissions.revert-period');
     // Batch Payment Module
     Route::get('/payments/manage', [\App\Http\Controllers\ManagePaymentsController::class, 'index'])
         ->middleware('role:superadmin,admin,finance')
