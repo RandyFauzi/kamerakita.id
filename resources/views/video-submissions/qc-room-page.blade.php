@@ -304,17 +304,6 @@
             </div>
         </div>
 
-        <!-- Alpine Image Preview Modal Overlay -->
-        <div x-show="showImageModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-fade-in" x-cloak style="display: none;">
-            <div class="relative max-w-4xl w-full bg-white rounded-3xl overflow-hidden shadow-2xl p-2 border border-slate-100">
-                <button type="button" @click="showImageModal = false" class="absolute top-4 right-4 z-10 p-2 bg-slate-900/60 hover:bg-slate-900 text-white rounded-full transition duration-150">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
-                <img :src="previewImageUrl" class="w-full max-h-[80vh] object-contain rounded-2xl">
-            </div>
-        </div>
 
         <!-- Alpine Daily Report Detail Pop-up Modal -->
         <div x-show="showDetailModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" x-cloak style="display: none;">
@@ -373,29 +362,27 @@
                             <!-- Email image -->
                             <div class="space-y-1.5" x-show="activeDailyReport.email_img">
                                 <span class="block text-[9px] text-gray-400 uppercase font-mono">Bukti Email Register</span>
-                                <button type="button" @click="previewImageUrl = activeDailyReport.email_img; showImageModal = true" class="relative group block w-full overflow-hidden rounded-xl border border-slate-200">
+                                <a :href="activeDailyReport.email_img" target="_blank" class="relative group block w-full overflow-hidden rounded-xl border border-slate-200">
                                     <img :src="activeDailyReport.email_img" class="w-full h-24 object-cover group-hover:scale-105 transition duration-150">
                                     <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
                                         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
                                         </svg>
                                     </div>
-                                </button>
+                                </a>
                             </div>
                             
                             <!-- Quality image -->
                             <div class="space-y-1.5" x-show="activeDailyReport.quality_img">
                                 <span class="block text-[9px] text-gray-400 uppercase font-mono">Bukti Kualitas Video</span>
-                                <button type="button" @click="previewImageUrl = activeDailyReport.quality_img; showImageModal = true" class="relative group block w-full overflow-hidden rounded-xl border border-slate-200">
+                                <a :href="activeDailyReport.quality_img" target="_blank" class="relative group block w-full overflow-hidden rounded-xl border border-slate-200">
                                     <img :src="activeDailyReport.quality_img" class="w-full h-24 object-cover group-hover:scale-105 transition duration-150">
                                     <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
                                         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
                                         </svg>
                                     </div>
-                                </button>
+                                </a>
                             </div>
                         </div>
                     </div>
