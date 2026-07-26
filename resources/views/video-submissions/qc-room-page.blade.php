@@ -8,7 +8,9 @@
     <div class="py-8" x-data="{ 
         expandedPartners: [],
         showImageModal: false,
+        showDetailModal: false,
         previewImageUrl: '',
+        activeDailyReport: {},
         togglePartner(partnerId) {
             if (this.expandedPartners.includes(partnerId)) {
                 this.expandedPartners = this.expandedPartners.filter(id => id !== partnerId);
@@ -223,49 +225,62 @@
                                 <tr x-show="isExpanded('{{ $partner->id }}')" x-cloak class="bg-slate-50/40">
                                     <td colspan="7" class="px-6 py-4">
                                         <div class="border border-slate-100 bg-white rounded-2xl p-4 shadow-sm">
-                                            <h4 class="text-xs font-black text-slate-500 uppercase tracking-widest mb-3 font-mono">Rincian Laporan Kerja Harian (SOP & Bukti)</h4>
+                                            <h4 class="text-xs font-black text-slate-500 uppercase tracking-widest mb-3 font-mono">Daftar Laporan Kerja Harian</h4>
                                             
-                                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                                @foreach($partner->period_reports as $report)
-                                                    <div class="border border-slate-100 rounded-xl p-3 bg-slate-50/30 flex items-start justify-between gap-3">
-                                                        <div class="space-y-1">
-                                                            <span class="block text-[10px] font-mono text-gray-400">ID: {{ substr($report->id, 0, 8) }}...</span>
-                                                            <strong class="block text-xs text-slate-800">{{ $report->submission_date->translatedFormat('d F Y') }}</strong>
-                                                            <span class="block text-xs font-semibold text-indigo-650">Durasi Kirim: {{ $report->submitted_duration_formatted }}</span>
-                                                            
-                                                            @if($report->qc_status === 'approved')
-                                                                <span class="inline-block px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[9px] font-bold border border-emerald-100">Approved ({{ $report->approved_duration_minutes }}m)</span>
-                                                            @elseif($report->qc_status === 'rejected')
-                                                                <span class="inline-block px-1.5 py-0.5 rounded bg-rose-50 text-rose-700 text-[9px] font-bold border border-rose-100">Rejected</span>
-                                                            @else
-                                                                <span class="inline-block px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 text-[9px] font-bold border border-amber-100">Review (Pending)</span>
-                                                            @endif
-                                                        </div>
-                                                        
-                                                        <!-- Proof/Evidence Image Buttons -->
-                                                         <div class="flex items-center gap-2 shrink-0">
-                                                             @if($report->evidence_email_image_path)
-                                                                 <button type="button" @click="previewImageUrl = '{{ $report->evidence_email_image_url }}'; showImageModal = true" class="relative group block overflow-hidden rounded-lg border border-slate-200" title="Bukti Email Register">
-                                                                     <img src="{{ $report->evidence_email_image_url }}" class="h-10 w-14 object-cover group-hover:scale-105 transition duration-150">
-                                                                     <div class="absolute inset-0 bg-slate-900/45 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-                                                                         <span class="text-[8px] text-white font-bold tracking-tighter">Email</span>
-                                                                     </div>
-                                                                 </button>
-                                                             @endif
-                                                             @if($report->evidence_app_quality_image_path)
-                                                                 <button type="button" @click="previewImageUrl = '{{ $report->evidence_app_quality_image_url }}'; showImageModal = true" class="relative group block overflow-hidden rounded-lg border border-slate-200" title="Bukti Kualitas/Durasi">
-                                                                     <img src="{{ $report->evidence_app_quality_image_url }}" class="h-10 w-14 object-cover group-hover:scale-105 transition duration-150">
-                                                                     <div class="absolute inset-0 bg-slate-900/45 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-                                                                         <span class="text-[8px] text-white font-bold tracking-tighter">Kualitas</span>
-                                                                     </div>
-                                                                 </button>
-                                                             @endif
-                                                             @if(!$report->evidence_email_image_path && !$report->evidence_app_quality_image_path)
-                                                                 <span class="text-[9px] text-gray-400">Tidak ada bukti</span>
-                                                             @endif
-                                                         </div>
-                                                    </div>
-                                                @endforeach
+                                            <div class="overflow-x-auto mt-2">
+                                                <table class="min-w-full divide-y divide-gray-100">
+                                                    <thead class="bg-slate-50">
+                                                        <tr>
+                                                            <th scope="col" class="px-4 py-2 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider font-mono">ID Laporan</th>
+                                                            <th scope="col" class="px-4 py-2 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider font-mono">Tanggal Kerja</th>
+                                                            <th scope="col" class="px-4 py-2 text-center text-[10px] font-bold text-slate-500 uppercase tracking-wider font-mono">Durasi Kirim</th>
+                                                            <th scope="col" class="px-4 py-2 text-center text-[10px] font-bold text-slate-500 uppercase tracking-wider font-mono">Status QC</th>
+                                                            <th scope="col" class="px-4 py-2 text-center text-[10px] font-bold text-slate-500 uppercase tracking-wider font-mono">Aksi</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody class="divide-y divide-gray-100 bg-white">
+                                                        @foreach($partner->period_reports as $report)
+                                                            <tr class="hover:bg-slate-50/50 transition-colors">
+                                                                <td class="px-4 py-2 whitespace-nowrap text-xs font-mono text-gray-500">
+                                                                    {{ substr($report->id, 0, 8) }}...
+                                                                </td>
+                                                                <td class="px-4 py-2 whitespace-nowrap text-xs font-semibold text-slate-700">
+                                                                    {{ $report->submission_date->translatedFormat('d F Y') }}
+                                                                </td>
+                                                                <td class="px-4 py-2 whitespace-nowrap text-xs text-center font-bold text-indigo-650 font-mono">
+                                                                    {{ $report->submitted_duration_formatted }}
+                                                                </td>
+                                                                <td class="px-4 py-2 whitespace-nowrap text-center">
+                                                                    @if($report->qc_status === 'approved')
+                                                                        <span class="inline-flex px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100">Approved ({{ $report->approved_duration_minutes }}m)</span>
+                                                                    @elseif($report->qc_status === 'rejected')
+                                                                        <span class="inline-flex px-2 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-100">Rejected</span>
+                                                                    @else
+                                                                        <span class="inline-flex px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-100">Review (Pending)</span>
+                                                                    @endif
+                                                                </td>
+                                                                <td class="px-4 py-2 whitespace-nowrap text-center">
+                                                                    <button type="button" 
+                                                                            @click="activeDailyReport = {{ json_encode([
+                                                                                'id' => $report->id,
+                                                                                'date' => $report->submission_date->translatedFormat('d F Y'),
+                                                                                'duration' => $report->submitted_duration_formatted,
+                                                                                'status' => $report->qc_status === 'approved' ? 'Approved' : ($report->qc_status === 'rejected' ? 'Rejected' : 'Review (Pending)'),
+                                                                                'approved_min' => $report->approved_duration_minutes,
+                                                                                'email_img' => $report->evidence_email_image_url,
+                                                                                'quality_img' => $report->evidence_app_quality_image_url,
+                                                                                'device' => $report->device_type ?: '-',
+                                                                                'headstrap' => $report->has_headstrap ? 'Ya' : 'Tidak',
+                                                                                'notes' => $report->verifier_notes ?: 'Tidak ada catatan'
+                                                                            ]) }}; showDetailModal = true" 
+                                                                            class="inline-flex items-center px-3 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-[10px] font-bold transition shadow-xs">
+                                                                        Detail
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
                                             </div>
                                         </div>
                                     </td>
@@ -298,6 +313,100 @@
                     </svg>
                 </button>
                 <img :src="previewImageUrl" class="w-full max-h-[80vh] object-contain rounded-2xl">
+            </div>
+        </div>
+
+        <!-- Alpine Daily Report Detail Pop-up Modal -->
+        <div x-show="showDetailModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" x-cloak style="display: none;">
+            <div class="bg-white rounded-[32px] max-w-lg w-full shadow-2xl overflow-hidden border border-gray-150 animate-in fade-in zoom-in-95 duration-200 flex flex-col my-8">
+                <!-- Modal Header -->
+                <div class="px-6 py-4 bg-slate-950 text-white flex justify-between items-center">
+                    <div>
+                        <span class="text-[9px] uppercase font-bold text-indigo-400 tracking-widest font-mono">Detail Laporan Harian</span>
+                        <h3 class="text-base font-black leading-tight" x-text="activeDailyReport.date"></h3>
+                    </div>
+                    <button @click="showDetailModal = false" class="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="p-6 space-y-6 overflow-y-auto max-h-[65vh]">
+                    <!-- Report Fields Grid -->
+                    <div class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-2xl text-xs font-semibold text-slate-700">
+                        <div>
+                            <span class="block text-[9px] text-gray-400 font-normal uppercase font-mono">ID Laporan</span>
+                            <span class="block font-bold text-slate-800 font-mono" x-text="activeDailyReport.id ? activeDailyReport.id.substring(0, 8) + '...' : ''"></span>
+                        </div>
+                        <div>
+                            <span class="block text-[9px] text-gray-400 font-normal uppercase font-mono">Status QC</span>
+                            <span class="block font-bold text-slate-800" x-text="activeDailyReport.status"></span>
+                        </div>
+                        <div>
+                            <span class="block text-[9px] text-gray-400 font-normal uppercase font-mono">Durasi Kirim</span>
+                            <span class="block font-bold text-slate-800" x-text="activeDailyReport.duration"></span>
+                        </div>
+                        <div>
+                            <span class="block text-[9px] text-gray-400 font-normal uppercase font-mono">Durasi Disetujui</span>
+                            <span class="block font-bold text-slate-800" x-text="activeDailyReport.approved_min + ' menit'"></span>
+                        </div>
+                        <div>
+                            <span class="block text-[9px] text-gray-400 font-normal uppercase font-mono">Tipe Perangkat</span>
+                            <span class="block font-bold text-slate-800" x-text="activeDailyReport.device"></span>
+                        </div>
+                        <div>
+                            <span class="block text-[9px] text-gray-400 font-normal uppercase font-mono">Gunakan Headstrap</span>
+                            <span class="block font-bold text-slate-800" x-text="activeDailyReport.headstrap"></span>
+                        </div>
+                        <div class="col-span-2 border-t border-gray-200 pt-2 mt-2">
+                            <span class="block text-[9px] text-gray-400 font-normal uppercase font-mono">Catatan Masukan / Alasan</span>
+                            <p class="block text-slate-800 mt-1 leading-relaxed font-medium" x-text="activeDailyReport.notes"></p>
+                        </div>
+                    </div>
+
+                    <!-- Proof/Evidence Image Grid -->
+                    <div class="space-y-3">
+                        <span class="block text-[10px] font-black text-slate-400 uppercase tracking-wider font-mono">Foto Bukti (SOP)</span>
+                        <div class="grid grid-cols-2 gap-4">
+                            <!-- Email image -->
+                            <div class="space-y-1.5" x-show="activeDailyReport.email_img">
+                                <span class="block text-[9px] text-gray-400 uppercase font-mono">Bukti Email Register</span>
+                                <button type="button" @click="previewImageUrl = activeDailyReport.email_img; showImageModal = true" class="relative group block w-full overflow-hidden rounded-xl border border-slate-200">
+                                    <img :src="activeDailyReport.email_img" class="w-full h-24 object-cover group-hover:scale-105 transition duration-150">
+                                    <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+                                    </div>
+                                </button>
+                            </div>
+                            
+                            <!-- Quality image -->
+                            <div class="space-y-1.5" x-show="activeDailyReport.quality_img">
+                                <span class="block text-[9px] text-gray-400 uppercase font-mono">Bukti Kualitas Video</span>
+                                <button type="button" @click="previewImageUrl = activeDailyReport.quality_img; showImageModal = true" class="relative group block w-full overflow-hidden rounded-xl border border-slate-200">
+                                    <img :src="activeDailyReport.quality_img" class="w-full h-24 object-cover group-hover:scale-105 transition duration-150">
+                                    <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="px-6 py-4 bg-gray-50 border-t border-gray-150 flex justify-end">
+                    <button type="button" @click="showDetailModal = false" class="px-5 py-2 bg-gray-900 hover:bg-gray-800 text-white font-bold text-xs rounded-xl transition">
+                        Tutup
+                    </button>
+                </div>
             </div>
         </div>
     </div>
