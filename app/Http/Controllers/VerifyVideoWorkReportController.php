@@ -313,8 +313,8 @@ class VerifyVideoWorkReportController extends Controller
 
         return view('video-submissions.export-pdf', [
             'partners' => $partners,
-            'startDate' => $startDate->translatedFormat('d M Y'),
-            'endDate' => $endDate->translatedFormat('d M Y'),
+            'startDate' => $startDate->format('d M Y'),
+            'endDate' => $endDate->format('d M Y'),
             'periodLabel' => $periodLabel,
         ]);
     }
