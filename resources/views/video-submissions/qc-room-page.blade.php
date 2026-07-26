@@ -482,7 +482,7 @@
                                         <button type="button" x-show="activeReport.qc_status === 'on_review'"
                                                 class="flex flex-col items-center justify-center p-3 border rounded-xl text-center transition-all duration-200 focus:outline-none"
                                                 :class="actionType === 'approve_full' ? 'border-indigo-650 bg-indigo-50 text-indigo-700 font-bold shadow-sm' : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'"
-                                                @click="actionType = 'approve_full'; approvedMinutes = activeReport.submitted_duration_minutes">
+                                                @click="actionType = 'approve_full'; approvedMinutes = activeReport.submitted_duration_minutes; if (notes === 'Penyesuaian durasi verifikasi. Total waktu disetujui telah disesuaikan dengan hasil validasi kualitas dan pembacaan durasi akhir pada sistem Minute Data.') { notes = '' }">
                                             <span class="block text-sm font-bold">Approve Penuh</span>
                                             <span class="block text-xs text-gray-400 mt-0.5" x-text="activeReport.submitted_duration_minutes + ' menit'"></span>
                                         </button>
@@ -490,7 +490,7 @@
                                         <button type="button" x-show="activeReport.qc_status === 'on_review'"
                                                 class="flex flex-col items-center justify-center p-3 border rounded-xl text-center transition-all duration-200 focus:outline-none"
                                                 :class="actionType === 'approve_partial' ? 'border-indigo-650 bg-indigo-50 text-indigo-700 font-bold shadow-sm' : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'"
-                                                @click="actionType = 'approve_partial'">
+                                                @click="actionType = 'approve_partial'; if (!notes || notes === '') { notes = 'Penyesuaian durasi verifikasi. Total waktu disetujui telah disesuaikan dengan hasil validasi kualitas dan pembacaan durasi akhir pada sistem Minute Data.' }">
                                             <span class="block text-sm font-bold">Approve Sebagian</span>
                                             <span class="block text-xs text-gray-400 mt-0.5">Input durasi manual</span>
                                         </button>
@@ -498,7 +498,7 @@
                                         <button type="button" x-show="activeReport.qc_status === 'on_review'"
                                                 class="flex flex-col items-center justify-center p-3 border rounded-xl text-center transition-all duration-200 focus:outline-none"
                                                 :class="actionType === 'reject' ? 'border-red-600 bg-red-50 text-red-750 font-bold shadow-sm' : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'"
-                                                @click="actionType = 'reject'">
+                                                @click="actionType = 'reject'; if (notes === 'Penyesuaian durasi verifikasi. Total waktu disetujui telah disesuaikan dengan hasil validasi kualitas dan pembacaan durasi akhir pada sistem Minute Data.') { notes = '' }">
                                             <span class="block text-sm font-bold">Reject</span>
                                             <span class="block text-xs text-gray-400 mt-0.5">Video ditolak</span>
                                         </button>
