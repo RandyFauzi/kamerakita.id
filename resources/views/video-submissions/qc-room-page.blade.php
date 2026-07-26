@@ -291,6 +291,7 @@
                                         <div class="flex flex-col">
                                             <span class="text-sm font-medium text-gray-900">{{ $report->partner->full_name }}</span>
                                             <span class="text-xs text-gray-400">ID: {{ $report->partner->mitra_id }}</span>
+                                            <span class="text-xs text-slate-400">{{ $report->partner->email ?: ($report->partner->user?->email ?: '-') }}</span>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
