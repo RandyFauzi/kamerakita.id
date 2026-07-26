@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Work Report Summary - {{ $periodLabel ?: ($startDate . ' - ' . $endDate) }}</title>
-    <link rel="icon" href="{{ asset('images/favicon.ico') }}" type="image/x-icon">
-    <link rel="shortcut icon" href="{{ asset('images/favicon.ico') }}" type="image/x-icon">
+    <link class="no-print" rel="icon" href="{{ asset('images/favicon.ico') }}" type="image/x-icon">
+    <link class="no-print" rel="shortcut icon" href="{{ asset('images/favicon.ico') }}" type="image/x-icon">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         /* Exact A4 Standard Professional Print CSS */
@@ -51,7 +51,7 @@
     <div class="no-print max-w-4xl mx-auto mb-6 bg-white border border-gray-200 rounded-3xl p-4 flex justify-between items-center shadow-sm">
         <div class="space-y-0.5">
             <h4 class="font-bold text-gray-800 text-sm">A4 Print Preview Mode</h4>
-            <p class="text-xs text-gray-400">Click print button to save this report as a PDF file.</p>
+            <p class="text-xs text-gray-400">Click print button to save this report as a PDF file. Images are replaced with clickable links for performance.</p>
         </div>
         <div class="flex gap-2">
             <a href="{{ route('video-submissions.qc-room') }}" class="px-4 py-2 border border-gray-200 text-gray-700 font-bold text-xs rounded-xl hover:bg-gray-50 transition">
@@ -193,28 +193,23 @@
                                     @endif
                                 </div>
 
-                                <!-- Right side: Proof Images (Side-by-side) -->
-                                <div class="flex gap-2 shrink-0">
-                                    <div class="text-center">
-                                        <span class="block text-[7px] font-bold text-gray-450 uppercase font-mono mb-0.5">1. Email</span>
-                                        <div style="width: 70px; height: 70px;" class="bg-gray-50 rounded border border-gray-200 flex items-center justify-center overflow-hidden shrink-0">
-                                            @if($report->evidence_email_image_url)
-                                                <img src="{{ $report->evidence_email_image_url }}" style="width: 100%; height: 100%; object-fit: contain;">
-                                            @else
-                                                <span class="text-[8px] text-gray-300">No Image</span>
-                                            @endif
-                                        </div>
-                                    </div>
-                                    <div class="text-center">
-                                        <span class="block text-[7px] font-bold text-gray-450 uppercase font-mono mb-0.5">2. Quality</span>
-                                        <div style="width: 70px; height: 70px;" class="bg-gray-50 rounded border border-gray-200 flex items-center justify-center overflow-hidden shrink-0">
-                                            @if($report->evidence_app_quality_image_url)
-                                                <img src="{{ $report->evidence_app_quality_image_url }}" style="width: 100%; height: 100%; object-fit: contain;">
-                                            @else
-                                                <span class="text-[8px] text-gray-300">No Image</span>
-                                            @endif
-                                        </div>
-                                    </div>
+                                <!-- Right side: Clickable Proof Buttons (Replaces heavy images for performance & security) -->
+                                <div class="flex flex-col gap-1 shrink-0 ml-4">
+                                    @if($report->evidence_email_image_url)
+                                        <a href="{{ $report->evidence_email_image_url }}" target="_blank" class="inline-flex items-center justify-center px-3 py-1.5 border border-indigo-200 text-indigo-750 bg-indigo-50 hover:bg-indigo-100 rounded-lg text-[9px] font-bold font-mono transition" style="text-decoration: none;">
+                                            Email Proof ↗
+                                        </a>
+                                    @else
+                                        <span class="text-[9px] text-gray-400 font-mono text-right">No Email Proof</span>
+                                    @endif
+
+                                    @if($report->evidence_app_quality_image_url)
+                                        <a href="{{ $report->evidence_app_quality_image_url }}" target="_blank" class="inline-flex items-center justify-center px-3 py-1.5 border border-gray-200 text-gray-750 bg-gray-50 hover:bg-gray-100 rounded-lg text-[9px] font-bold font-mono transition" style="text-decoration: none;">
+                                            Quality Proof ↗
+                                        </a>
+                                    @else
+                                        <span class="text-[9px] text-gray-400 font-mono text-right">No Quality Proof</span>
+                                    @endif
                                 </div>
                             </div>
                         @empty
