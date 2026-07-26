@@ -265,7 +265,7 @@
                                                                                 'id' => $report->id,
                                                                                 'date' => $report->submission_date->translatedFormat('d F Y'),
                                                                                 'duration' => $report->submitted_duration_formatted,
-                                                                                'status' => $report->qc_status === 'approved' ? 'Approved' : ($report->qc_status === 'rejected' ? 'Rejected' : 'Review (Pending)'),
+                                                                                'status' => $partner->approval_status === 'paid' ? 'Paid (Lunas)' : ($partner->approval_status === 'approved' ? 'Rilis (Approved)' : ($partner->approval_status === 'draft' ? 'Draf (Admin)' : 'Belum Diperiksa')),
                                                                                 'approved_min' => $report->approved_duration_minutes,
                                                                                 'email_img' => $report->evidence_email_image_url,
                                                                                 'quality_img' => $report->evidence_app_quality_image_url,
@@ -327,31 +327,19 @@
                     <div class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-2xl text-xs font-semibold text-slate-700">
                         <div>
                             <span class="block text-[9px] text-gray-400 font-normal uppercase font-mono">ID Laporan</span>
-                            <span class="block font-bold text-slate-800 font-mono" x-text="activeDailyReport.id ? activeDailyReport.id.substring(0, 8) + '...' : ''"></span>
+                            <span class="block font-bold text-slate-800 font-mono" x-text="activeDailyReport.id"></span>
                         </div>
                         <div>
-                            <span class="block text-[9px] text-gray-400 font-normal uppercase font-mono">Status QC</span>
+                            <span class="block text-[9px] text-gray-400 font-normal uppercase font-mono">Tanggal Kerja</span>
+                            <span class="block font-bold text-slate-800" x-text="activeDailyReport.date"></span>
+                        </div>
+                        <div>
+                            <span class="block text-[9px] text-gray-400 font-normal uppercase font-mono">Total Durasi</span>
+                            <span class="block font-bold text-slate-800 font-mono" x-text="activeDailyReport.duration"></span>
+                        </div>
+                        <div>
+                            <span class="block text-[9px] text-gray-400 font-normal uppercase font-mono">Status</span>
                             <span class="block font-bold text-slate-800" x-text="activeDailyReport.status"></span>
-                        </div>
-                        <div>
-                            <span class="block text-[9px] text-gray-400 font-normal uppercase font-mono">Durasi Kirim</span>
-                            <span class="block font-bold text-slate-800" x-text="activeDailyReport.duration"></span>
-                        </div>
-                        <div>
-                            <span class="block text-[9px] text-gray-400 font-normal uppercase font-mono">Durasi Disetujui</span>
-                            <span class="block font-bold text-slate-800" x-text="activeDailyReport.approved_min + ' menit'"></span>
-                        </div>
-                        <div>
-                            <span class="block text-[9px] text-gray-400 font-normal uppercase font-mono">Tipe Perangkat</span>
-                            <span class="block font-bold text-slate-800" x-text="activeDailyReport.device"></span>
-                        </div>
-                        <div>
-                            <span class="block text-[9px] text-gray-400 font-normal uppercase font-mono">Gunakan Headstrap</span>
-                            <span class="block font-bold text-slate-800" x-text="activeDailyReport.headstrap"></span>
-                        </div>
-                        <div class="col-span-2 border-t border-gray-200 pt-2 mt-2">
-                            <span class="block text-[9px] text-gray-400 font-normal uppercase font-mono">Catatan Masukan / Alasan</span>
-                            <p class="block text-slate-800 mt-1 leading-relaxed font-medium" x-text="activeDailyReport.notes"></p>
                         </div>
                     </div>
 
