@@ -236,4 +236,21 @@ class VerifyVideoWorkReportController extends Controller
 
         return redirect()->back()->with('success', 'Laporan video berhasil ditolak dan diminta revisi.');
     }
+
+    public function restoreReport(VideoWorkReport $report)
+    {
+        if (Auth::user()->role !== 'superadmin' && Auth::user()->role !== 'admin') {
+            abort(403);
+        }
+
+        $report->update([
+            'qc_status' => 'on_review',
+            'approved_duration_minutes' => 0,
+            'verifier_notes' => null,
+            'verified_by' => null,
+            'verified_at' => null,
+        ]);
+
+        return redirect()->back()->with('success', 'Status penolakan laporan berhasil dibatalkan dan dikembalikan ke antrean review.');
+    }
 }

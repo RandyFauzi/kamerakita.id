@@ -170,4 +170,26 @@ class PeriodApprovalTest extends TestCase
         $response->assertRedirect();
         $this->assertDatabaseMissing('video_work_reports', ['id' => $report->id]);
     }
+
+    public function test_admin_can_restore_rejected_daily_report()
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $partner = Partner::factory()->create();
+        $report = VideoWorkReport::factory()->create([
+            'partner_id' => $partner->id,
+            'submission_date' => '2026-07-27',
+            'submitted_duration_minutes' => 60,
+            'qc_status' => 'rejected',
+            'verifier_notes' => 'Some rejection notes',
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->post(route('video-submissions.restore-report', $report->id));
+
+        $response->assertRedirect();
+        
+        $report->refresh();
+        $this->assertEquals('on_review', $report->qc_status);
+        $this->assertNull($report->verifier_notes);
+    }
 }

@@ -321,14 +321,24 @@
                                                                             </button>
 
                                                                             @if($partner->approval_status !== 'paid')
-                                                                                <!-- Reject/Revision Action -->
-                                                                                <form action="{{ route('video-submissions.reject-report', $report->id) }}" method="POST" class="inline" onsubmit="return confirmRejection(this)">
-                                                                                    @csrf
-                                                                                    <input type="hidden" name="reason" class="reject-reason-input">
-                                                                                    <button type="submit" class="inline-flex items-center px-2 py-1 bg-amber-55 hover:bg-amber-100 text-amber-850 rounded-lg text-[9px] font-bold border border-amber-200 transition">
-                                                                                        Revisi
-                                                                                    </button>
-                                                                                </form>
+                                                                                @if($report->qc_status === 'rejected')
+                                                                                    <!-- Restore/Undo Rejection Action -->
+                                                                                    <form action="{{ route('video-submissions.restore-report', $report->id) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan status revisi dan mengembalikan laporan ini ke antrean review?')">
+                                                                                        @csrf
+                                                                                        <button type="submit" class="inline-flex items-center px-2 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-lg text-[9px] font-bold border border-emerald-200 transition">
+                                                                                            Batal Tolak
+                                                                                        </button>
+                                                                                    </form>
+                                                                                @else
+                                                                                    <!-- Reject/Revision Action -->
+                                                                                    <form action="{{ route('video-submissions.reject-report', $report->id) }}" method="POST" class="inline" onsubmit="return confirmRejection(this)">
+                                                                                        @csrf
+                                                                                        <input type="hidden" name="reason" class="reject-reason-input">
+                                                                                        <button type="submit" class="inline-flex items-center px-2 py-1 bg-amber-55 hover:bg-amber-100 text-amber-855 rounded-lg text-[9px] font-bold border border-amber-200 transition">
+                                                                                            Revisi
+                                                                                        </button>
+                                                                                    </form>
+                                                                                @endif
 
                                                                                 <!-- Delete Action -->
                                                                                 <form action="{{ route('video-submissions.destroy', $report->id) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus laporan harian ini secara permanen?')">
