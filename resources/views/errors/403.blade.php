@@ -221,7 +221,6 @@
             <span class="code-line"><span class="label">ISP Provider</span>: <span id="geo-isp">Tracing...</span></span>
             <span class="code-line"><span class="label">City/Region</span>: <span id="geo-city">Tracing...</span></span>
             <span class="code-line"><span class="label">Country</span>: <span id="geo-country">Tracing...</span></span>
-            <span class="code-line"><span class="label">Coordinates</span>: <span id="geo-latlon">Tracing...</span></span>
         </div>
 
         <!-- Fake Terminal Animation -->
@@ -269,12 +268,10 @@
                     document.getElementById('geo-isp').innerText = data.connection.isp + ' (' + data.connection.asn + ')';
                     document.getElementById('geo-city').innerText = data.city + ', ' + data.region;
                     document.getElementById('geo-country').innerText = data.country + ' (' + data.postal + ')';
-                    document.getElementById('geo-latlon').innerText = data.latitude + ', ' + data.longitude;
                 } else {
                     document.getElementById('geo-isp').innerText = 'Trace Blocked / Failed';
                     document.getElementById('geo-city').innerText = 'Unknown';
                     document.getElementById('geo-country').innerText = 'Unknown';
-                    document.getElementById('geo-latlon').innerText = 'Unknown';
                 }
             })
             .catch(() => {
