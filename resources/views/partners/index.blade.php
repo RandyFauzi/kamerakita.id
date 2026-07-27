@@ -42,7 +42,18 @@
                 const status = document.getElementById('status').value || '';
                 const group = document.getElementById('group').value || '';
                 
-                const params = new URLSearchParams({ search, role, status, group });
+                const mitra_id = document.getElementById('mitra_id')?.value || '';
+                const full_name = document.getElementById('full_name')?.value || '';
+                const hourly_rate = document.getElementById('hourly_rate')?.value || '';
+                const headstrap = document.getElementById('headstrap')?.value || '';
+                const whatsapp = document.getElementById('whatsapp')?.value || '';
+                const mitra_parent = document.getElementById('mitra_parent')?.value || '';
+                const client_registered = document.getElementById('client_registered')?.value || '';
+                
+                const params = new URLSearchParams({ 
+                    search, role, status, group,
+                    mitra_id, full_name, hourly_rate, headstrap, whatsapp, mitra_parent, client_registered
+                });
                 
                 fetch('{{ route('partners.export-contacts') }}?' + params.toString())
                     .then(res => res.text())
@@ -202,7 +213,7 @@
                                 </svg>
                                 <span class="hidden md:inline">Salin</span>
                             </button>
-                            @if($search || $role || $status || (isset($group) && $group))
+                            @if($search || $role || $status || (isset($group) && $group) || $mitraId || $fullName || $hourlyRate || $headstrap || $whatsapp || $mitraParent || $clientRegistered)
                                 <a href="{{ route('partners.index') }}" class="flex-none justify-center inline-flex items-center px-4 py-2.5 bg-gray-55 border border-gray-200 rounded-xl font-semibold text-sm text-gray-700 hover:bg-gray-100 transition shadow-sm" title="Reset Filter">
                                     <svg class="w-4 h-4 md:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -235,8 +246,15 @@
                                 </tr>
                                 <tr class="bg-slate-100/50 border-t border-slate-205">
                                     <th class="px-4 py-2"></th>
-                                    <th class="px-6 py-2"></th>
-                                    <th class="px-6 py-2"></th>
+                                    <!-- ID Mitra Filter -->
+                                    <th class="px-6 py-2">
+                                        <input type="text" name="mitra_id" id="mitra_id" value="{{ $mitraId }}" onchange="this.form.submit()" placeholder="Cari ID..." class="block w-full py-1 px-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700">
+                                    </th>
+                                    <!-- Nama Lengkap Filter -->
+                                    <th class="px-6 py-2">
+                                        <input type="text" name="full_name" id="full_name" value="{{ $fullName }}" onchange="this.form.submit()" placeholder="Cari nama..." class="block w-full py-1 px-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700">
+                                    </th>
+                                    <!-- Peran Filter -->
                                     <th class="px-6 py-2">
                                         <select name="role" id="role" onchange="this.form.submit()" class="block w-full py-1.5 px-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700">
                                             <option value="">Semua Peran</option>
@@ -244,6 +262,7 @@
                                             <option value="mitra" {{ $role == 'mitra' ? 'selected' : '' }}>Mitra</option>
                                         </select>
                                     </th>
+                                    <!-- Grup Filter -->
                                     <th class="px-6 py-2">
                                         <select name="group" id="group" onchange="this.form.submit()" class="block w-full py-1.5 px-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700">
                                             <option value="">Semua Grup</option>
@@ -251,11 +270,40 @@
                                             <option value="Group B" {{ (isset($group) && $group == 'Group B') ? 'selected' : '' }}>Group B</option>
                                         </select>
                                     </th>
-                                    <th class="px-6 py-2"></th>
-                                    <th class="px-6 py-2"></th>
-                                    <th class="px-6 py-2"></th>
-                                    <th class="px-6 py-2"></th>
-                                    <th class="px-6 py-2"></th>
+                                    <!-- Nominal/Jam Filter -->
+                                    <th class="px-6 py-2">
+                                        <input type="text" name="hourly_rate" id="hourly_rate" value="{{ $hourlyRate }}" onchange="this.form.submit()" placeholder="Tarif..." class="block w-full py-1 px-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700">
+                                    </th>
+                                    <!-- Headstrap Filter -->
+                                    <th class="px-6 py-2">
+                                        <select name="headstrap" id="headstrap" onchange="this.form.submit()" class="block w-full py-1.5 px-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700">
+                                            <option value="">Semua</option>
+                                            <option value="yes" {{ $headstrap == 'yes' ? 'selected' : '' }}>Sudah</option>
+                                            <option value="no" {{ $headstrap == 'no' ? 'selected' : '' }}>Belum</option>
+                                        </select>
+                                    </th>
+                                    <!-- WhatsApp Filter -->
+                                    <th class="px-6 py-2">
+                                        <input type="text" name="whatsapp" id="whatsapp" value="{{ $whatsapp }}" onchange="this.form.submit()" placeholder="Cari WA..." class="block w-full py-1 px-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700">
+                                    </th>
+                                    <!-- Mitra Atasan Filter -->
+                                    <th class="px-6 py-2">
+                                        <select name="mitra_parent" id="mitra_parent" onchange="this.form.submit()" class="block w-full py-1.5 px-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700">
+                                            <option value="">Semua</option>
+                                            @foreach($mitraList as $mitraItem)
+                                                <option value="{{ $mitraItem->id }}" {{ $mitraParent == $mitraItem->id ? 'selected' : '' }}>{{ $mitraItem->full_name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </th>
+                                    <!-- Registrasi Klien Filter -->
+                                    <th class="px-6 py-2">
+                                        <select name="client_registered" id="client_registered" onchange="this.form.submit()" class="block w-full py-1.5 px-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700">
+                                            <option value="">Semua</option>
+                                            <option value="yes" {{ $clientRegistered == 'yes' ? 'selected' : '' }}>Registered</option>
+                                            <option value="no" {{ $clientRegistered == 'no' ? 'selected' : '' }}>Unregistered</option>
+                                        </select>
+                                    </th>
+                                    <!-- Status Filter -->
                                     <th class="px-6 py-2">
                                         <select name="status" id="status" onchange="this.form.submit()" class="block w-full py-1.5 px-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700">
                                             <option value="">Semua Status</option>

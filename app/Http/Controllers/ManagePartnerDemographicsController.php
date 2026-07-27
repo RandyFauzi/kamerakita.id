@@ -21,6 +21,15 @@ class ManagePartnerDemographicsController extends Controller
         $role = $request->input('role');
         $status = $request->input('status');
         $group = $request->input('group');
+        
+        // Spreadsheet Column-Specific Filters
+        $mitraId = $request->input('mitra_id');
+        $fullName = $request->input('full_name');
+        $hourlyRate = $request->input('hourly_rate');
+        $headstrap = $request->input('headstrap');
+        $whatsapp = $request->input('whatsapp');
+        $mitraParent = $request->input('mitra_parent');
+        $clientRegistered = $request->input('client_registered');
 
         $summaryRow = Partner::query()
             ->selectRaw('COUNT(*) as total_users')
@@ -58,11 +67,37 @@ class ManagePartnerDemographicsController extends Controller
             ->when($group, function ($query, $group) {
                 $query->where('group_name', $group);
             })
+            ->when($mitraId, function ($query, $mitraId) {
+                $query->where('mitra_id', 'like', "%{$mitraId}%");
+            })
+            ->when($fullName, function ($query, $fullName) {
+                $query->where('full_name', 'like', "%{$fullName}%");
+            })
+            ->when($hourlyRate, function ($query, $hourlyRate) {
+                $query->where('base_hourly_rate', $hourlyRate);
+            })
+            ->when($headstrap !== null && $headstrap !== '', function ($query) use ($headstrap) {
+                $query->where('has_headstrap', $headstrap === 'yes' ? 1 : 0);
+            })
+            ->when($whatsapp, function ($query, $whatsapp) {
+                $query->where('whatsapp_number', 'like', "%{$whatsapp}%");
+            })
+            ->when($mitraParent, function ($query, $mitraParent) {
+                $query->where('mitra_parent_id', $mitraParent);
+            })
+            ->when($clientRegistered !== null && $clientRegistered !== '', function ($query) use ($clientRegistered) {
+                $query->where('is_client_registered', $clientRegistered === 'yes' ? 1 : 0);
+            })
             ->orderBy('mitra_id', 'asc')
             ->paginate(15)
             ->withQueryString();
 
-        return view('partners.index', compact('partners', 'search', 'role', 'status', 'group', 'summary'));
+        $mitraList = Partner::where('partner_role', 'mitra')->get();
+
+        return view('partners.index', compact(
+            'partners', 'search', 'role', 'status', 'group', 'summary',
+            'mitraId', 'fullName', 'hourlyRate', 'headstrap', 'whatsapp', 'mitraParent', 'clientRegistered', 'mitraList'
+        ));
     }
 
     public function create()
@@ -217,6 +252,14 @@ class ManagePartnerDemographicsController extends Controller
         $role = $request->input('role');
         $status = $request->input('status');
         $group = $request->input('group');
+        
+        $mitraId = $request->input('mitra_id');
+        $fullName = $request->input('full_name');
+        $hourlyRate = $request->input('hourly_rate');
+        $headstrap = $request->input('headstrap');
+        $whatsapp = $request->input('whatsapp');
+        $mitraParent = $request->input('mitra_parent');
+        $clientRegistered = $request->input('client_registered');
 
         $partners = Partner::query()
             ->with(['user'])
@@ -235,6 +278,27 @@ class ManagePartnerDemographicsController extends Controller
             })
             ->when($group, function ($query, $group) {
                 $query->where('group_name', $group);
+            })
+            ->when($mitraId, function ($query, $mitraId) {
+                $query->where('mitra_id', 'like', "%{$mitraId}%");
+            })
+            ->when($fullName, function ($query, $fullName) {
+                $query->where('full_name', 'like', "%{$fullName}%");
+            })
+            ->when($hourlyRate, function ($query, $hourlyRate) {
+                $query->where('base_hourly_rate', $hourlyRate);
+            })
+            ->when($headstrap !== null && $headstrap !== '', function ($query) use ($headstrap) {
+                $query->where('has_headstrap', $headstrap === 'yes' ? 1 : 0);
+            })
+            ->when($whatsapp, function ($query, $whatsapp) {
+                $query->where('whatsapp_number', 'like', "%{$whatsapp}%");
+            })
+            ->when($mitraParent, function ($query, $mitraParent) {
+                $query->where('mitra_parent_id', $mitraParent);
+            })
+            ->when($clientRegistered !== null && $clientRegistered !== '', function ($query) use ($clientRegistered) {
+                $query->where('is_client_registered', $clientRegistered === 'yes' ? 1 : 0);
             })
             ->orderBy('mitra_id', 'asc')
             ->get();
