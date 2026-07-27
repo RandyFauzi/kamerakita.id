@@ -307,7 +307,8 @@
                                     <th class="px-6 py-2">
                                         <select name="status" id="status" onchange="this.form.submit()" class="block w-full py-1.5 px-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700">
                                             <option value="">Semua Status</option>
-                                            <option value="active" {{ $status == 'active' ? 'selected' : '' }}>Active</option>
+                                            <option value="active" {{ $status == 'active' ? 'selected' : '' }}>Active (Hari Ini)</option>
+                                            <option value="past_active" {{ $status == 'past_active' ? 'selected' : '' }}>Active (Masa Lalu)</option>
                                             <option value="inactive" {{ $status == 'inactive' ? 'selected' : '' }}>Inactive</option>
                                             <option value="suspended" {{ $status == 'suspended' ? 'selected' : '' }}>Suspended</option>
                                         </select>

@@ -46,22 +46,54 @@ class Partner extends Model
 
     public function statusLabel(): string
     {
-        return match ($this->status) {
-            self::STATUS_ACTIVE => 'Active',
-            self::STATUS_INACTIVE => 'Inactive',
-            self::STATUS_SUSPENDED => 'Suspended',
-            default => ucfirst((string) $this->status),
-        };
+        if ($this->status === self::STATUS_SUSPENDED) {
+            return 'Suspended';
+        }
+
+        $latestDate = $this->video_work_reports_max_submission_date;
+        if ($latestDate === null && $this->relationLoaded('videoWorkReports')) {
+            $latestDate = $this->videoWorkReports->max('submission_date');
+        }
+        if ($latestDate === null) {
+            $latestDate = $this->videoWorkReports()->max('submission_date');
+        }
+
+        if (!$latestDate) {
+            return 'Inactive';
+        }
+
+        $days = now()->startOfDay()->diffInDays(\Carbon\Carbon::parse($latestDate)->startOfDay());
+        if ($days === 0) {
+            return 'Active';
+        }
+
+        return "Aktif {$days} hari yang lalu";
     }
 
     public function statusBadgeClasses(): string
     {
-        return match ($this->status) {
-            self::STATUS_ACTIVE => 'bg-green-50 text-green-700 border-green-200',
-            self::STATUS_INACTIVE => 'bg-amber-50 text-amber-700 border-amber-200',
-            self::STATUS_SUSPENDED => 'bg-red-50 text-red-700 border-red-200',
-            default => 'bg-gray-50 text-gray-600 border-gray-200',
-        };
+        if ($this->status === self::STATUS_SUSPENDED) {
+            return 'bg-red-50 text-red-700 border-red-200';
+        }
+
+        $latestDate = $this->video_work_reports_max_submission_date;
+        if ($latestDate === null && $this->relationLoaded('videoWorkReports')) {
+            $latestDate = $this->videoWorkReports->max('submission_date');
+        }
+        if ($latestDate === null) {
+            $latestDate = $this->videoWorkReports()->max('submission_date');
+        }
+
+        if (!$latestDate) {
+            return 'bg-gray-50 text-gray-600 border-gray-200';
+        }
+
+        $days = now()->startOfDay()->diffInDays(\Carbon\Carbon::parse($latestDate)->startOfDay());
+        if ($days === 0) {
+            return 'bg-green-50 text-green-700 border-green-200';
+        }
+
+        return 'bg-amber-50 text-amber-700 border-amber-200';
     }
 
     public function user(): BelongsTo

@@ -87,29 +87,8 @@ class PartnerActivityStatusService
 
     private function shouldBeInactive(Partner $partner): bool
     {
-        $cutoffDate = now()->startOfDay()->subDays(self::STALE_DAYS);
-
-        $hasRecentReport = VideoWorkReport::query()
+        return !VideoWorkReport::query()
             ->where('partner_id', $partner->id)
-            ->whereNotNull('evidence_email_image_path')
-            ->whereDate('submission_date', '>=', $cutoffDate->toDateString())
             ->exists();
-
-        if ($hasRecentReport) {
-            return false;
-        }
-
-        $latestReportDate = VideoWorkReport::query()
-            ->where('partner_id', $partner->id)
-            ->whereNotNull('evidence_email_image_path')
-            ->max('submission_date');
-
-        if ($latestReportDate) {
-            return Carbon::parse($latestReportDate)->startOfDay()->lt($cutoffDate);
-        }
-
-        return $partner->created_at
-            ? $partner->created_at->copy()->startOfDay()->lt($cutoffDate)
-            : true;
     }
 }

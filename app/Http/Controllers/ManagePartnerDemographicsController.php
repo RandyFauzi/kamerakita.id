@@ -31,26 +31,34 @@ class ManagePartnerDemographicsController extends Controller
         $mitraParent = $request->input('mitra_parent');
         $clientRegistered = $request->input('client_registered');
 
-        $summaryRow = Partner::query()
-            ->selectRaw('COUNT(*) as total_users')
-            ->selectRaw("SUM(CASE WHEN partner_role = 'worker' THEN 1 ELSE 0 END) as total_workers")
-            ->selectRaw("SUM(CASE WHEN partner_role = 'mitra' THEN 1 ELSE 0 END) as total_mitra")
-            ->selectRaw("SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) as total_active")
-            ->selectRaw("SUM(CASE WHEN status = 'inactive' THEN 1 ELSE 0 END) as total_inactive")
-            ->selectRaw("SUM(CASE WHEN status = 'suspended' THEN 1 ELSE 0 END) as total_suspended")
-            ->first();
+        $todayDateString = now()->toDateString();
+        
+        $totalUsers = Partner::count();
+        $totalWorkers = Partner::where('partner_role', 'worker')->count();
+        $totalMitra = Partner::where('partner_role', 'mitra')->count();
+        $totalSuspended = Partner::where('status', 'suspended')->count();
+        
+        $totalActive = Partner::where('status', '!=', 'suspended')
+            ->whereHas('videoWorkReports', function ($q) use ($todayDateString) {
+                $q->whereDate('submission_date', $todayDateString);
+            })->count();
+
+        $totalInactive = Partner::where('status', '!=', 'suspended')
+            ->whereDoesntHave('videoWorkReports')
+            ->count();
 
         $summary = [
-            'total_users' => (int) $summaryRow->total_users,
-            'total_workers' => (int) $summaryRow->total_workers,
-            'total_mitra' => (int) $summaryRow->total_mitra,
-            'total_active' => (int) $summaryRow->total_active,
-            'total_inactive' => (int) $summaryRow->total_inactive,
-            'total_suspended' => (int) $summaryRow->total_suspended,
+            'total_users' => $totalUsers,
+            'total_workers' => $totalWorkers,
+            'total_mitra' => $totalMitra,
+            'total_active' => $totalActive,
+            'total_inactive' => $totalInactive,
+            'total_suspended' => $totalSuspended,
         ];
 
         $partners = Partner::query()
             ->with(['mitraParent', 'user'])
+            ->withMax('videoWorkReports', 'submission_date')
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('full_name', 'like', "%{$search}%")
@@ -61,8 +69,20 @@ class ManagePartnerDemographicsController extends Controller
             ->when($role, function ($query, $role) {
                 $query->where('partner_role', $role);
             })
-            ->when($status, function ($query, $status) {
-                $query->where('status', $status);
+            ->when($status, function ($query, $status) use ($todayDateString) {
+                if ($status === 'active') {
+                    $query->where('status', 'active')
+                        ->whereHas('videoWorkReports', function ($q) use ($todayDateString) {
+                            $q->whereDate('submission_date', $todayDateString);
+                        });
+                } elseif ($status === 'past_active') {
+                    $query->where('status', 'active')
+                        ->whereDoesntHave('videoWorkReports', function ($q) use ($todayDateString) {
+                            $q->whereDate('submission_date', $todayDateString);
+                        });
+                } else {
+                    $query->where('status', $status);
+                }
             })
             ->when($group, function ($query, $group) {
                 $query->where('group_name', $group);
