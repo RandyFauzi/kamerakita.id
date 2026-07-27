@@ -728,7 +728,7 @@
                             </div>
                             
                             <div class="bg-gray-50 px-6 py-3 sm:flex sm:flex-row-reverse rounded-b-2xl gap-2 text-xs">
-                                <button type="submit" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-xs px-4 py-2 bg-blue-650 hover:bg-blue-700 text-xs font-bold text-white transition">
+                                <button type="submit" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-xs px-4 py-2 bg-blue-600 hover:bg-blue-700 text-xs font-bold text-white transition">
                                     Simpan
                                 </button>
                                 <button type="button" @click="showBulkModal = false" class="mt-2 w-full inline-flex justify-center rounded-lg border border-gray-300 shadow-xs px-4 py-2 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 sm:mt-0 transition">
