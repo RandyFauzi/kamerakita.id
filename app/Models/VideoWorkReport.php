@@ -98,9 +98,9 @@ class VideoWorkReport extends Model
             return null;
         }
 
-        return route('video-submissions.evidence.show', [
+        return URL::signedRoute('video-submissions.evidence.show', [
             'report' => $this->id,
             'type' => $type
-        ], false); // Generate relative URL for universal cross-host reliability
+        ], null, false); // Generate relative signed URL for universal cross-host reliability
     }
 }
