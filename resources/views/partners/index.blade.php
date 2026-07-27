@@ -20,6 +20,15 @@
             deleteTarget: {},
             deleting: false,
             showCopyModal: false,
+            showBulkModal: false,
+            selectedIds: [],
+            toggleSelectAll(e) {
+                if (e.target.checked) {
+                    this.selectedIds = @js($partners->pluck('id')->toArray());
+                } else {
+                    this.selectedIds = [];
+                }
+            },
             copyData: '',
             fetchingContacts: false,
             openDeleteModal(target) {
@@ -231,6 +240,9 @@
                         <table class="min-w-full divide-y divide-gray-100">
                             <thead class="bg-gray-50/50">
                                 <tr>
+                                    <th scope="col" class="w-10 px-4 py-4 text-center">
+                                        <input type="checkbox" @change="toggleSelectAll($event)" :checked="selectedIds.length === @js($partners->count()) && @js($partners->count()) > 0" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                    </th>
                                     <th scope="col" class="w-16 px-4 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">No.</th>
                                     <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">ID Mitra</th>
                                     <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Nama Lengkap</th>
@@ -245,6 +257,7 @@
                                     <th scope="col" class="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Aksi</th>
                                 </tr>
                                 <tr class="bg-slate-100/50 border-t border-slate-205">
+                                    <th class="px-4 py-2"></th>
                                     <th class="px-4 py-2"></th>
                                     <!-- ID Mitra Filter -->
                                     <th class="px-6 py-2">
@@ -319,6 +332,9 @@
                             <tbody class="bg-white divide-y divide-gray-100">
                             @forelse($partners as $partner)
                                 <tr class="hover:bg-gray-50/50 transition-colors duration-150">
+                                    <td class="w-10 px-4 py-4 text-center whitespace-nowrap">
+                                        <input type="checkbox" :value="'{{ $partner->id }}'" x-model="selectedIds" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                    </td>
                                     <td class="w-16 px-4 py-4 whitespace-nowrap text-center text-sm font-semibold text-gray-500">
                                         {{ $partners->firstItem() + $loop->index }}
                                     </td>
@@ -401,7 +417,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="11" class="px-6 py-12 text-center text-gray-500">
+                                    <td colspan="13" class="px-6 py-12 text-center text-gray-500">
                                         <span class="text-sm">Tidak ada data mitra atau worker ditemukan.</span>
                                     </td>
                                 </tr>
@@ -570,6 +586,177 @@
                                 Tutup
                             </button>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- Floating Bulk Action Bar -->
+        <div 
+            x-show="selectedIds.length > 0" 
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 translate-y-full"
+            x-transition:enter-end="opacity-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 translate-y-0"
+            x-transition:leave-end="opacity-0 translate-y-full"
+            class="fixed bottom-0 inset-x-0 z-40 bg-white border-t border-gray-200 shadow-2xl px-6 py-4 flex items-center justify-between"
+            style="display: none;"
+        >
+            <div class="flex items-center gap-3">
+                <span class="inline-flex items-center justify-center bg-indigo-100 text-indigo-800 text-xs font-black px-2.5 py-1 rounded-full font-mono">
+                    <span x-text="selectedIds.length"></span> Terpilih
+                </span>
+                <span class="text-sm font-medium text-gray-500">Pilih aksi untuk menyunting data mitra secara massal.</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <button 
+                    type="button" 
+                    @click="showBulkModal = true"
+                    class="inline-flex items-center px-4 py-2 bg-indigo-650 hover:bg-indigo-700 border border-transparent rounded-xl font-semibold text-sm text-white transition shadow-sm font-bold"
+                >
+                    Sunting Massal (Bulk Edit)
+                </button>
+                <button 
+                    type="button" 
+                    @click="selectedIds = []"
+                    class="inline-flex items-center px-4 py-2 bg-gray-100 border border-gray-200 rounded-xl font-semibold text-sm text-gray-700 hover:bg-gray-200 transition"
+                >
+                    Batal
+                </button>
+            </div>
+        </div>
+
+        <!-- Bulk Edit Modal -->
+        <template x-if="showBulkModal">
+            <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="bulk-modal-title" role="dialog" aria-modal="true">
+                <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                    <div x-show="showBulkModal" 
+                         x-transition:enter="ease-out duration-300" 
+                         x-transition:enter-start="opacity-0" 
+                         x-transition:enter-end="opacity-100" 
+                         x-transition:leave="ease-in duration-200" 
+                         x-transition:leave-start="opacity-100" 
+                         x-transition:leave-end="opacity-0" 
+                         class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" 
+                         @click="showBulkModal = false"
+                         aria-hidden="true"></div>
+
+                    <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+                    <div x-show="showBulkModal" 
+                         x-transition:enter="ease-out duration-300" 
+                         x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" 
+                         x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" 
+                         x-transition:leave="ease-in duration-200" 
+                         x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" 
+                         x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" 
+                         class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-xl sm:w-full">
+                        
+                        <form action="{{ route('partners.bulk-update') }}" method="POST">
+                            @csrf
+                            
+                            <!-- Bind selected partner IDs -->
+                            <template x-for="id in selectedIds" :key="id">
+                                <input type="hidden" name="ids[]" :value="id">
+                            </template>
+
+                            <div class="bg-white px-6 pt-6 pb-4">
+                                <div class="flex items-start gap-4">
+                                    <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-xl bg-indigo-50 text-indigo-600 sm:mx-0">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="w-full mt-3 sm:mt-0 sm:ml-4">
+                                        <h3 class="text-lg leading-6 font-bold text-gray-900" id="bulk-modal-title">
+                                            Sunting Massal (<span x-text="selectedIds.length"></span> Akun)
+                                        </h3>
+                                        <p class="text-xs text-gray-400 mt-1">
+                                            Tentukan kolom yang ingin Anda ubah secara massal. Kolom yang dibiarkan "Tidak Ada Perubahan" tidak akan diperbarui.
+                                        </p>
+
+                                        <div class="mt-6 space-y-4">
+                                            <!-- Group bulk selection -->
+                                            <div>
+                                                <label for="bulk_group" class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 font-mono">Grup</label>
+                                                <select name="group_name" id="bulk_group" class="block w-full py-2 px-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                                                    <option value="no_change">Tidak Ada Perubahan</option>
+                                                    <option value="clear">Hapus Grup (Kosongkan)</option>
+                                                    <option value="Group A">Group A</option>
+                                                    <option value="Group B">Group B</option>
+                                                </select>
+                                            </div>
+
+                                            <!-- Status bulk selection -->
+                                            <div>
+                                                <label for="bulk_status" class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 font-mono">Status</label>
+                                                <select name="status" id="bulk_status" class="block w-full py-2 px-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                                                    <option value="no_change">Tidak Ada Perubahan</option>
+                                                    <option value="active">Active</option>
+                                                    <option value="inactive">Inactive</option>
+                                                    <option value="suspended">Suspended</option>
+                                                </select>
+                                            </div>
+
+                                            <!-- Headstrap bulk selection -->
+                                            <div>
+                                                <label for="bulk_headstrap" class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 font-mono">Headstrap</label>
+                                                <select name="has_headstrap" id="bulk_headstrap" class="block w-full py-2 px-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                                                    <option value="no_change">Tidak Ada Perubahan</option>
+                                                    <option value="yes">Sudah (Ada)</option>
+                                                    <option value="no">Belum (Tidak Ada)</option>
+                                                </select>
+                                            </div>
+
+                                            <!-- Client Registration bulk selection -->
+                                            <div>
+                                                <label for="bulk_client" class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 font-mono">Registrasi Klien</label>
+                                                <select name="is_client_registered" id="bulk_client" class="block w-full py-2 px-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                                                    <option value="no_change">Tidak Ada Perubahan</option>
+                                                    <option value="yes">Registered</option>
+                                                    <option value="no">Unregistered</option>
+                                                </select>
+                                            </div>
+
+                                            <!-- Hourly rate bulk input -->
+                                            <div>
+                                                <label for="bulk_rate" class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 font-mono">Nominal/Jam (Tarif)</label>
+                                                <input type="number" name="base_hourly_rate" id="bulk_rate" placeholder="Biarkan kosong jika tidak diubah..." class="block w-full py-2 px-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white shadow-sm">
+                                            </div>
+
+                                            <!-- Parent Mitra selection -->
+                                            <div x-data="{ parentOption: 'no_change' }">
+                                                <label for="bulk_parent_option" class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 font-mono">Mitra Atasan</label>
+                                                <select name="mitra_parent_id" id="bulk_parent_option" x-model="parentOption" class="block w-full py-2 px-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                                                    <option value="no_change">Tidak Ada Perubahan</option>
+                                                    <option value="clear">Hapus Mitra Atasan (Kosongkan)</option>
+                                                    <option value="other">Pilih Mitra Atasan Baru</option>
+                                                </select>
+                                                
+                                                <div x-show="parentOption === 'other'" class="mt-2" x-transition style="display: none;">
+                                                    <select name="selected_parent_id" class="block w-full py-2 px-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                                                        <option value="">Pilih Mitra Coordinator...</option>
+                                                        @foreach($mitraList as $mitraItem)
+                                                            <option value="{{ $mitraItem->id }}">{{ $mitraItem->full_name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-gray-50 px-6 py-4 sm:flex sm:flex-row-reverse rounded-b-2xl gap-2">
+                                <button type="submit" class="w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-5 py-2.5 bg-indigo-650 hover:bg-indigo-700 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:w-auto sm:text-sm transition font-bold shadow-sm">
+                                    Simpan Perubahan
+                                </button>
+                                <button type="button" @click="showBulkModal = false" class="mt-3 w-full inline-flex justify-center rounded-xl border border-gray-300 shadow-sm px-5 py-2.5 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm transition">
+                                    Batal
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>

@@ -30,6 +30,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/partners/export-contacts', [\App\Http\Controllers\ManagePartnerDemographicsController::class, 'exportContacts'])
         ->middleware('role:superadmin,admin')
         ->name('partners.export-contacts');
+    Route::post('/partners/bulk-update', [\App\Http\Controllers\ManagePartnerDemographicsController::class, 'bulkUpdate'])
+        ->middleware('role:superadmin,admin')
+        ->name('partners.bulk-update');
     Route::resource('partners', ManagePartnerDemographicsController::class)
         ->middleware('role:superadmin,admin');
 

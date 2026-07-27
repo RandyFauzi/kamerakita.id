@@ -332,4 +332,56 @@ class ManagePartnerDemographicsController extends Controller
         return response($output, 200)
             ->header('Content-Type', 'text/plain');
     }
+
+    public function bulkUpdate(Request $request)
+    {
+        $validated = $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:partners,id',
+            'group_name' => 'nullable|string|in:no_change,clear,Group A,Group B',
+            'status' => 'nullable|string|in:no_change,active,inactive,suspended',
+            'has_headstrap' => 'nullable|string|in:no_change,yes,no',
+            'is_client_registered' => 'nullable|string|in:no_change,yes,no',
+            'base_hourly_rate' => 'nullable|numeric|min:0',
+            'mitra_parent_id' => 'nullable|string|in:no_change,clear,other',
+            'selected_parent_id' => 'nullable|exists:partners,id',
+        ]);
+
+        $ids = $validated['ids'];
+        $updateData = [];
+
+        if (isset($validated['group_name']) && $validated['group_name'] !== 'no_change') {
+            $updateData['group_name'] = $validated['group_name'] === 'clear' ? null : $validated['group_name'];
+        }
+
+        if (isset($validated['status']) && $validated['status'] !== 'no_change') {
+            $updateData['status'] = $validated['status'];
+        }
+
+        if (isset($validated['has_headstrap']) && $validated['has_headstrap'] !== 'no_change') {
+            $updateData['has_headstrap'] = $validated['has_headstrap'] === 'yes' ? 1 : 0;
+        }
+
+        if (isset($validated['is_client_registered']) && $validated['is_client_registered'] !== 'no_change') {
+            $updateData['is_client_registered'] = $validated['is_client_registered'] === 'yes' ? 1 : 0;
+        }
+
+        if ($request->filled('base_hourly_rate')) {
+            $updateData['base_hourly_rate'] = $validated['base_hourly_rate'];
+        }
+
+        if (isset($validated['mitra_parent_id']) && $validated['mitra_parent_id'] !== 'no_change') {
+            if ($validated['mitra_parent_id'] === 'clear') {
+                $updateData['mitra_parent_id'] = null;
+            } elseif ($validated['mitra_parent_id'] === 'other' && $request->filled('selected_parent_id')) {
+                $updateData['mitra_parent_id'] = $validated['selected_parent_id'];
+            }
+        }
+
+        if (!empty($updateData)) {
+            Partner::whereIn('id', $ids)->update($updateData);
+        }
+
+        return redirect()->back()->with('success', count($ids) . ' akun kemitraan berhasil disunting secara massal!');
+    }
 }
