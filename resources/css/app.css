@@ -8,6 +8,32 @@
     }
 }
 
+@layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+    
+    ::selection {
+        background-color: hsl(230, 80%, 90%);
+        color: hsl(230, 80%, 20%);
+    }
+}
+
+@layer components {
+    /* Menerapkan transisi pada tombol/tautan secara umum untuk feel yang lebih hidup */
+    button, a.btn, .hover-lift {
+        @apply transition-all duration-300 ease-out;
+    }
+    
+    button:not(:disabled):hover, a.btn:hover, .hover-lift:hover {
+        @apply -translate-y-[1px] shadow-md;
+    }
+    
+    button:not(:disabled):active, a.btn:active, .hover-lift:active {
+        @apply translate-y-[0px] shadow-sm;
+    }
+}
+
 [x-cloak] {
     display: none !important;
 }

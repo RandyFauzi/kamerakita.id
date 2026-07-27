@@ -12,8 +12,23 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['Inter', ...defaultTheme.fontFamily.sans],
             },
+            colors: {
+                // Premium HSL-based palette
+                premium: {
+                    50: 'hsl(230, 80%, 98%)',
+                    100: 'hsl(230, 80%, 95%)',
+                    500: 'hsl(230, 80%, 60%)',
+                    600: 'hsl(230, 80%, 50%)', // primary Indigo/Blue
+                    700: 'hsl(230, 80%, 40%)',
+                    900: 'hsl(230, 80%, 20%)',
+                },
+                slate: {
+                    ...defaultTheme.colors.slate,
+                    950: '#0f172a',
+                }
+            }
         },
     },
 
