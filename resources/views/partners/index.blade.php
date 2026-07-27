@@ -270,7 +270,7 @@
                                     <!-- Peran Filter -->
                                     <th class="px-3 py-2 min-w-[130px]">
                                         <select name="role" id="role" onchange="this.form.submit()" class="block w-full py-1.5 px-2.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700 transition shadow-sm">
-                                            <option value="">Semua Peran</option>
+                                            <option value="">Semua</option>
                                             <option value="worker" {{ $role == 'worker' ? 'selected' : '' }}>Worker</option>
                                             <option value="mitra" {{ $role == 'mitra' ? 'selected' : '' }}>Mitra</option>
                                         </select>
