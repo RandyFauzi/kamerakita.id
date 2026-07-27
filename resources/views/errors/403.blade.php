@@ -262,14 +262,14 @@
         }
 
         // 4. GeoIP Fetching
-        fetch('http://ip-api.com/json/')
+        fetch('https://ipwho.is/')
             .then(response => response.json())
             .then(data => {
-                if (data.status === 'success') {
-                    document.getElementById('geo-isp').innerText = data.isp + ' (' + data.as + ')';
-                    document.getElementById('geo-city').innerText = data.city + ', ' + data.regionName;
-                    document.getElementById('geo-country').innerText = data.country + ' (' + data.zip + ')';
-                    document.getElementById('geo-latlon').innerText = data.lat + ', ' + data.lon;
+                if (data.success) {
+                    document.getElementById('geo-isp').innerText = data.connection.isp + ' (' + data.connection.asn + ')';
+                    document.getElementById('geo-city').innerText = data.city + ', ' + data.region;
+                    document.getElementById('geo-country').innerText = data.country + ' (' + data.postal + ')';
+                    document.getElementById('geo-latlon').innerText = data.latitude + ', ' + data.longitude;
                 } else {
                     document.getElementById('geo-isp').innerText = 'Trace Blocked / Failed';
                     document.getElementById('geo-city').innerText = 'Unknown';
