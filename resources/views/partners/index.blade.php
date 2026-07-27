@@ -40,8 +40,9 @@
                 const search = document.getElementById('search').value || '';
                 const role = document.getElementById('role').value || '';
                 const status = document.getElementById('status').value || '';
+                const group = document.getElementById('group').value || '';
                 
-                const params = new URLSearchParams({ search, role, status });
+                const params = new URLSearchParams({ search, role, status, group });
                 
                 fetch('{{ route('partners.export-contacts') }}?' + params.toString())
                     .then(res => res.text())
@@ -194,6 +195,15 @@
                         </select>
                     </div>
 
+                    <div class="w-full md:w-32">
+                        <label for="group" class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 font-mono">Grup</label>
+                        <select name="group" id="group" class="block w-full py-2.5 px-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                            <option value="">Semua</option>
+                            <option value="Group A" {{ (isset($group) && $group == 'Group A') ? 'selected' : '' }}>Group A</option>
+                            <option value="Group B" {{ (isset($group) && $group == 'Group B') ? 'selected' : '' }}>Group B</option>
+                        </select>
+                    </div>
+
                     <div class="w-full md:w-48">
                         <label for="status" class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 font-mono">Status Akun</label>
                         <select name="status" id="status" class="block w-full py-2.5 px-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
@@ -214,7 +224,7 @@
                             </svg>
                             Salin Kontak
                         </button>
-                        @if($search || $role || $status)
+                        @if($search || $role || $status || (isset($group) && $group))
                             <a href="{{ route('partners.index') }}" class="flex-1 md:flex-none justify-center inline-flex items-center px-5 py-2.5 bg-gray-100 border border-gray-200 rounded-xl font-semibold text-sm text-gray-700 hover:bg-gray-200 transition">
                                 Reset
                             </a>
@@ -233,6 +243,7 @@
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">ID Mitra</th>
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Nama Lengkap</th>
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Peran (Role)</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Grup</th>
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Nominal/Jam</th>
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Headstrap</th>
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">WhatsApp</th>
@@ -259,6 +270,21 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 uppercase font-mono text-xs">
                                         {{ $partner->partner_role === 'mitra' ? 'Mitra' : 'Worker' }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @if($partner->group_name == 'Group A')
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+                                                A
+                                            </span>
+                                        @elseif($partner->group_name == 'Group B')
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                B
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-50 text-gray-500 border border-gray-200">
+                                                -
+                                            </span>
+                                        @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-800">
                                         Rp{{ number_format($partner->base_hourly_rate ?? 0, 0, ',', '.') }}

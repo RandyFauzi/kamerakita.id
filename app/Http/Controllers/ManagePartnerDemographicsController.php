@@ -20,6 +20,7 @@ class ManagePartnerDemographicsController extends Controller
         $search = $request->input('search');
         $role = $request->input('role');
         $status = $request->input('status');
+        $group = $request->input('group');
 
         $summaryRow = Partner::query()
             ->selectRaw('COUNT(*) as total_users')
@@ -54,11 +55,14 @@ class ManagePartnerDemographicsController extends Controller
             ->when($status, function ($query, $status) {
                 $query->where('status', $status);
             })
+            ->when($group, function ($query, $group) {
+                $query->where('group_name', $group);
+            })
             ->orderBy('mitra_id', 'asc')
             ->paginate(15)
             ->withQueryString();
 
-        return view('partners.index', compact('partners', 'search', 'role', 'status', 'summary'));
+        return view('partners.index', compact('partners', 'search', 'role', 'status', 'group', 'summary'));
     }
 
     public function create()
@@ -212,6 +216,7 @@ class ManagePartnerDemographicsController extends Controller
         $search = $request->input('search');
         $role = $request->input('role');
         $status = $request->input('status');
+        $group = $request->input('group');
 
         $partners = Partner::query()
             ->with(['user'])
@@ -227,6 +232,9 @@ class ManagePartnerDemographicsController extends Controller
             })
             ->when($status, function ($query, $status) {
                 $query->where('status', $status);
+            })
+            ->when($group, function ($query, $group) {
+                $query->where('group_name', $group);
             })
             ->orderBy('mitra_id', 'asc')
             ->get();
