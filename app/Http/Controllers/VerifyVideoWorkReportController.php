@@ -35,6 +35,7 @@ class VerifyVideoWorkReportController extends Controller
 
         // 2. Fetch partners who submitted reports in this period
         $search = $request->input('search');
+        $selectedGroup = $request->input('group');
         $query = Partner::whereHas('videoWorkReports', function ($q) use ($startDate, $endDate) {
             $q->whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')]);
         });
@@ -45,6 +46,10 @@ class VerifyVideoWorkReportController extends Controller
                   ->orWhere('mitra_id', 'like', "%{$search}%")
                   ->orWhere('email', 'like', "%{$search}%");
             });
+        }
+
+        if ($selectedGroup) {
+            $query->where('group_name', $selectedGroup);
         }
 
         $partners = $query->paginate(15)->withQueryString();
@@ -75,10 +80,21 @@ class VerifyVideoWorkReportController extends Controller
         }
 
         // Stats summary for the selected period
-        $periodReportedMin = VideoWorkReport::whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])->sum('submitted_duration_minutes');
-        $periodApprovedMin = VideoWorkReport::whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
-            ->where('qc_status', 'approved')
-            ->sum('approved_duration_minutes');
+        $reportedQuery = VideoWorkReport::whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')]);
+        $approvedQuery = VideoWorkReport::whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
+            ->where('qc_status', 'approved');
+
+        if ($selectedGroup) {
+            $reportedQuery->whereHas('partner', function ($q) use ($selectedGroup) {
+                $q->where('group_name', $selectedGroup);
+            });
+            $approvedQuery->whereHas('partner', function ($q) use ($selectedGroup) {
+                $q->where('group_name', $selectedGroup);
+            });
+        }
+
+        $periodReportedMin = $reportedQuery->sum('submitted_duration_minutes');
+        $periodApprovedMin = $approvedQuery->sum('approved_duration_minutes');
 
         $formatDur = function (int $minutes) {
             $hours = floor($minutes / 60);
@@ -103,6 +119,7 @@ class VerifyVideoWorkReportController extends Controller
             'startDate',
             'endDate',
             'search',
+            'selectedGroup',
             'totalPendingCount',
             'totalOnReviewCount',
             'filteredSubmittedDuration',
@@ -275,9 +292,16 @@ class VerifyVideoWorkReportController extends Controller
         }
 
         // 2. Fetch partners who submitted reports in this period
-        $partners = Partner::whereHas('videoWorkReports', function ($q) use ($startDate, $endDate) {
+        $group = $request->input('group');
+        $query = Partner::whereHas('videoWorkReports', function ($q) use ($startDate, $endDate) {
             $q->whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')]);
-        })->get();
+        });
+
+        if ($group) {
+            $query->where('group_name', $group);
+        }
+
+        $partners = $query->get();
 
         foreach ($partners as $partner) {
             $reports = VideoWorkReport::where('partner_id', $partner->id)

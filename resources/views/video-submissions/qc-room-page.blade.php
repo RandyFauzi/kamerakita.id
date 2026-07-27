@@ -68,6 +68,16 @@
                             @endforeach
                         </select>
                     </div>
+                    
+                    <!-- Group Filter -->
+                    <div class="w-full md:w-44">
+                        <label for="group" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 font-mono">Pilih Grup</label>
+                        <select name="group" id="group" onchange="this.form.submit()" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition bg-white text-gray-700 font-medium">
+                            <option value="">Semua Grup</option>
+                            <option value="Group A" {{ $selectedGroup === 'Group A' ? 'selected' : '' }}>Group A</option>
+                            <option value="Group B" {{ $selectedGroup === 'Group B' ? 'selected' : '' }}>Group B</option>
+                        </select>
+                    </div>
 
                     <!-- Search Input -->
                     <div class="flex-1 w-full">
@@ -86,12 +96,12 @@
                         <button type="submit" class="flex-1 md:flex-none justify-center inline-flex items-center px-6 py-2.5 bg-gray-900 border border-transparent rounded-xl font-semibold text-sm text-white hover:bg-gray-800 transition-colors duration-200">
                             Cari
                         </button>
-                        @if($search)
+                        @if($search || $selectedGroup)
                             <a href="{{ route('video-submissions.qc-room', ['period' => $selectedPeriodKey]) }}" class="flex-1 md:flex-none justify-center inline-flex items-center px-5 py-2.5 bg-gray-100 border border-gray-200 rounded-xl font-semibold text-sm text-gray-700 hover:bg-gray-200 transition-all">
                                 Reset
                             </a>
                         @endif
-                        <a href="{{ route('video-submissions.export-pdf', ['period' => $selectedPeriodKey]) }}" 
+                        <a href="{{ route('video-submissions.export-pdf', ['period' => $selectedPeriodKey, 'search' => $search, 'group' => $selectedGroup]) }}" 
                            target="_blank" 
                            class="flex-1 md:flex-none justify-center inline-flex items-center px-5 py-2.5 bg-indigo-55 border border-indigo-200 rounded-xl font-semibold text-sm text-indigo-700 hover:bg-indigo-100 transition-all gap-1.5 shadow-sm">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
