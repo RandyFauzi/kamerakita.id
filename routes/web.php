@@ -17,6 +17,15 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/onboarding/success', function () {
+    return view('onboarding.success');
+})->name('onboarding.success');
+
+Route::get('/clear-cache', function () {
+    \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+    return 'Cache cleared successfully!';
+});
+
 Route::get('/get-started', function () {
     return view('get-started');
 })->name('get-started');
