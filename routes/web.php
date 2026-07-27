@@ -108,7 +108,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('payments.cancel');
 
     Route::get('/video-work-reports/{report}/evidence/{type}', ShowVideoWorkReportEvidenceController::class)
-        ->middleware(['signed:relative', 'role:superadmin,admin,finance,worker,mitra'])
+        ->middleware(['signed:relative'])
         ->name('video-submissions.evidence.show');
 
     // Phase 5: Bulk Payroll Export Module
