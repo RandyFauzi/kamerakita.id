@@ -13,7 +13,7 @@ class ShowVideoWorkReportEvidenceController extends Controller
     public function __invoke(VideoWorkReport $report, string $type): Response
     {
         $user = auth()->user();
-        if (in_array($user->role, ['worker', 'mitra'])) {
+        if ($user && in_array($user->role, ['worker', 'mitra'])) {
             $partner = Partner::where('user_id', $user->id)->first();
             abort_unless($partner && $report->partner_id === $partner->id, 403, 'Akses ditolak.');
         }
