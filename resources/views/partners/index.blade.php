@@ -600,7 +600,7 @@
             x-transition:leave="transition ease-in duration-200"
             x-transition:leave-start="opacity-100 translate-y-0"
             x-transition:leave-end="opacity-0 translate-y-full"
-            class="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 bg-gradient-to-r from-blue-600 to-indigo-650 text-white px-5 py-3 rounded-full flex items-center gap-4 shadow-xl border border-indigo-400/25"
+            class="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 bg-blue-600 text-white px-5 py-3 rounded-full flex items-center gap-4 shadow-xl border border-blue-400/25"
             style="display: none;"
         >
             <div class="flex items-center gap-2">
