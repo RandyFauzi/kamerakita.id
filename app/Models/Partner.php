@@ -64,7 +64,7 @@ class Partner extends Model
 
         $days = now()->startOfDay()->diffInDays(\Carbon\Carbon::parse($latestDate)->startOfDay());
         if ($days === 0) {
-            return 'Active';
+            return 'Aktif Hari Ini';
         }
 
         return "Aktif {$days} hari yang lalu";
