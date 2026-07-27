@@ -34,6 +34,10 @@ Route::get('/dashboard', RenderDashboardOverviewController::class)
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
+Route::get('/video-work-reports/{report}/evidence/{type}', ShowVideoWorkReportEvidenceController::class)
+    ->middleware(['signed:relative'])
+    ->name('video-submissions.evidence.show');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     // Phase 1: Partner Demographics CRUD
     Route::get('/partners/export-contacts', [\App\Http\Controllers\ManagePartnerDemographicsController::class, 'exportContacts'])
@@ -106,10 +110,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/payments/manage/cancel', [\App\Http\Controllers\ManagePaymentsController::class, 'cancelPayment'])
         ->middleware('role:superadmin,admin,finance')
         ->name('payments.cancel');
-
-    Route::get('/video-work-reports/{report}/evidence/{type}', ShowVideoWorkReportEvidenceController::class)
-        ->middleware(['signed:relative'])
-        ->name('video-submissions.evidence.show');
 
     // Phase 5: Bulk Payroll Export Module
     Route::get('/payroll/export-csv', [ExportPayrollDataController::class, 'exportCsv'])
