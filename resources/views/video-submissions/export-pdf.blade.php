@@ -196,19 +196,19 @@
                                 <!-- Right side: Clickable Proof Buttons (Replaces heavy images for performance & security) -->
                                 <div class="flex flex-col gap-1 shrink-0 ml-4">
                                     @if($report->evidence_email_image_url)
-                                        <a href="{{ $report->evidence_email_image_url }}" target="_blank" class="inline-flex items-center justify-center px-3 py-1.5 border border-indigo-200 text-indigo-750 bg-indigo-50 hover:bg-indigo-100 rounded-lg text-[9px] font-bold font-mono transition" style="text-decoration: none;">
-                                            Email Register ↗
+                                        <a href="{{ $report->evidence_email_image_url }}" target="_blank" class="block w-full px-3 py-1.5 text-[9px] font-bold text-center bg-indigo-50 text-indigo-700 rounded-md border border-indigo-100 hover:bg-indigo-100 uppercase tracking-wide">
+                                            Total Hour Evidence ↗
                                         </a>
                                     @else
-                                        <span class="text-[9px] text-gray-400 font-mono text-right">No Email Register</span>
+                                        <span class="text-[9px] text-gray-400 font-mono text-right">No Total Hour Evidence</span>
                                     @endif
 
                                     @if($report->evidence_app_quality_image_url)
-                                        <a href="{{ $report->evidence_app_quality_image_url }}" target="_blank" class="inline-flex items-center justify-center px-3 py-1.5 border border-gray-200 text-gray-750 bg-gray-50 hover:bg-gray-100 rounded-lg text-[9px] font-bold font-mono transition" style="text-decoration: none;">
-                                            Video Quality ↗
+                                        <a href="{{ $report->evidence_app_quality_image_url }}" target="_blank" class="block w-full px-3 py-1.5 text-[9px] font-bold text-center bg-gray-50 text-gray-700 rounded-md border border-gray-100 hover:bg-gray-100 uppercase tracking-wide">
+                                            Account's Quality Evidence ↗
                                         </a>
                                     @else
-                                        <span class="text-[9px] text-gray-400 font-mono text-right">No Video Quality</span>
+                                        <span class="text-[9px] text-gray-400 font-mono text-right">No Account's Quality Evidence</span>
                                     @endif
                                 </div>
                             </div>
