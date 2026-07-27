@@ -173,40 +173,44 @@
 
             <!-- Filter & Search Card -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-2xl border border-gray-150 p-6">
-                <form action="{{ route('partners.index') }}" method="GET" class="flex flex-col md:flex-row gap-4 items-end">
-                    <div class="flex-1 w-full">
-                        <label for="search" class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 font-mono">Cari Nama / ID</label>
+                <form action="{{ route('partners.index') }}" method="GET" class="flex flex-wrap gap-4 items-end">
+                    <!-- Search Input -->
+                    <div class="flex-grow min-w-[200px] w-full md:w-auto">
+                        <label for="search" class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 font-mono whitespace-nowrap overflow-hidden text-ellipsis">Cari Nama / ID</label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                                 </svg>
                             </div>
-                            <input type="text" name="search" id="search" value="{{ $search }}" placeholder="Nama Lengkap, ID Mitra, atau WhatsApp..." class="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                            <input type="text" name="search" id="search" value="{{ $search }}" placeholder="Ketik nama, ID, atau WA..." class="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition shadow-sm">
                         </div>
                     </div>
                     
-                    <div class="w-full md:w-48">
-                        <label for="role" class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 font-mono">Peran (Role)</label>
-                        <select name="role" id="role" class="block w-full py-2.5 px-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                    <!-- Role Filter -->
+                    <div class="w-full sm:w-[160px] flex-none">
+                        <label for="role" class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 font-mono">Peran</label>
+                        <select name="role" id="role" class="block w-full py-2.5 px-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition shadow-sm">
                             <option value="">Semua Peran</option>
-                            <option value="worker" {{ $role == 'worker' ? 'selected' : '' }}>Worker (Perekam)</option>
-                            <option value="mitra" {{ $role == 'mitra' ? 'selected' : '' }}>Mitra (Koordinator)</option>
+                            <option value="worker" {{ $role == 'worker' ? 'selected' : '' }}>Worker</option>
+                            <option value="mitra" {{ $role == 'mitra' ? 'selected' : '' }}>Mitra</option>
                         </select>
                     </div>
 
-                    <div class="w-full md:w-32">
-                        <label for="group" class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 font-mono">Grup</label>
-                        <select name="group" id="group" class="block w-full py-2.5 px-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
-                            <option value="">Semua</option>
+                    <!-- Group Filter -->
+                    <div class="w-full sm:w-[130px] flex-none">
+                        <label for="group" class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 font-mono">Grup</label>
+                        <select name="group" id="group" class="block w-full py-2.5 px-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition shadow-sm">
+                            <option value="">Semua Grup</option>
                             <option value="Group A" {{ (isset($group) && $group == 'Group A') ? 'selected' : '' }}>Group A</option>
                             <option value="Group B" {{ (isset($group) && $group == 'Group B') ? 'selected' : '' }}>Group B</option>
                         </select>
                     </div>
 
-                    <div class="w-full md:w-48">
-                        <label for="status" class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 font-mono">Status Akun</label>
-                        <select name="status" id="status" class="block w-full py-2.5 px-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                    <!-- Status Filter -->
+                    <div class="w-full sm:w-[160px] flex-none">
+                        <label for="status" class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 font-mono">Status</label>
+                        <select name="status" id="status" class="block w-full py-2.5 px-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition shadow-sm">
                             <option value="">Semua Status</option>
                             <option value="active" {{ $status == 'active' ? 'selected' : '' }}>Active</option>
                             <option value="inactive" {{ $status == 'inactive' ? 'selected' : '' }}>Inactive</option>
@@ -214,19 +218,23 @@
                         </select>
                     </div>
 
-                    <div class="flex gap-2 w-full md:w-auto">
-                        <button type="submit" class="flex-1 md:flex-none justify-center inline-flex items-center px-5 py-2.5 bg-gray-900 border border-transparent rounded-xl font-semibold text-sm text-white hover:bg-gray-800 transition">
+                    <!-- Action Buttons -->
+                    <div class="flex gap-2 w-full md:w-auto flex-none">
+                        <button type="submit" class="flex-1 md:flex-none justify-center inline-flex items-center px-5 py-2.5 bg-gray-900 border border-transparent rounded-xl font-semibold text-sm text-white hover:bg-gray-800 transition shadow-sm">
                             Filter
                         </button>
-                        <button type="button" @click="openCopyModal()" class="flex-1 md:flex-none justify-center inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-200 rounded-xl font-semibold text-sm text-gray-700 hover:bg-gray-50 hover:text-indigo-600 transition shadow-sm" title="Salin Kontak dari Hasil Filter">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <button type="button" @click="openCopyModal()" class="flex-none justify-center inline-flex items-center px-4 py-2.5 bg-white border border-gray-200 rounded-xl font-semibold text-sm text-gray-700 hover:bg-gray-50 hover:text-indigo-600 transition shadow-sm" title="Salin Kontak dari Hasil Filter">
+                            <svg class="w-4 h-4 md:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
                             </svg>
-                            Salin Kontak
+                            <span class="hidden md:inline">Salin</span>
                         </button>
                         @if($search || $role || $status || (isset($group) && $group))
-                            <a href="{{ route('partners.index') }}" class="flex-1 md:flex-none justify-center inline-flex items-center px-5 py-2.5 bg-gray-100 border border-gray-200 rounded-xl font-semibold text-sm text-gray-700 hover:bg-gray-200 transition">
-                                Reset
+                            <a href="{{ route('partners.index') }}" class="flex-none justify-center inline-flex items-center px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl font-semibold text-sm text-gray-700 hover:bg-gray-100 transition shadow-sm" title="Reset Filter">
+                                <svg class="w-4 h-4 md:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                                <span class="hidden md:inline">Reset</span>
                             </a>
                         @endif
                     </div>
