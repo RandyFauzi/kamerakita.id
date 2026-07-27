@@ -260,48 +260,48 @@
                                     <th class="px-4 py-2"></th>
                                     <th class="px-4 py-2"></th>
                                     <!-- ID Mitra Filter -->
-                                    <th class="px-6 py-2">
-                                        <input type="text" name="mitra_id" id="mitra_id" value="{{ $mitraId }}" onchange="this.form.submit()" placeholder="Cari ID..." class="block w-full py-1 px-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700">
+                                    <th class="px-3 py-2 min-w-[120px]">
+                                        <input type="text" name="mitra_id" id="mitra_id" value="{{ $mitraId }}" onchange="this.form.submit()" placeholder="Cari ID..." class="block w-full py-1.5 px-2.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700 transition shadow-sm">
                                     </th>
                                     <!-- Nama Lengkap Filter -->
-                                    <th class="px-6 py-2">
-                                        <input type="text" name="full_name" id="full_name" value="{{ $fullName }}" onchange="this.form.submit()" placeholder="Cari nama..." class="block w-full py-1 px-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700">
+                                    <th class="px-3 py-2 min-w-[180px]">
+                                        <input type="text" name="full_name" id="full_name" value="{{ $fullName }}" onchange="this.form.submit()" placeholder="Cari nama..." class="block w-full py-1.5 px-2.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700 transition shadow-sm">
                                     </th>
                                     <!-- Peran Filter -->
-                                    <th class="px-6 py-2">
-                                        <select name="role" id="role" onchange="this.form.submit()" class="block w-full py-1.5 px-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700">
+                                    <th class="px-3 py-2 min-w-[130px]">
+                                        <select name="role" id="role" onchange="this.form.submit()" class="block w-full py-1.5 px-2.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700 transition shadow-sm">
                                             <option value="">Semua Peran</option>
                                             <option value="worker" {{ $role == 'worker' ? 'selected' : '' }}>Worker</option>
                                             <option value="mitra" {{ $role == 'mitra' ? 'selected' : '' }}>Mitra</option>
                                         </select>
                                     </th>
                                     <!-- Grup Filter -->
-                                    <th class="px-6 py-2">
-                                        <select name="group" id="group" onchange="this.form.submit()" class="block w-full py-1.5 px-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700">
+                                    <th class="px-3 py-2 min-w-[120px]">
+                                        <select name="group" id="group" onchange="this.form.submit()" class="block w-full py-1.5 px-2.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700 transition shadow-sm">
                                             <option value="">Semua Grup</option>
                                             <option value="Group A" {{ (isset($group) && $group == 'Group A') ? 'selected' : '' }}>Group A</option>
                                             <option value="Group B" {{ (isset($group) && $group == 'Group B') ? 'selected' : '' }}>Group B</option>
                                         </select>
                                     </th>
                                     <!-- Nominal/Jam Filter -->
-                                    <th class="px-6 py-2">
-                                        <input type="text" name="hourly_rate" id="hourly_rate" value="{{ $hourlyRate }}" onchange="this.form.submit()" placeholder="Tarif..." class="block w-full py-1 px-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700">
+                                    <th class="px-3 py-2 min-w-[130px]">
+                                        <input type="text" name="hourly_rate" id="hourly_rate" value="{{ $hourlyRate }}" onchange="this.form.submit()" placeholder="Tarif..." class="block w-full py-1.5 px-2.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700 transition shadow-sm">
                                     </th>
                                     <!-- Headstrap Filter -->
-                                    <th class="px-6 py-2">
-                                        <select name="headstrap" id="headstrap" onchange="this.form.submit()" class="block w-full py-1.5 px-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700">
+                                    <th class="px-3 py-2 min-w-[110px]">
+                                        <select name="headstrap" id="headstrap" onchange="this.form.submit()" class="block w-full py-1.5 px-2.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700 transition shadow-sm">
                                             <option value="">Semua</option>
                                             <option value="yes" {{ $headstrap == 'yes' ? 'selected' : '' }}>Sudah</option>
                                             <option value="no" {{ $headstrap == 'no' ? 'selected' : '' }}>Belum</option>
                                         </select>
                                     </th>
                                     <!-- WhatsApp Filter -->
-                                    <th class="px-6 py-2">
-                                        <input type="text" name="whatsapp" id="whatsapp" value="{{ $whatsapp }}" onchange="this.form.submit()" placeholder="Cari WA..." class="block w-full py-1 px-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700">
+                                    <th class="px-3 py-2 min-w-[140px]">
+                                        <input type="text" name="whatsapp" id="whatsapp" value="{{ $whatsapp }}" onchange="this.form.submit()" placeholder="Cari WA..." class="block w-full py-1.5 px-2.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700 transition shadow-sm">
                                     </th>
                                     <!-- Mitra Atasan Filter -->
-                                    <th class="px-6 py-2">
-                                        <select name="mitra_parent" id="mitra_parent" onchange="this.form.submit()" class="block w-full py-1.5 px-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700">
+                                    <th class="px-3 py-2 min-w-[150px]">
+                                        <select name="mitra_parent" id="mitra_parent" onchange="this.form.submit()" class="block w-full py-1.5 px-2.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700 transition shadow-sm">
                                             <option value="">Semua</option>
                                             @foreach($mitraList as $mitraItem)
                                                 <option value="{{ $mitraItem->id }}" {{ $mitraParent == $mitraItem->id ? 'selected' : '' }}>{{ $mitraItem->full_name }}</option>
@@ -309,16 +309,16 @@
                                         </select>
                                     </th>
                                     <!-- Registrasi Klien Filter -->
-                                    <th class="px-6 py-2">
-                                        <select name="client_registered" id="client_registered" onchange="this.form.submit()" class="block w-full py-1.5 px-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700">
+                                    <th class="px-3 py-2 min-w-[140px]">
+                                        <select name="client_registered" id="client_registered" onchange="this.form.submit()" class="block w-full py-1.5 px-2.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700 transition shadow-sm">
                                             <option value="">Semua</option>
                                             <option value="yes" {{ $clientRegistered == 'yes' ? 'selected' : '' }}>Registered</option>
                                             <option value="no" {{ $clientRegistered == 'no' ? 'selected' : '' }}>Unregistered</option>
                                         </select>
                                     </th>
                                     <!-- Status Filter -->
-                                    <th class="px-6 py-2">
-                                        <select name="status" id="status" onchange="this.form.submit()" class="block w-full py-1.5 px-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700">
+                                    <th class="px-3 py-2 min-w-[150px]">
+                                        <select name="status" id="status" onchange="this.form.submit()" class="block w-full py-1.5 px-2.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700 transition shadow-sm">
                                             <option value="">Semua Status</option>
                                             <option value="active" {{ $status == 'active' ? 'selected' : '' }}>Active (Hari Ini)</option>
                                             <option value="past_active" {{ $status == 'past_active' ? 'selected' : '' }}>Active (Masa Lalu)</option>
