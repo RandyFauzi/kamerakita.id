@@ -29,7 +29,8 @@
                             <label for="partner_role" class="block text-sm font-semibold text-gray-700 mb-1">Peran Kemitraan <span class="text-red-500">*</span></label>
                             <select name="partner_role" id="partner_role" x-model="role" required class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                                 <option value="worker">Worker (Perekam Video)</option>
-                                <option value="mitra">Mitra (Koordinator)</option>
+                                <option value="mitra">Mitra (Koordinator/Fasilitator)</option>
+                                <option value="rekruter">Rekruter (Perekrut Worker)</option>
                             </select>
                             @error('partner_role') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>

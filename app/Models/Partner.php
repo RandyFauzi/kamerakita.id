@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class Partner extends Model
 {
@@ -16,10 +17,17 @@ class Partner extends Model
     public const STATUS_INACTIVE = 'inactive';
     public const STATUS_SUSPENDED = 'suspended';
 
+    public const ROLE_WORKER = 'worker';
+    public const ROLE_MITRA = 'mitra';
+    public const ROLE_REKRUTER = 'rekruter';
+
+    /** Roles that own a referral code and can recruit workers */
+    public const RECRUITER_ROLES = [self::ROLE_MITRA, self::ROLE_REKRUTER];
+
     protected $fillable = [
-        'partner_role',       // worker, mitra
-        'mitra_parent_id',    // referencing the parent Mitra
-        'mitra_id',           // e.g., KMK-001
+        'partner_role',           // worker, mitra, rekruter
+        'mitra_parent_id',        // referencing the parent Mitra
+        'mitra_id',               // e.g., KMK-001
         'nik',
         'full_name',
         'whatsapp_number',
@@ -28,16 +36,34 @@ class Partner extends Model
         'bank_name',
         'bank_account_number',
         'bank_account_owner',
-        'account_number',     // legacy fallback support
-        'account_owner_name', // legacy fallback support
+        'account_number',         // legacy fallback support
+        'account_owner_name',     // legacy fallback support
         'smartphone_type',
         'has_headstrap',
         'status',
         'group_name',
+        'referral_code',          // personal code for Mitra/Rekruter to share with workers
+        'recruiter_partner_id',   // FK to Mitra/Rekruter who recruited this worker
         'is_client_registered',
         'base_hourly_rate',
         'user_id',
     ];
+
+    /**
+     * Auto-generate a unique referral code when a Mitra or Rekruter partner is created.
+     */
+    protected static function booted(): void
+    {
+        static::creating(function (Partner $partner) {
+            if (in_array($partner->partner_role, self::RECRUITER_ROLES) && empty($partner->referral_code)) {
+                do {
+                    $code = 'REF-' . strtoupper(Str::random(6));
+                } while (self::where('referral_code', $code)->exists());
+
+                $partner->referral_code = $code;
+            }
+        });
+    }
 
     protected $casts = [
         'has_headstrap' => 'boolean',
@@ -123,5 +149,29 @@ class Partner extends Model
     public function videoWorkReports(): HasMany
     {
         return $this->hasMany(VideoWorkReport::class, 'partner_id');
+    }
+
+    /**
+     * Relationship: The Mitra/Rekruter who recruited this Worker
+     */
+    public function recruiter(): BelongsTo
+    {
+        return $this->belongsTo(Partner::class, 'recruiter_partner_id');
+    }
+
+    /**
+     * Relationship: Workers recruited by this Mitra/Rekruter
+     */
+    public function recruitedWorkers(): HasMany
+    {
+        return $this->hasMany(Partner::class, 'recruiter_partner_id');
+    }
+
+    /**
+     * Relationship: Commissions earned by this Rekruter
+     */
+    public function recruiterCommissions(): HasMany
+    {
+        return $this->hasMany(RecruiterCommission::class, 'recruiter_partner_id');
     }
 }

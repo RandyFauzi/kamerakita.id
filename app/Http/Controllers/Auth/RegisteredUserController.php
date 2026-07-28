@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Partner;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -34,21 +35,30 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s]*$/'], // Enforce letters only for names
             'email' => ['required', 'string', 'lowercase', 'email:rfc,dns', 'max:255', 'unique:'.User::class], // DNS lookup verification
             'password' => [
-                'required', 
-                'confirmed', 
+                'required',
+                'confirmed',
                 Rules\Password::min(8)
             ],
             'activation_code' => ['required', 'string', 'exists:activation_codes,code'],
+            // Referral code is optional; if provided it must match an existing Mitra/Rekruter referral_code
+            'referral_code' => ['nullable', 'string', 'exists:partners,referral_code'],
         ], [
             'name.regex' => 'Nama hanya boleh mengandung huruf dan spasi.',
             'email.email' => 'Format email tidak valid atau domain tidak terdaftar.',
             'password.min' => 'Kata sandi minimal harus 8 karakter.',
             'activation_code.required' => 'Kode aktivasi wajib diisi.',
             'activation_code.exists' => 'Kode aktivasi tidak valid atau tidak terdaftar di sistem.',
+            'referral_code.exists' => 'Kode referral tidak valid. Pastikan kode yang Anda masukkan benar.',
         ]);
 
         $actCode = \App\Models\ActivationCode::where('code', $request->activation_code)->first();
         $groupName = $actCode ? $actCode->group_name : 'Group A';
+
+        // Look up the recruiter (Mitra/Rekruter) by their referral code
+        $recruiterPartner = null;
+        if ($request->filled('referral_code')) {
+            $recruiterPartner = Partner::where('referral_code', $request->referral_code)->first();
+        }
 
         $user = User::create([
             'name' => $request->name,
@@ -78,6 +88,8 @@ class RegisteredUserController extends Controller
             'group_name' => $groupName,
             'base_hourly_rate' => 50000, // default rate in IDR
             'user_id' => $user->id,
+            // Link to recruiter if a valid referral code was provided
+            'recruiter_partner_id' => $recruiterPartner ? $recruiterPartner->id : null,
         ]);
 
         event(new Registered($user));

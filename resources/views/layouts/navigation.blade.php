@@ -18,6 +18,11 @@
                     <x-nav-link :href="route('partners.index')" :active="request()->routeIs('partners.*')">
                         {{ __('Data Mitra') }}
                     </x-nav-link>
+                    @if(in_array(Auth::user()->role ?? '', ['superadmin', 'admin']))
+                    <x-nav-link :href="route('rekruter.index')" :active="request()->routeIs('rekruter.*')">
+                        {{ __('Rekruter') }}
+                    </x-nav-link>
+                    @endif
                 </div>
             </div>
 
@@ -76,6 +81,11 @@
             <x-responsive-nav-link :href="route('partners.index')" :active="request()->routeIs('partners.*')">
                 {{ __('Data Mitra') }}
             </x-responsive-nav-link>
+            @if(in_array(Auth::user()->role ?? '', ['superadmin', 'admin']))
+            <x-responsive-nav-link :href="route('rekruter.index')" :active="request()->routeIs('rekruter.*')">
+                {{ __('Rekruter') }}
+            </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->

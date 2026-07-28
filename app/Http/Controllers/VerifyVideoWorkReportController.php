@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Partner;
 use App\Models\VideoWorkReport;
 use App\Models\PeriodApproval;
+use App\Services\CheckRecruiterMilestone;
 use App\Services\PeriodService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -223,6 +224,9 @@ class VerifyVideoWorkReportController extends Controller
         $partner = Partner::find($partnerId);
         if ($partner) {
             \App\Services\ActivityLogger::log('report.approve', "Menyetujui periode {$startDate} s/d {$endDate} untuk mitra {$partner->full_name} dengan durasi disetujui {$approvedMinutes} menit.");
+
+            // Check if this worker has reached the 20-hour milestone for their Rekruter's commission
+            CheckRecruiterMilestone::check($partner);
         }
 
         // Send WhatsApp notification

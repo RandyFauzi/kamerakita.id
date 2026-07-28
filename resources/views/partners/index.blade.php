@@ -348,7 +348,13 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 uppercase font-mono text-xs">
-                                        {{ $partner->partner_role === 'mitra' ? 'Mitra' : 'Worker' }}
+                                        @if($partner->partner_role === 'mitra')
+                                            Mitra
+                                        @elseif($partner->partner_role === 'rekruter')
+                                            Rekruter
+                                        @else
+                                            Worker
+                                        @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         @if($partner->group_name == 'Group A')

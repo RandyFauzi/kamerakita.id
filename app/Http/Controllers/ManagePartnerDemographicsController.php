@@ -36,6 +36,7 @@ class ManagePartnerDemographicsController extends Controller
         $totalUsers = Partner::count();
         $totalWorkers = Partner::where('partner_role', 'worker')->count();
         $totalMitra = Partner::where('partner_role', 'mitra')->count();
+        $totalRekruter = Partner::where('partner_role', 'rekruter')->count();
         $totalSuspended = Partner::where('status', 'suspended')->count();
         
         $totalActive = Partner::where('status', '!=', 'suspended')
@@ -51,6 +52,7 @@ class ManagePartnerDemographicsController extends Controller
             'total_users' => $totalUsers,
             'total_workers' => $totalWorkers,
             'total_mitra' => $totalMitra,
+            'total_rekruter' => $totalRekruter,
             'total_active' => $totalActive,
             'total_inactive' => $totalInactive,
             'total_suspended' => $totalSuspended,
@@ -140,7 +142,7 @@ class ManagePartnerDemographicsController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'partner_role' => 'required|in:worker,mitra',
+            'partner_role' => 'required|in:worker,mitra,rekruter',
             'mitra_parent_id' => 'nullable|exists:partners,id',
             'mitra_id' => 'required|string|unique:partners,mitra_id',
             'nik' => 'nullable|string|max:30|unique:partners,nik',
@@ -200,7 +202,7 @@ class ManagePartnerDemographicsController extends Controller
     public function update(Request $request, Partner $partner)
     {
         $validated = $request->validate([
-            'partner_role' => 'required|in:worker,mitra',
+            'partner_role' => 'required|in:worker,mitra,rekruter',
             'mitra_parent_id' => 'nullable|exists:partners,id',
             'nik' => 'nullable|string|max:30|unique:partners,nik,'.$partner->id,
             'full_name' => 'required|string|max:255',

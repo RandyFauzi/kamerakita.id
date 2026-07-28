@@ -57,6 +57,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware('role:superadmin,admin')
         ->name('activity-logs.index');
 
+    // Rekruter Management Routes
+    Route::get('/rekruter', [\App\Http\Controllers\RekruterController::class, 'index'])
+        ->middleware('role:superadmin,admin')
+        ->name('rekruter.index');
+    Route::get('/rekruter/{rekruter}', [\App\Http\Controllers\RekruterController::class, 'show'])
+        ->middleware('role:superadmin,admin')
+        ->name('rekruter.show');
+    Route::patch('/rekruter/commission/{commission}/pay', [\App\Http\Controllers\RekruterController::class, 'markCommissionPaid'])
+        ->middleware('role:superadmin,admin')
+        ->name('rekruter.commission.pay');
+
     // Fastwork Onboardings Admin routes
     Route::get('/admin/onboardings', [\App\Http\Controllers\ManageOnboardingsController::class, 'index'])
         ->middleware('role:superadmin,admin')
