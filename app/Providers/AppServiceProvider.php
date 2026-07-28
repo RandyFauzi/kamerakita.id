@@ -19,6 +19,20 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        \Illuminate\Support\Facades\Event::listen(
+            \Illuminate\Auth\Events\Login::class,
+            function (\Illuminate\Auth\Events\Login $event) {
+                \App\Services\ActivityLogger::log('auth.login', "Pengguna {$event->user->name} ({$event->user->email}) berhasil login.");
+            }
+        );
+
+        \Illuminate\Support\Facades\Event::listen(
+            \Illuminate\Auth\Events\Logout::class,
+            function (\Illuminate\Auth\Events\Logout $event) {
+                if ($event->user) {
+                    \App\Services\ActivityLogger::log('auth.logout', "Pengguna {$event->user->name} ({$event->user->email}) telah logout.");
+                }
+            }
+        );
     }
 }

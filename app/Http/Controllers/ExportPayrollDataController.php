@@ -80,6 +80,9 @@ class ExportPayrollDataController extends Controller
             fclose($file);
         };
 
+        $count = count($grouped);
+        \App\Services\ActivityLogger::log('payroll.export_csv', "Mengekspor data payroll bank transfer CSV untuk {$count} mitra/worker.");
+
         return Response::stream($callback, 200, $headers);
     }
 

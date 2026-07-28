@@ -350,7 +350,7 @@
         <!-- ADMINISTRATIVE ACTIONS Section -->
         <div class="space-y-3">
             <span class="block text-xs font-black tracking-widest text-slate-400 uppercase font-mono">ADMINISTRASI & GRUP</span>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 sm:gap-4">
                 <!-- Action 1: Kelola Kode Referal -->
                 <a href="{{ route('referral-codes.index') }}" class="bg-white rounded-2xl p-5 border border-gray-150 shadow-sm flex flex-col items-center justify-center text-center space-y-2 hover:shadow-md hover:border-indigo-200 transition">
                     <div class="p-2.5 bg-indigo-50 text-indigo-650 rounded-xl">
@@ -382,6 +382,17 @@
                     </div>
                     <span class="block text-xs font-extrabold text-gray-800">Data Demografi Mitra</span>
                     <span class="block text-[10px] text-gray-400 font-medium">Detail profil & ekspor kontak</span>
+                </a>
+
+                <!-- Action 4: Log Aktivitas Audit Trail -->
+                <a href="{{ route('activity-logs.index') }}" class="bg-white rounded-2xl p-5 border border-gray-150 shadow-sm flex flex-col items-center justify-center text-center space-y-2 hover:shadow-md hover:border-indigo-200 transition">
+                    <div class="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <span class="block text-xs font-extrabold text-gray-800">Log Aktivitas Sistem</span>
+                    <span class="block text-[10px] text-gray-400 font-medium">Audit trail tindakan pengguna</span>
                 </a>
             </div>
         </div>

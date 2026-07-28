@@ -75,6 +75,8 @@ class EditRejectedVideoWorkReportController extends Controller
                 $backup->backup($newEmailPath);
                 $backup->backup($newQualityPath);
             });
+
+            \App\Services\ActivityLogger::log('report.revise', "Merevisi laporan video ID {$report->id} tanggal {$validated['submission_date']} dengan durasi {$validated['submitted_duration_minutes']} menit.");
         } catch (Throwable $exception) {
             $this->deleteEvidenceFiles([$newEmailPath, $newQualityPath], true);
 

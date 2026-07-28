@@ -181,6 +181,8 @@ class ManagePartnerDemographicsController extends Controller
             ]);
         });
 
+        \App\Services\ActivityLogger::log('partner.create', "Mendaftarkan mitra/worker baru: {$validated['full_name']} (Role: {$validated['partner_role']}, ID: {$validated['mitra_id']})");
+
         return redirect()->route('partners.index')->with('success', 'Mitra/Worker berhasil didaftarkan dan akun login sudah dibuat!');
     }
 
@@ -249,6 +251,8 @@ class ManagePartnerDemographicsController extends Controller
             ]);
         });
 
+        \App\Services\ActivityLogger::log('partner.update', "Memperbarui data mitra/worker: {$validated['full_name']} (ID: {$partner->mitra_id})");
+
         return redirect()->route('partners.index')->with('success', 'Data mitra/worker dan akun login berhasil diperbarui!');
     }
 
@@ -262,6 +266,8 @@ class ManagePartnerDemographicsController extends Controller
                 $user->delete();
             }
         });
+
+        \App\Services\ActivityLogger::log('partner.delete', "Menghapus mitra/worker: {$partner->full_name} (ID: {$partner->mitra_id})");
 
         return redirect()->route('partners.index')->with('success', 'Mitra/Worker berhasil dihapus dari sistem.');
     }
@@ -381,6 +387,10 @@ class ManagePartnerDemographicsController extends Controller
         if (!empty($updateData)) {
             Partner::whereIn('id', $ids)->update($updateData);
         }
+
+        $count = count($ids);
+        $changedFields = implode(', ', array_keys($updateData));
+        \App\Services\ActivityLogger::log('partner.bulk_update', "Melakukan sunting massal untuk {$count} mitra/worker. Kolom yang diubah: {$changedFields}");
 
         return redirect()->back()->with('success', count($ids) . ' akun kemitraan berhasil disunting secara massal!');
     }

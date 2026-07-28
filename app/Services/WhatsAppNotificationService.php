@@ -9,11 +9,13 @@ class WhatsAppNotificationService
 {
     protected $apiUrl;
     protected $apiKey;
+    protected $session;
 
     public function __construct()
     {
         $this->apiUrl = config('services.whatsapp.api_url');
         $this->apiKey = config('services.whatsapp.api_key');
+        $this->session = config('services.whatsapp.session');
     }
 
     /**
@@ -36,7 +38,7 @@ class WhatsAppNotificationService
             ])->post($this->apiUrl, [
                 'phone' => $phone,
                 'message' => $message,
-                'session' => 'default',
+                'session' => $this->session,
                 'priority' => 'high',
             ]);
 

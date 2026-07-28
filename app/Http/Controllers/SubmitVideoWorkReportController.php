@@ -77,6 +77,8 @@ class SubmitVideoWorkReportController extends Controller
 
                 app(PartnerActivityStatusService::class)->markActiveAfterReport($partner);
             });
+
+            \App\Services\ActivityLogger::log('report.submit', "Mengirimkan laporan harian baru untuk tanggal {$validated['submission_date']} dengan durasi {$validated['submitted_duration_minutes']} menit.");
         } catch (Throwable $exception) {
             foreach ([$emailPath, $qualityPath] as $path) {
                 try {

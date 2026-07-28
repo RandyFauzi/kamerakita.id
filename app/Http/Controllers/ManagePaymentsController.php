@@ -171,6 +171,8 @@ class ManagePaymentsController extends Controller
                 ]);
             });
 
+            \App\Services\ActivityLogger::log('payment.process', "Memproses pembayaran gaji untuk mitra {$partner->full_name} untuk periode {$startDate->format('Y-m-d')} s/d {$endDate->format('Y-m-d')}");
+
             return redirect()->back()->with('success', 'Pembayaran gaji mitra berhasil diproses dan disimpan.');
         } catch (Throwable $e) {
             Log::error('Error processing payment: ' . $e->getMessage());
@@ -229,6 +231,8 @@ class ManagePaymentsController extends Controller
                     Storage::disk('public')->delete($proofPath);
                 }
             });
+
+            \App\Services\ActivityLogger::log('payment.cancel', "Pembayaran untuk batch {$validated['batch_id']} (bukti: {$proofPath}) berhasil dibatalkan.");
 
             return redirect()->back()->with('success', 'Pembayaran berhasil dibatalkan dan status dikembalikan ke unpaid.');
         } catch (Throwable $e) {

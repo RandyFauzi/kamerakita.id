@@ -53,6 +53,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->except(['create', 'show', 'edit', 'update'])
         ->middleware('role:superadmin,admin');
 
+    Route::get('/admin/activity-logs', \App\Http\Controllers\ListActivityLogsController::class)
+        ->middleware('role:superadmin,admin')
+        ->name('activity-logs.index');
+
     // Fastwork Onboardings Admin routes
     Route::get('/admin/onboardings', [\App\Http\Controllers\ManageOnboardingsController::class, 'index'])
         ->middleware('role:superadmin,admin')

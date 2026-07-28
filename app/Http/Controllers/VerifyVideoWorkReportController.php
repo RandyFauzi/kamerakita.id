@@ -219,8 +219,13 @@ class VerifyVideoWorkReportController extends Controller
             }
         });
 
-        // Send WhatsApp notification
+        // Log Activity
         $partner = Partner::find($partnerId);
+        if ($partner) {
+            \App\Services\ActivityLogger::log('report.approve', "Menyetujui periode {$startDate} s/d {$endDate} untuk mitra {$partner->full_name} dengan durasi disetujui {$approvedMinutes} menit.");
+        }
+
+        // Send WhatsApp notification
         if ($partner && $partner->whatsapp_number) {
             $formattedStart = \Carbon\Carbon::parse($startDate)->format('d M Y');
             $formattedEnd = \Carbon\Carbon::parse($endDate)->format('d M Y');
@@ -236,6 +241,9 @@ class VerifyVideoWorkReportController extends Controller
         if (Auth::user()->role !== 'superadmin' && Auth::user()->role !== 'admin') {
             abort(403);
         }
+        
+        $reportPartnerName = $report->partner ? $report->partner->full_name : 'Unknown';
+        \App\Services\ActivityLogger::log('report.delete', "Menghapus laporan video ID {$report->id} tanggal {$report->submission_date} milik mitra {$reportPartnerName}");
         
         $report->delete();
 
@@ -259,6 +267,9 @@ class VerifyVideoWorkReportController extends Controller
             'verified_by' => Auth::id(),
             'verified_at' => now(),
         ]);
+
+        // Log Activity
+        \App\Services\ActivityLogger::log('report.reject', "Menolak laporan video ID {$report->id} tanggal {$report->submission_date} milik {$report->partner->full_name} dengan alasan: {$validated['reason']}");
 
         // Send WhatsApp notification
         $partner = $report->partner;
@@ -402,6 +413,11 @@ class VerifyVideoWorkReportController extends Controller
                     'verifier_notes' => null,
                 ]);
         });
+
+        $partner = Partner::find($partnerId);
+        if ($partner) {
+            \App\Services\ActivityLogger::log('report.revert_approval', "Membatalkan persetujuan periode {$startDateObj->format('Y-m-d')} s/d {$endDateObj->format('Y-m-d')} untuk mitra {$partner->full_name}");
+        }
 
         return redirect()->back()->with('success', 'Persetujuan periode berhasil dibatalkan dan status laporan harian dikembalikan ke antrean review.');
     }
