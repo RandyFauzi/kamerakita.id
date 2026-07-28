@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="w-full flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3">
             <h2 class="font-bold text-xl sm:text-2xl text-gray-800 leading-tight">
-                {{ __('Kelola Kode Referal & Grup') }}
+                {{ __('Kelola Kode Aktivasi & Grup') }}
             </h2>
             <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 rounded-xl text-xs font-bold shadow-sm transition">
                 ← Kembali ke Dashboard
@@ -25,11 +25,11 @@
             <!-- Left Column: Add New Code Form -->
             <div class="bg-white rounded-2xl sm:rounded-3xl p-6 border border-gray-150 shadow-sm space-y-5 h-fit">
                 <div>
-                    <h3 class="font-extrabold text-base text-gray-900">Buat Kode Referal Baru</h3>
+                    <h3 class="font-extrabold text-base text-gray-900">Buat Kode Aktivasi Baru</h3>
                     <p class="text-xs text-gray-400 mt-1">Gunakan kode ini untuk mengelompokkan kontributor saat pendaftaran.</p>
                 </div>
 
-                <form method="POST" action="{{ route('referral-codes.store') }}" class="space-y-4">
+                <form method="POST" action="{{ route('activation-codes.store') }}" class="space-y-4">
                     @csrf
 
                     <div class="bg-gray-50 border border-gray-150 rounded-xl p-3.5 space-y-1">
@@ -47,7 +47,7 @@
                     </div>
 
                     <button type="submit" class="w-full py-3 bg-gray-900 hover:bg-gray-800 text-white font-bold text-xs uppercase tracking-widest rounded-xl transition shadow-sm">
-                        Simpan Kode Referal
+                        Simpan Kode Aktivasi
                     </button>
                 </form>
             </div>
@@ -76,7 +76,7 @@
                 <!-- Codes Table -->
                 <div class="bg-white rounded-2xl sm:rounded-3xl border border-gray-150 shadow-sm overflow-hidden">
                     <div class="p-6 border-b border-gray-100">
-                        <h3 class="font-extrabold text-base text-gray-900">Daftar Kode Referal</h3>
+                        <h3 class="font-extrabold text-base text-gray-900">Daftar Kode Aktivasi</h3>
                         <p class="text-xs text-gray-400 mt-1">Daftar kode aktif yang digunakan untuk pendaftaran.</p>
                     </div>
 
@@ -84,7 +84,7 @@
                         <table class="w-full text-left text-sm text-gray-500">
                             <thead class="text-xs text-gray-450 uppercase bg-gray-50/50 border-b border-gray-100 font-bold">
                                 <tr>
-                                    <th scope="col" class="px-6 py-4">Kode Referal</th>
+                                    <th scope="col" class="px-6 py-4">Kode Aktivasi</th>
                                     <th scope="col" class="px-6 py-4">Grup Tujuan</th>
                                     <th scope="col" class="px-6 py-4 text-right">Aksi</th>
                                 </tr>
@@ -101,7 +101,7 @@
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 text-right">
-                                            <form action="{{ route('referral-codes.destroy', $code->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kode ini?')">
+                                            <form action="{{ route('activation-codes.destroy', $code->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kode ini?')">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="text-xs text-red-600 hover:text-red-900 font-extrabold transition">
@@ -113,7 +113,7 @@
                                 @empty
                                     <tr>
                                         <td colspan="3" class="px-6 py-10 text-center text-gray-400">
-                                            Belum ada kode referal yang terdaftar.
+                                            Belum ada kode aktivasi yang terdaftar.
                                         </td>
                                     </tr>
                                 @endforelse

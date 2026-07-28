@@ -38,17 +38,17 @@ class RegisteredUserController extends Controller
                 'confirmed', 
                 Rules\Password::min(8)
             ],
-            'referral_code' => ['required', 'string', 'exists:referral_codes,code'],
+            'activation_code' => ['required', 'string', 'exists:activation_codes,code'],
         ], [
             'name.regex' => 'Nama hanya boleh mengandung huruf dan spasi.',
             'email.email' => 'Format email tidak valid atau domain tidak terdaftar.',
             'password.min' => 'Kata sandi minimal harus 8 karakter.',
-            'referral_code.required' => 'Kode referal wajib diisi.',
-            'referral_code.exists' => 'Kode referal tidak valid atau tidak terdaftar di sistem.',
+            'activation_code.required' => 'Kode aktivasi wajib diisi.',
+            'activation_code.exists' => 'Kode aktivasi tidak valid atau tidak terdaftar di sistem.',
         ]);
 
-        $refCode = \App\Models\ReferralCode::where('code', $request->referral_code)->first();
-        $groupName = $refCode ? $refCode->group_name : 'Group A';
+        $actCode = \App\Models\ActivationCode::where('code', $request->activation_code)->first();
+        $groupName = $actCode ? $actCode->group_name : 'Group A';
 
         $user = User::create([
             'name' => $request->name,

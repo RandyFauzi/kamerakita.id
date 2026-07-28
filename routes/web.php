@@ -49,7 +49,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('partners', ManagePartnerDemographicsController::class)
         ->middleware('role:superadmin,admin');
 
-    Route::resource('referral-codes', \App\Http\Controllers\ManageReferralCodesController::class)
+    Route::resource('activation-codes', \App\Http\Controllers\ManageActivationCodesController::class)
         ->except(['create', 'show', 'edit', 'update'])
         ->middleware('role:superadmin,admin');
 

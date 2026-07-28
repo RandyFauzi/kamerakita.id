@@ -23,7 +23,7 @@ class RegistrationTest extends TestCase
             'email' => 'test@gmail.com',
             'password' => 'password',
             'password_confirmation' => 'password',
-            'referral_code' => 'KMK-01ASQW',
+            'activation_code' => 'KMK-01ASQW',
         ]);
 
         $this->assertAuthenticated();

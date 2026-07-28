@@ -351,14 +351,14 @@
         <div class="space-y-3">
             <span class="block text-xs font-black tracking-widest text-slate-400 uppercase font-mono">ADMINISTRASI & GRUP</span>
             <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 sm:gap-4">
-                <!-- Action 1: Kelola Kode Referal -->
-                <a href="{{ route('referral-codes.index') }}" class="bg-white rounded-2xl p-5 border border-gray-150 shadow-sm flex flex-col items-center justify-center text-center space-y-2 hover:shadow-md hover:border-indigo-200 transition">
+                <!-- Action 1: Kelola Kode Aktivasi -->
+                <a href="{{ route('activation-codes.index') }}" class="bg-white rounded-2xl p-5 border border-gray-150 shadow-sm flex flex-col items-center justify-center text-center space-y-2 hover:shadow-md hover:border-indigo-200 transition">
                     <div class="p-2.5 bg-indigo-50 text-indigo-650 rounded-xl">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
                         </svg>
                     </div>
-                    <span class="block text-xs font-extrabold text-gray-800">Kelola Kode Referal</span>
+                    <span class="block text-xs font-extrabold text-gray-800">Kelola Kode Aktivasi</span>
                     <span class="block text-[10px] text-gray-400 font-medium">Buat & kelola grup A / B</span>
                 </a>
 

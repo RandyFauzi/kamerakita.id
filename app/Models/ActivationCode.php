@@ -6,9 +6,11 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ReferralCode extends Model
+class ActivationCode extends Model
 {
     use HasUuids, HasFactory;
+
+    protected $table = 'activation_codes';
 
     protected $fillable = [
         'code',

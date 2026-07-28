@@ -67,7 +67,7 @@
 <body class="min-h-screen overflow-x-hidden bg-[#f7f7f6] text-slate-950">
     @php
         $manualBookUrl = asset('images/Assest/Manual Book/ManualBook_KameraKitaAI_22072026.pdf');
-        $whatsappUrl = 'https://wa.me/6287886272647?text='.rawurlencode('Halo Admin KameraKita AI, saya ingin bergabung dan membutuhkan referral/invite code untuk registrasi aplikasi Minute.');
+        $whatsappUrl = 'https://wa.me/6287886272647?text='.rawurlencode('Halo Admin KameraKita AI, saya ingin bergabung dan membutuhkan activation code untuk registrasi aplikasi Minute.');
         $slides = [
             [
                 'kicker' => 'Step 01',
@@ -99,8 +99,8 @@
             ],
             [
                 'kicker' => 'Step 05',
-                'title' => 'Minta referral code',
-                'body' => 'Invite code diberikan oleh tim. Japri admin WhatsApp dulu sebelum daftar di aplikasi Minute.',
+                'title' => 'Minta activation code',
+                'body' => 'Activation code diberikan oleh tim. Japri admin WhatsApp dulu sebelum daftar di aplikasi Minute.',
                 'art' => 'code',
                 'accent' => '#10b981',
             ],
@@ -344,7 +344,7 @@
                             <span aria-hidden="true"></span>
                         </div>
 
-                        <a href="{{ $whatsappUrl }}" target="_blank" class="mt-4 text-center text-xs font-black text-emerald-700">Minta referral code via WhatsApp</a>
+                        <a href="{{ $whatsappUrl }}" target="_blank" class="mt-4 text-center text-xs font-black text-emerald-700">Minta activation code via WhatsApp</a>
                     </article>
                 </div>
             </section>
