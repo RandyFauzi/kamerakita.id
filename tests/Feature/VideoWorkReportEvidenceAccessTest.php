@@ -33,7 +33,8 @@ class VideoWorkReportEvidenceAccessTest extends TestCase
         $url = URL::temporarySignedRoute(
             'video-submissions.evidence.show',
             now()->addMinutes(5),
-            ['report' => $report->id, 'type' => 'email']
+            ['report' => $report->id, 'type' => 'email'],
+            false
         );
 
         $this->actingAs($admin)
@@ -47,10 +48,19 @@ class VideoWorkReportEvidenceAccessTest extends TestCase
         Storage::fake('local');
 
         $user = User::factory()->create([
-            'role' => 'verifikator',
+            'role' => 'worker',
             'email_verified_at' => now(),
         ]);
+        
+        // This creates a partner for the logged in user so they are identified as a worker
+        $userPartner = Partner::factory()->create([
+            'user_id' => $user->id,
+            'partner_role' => 'worker',
+        ]);
+
+        $otherPartner = Partner::factory()->create();
         $report = VideoWorkReport::factory()->create([
+            'partner_id' => $otherPartner->id,
             'evidence_email_image_path' => 'evidences/email/report.jpg',
         ]);
 
@@ -59,7 +69,8 @@ class VideoWorkReportEvidenceAccessTest extends TestCase
         $url = URL::temporarySignedRoute(
             'video-submissions.evidence.show',
             now()->addMinutes(5),
-            ['report' => $report->id, 'type' => 'email']
+            ['report' => $report->id, 'type' => 'email'],
+            false
         );
 
         $this->actingAs($user)

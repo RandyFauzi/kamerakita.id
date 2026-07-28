@@ -59,7 +59,30 @@ class RenderDashboardOverviewController extends Controller
 
             $clientInvoices = \App\Models\ClientInvoice::orderBy('created_at', 'desc')->get();
 
-            return view('dashboard.admin', compact('metrics', 'latestReports', 'clientInvoices'));
+            // Query monthly performance data
+            $isMysql = \Illuminate\Support\Facades\DB::getDriverName() === 'mysql';
+            $groupByRaw = $isMysql ? "DATE_FORMAT(submission_date, '%Y-%m')" : "strftime('%Y-%m', submission_date)";
+            $monthlyData = VideoWorkReport::select(
+                    \Illuminate\Support\Facades\DB::raw("$groupByRaw as month"),
+                    \Illuminate\Support\Facades\DB::raw("SUM(approved_duration_minutes) as total_minutes")
+                )
+                ->where('qc_status', 'approved')
+                ->where('submission_date', '>=', now()->subMonths(6)->startOfMonth())
+                ->groupBy('month')
+                ->orderBy('month', 'asc')
+                ->get();
+
+            // Query daily average duration data
+            $dailyAverageData = VideoWorkReport::select(
+                    'submission_date',
+                    \Illuminate\Support\Facades\DB::raw("AVG(submitted_duration_minutes) as avg_minutes")
+                )
+                ->where('submission_date', '>=', now()->subDays(7)->toDateString())
+                ->groupBy('submission_date')
+                ->orderBy('submission_date', 'asc')
+                ->get();
+
+            return view('dashboard.admin', compact('metrics', 'latestReports', 'clientInvoices', 'monthlyData', 'dailyAverageData'));
         }
 
         // Default fallback dashboard

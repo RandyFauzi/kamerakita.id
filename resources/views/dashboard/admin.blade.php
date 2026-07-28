@@ -143,6 +143,158 @@
             </div>
         </div>
 
+        @php
+            $monthlyMonths = $monthlyData->pluck('month')->map(function($m) {
+                return \Carbon\Carbon::parse($m . '-01')->format('M Y');
+            })->toArray();
+            $monthlyMinutes = $monthlyData->pluck('total_minutes')->map(function($m) {
+                return round($m / 60, 2); // Convert to hours
+            })->toArray();
+
+            $dailyDates = $dailyAverageData->pluck('submission_date')->map(function($d) {
+                return \Carbon\Carbon::parse($d)->format('d M');
+            })->toArray();
+            $dailyAvgs = $dailyAverageData->pluck('avg_minutes')->map(function($m) {
+                return round($m, 1); // Average in minutes
+            })->toArray();
+        @endphp
+
+        <!-- Analytics Section -->
+        <div class="space-y-3">
+            <span class="block text-xs font-black tracking-widest text-slate-400 uppercase font-mono">ANALISIS & GRAFIK KINERJA</span>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                <!-- Monthly Performance Chart -->
+                <div class="bg-white rounded-2xl sm:rounded-[32px] p-5 sm:p-6 border border-gray-150 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h4 class="text-sm font-bold text-gray-800">Total Jam Kerja Terverifikasi</h4>
+                            <p class="text-[10px] text-gray-400 mt-0.5">Akumulasi durasi yang disetujui (approved) per bulan</p>
+                        </div>
+                        <span class="bg-blue-50 text-blue-700 text-[10px] font-black px-2 py-0.5 rounded-md font-mono">Bulanan</span>
+                    </div>
+                    <div id="monthlyPerformanceChart" class="min-h-[280px]"></div>
+                </div>
+
+                <!-- Daily Average Duration Chart -->
+                <div class="bg-white rounded-2xl sm:rounded-[32px] p-5 sm:p-6 border border-gray-150 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h4 class="text-sm font-bold text-gray-800">Rata-rata Durasi Kerja per Hari</h4>
+                            <p class="text-[10px] text-gray-400 mt-0.5">Rata-rata durasi (menit) yang dilaporkan per hari (7 hari terakhir)</p>
+                        </div>
+                        <span class="bg-indigo-50 text-indigo-700 text-[10px] font-black px-2 py-0.5 rounded-md font-mono">Harian</span>
+                    </div>
+                    <div id="dailyAverageChart" class="min-h-[280px]"></div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                // Monthly Chart
+                const monthlyOptions = {
+                    chart: {
+                        type: 'bar',
+                        height: 280,
+                        toolbar: { show: false },
+                        parentHeightOffset: 0
+                    },
+                    colors: ['#3b82f6'],
+                    series: [{
+                        name: 'Total Jam',
+                        data: @js($monthlyMinutes)
+                    }],
+                    xaxis: {
+                        categories: @js($monthlyMonths),
+                        labels: {
+                            style: { colors: '#94a3b8', fontSize: '11px', fontFamily: 'Plus Jakarta Sans, sans-serif' }
+                        }
+                    },
+                    yaxis: {
+                        labels: {
+                            style: { colors: '#94a3b8', fontSize: '11px', fontFamily: 'Plus Jakarta Sans, sans-serif' },
+                            formatter: function (value) { return value + " Jam"; }
+                        }
+                    },
+                    plotOptions: {
+                        bar: {
+                            borderRadius: 6,
+                            columnWidth: '40%'
+                        }
+                    },
+                    dataLabels: { enabled: false },
+                    grid: {
+                        borderColor: '#f1f5f9',
+                        strokeDashArray: 4
+                    },
+                    tooltip: {
+                        theme: 'light',
+                        y: {
+                            formatter: function (value) { return value + " Jam Kerja"; }
+                        }
+                    }
+                };
+
+                const monthlyChart = new ApexCharts(document.querySelector("#monthlyPerformanceChart"), monthlyOptions);
+                monthlyChart.render();
+
+                // Daily Chart
+                const dailyOptions = {
+                    chart: {
+                        type: 'area',
+                        height: 280,
+                        toolbar: { show: false },
+                        parentHeightOffset: 0
+                    },
+                    colors: ['#4f46e5'],
+                    series: [{
+                        name: 'Rata-rata Menit',
+                        data: @js($dailyAvgs)
+                    }],
+                    xaxis: {
+                        categories: @js($dailyDates),
+                        labels: {
+                            style: { colors: '#94a3b8', fontSize: '11px', fontFamily: 'Plus Jakarta Sans, sans-serif' }
+                        }
+                    },
+                    yaxis: {
+                        labels: {
+                            style: { colors: '#94a3b8', fontSize: '11px', fontFamily: 'Plus Jakarta Sans, sans-serif' },
+                            formatter: function (value) { return value + " Mnt"; }
+                        }
+                    },
+                    stroke: {
+                        curve: 'smooth',
+                        width: 3
+                    },
+                    fill: {
+                        type: 'gradient',
+                        gradient: {
+                            shadeIntensity: 1,
+                            opacityFrom: 0.45,
+                            opacityTo: 0.05,
+                            stops: [0, 100]
+                        }
+                    },
+                    dataLabels: { enabled: false },
+                    grid: {
+                        borderColor: '#f1f5f9',
+                        strokeDashArray: 4
+                    },
+                    tooltip: {
+                        theme: 'light',
+                        y: {
+                            formatter: function (value) { return value + " Menit"; }
+                        }
+                    }
+                };
+
+                const dailyChart = new ApexCharts(document.querySelector("#dailyAverageChart"), dailyOptions);
+                dailyChart.render();
+            });
+        </script>
+
         <!-- OTHER FEATURES Section -->
         <div class="space-y-3">
             <span class="block text-xs font-black tracking-widest text-slate-400 uppercase font-mono">STATISTIK STRUKTUR AGENSI</span>
