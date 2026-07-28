@@ -9,3 +9,4 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('partners:sync-activity-status')->dailyAt('00:10');
+Schedule::command('partners:notify-inactive')->dailyAt('09:00');
