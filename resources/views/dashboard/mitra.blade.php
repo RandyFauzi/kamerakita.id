@@ -30,6 +30,28 @@
             </div>
         </template>
 
+        {{-- Referral Code Banner --}}
+        @if($partner->referral_code)
+        <div class="bg-gradient-to-r from-indigo-600 to-violet-600 rounded-2xl sm:rounded-3xl p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-lg">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-white/20 rounded-2xl shrink-0">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                    </svg>
+                </div>
+                <div>
+                    <span class="block text-[10px] font-black tracking-widest text-indigo-200 uppercase">Kode Referral Anda</span>
+                    <span class="block text-2xl sm:text-3xl font-black text-white font-mono tracking-widest mt-1">{{ $partner->referral_code }}</span>
+                    <span class="block text-xs text-indigo-200 mt-1">Bagikan kode ini ke calon Worker yang ingin bergabung di bawah tim Anda.</span>
+                </div>
+            </div>
+            <button onclick="navigator.clipboard.writeText('{{ $partner->referral_code }}').then(() => { this.textContent = '✓ Tersalin!'; setTimeout(() => this.textContent = 'Salin Kode', 1500) })"
+                class="shrink-0 px-5 py-2.5 bg-white text-indigo-700 font-bold text-xs uppercase tracking-widest rounded-xl hover:bg-indigo-50 transition shadow">
+                Salin Kode
+            </button>
+        </div>
+        @endif
+
         <!-- Dynamic Holographic Card & Info Balance -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
             <!-- Left: Holographic balance card (2 cols) - KOMISI TIM -->

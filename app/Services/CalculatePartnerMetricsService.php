@@ -125,6 +125,49 @@ class CalculatePartnerMetricsService
     }
 
     /**
+     * Get metrics for a Rekruter — tracks recruited workers and milestone commissions.
+     */
+    public function getRekruterMetrics(Partner $rekruter): array
+    {
+        // Workers recruited via referral code
+        $recruitedWorkers = \App\Models\Partner::where('recruiter_partner_id', $rekruter->id)
+            ->with(['videoWorkReports' => fn($q) => $q->where('qc_status', 'approved')])
+            ->get();
+
+        // Commission records from recruiter_commissions table
+        $commissions = \App\Models\RecruiterCommission::where('recruiter_partner_id', $rekruter->id)
+            ->with('worker')
+            ->get();
+
+        $pendingCommissions = $commissions->where('status', 'pending');
+        $paidCommissions = $commissions->where('status', 'paid');
+
+        $workersData = [];
+        foreach ($recruitedWorkers as $worker) {
+            $approvedMinutes = $worker->videoWorkReports->sum('approved_duration_minutes');
+            $approvedHours = round($approvedMinutes / 60, 1);
+            $workerCommission = $commissions->firstWhere('worker_partner_id', $worker->id);
+
+            $workersData[] = [
+                'worker' => $worker,
+                'approved_hours' => $approvedHours,
+                'milestone_reached' => $workerCommission !== null,
+                'milestone_status' => $workerCommission?->status,
+            ];
+        }
+
+        return [
+            'recruited_workers_count' => $recruitedWorkers->count(),
+            'workers_data' => $workersData,
+            'pending_commission_count' => $pendingCommissions->count(),
+            'paid_commission_count' => $paidCommissions->count(),
+            'pending_commission_amount' => $pendingCommissions->sum('commission_amount'),
+            'paid_commission_amount' => $paidCommissions->sum('commission_amount'),
+            'total_commission_amount' => $commissions->sum('commission_amount'),
+        ];
+    }
+
+    /**
      * Get global metrics for Super Admin, including dynamic live USD conversions.
      */
     public function getGlobalMetrics(): array

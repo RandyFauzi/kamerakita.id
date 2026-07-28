@@ -45,6 +45,12 @@ class RenderDashboardOverviewController extends Controller
 
                 return view('dashboard.mitra', compact('partner', 'metrics'));
             }
+
+            if ($partner->partner_role === 'rekruter') {
+                $metrics = $this->metricsService->getRekruterMetrics($partner);
+
+                return view('dashboard.rekruter', compact('partner', 'metrics'));
+            }
         }
 
         // Check if user is an internal admin/finance user
