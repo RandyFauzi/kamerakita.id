@@ -37,7 +37,7 @@ return [
 
     'whatsapp' => [
         'api_url' => env('WHATSAPP_API_URL', 'https://handcap-by.autogrowthid.site/api/v1/send-message'),
-        'api_key' => env('WHATSAPP_API_KEY', 'supersecretapikey'),
+        'api_key' => env('WHATSAPP_API_KEY', 'key_0d5106d41dc621835c64eb9094bacab8'),
     ],
 
 ];
