@@ -19,6 +19,22 @@ class WhatsAppNotificationService
     }
 
     /**
+     * Dispatch WhatsApp message to the queue to be sent in the background.
+     *
+     * @param string $phone
+     * @param string $message
+     * @return void
+     */
+    public function queueMessage(string $phone, string $message): void
+    {
+        if (empty($phone)) {
+            return;
+        }
+
+        \App\Jobs\SendWhatsAppMessageJob::dispatch($phone, $message);
+    }
+
+    /**
      * Send WhatsApp message to target phone number.
      *
      * @param string $phone

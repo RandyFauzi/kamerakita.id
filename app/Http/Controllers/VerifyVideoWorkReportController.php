@@ -234,7 +234,7 @@ class VerifyVideoWorkReportController extends Controller
             $formattedStart = \Carbon\Carbon::parse($startDate)->format('d M Y');
             $formattedEnd = \Carbon\Carbon::parse($endDate)->format('d M Y');
             $waMessage = "Halo *{$partner->full_name}*,\n\nLaporan video Anda untuk periode *{$formattedStart} s/d {$formattedEnd}* telah selesai diverifikasi!\n\n*Total Durasi Disetujui:* {$approvedMinutes} menit.\n\nTerimakasih atas kerja kerasnya! 👍";
-            app(\App\Services\WhatsAppNotificationService::class)->sendMessage($partner->whatsapp_number, $waMessage);
+            app(\App\Services\WhatsAppNotificationService::class)->queueMessage($partner->whatsapp_number, $waMessage);
         }
 
         return redirect()->back()->with('success', 'Persetujuan periode berhasil difinalisasi dan dirilis ke mitra.');
@@ -280,7 +280,7 @@ class VerifyVideoWorkReportController extends Controller
         if ($partner && $partner->whatsapp_number) {
             $formattedDate = \Carbon\Carbon::parse($report->submission_date)->format('d M Y');
             $waMessage = "Halo *{$partner->full_name}*,\n\nLaporan video Anda untuk tanggal *{$formattedDate}* telah *DITOLAK* oleh tim QC.\n\n*Alasan Penolakan:* \"{$validated['reason']}\"\n\nSilakan segera login ke dashboard untuk merevisi laporan Anda:\n" . route('dashboard');
-            app(\App\Services\WhatsAppNotificationService::class)->sendMessage($partner->whatsapp_number, $waMessage);
+            app(\App\Services\WhatsAppNotificationService::class)->queueMessage($partner->whatsapp_number, $waMessage);
         }
 
         return redirect()->back()->with('success', 'Laporan video berhasil ditolak dan diminta revisi.');

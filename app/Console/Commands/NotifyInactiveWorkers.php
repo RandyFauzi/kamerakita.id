@@ -51,7 +51,7 @@ class NotifyInactiveWorkers extends Command
             if ($isInactiveTwoDays && $worker->whatsapp_number) {
                 $message = "Haiii *{$worker->full_name}*,\n\nSayang banget lohh kamu sudah *2 hari* gak aktif bikin video di KameraKita. 😔\n\nPadahal potensi cuan melimpah sedang menunggumu! 💸 Kalau kamu ada masalah atau kendala apa pun, boleh banget sharing sama mimin ya. Semangattt terus pejuang cuan! 💪🔥\n\nYuk mulai lagi hari ini:\n" . route('dashboard');
                 
-                $waService->sendMessage($worker->whatsapp_number, $message);
+                $waService->queueMessage($worker->whatsapp_number, $message);
                 $this->info("Notified inactive worker: {$worker->full_name} ({$worker->whatsapp_number})");
                 $notifiedCount++;
             }
