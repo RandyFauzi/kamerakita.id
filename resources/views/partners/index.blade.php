@@ -148,9 +148,9 @@
                 <a href="{{ route('partners.index', array_merge(request()->except('page'), ['status' => 'active'])) }}" class="rounded-2xl border border-emerald-100 bg-white p-4 shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50/30 sm:p-5">
                     <div class="flex items-start justify-between gap-3">
                         <div>
-                            <span class="block text-[10px] font-black uppercase tracking-widest text-gray-400">Akun Aktif</span>
+                            <span class="block text-[10px] font-black uppercase tracking-widest text-gray-400">Pernah Aktif</span>
                             <strong class="mt-2 block text-2xl font-black text-emerald-700 sm:text-3xl">{{ number_format($summary['total_active'], 0, ',', '.') }}</strong>
-                            <span class="mt-1 block text-xs text-gray-400">Mengirim laporan rutin</span>
+                            <span class="mt-1 block text-xs text-gray-400">Pernah kirim laporan (all time)</span>
                         </div>
                         <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">

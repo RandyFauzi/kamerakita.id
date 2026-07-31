@@ -39,11 +39,12 @@ class ManagePartnerDemographicsController extends Controller
         $totalRekruter = Partner::where('partner_role', 'rekruter')->count();
         $totalSuspended = Partner::where('status', 'suspended')->count();
         
+        // Pernah aktif = pernah mengirim laporan minimal 1x (sepanjang waktu)
         $totalActive = Partner::where('status', '!=', 'suspended')
-            ->whereHas('videoWorkReports', function ($q) use ($todayDateString) {
-                $q->whereDate('submission_date', $todayDateString);
-            })->count();
+            ->whereHas('videoWorkReports')
+            ->count();
 
+        // Belum pernah aktif = belum pernah kirim laporan sama sekali
         $totalInactive = Partner::where('status', '!=', 'suspended')
             ->whereDoesntHave('videoWorkReports')
             ->count();
@@ -71,17 +72,15 @@ class ManagePartnerDemographicsController extends Controller
             ->when($role, function ($query, $role) {
                 $query->where('partner_role', $role);
             })
-            ->when($status, function ($query, $status) use ($todayDateString) {
+            ->when($status, function ($query, $status) {
                 if ($status === 'active') {
-                    $query->where('status', 'active')
-                        ->whereHas('videoWorkReports', function ($q) use ($todayDateString) {
-                            $q->whereDate('submission_date', $todayDateString);
-                        });
-                } elseif ($status === 'past_active') {
-                    $query->where('status', 'active')
-                        ->whereDoesntHave('videoWorkReports', function ($q) use ($todayDateString) {
-                            $q->whereDate('submission_date', $todayDateString);
-                        });
+                    // Pernah aktif = pernah kirim laporan (sepanjang waktu)
+                    $query->where('status', '!=', 'suspended')
+                        ->whereHas('videoWorkReports');
+                } elseif ($status === 'inactive') {
+                    // Belum pernah aktif = belum pernah kirim laporan sama sekali
+                    $query->where('status', '!=', 'suspended')
+                        ->whereDoesntHave('videoWorkReports');
                 } else {
                     $query->where('status', $status);
                 }
