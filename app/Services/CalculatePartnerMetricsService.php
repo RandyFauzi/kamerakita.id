@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Http;
 
 class CalculatePartnerMetricsService
 {
-    private const DEFAULT_WORKER_HOURLY_RATE_IDR = 54000;
+    private const DEFAULT_WORKER_HOURLY_RATE_IDR = 50000;
     private const MITRA_COMMISSION_HOURLY_RATE_IDR = 9000;
     private const DEFAULT_MITRA_OWN_HOURLY_RATE_IDR = 63000;
 
@@ -199,8 +199,8 @@ class CalculatePartnerMetricsService
             return 17900;
         });
 
-        // Billing to Client is fixed at $4.00 USD/hour, converted dynamically to IDR
-        $clientBillingRateIdr = $usdToIdrRate * 4;
+        // Billing to Client is fixed at $3.50 USD/hour, converted dynamically to IDR
+        $clientBillingRateIdr = $usdToIdrRate * 3.5;
 
         $clientPaidAmount = ($paid / 60) * $clientBillingRateIdr;
         $clientPendingAmount = ($pending / 60) * $clientBillingRateIdr;

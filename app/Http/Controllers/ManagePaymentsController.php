@@ -17,7 +17,7 @@ use Throwable;
 
 class ManagePaymentsController extends Controller
 {
-    private const DEFAULT_HOURLY_RATE_IDR = 54000;
+    private const DEFAULT_HOURLY_RATE_IDR = 50000;
 
     /**
      * Display list of workers with approved, unpaid work reports grouped by period, and payout history.

@@ -137,7 +137,7 @@
                     </div>
                     <div class="flex justify-between text-xs">
                         <span class="text-gray-450 font-semibold">Rate Billing Klien:</span>
-                        <span class="font-bold text-gray-800">$4.00 / jam</span>
+                        <span class="font-bold text-gray-800">$3.50 / jam</span>
                     </div>
                 </div>
             </div>
