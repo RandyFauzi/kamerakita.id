@@ -80,7 +80,7 @@ class VerifyVideoWorkReportController extends Controller
             $partner->approval_status = $approval ? $approval->status : 'none'; // none, draft, approved, paid
         }
 
-        // Stats summary for the selected period
+        // Stats summary — ikut filter search DAN grup agar konsisten dengan tabel
         $reportedQuery = VideoWorkReport::whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')]);
         $approvedQuery = VideoWorkReport::whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
             ->where('qc_status', 'approved');
@@ -91,6 +91,20 @@ class VerifyVideoWorkReportController extends Controller
             });
             $approvedQuery->whereHas('partner', function ($q) use ($selectedGroup) {
                 $q->where('group_name', $selectedGroup);
+            });
+        }
+
+        // Jika ada search, total hanya hitung mitra yang match
+        if ($search) {
+            $reportedQuery->whereHas('partner', function ($q) use ($search) {
+                $q->where('full_name', 'like', "%{$search}%")
+                  ->orWhere('mitra_id', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+            });
+            $approvedQuery->whereHas('partner', function ($q) use ($search) {
+                $q->where('full_name', 'like', "%{$search}%")
+                  ->orWhere('mitra_id', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
             });
         }
 
