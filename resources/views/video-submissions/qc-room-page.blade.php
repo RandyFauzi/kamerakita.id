@@ -60,6 +60,7 @@
                     <div class="w-full md:w-80">
                         <label for="period" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 font-mono">Pilih Periode Mingguan (Sabtu-Kamis)</label>
                         <select name="period" id="period" onchange="this.form.submit()" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition bg-white text-gray-700 font-medium">
+                            <option value="all" {{ $selectedPeriodKey === 'all' ? 'selected' : '' }}>Semua Periode (All-Time)</option>
                             @foreach($periods as $p)
                                 <option value="{{ $p['start']->format('Y-m-d') . '|' . $p['end']->format('Y-m-d') }}" 
                                     {{ $selectedPeriodKey === ($p['start']->format('Y-m-d') . '|' . $p['end']->format('Y-m-d')) ? 'selected' : '' }}>
@@ -231,11 +232,16 @@
                                             <div class="lg:col-span-5 space-y-4 pr-0 lg:pr-6 border-0 lg:border-r border-slate-100">
                                                 <h4 class="text-xs font-black text-slate-800 uppercase tracking-widest font-mono">Panel Verifikasi Periode</h4>
                                                 
-                                                <form id="form-{{ $partner->id }}" method="POST" class="space-y-4">
-                                                    @csrf
-                                                    <input type="hidden" name="partner_id" value="{{ $partner->id }}">
-                                                    <input type="hidden" name="period_start_date" value="{{ $startDate->format('Y-m-d') }}">
-                                                    <input type="hidden" name="period_end_date" value="{{ $endDate->format('Y-m-d') }}">
+                                                @if($selectedPeriodKey === 'all')
+                                                    <div class="w-full bg-indigo-50 border border-indigo-100 rounded-xl p-4 text-center text-xs font-medium text-indigo-700 leading-relaxed">
+                                                        ℹ️ Panel persetujuan dinonaktifkan pada tampilan <strong>Semua Periode</strong>. Silakan pilih periode spesifik di bagian atas untuk melakukan approval.
+                                                    </div>
+                                                @else
+                                                    <form id="form-{{ $partner->id }}" method="POST" class="space-y-4">
+                                                        @csrf
+                                                        <input type="hidden" name="partner_id" value="{{ $partner->id }}">
+                                                        <input type="hidden" name="period_start_date" value="{{ $startDate->format('Y-m-d') }}">
+                                                        <input type="hidden" name="period_end_date" value="{{ $endDate->format('Y-m-d') }}">
                                                     
                                                     <!-- Input Durasi Disetujui -->
                                                     <div>
@@ -289,6 +295,7 @@
                                                         @endif
                                                     </div>
                                                 </form>
+                                                @endif
                                             </div>
 
                                             <!-- Right Panel (7 columns): Daftar Laporan Kerja Harian -->

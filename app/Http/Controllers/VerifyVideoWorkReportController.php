@@ -24,21 +24,29 @@ class VerifyVideoWorkReportController extends Controller
             $selectedPeriodKey = $periods[0]['start']->format('Y-m-d') . '|' . $periods[0]['end']->format('Y-m-d');
         }
 
-        if ($selectedPeriodKey) {
+        $startDate = null;
+        $endDate = null;
+
+        if ($selectedPeriodKey && $selectedPeriodKey !== 'all') {
             $parts = explode('|', $selectedPeriodKey);
-            $startDate = Carbon::parse($parts[0])->startOfDay();
-            $endDate = Carbon::parse($parts[1])->endOfDay();
-        } else {
+            if (count($parts) === 2) {
+                $startDate = Carbon::parse($parts[0])->startOfDay();
+                $endDate = Carbon::parse($parts[1])->endOfDay();
+            }
+        } elseif ($selectedPeriodKey === null) {
             $range = PeriodService::getPeriodRange(now());
             $startDate = $range['start'];
             $endDate = $range['end'];
+            $selectedPeriodKey = $startDate->format('Y-m-d') . '|' . $endDate->format('Y-m-d');
         }
 
         // 2. Fetch partners who submitted reports in this period
         $search = $request->input('search');
         $selectedGroup = $request->input('group');
         $query = Partner::whereHas('videoWorkReports', function ($q) use ($startDate, $endDate) {
-            $q->whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')]);
+            if ($startDate && $endDate) {
+                $q->whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')]);
+            }
         });
 
         if ($search) {
@@ -57,18 +65,22 @@ class VerifyVideoWorkReportController extends Controller
 
         // 3. For each partner, load their reports in this period and their period approval status
         foreach ($partners as $partner) {
-            $reports = VideoWorkReport::where('partner_id', $partner->id)
-                ->whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
-                ->orderBy('submission_date', 'asc')
-                ->get();
+            $reportsQuery = VideoWorkReport::where('partner_id', $partner->id)->orderBy('submission_date', 'asc');
+            if ($startDate && $endDate) {
+                $reportsQuery->whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')]);
+            }
+            $reports = $reportsQuery->get();
 
             $totalReportedMinutes = $reports->sum('submitted_duration_minutes');
             
             // Get period approval
-            $approval = PeriodApproval::where('partner_id', $partner->id)
-                ->where('period_start_date', $startDate->format('Y-m-d'))
-                ->where('period_end_date', $endDate->format('Y-m-d'))
-                ->first();
+            $approval = null;
+            if ($startDate && $endDate) {
+                $approval = PeriodApproval::where('partner_id', $partner->id)
+                    ->where('period_start_date', $startDate->format('Y-m-d'))
+                    ->where('period_end_date', $endDate->format('Y-m-d'))
+                    ->first();
+            }
 
             $partner->period_reports = $reports;
             $partner->total_reported_minutes = $totalReportedMinutes;
@@ -81,9 +93,13 @@ class VerifyVideoWorkReportController extends Controller
         }
 
         // Stats summary — ikut filter search DAN grup agar konsisten dengan tabel
-        $reportedQuery = VideoWorkReport::whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')]);
-        $approvedQuery = VideoWorkReport::whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
-            ->where('qc_status', 'approved');
+        $reportedQuery = VideoWorkReport::query();
+        $approvedQuery = VideoWorkReport::where('qc_status', 'approved');
+
+        if ($startDate && $endDate) {
+            $reportedQuery->whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')]);
+            $approvedQuery->whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')]);
+        }
 
         if ($selectedGroup) {
             $reportedQuery->whereHas('partner', function ($q) use ($selectedGroup) {
