@@ -147,10 +147,10 @@ class ManagePaymentsController extends Controller
         try {
             DB::transaction(function () use ($partner, $reports, $request, $imageService, $backupService, $startDate, $endDate) {
                 // Upload payment proof
-                $uploadedPath = $imageService->execute($request->file('payment_proof'), 'payment_proofs');
+                $uploadedPath = $imageService->store($request->file('payment_proof'), 'payment_proofs');
                 
                 // Backup
-                $backupService->execute($uploadedPath);
+                $backupService->backup($uploadedPath);
 
                 $now = now();
                 foreach ($reports as $report) {
