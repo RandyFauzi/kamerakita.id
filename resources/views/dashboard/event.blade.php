@@ -20,12 +20,10 @@
         <div class="w-full lg:w-1/2 px-8 sm:px-16 lg:px-24 py-12 flex flex-col justify-center relative z-20 pointer-events-none">
             <!-- Let left content text be pointer events none so it doesn't block Spline interactions -->
             <div class="pointer-events-auto">
-                <h1 class="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-white to-gray-400 tracking-tight mb-4">
-                {{ $eventName }}
-            </h1>
-            <p class="text-neutral-400 max-w-lg mb-12 text-sm leading-relaxed">
-                Pantau secara langsung pergerakan durasi video yang dilaporkan oleh mitra hingga batas waktu penutupan proyek.
-            </p>
+                <h1 class="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-white to-gray-400 tracking-tight mb-8 drop-shadow-md">
+                    {{ $eventName }}
+                </h1>
+            </div>
 
             <!-- Progress Bar Card (Semi-3D) -->
             <div class="mb-16 max-w-lg w-full rounded-[2rem] p-6 sm:p-8 relative overflow-hidden"
