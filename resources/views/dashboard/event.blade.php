@@ -65,21 +65,17 @@
                         </div>
                     </div>
                     
-                    <!-- Bottom section: Collaborators & Detail -->
-                    <div class="flex justify-between items-end mt-4">
+                    <!-- Bottom section: Acquired & Detail -->
+                    <div class="flex justify-between items-end mt-6">
                         <div>
-                            <p class="text-xs text-neutral-400 font-medium mb-3">Total Acquired</p>
-                            <div class="flex -space-x-2">
-                                <div class="w-9 h-9 rounded-xl bg-[#2a2a2c] flex items-center justify-center border-2 border-[#1a1a1c] z-30">
-                                    <span class="text-xs text-white font-bold">{{ number_format($totalHours, 1) }}</span>
-                                </div>
-                                <div class="w-9 h-9 rounded-xl bg-[#3a3a3c] flex items-center justify-center border-2 border-[#1a1a1c] z-20">
-                                    <span class="text-[10px] text-white">HRS</span>
-                                </div>
+                            <p class="text-sm text-neutral-400 font-medium mb-1">Total Acquired</p>
+                            <div class="flex items-baseline gap-1.5">
+                                <span class="text-2xl font-bold text-white tracking-tight">{{ number_format($totalHours, 1) }}</span>
+                                <span class="text-sm text-neutral-500 font-bold">HRS</span>
                             </div>
                         </div>
                         
-                        <button class="px-4 py-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-white font-medium transition-colors flex items-center gap-2">
+                        <button class="px-5 py-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-sm text-white font-medium transition-colors flex items-center gap-2">
                             More details 
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                         </button>
