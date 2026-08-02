@@ -17,7 +17,7 @@ class EventController extends Controller
             'name' => 'Closing Project 1 Minutes',
             'target_hours' => 200,
             'deadline' => Carbon::parse('2026-08-03 11:00:00'),
-            'group_name' => 'Grup B',
+            'group_name' => null, // null berarti mengambil semua laporan tanpa filter grup
             'period_index' => 2, // 2 = Periode 3
             'is_active' => true,
         ];
