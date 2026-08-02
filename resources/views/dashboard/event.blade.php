@@ -63,10 +63,18 @@
 
                     <!-- Stats -->
                     <div class="flex justify-between items-end mb-4 relative z-10">
-                        <span class="text-4xl sm:text-5xl font-bold text-white tracking-tighter">{{ number_format($rawPercentage, 0) }}%</span>
-                        <div class="flex items-center gap-2 pb-1">
-                            <span class="text-gray-400 text-xs font-medium">Live monitoring</span>
-                            <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        <!-- Progress Percentage Highlight -->
+                        <div class="flex flex-col">
+                            <span class="text-4xl sm:text-5xl font-bold text-white tracking-tighter drop-shadow-md">{{ number_format($rawPercentage, 0) }}%</span>
+                        </div>
+                        
+                        <!-- Target Highlight -->
+                        <div class="flex flex-col items-end">
+                            <span class="text-gray-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-0.5">Target</span>
+                            <div class="flex items-baseline gap-1">
+                                <span class="text-3xl sm:text-4xl font-bold text-white tracking-tighter drop-shadow-md">{{ $targetHours }}</span>
+                                <span class="text-xs text-gray-500 font-bold uppercase tracking-wider">HRS</span>
+                            </div>
                         </div>
                     </div>
 
@@ -81,10 +89,7 @@
                                     box-shadow: inset 0 4px 8px rgba(255,255,255,0.5), inset 0 -4px 8px rgba(0,0,0,0.15), 0 0 35px rgba(71,255,222,0.4);">
                         </div>
                         
-                        <!-- Text inside right side of the bar -->
-                        <div class="relative w-full flex justify-end z-20 pointer-events-none">
-                            <span class="text-xs font-bold text-white/80 drop-shadow-md tracking-wide">Target: {{ $targetHours }} HRS</span>
-                        </div>
+                        <!-- (Text Target dihapus dari dalam bar karena sudah menjadi highlight di atas) -->
                     </div>
                 </div>
             </div>
