@@ -124,12 +124,12 @@
                 </div>
             </div>
             
-            </div>
-        </div>
+        </div> <!-- Close Left Content -->
 
-        <!-- Right Content (Interactive 3D Spline) - Real Side by Side -->
-        <div class="w-full lg:w-1/2 h-[50vh] lg:h-screen relative z-10 pointer-events-auto flex items-center justify-center">
-            <div class="w-full h-full max-w-[800px] relative">
+        <!-- Right Content (Interactive 3D Spline) -->
+        <div class="w-full lg:w-1/2 h-[50vh] lg:h-screen relative z-10 pointer-events-auto flex items-center justify-center overflow-visible">
+            <!-- Ensure it fills the space but doesn't get clipped weirdly -->
+            <div class="w-[120%] lg:w-[150%] h-[120%] lg:h-[150%] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
                 <spline-viewer 
                     loading-anim-type="spinner-small-light" 
                     class="w-full h-full" 
@@ -137,11 +137,11 @@
                 </spline-viewer>
             </div>
             <!-- Overlay to fade out spline into background on small screens -->
-            <div class="absolute inset-0 bg-gradient-to-r from-[#171717] via-transparent to-transparent hidden lg:block pointer-events-none"></div>
-            <div class="absolute inset-0 bg-gradient-to-t from-[#171717] via-[#171717]/50 to-transparent lg:hidden pointer-events-none"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-[#0d131f] via-transparent to-transparent hidden lg:block pointer-events-none"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-[#0d131f] via-[#0d131f]/50 to-transparent lg:hidden pointer-events-none"></div>
         </div>
         
-    </div>
+    </div> <!-- Close Main Container -->
 
     <!-- Script for Countdown -->
     <script>
