@@ -119,16 +119,18 @@
         </div>
 
         <!-- Right Content (Interactive 3D Spline) -->
-        <div class="w-full lg:w-1/2 h-[50vh] lg:h-screen absolute top-0 right-0 opacity-40 lg:opacity-100 z-0 overflow-visible pointer-events-auto flex justify-end items-center">
-            <!-- Geser Spline drastis ke kanan agar tidak menutupi teks -->
-            <spline-viewer 
-                loading-anim-type="spinner-small-light" 
-                class="w-full h-full lg:w-[140%] lg:h-[140%] lg:absolute lg:top-[-20%] lg:-right-[40%]" 
-                url="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode">
-            </spline-viewer>
+        <div class="w-full lg:w-[55%] h-[50vh] lg:h-screen absolute top-0 right-0 opacity-40 lg:opacity-100 z-0 pointer-events-auto overflow-hidden">
+            <!-- Geser Spline secara eksplisit ke kanan menggunakan transform -->
+            <div class="w-full h-full flex justify-end items-center" style="transform: translateX(25%) scale(1.4); transform-origin: center right;">
+                <spline-viewer 
+                    loading-anim-type="spinner-small-light" 
+                    class="w-full h-full" 
+                    url="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode">
+                </spline-viewer>
+            </div>
             <!-- Overlay to fade out spline into background on small screens -->
-            <div class="absolute inset-0 bg-gradient-to-r from-[#111] via-transparent to-transparent hidden lg:block pointer-events-none"></div>
-            <div class="absolute inset-0 bg-gradient-to-t from-[#111] via-[#111]/50 to-transparent lg:hidden pointer-events-none"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-[#171717] via-transparent to-transparent hidden lg:block pointer-events-none"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-[#171717] via-[#171717]/50 to-transparent lg:hidden pointer-events-none"></div>
         </div>
         
     </div>
