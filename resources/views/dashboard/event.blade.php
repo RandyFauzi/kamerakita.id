@@ -1,147 +1,170 @@
 <x-app-layout>
-    <!-- Pastikan Spline script dimuat -->
-    <script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.5/build/spline-viewer.js"></script>
-
-    <!-- Full Black Canvas with Negative Margins to override layout padding -->
-    <!-- Custom style tag to forcefully override background just in case tailwind classes conflict -->
-    <style>
-        .event-dark-bg {
-            background: linear-gradient(135deg, #1f2937 0%, #030712 100%) !important;
-            color: #ffffff !important;
-        }
-    </style>
-
-    <div class="relative min-h-[calc(100vh-4rem)] -m-4 sm:-m-6 lg:-m-8 overflow-hidden flex flex-col lg:flex-row event-dark-bg">
+    <!-- Full Screen Wrapper for Video Background -->
+    <div class="relative min-h-[calc(100vh-4rem)] -m-4 sm:-m-6 lg:-m-8 overflow-hidden flex flex-col items-center justify-center bg-[#07090b]">
         
-        <!-- Subtle Spotlight Effect -->
-        <div class="absolute top-0 right-0 w-[800px] h-[800px] bg-white/[0.05] rounded-full filter blur-[120px] pointer-events-none transform translate-x-1/3 -translate-y-1/3 z-0"></div>
+        <!-- Video Background -->
+        <div class="absolute inset-0 w-full h-full z-0 overflow-hidden pointer-events-none">
+            <!-- Cipher Digital Video (Webm & MP4 Fallback) -->
+            <video autoplay loop muted playsinline class="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto object-cover transform -translate-x-1/2 -translate-y-1/2 opacity-75 mix-blend-screen filter contrast-125">
+                <source src="https://cipherdigital.com/wp-content/uploads/2026/04/Cipher_Hero_60fps.webm" type="video/webm">
+                <source src="https://cipherdigital.com/wp-content/uploads/2026/04/Cipher_Hero_60fps.mp4" type="video/mp4">
+            </video>
+            
+            <!-- Dark Vignette & Gradient Overlays for Readability -->
+            <div class="absolute inset-0 bg-gradient-to-b from-[#07090b]/80 via-transparent to-[#07090b]/90"></div>
+            <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-transparent via-[#07090b]/40 to-[#07090b]/95"></div>
+        </div>
 
-        <!-- Left Content (Text, Progress, Countdown) -->
-        <div class="w-full lg:w-1/2 px-8 sm:px-16 lg:px-24 py-12 flex flex-col justify-center relative z-20 pointer-events-none">
-            <!-- Let left content text be pointer events none so it doesn't block Spline interactions -->
-            <div class="pointer-events-auto">
-                <h1 class="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-white to-gray-400 tracking-tight mb-8 drop-shadow-md">
+        <!-- Main Content Grid -->
+        <div class="relative z-10 w-full max-w-[1400px] mx-auto px-6 sm:px-12 py-16 flex flex-col items-center justify-center">
+            
+            <!-- Header Section -->
+            <div class="text-center mb-12 lg:mb-20 max-w-4xl mx-auto">
+                <div class="inline-block mb-4 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-md">
+                    <span class="text-xs font-semibold tracking-[0.2em] text-[#a3ff47] uppercase">Live Monitoring Dashboard</span>
+                </div>
+                <h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-400 tracking-tighter drop-shadow-2xl mb-6">
                     {{ $eventName }}
                 </h1>
+                <p class="text-neutral-400 text-lg md:text-xl font-light tracking-wide max-w-2xl mx-auto">
+                    Pantau secara langsung pergerakan durasi video yang dilaporkan oleh mitra hingga batas waktu penutupan proyek.
+                </p>
             </div>
 
-            <!-- Progress Bar Card (Semi-3D) -->
-            <div class="mb-16 max-w-lg w-full rounded-[2rem] p-6 sm:p-8 relative overflow-hidden pointer-events-auto"
-                 style="background: linear-gradient(180deg, #262626 0%, #171717 100%); box-shadow: inset 0 1px 2px rgba(255,255,255,0.1), 0 25px 50px -12px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.05);">
+            <!-- Cards Container (Side by side on Large Screens) -->
+            <div class="flex flex-col lg:flex-row items-stretch justify-center gap-8 lg:gap-10 w-full">
                 
-                <!-- Subtle inner glow on top-left -->
-                <div class="absolute top-[-50px] left-[-50px] w-[200px] h-[200px] bg-white/[0.04] rounded-full blur-[40px] pointer-events-none z-0"></div>
-
-                <div class="relative z-10">
-                    <div class="flex items-center gap-3 mb-1">
-                        <svg class="w-6 h-6 text-neutral-300 animate-spin-slow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        <span class="text-xl font-medium text-white tracking-wide drop-shadow-sm">Project Progress</span>
-                        <span class="px-3 py-1 rounded-full text-xs text-neutral-400 ml-1" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);">{{ $eventName }}</span>
-                    </div>
-
-                    <div class="flex items-baseline gap-1 mb-5">
-                        <span class="text-7xl font-bold text-white tracking-tighter drop-shadow-lg">{{ number_format($rawPercentage, 0) }}</span>
-                        <span class="text-3xl text-neutral-500 font-bold drop-shadow-sm">%</span>
-                    </div>
-
-                    <!-- Semi-3D Thick Progress Bar -->
-                    <div class="w-full h-14 rounded-full relative flex items-center pr-5 mb-8"
-                         style="background: rgba(0,0,0,0.5); box-shadow: inset 0 4px 12px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.03);">
-                        
-                        <!-- Glowing Fill with 3D Volume -->
-                        <div class="absolute top-0 left-0 h-full rounded-full transition-all duration-1000 ease-out z-10" 
-                             style="width: {{ $progressPercentage > 15 ? $progressPercentage : 15 }}%; 
-                                    background: linear-gradient(90deg, #a3ff47 0%, #47ffde 100%); 
-                                    box-shadow: inset 0 4px 8px rgba(255,255,255,0.5), inset 0 -4px 8px rgba(0,0,0,0.15), 0 0 35px rgba(71,255,222,0.4);">
-                        </div>
-                        
-                        <!-- Text inside right side of the bar -->
-                        <div class="relative w-full flex justify-end z-20 pointer-events-none">
-                            <span class="text-sm font-medium text-white/80 drop-shadow-md">Target: {{ $targetHours }} HRS</span>
-                        </div>
-                    </div>
+                <!-- Progress Card (Glassmorphism & Semi-3D) -->
+                <div class="w-full lg:w-1/2 max-w-xl rounded-[2.5rem] p-8 sm:p-10 relative overflow-hidden backdrop-blur-2xl transition-all duration-500 hover:-translate-y-2 group"
+                     style="background: rgba(15, 17, 21, 0.6); box-shadow: inset 0 1px 1px rgba(255,255,255,0.1), 0 30px 60px -15px rgba(0,0,0,0.9); border: 1px solid rgba(255,255,255,0.08);">
                     
-                    <!-- Bottom section: Acquired & Detail -->
-                    <div class="flex justify-between items-end mt-6">
+                    <!-- Ambient Glow -->
+                    <div class="absolute top-[-20%] left-[-10%] w-[300px] h-[300px] bg-white/[0.03] rounded-full blur-[60px] pointer-events-none z-0 transition-opacity group-hover:opacity-100"></div>
+
+                    <div class="relative z-10 flex flex-col h-full justify-between">
                         <div>
-                            <p class="text-sm text-neutral-400 font-medium mb-1">Total Acquired</p>
-                            <div class="flex items-baseline gap-1.5">
-                                <span class="text-2xl font-bold text-white tracking-tight">{{ number_format($totalHours, 1) }}</span>
-                                <span class="text-sm text-neutral-500 font-bold">HRS</span>
+                            <div class="flex items-center justify-between mb-8">
+                                <div class="flex items-center gap-3">
+                                    <svg class="w-6 h-6 text-[#a3ff47] animate-spin-slow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    <span class="text-xl font-medium text-white tracking-wide">Project Progress</span>
+                                </div>
+                                <span class="px-3 py-1 rounded-full text-xs font-bold tracking-wider text-[#a3ff47] bg-[#a3ff47]/10 border border-[#a3ff47]/20 flex items-center gap-2">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-[#a3ff47] animate-pulse"></span>
+                                    LIVE
+                                </span>
+                            </div>
+
+                            <div class="flex items-baseline gap-1 mb-6">
+                                <span class="text-7xl lg:text-8xl font-bold text-white tracking-tighter">{{ number_format($rawPercentage, 0) }}</span>
+                                <span class="text-4xl text-neutral-500 font-bold">%</span>
+                            </div>
+
+                            <!-- Semi-3D Thick Progress Bar -->
+                            <div class="w-full h-12 lg:h-14 rounded-full relative flex items-center mb-10"
+                                 style="background: rgba(0,0,0,0.6); box-shadow: inset 0 4px 12px rgba(0,0,0,0.9), inset 0 1px 1px rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.03);">
+                                
+                                <!-- Glowing Fill -->
+                                <div class="absolute top-0 left-0 h-full rounded-full transition-all duration-1000 ease-out z-10" 
+                                     style="width: {{ $progressPercentage > 15 ? $progressPercentage : 15 }}%; 
+                                            background: linear-gradient(90deg, #a3ff47 0%, #47ffde 100%); 
+                                            box-shadow: inset 0 4px 8px rgba(255,255,255,0.5), inset 0 -4px 8px rgba(0,0,0,0.2), 0 0 40px rgba(71,255,222,0.4);">
+                                </div>
+                                
+                                <div class="absolute right-5 z-20 pointer-events-none">
+                                    <span class="text-xs sm:text-sm font-bold text-white/90 drop-shadow-md">Target: {{ $targetHours }} HRS</span>
+                                </div>
                             </div>
                         </div>
                         
-                        <button class="px-5 py-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-sm text-white font-medium transition-colors flex items-center gap-2">
-                            More details 
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                        </button>
+                        <div class="flex justify-between items-end mt-4 pt-6 border-t border-white/10">
+                            <div>
+                                <p class="text-xs text-neutral-400 font-semibold uppercase tracking-[0.15em] mb-2">Total Acquired</p>
+                                <div class="flex items-baseline gap-1.5">
+                                    <span class="text-3xl sm:text-4xl font-bold text-white tracking-tight">{{ number_format($totalHours, 1) }}</span>
+                                    <span class="text-sm sm:text-base text-neutral-500 font-bold">HRS</span>
+                                </div>
+                            </div>
+                            
+                            <button class="w-12 h-12 rounded-full bg-white/5 hover:bg-white/15 border border-white/10 text-white flex items-center justify-center transition-all hover:scale-110 shadow-lg">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Countdown Section -->
-            <div class="pointer-events-auto">
-                <div class="flex gap-4 sm:gap-6 md:gap-8 items-start">
-                    <!-- Days -->
-                    <div class="flex flex-col items-center">
-                        <div class="relative overflow-hidden h-[1.1em]">
-                            <span id="days" class="text-5xl sm:text-6xl text-white tracking-tight block transition-transform duration-300">00</span>
-                        </div>
-                        <span class="text-[10px] text-neutral-500 mt-2 uppercase tracking-widest">Days</span>
-                    </div>
+                <!-- Countdown Timer Card (Matching Aesthetic) -->
+                <div class="w-full lg:w-1/2 max-w-xl rounded-[2.5rem] p-8 sm:p-10 relative overflow-hidden backdrop-blur-2xl transition-all duration-500 hover:-translate-y-2 flex flex-col justify-center items-center group"
+                     style="background: rgba(15, 17, 21, 0.6); box-shadow: inset 0 1px 1px rgba(255,255,255,0.1), 0 30px 60px -15px rgba(0,0,0,0.9); border: 1px solid rgba(255,255,255,0.08);">
                     
-                    <div class="text-4xl text-neutral-600 font-light mt-1">:</div>
-                    
-                    <!-- Hours -->
-                    <div class="flex flex-col items-center">
-                        <div class="relative overflow-hidden h-[1.1em]">
-                            <span id="hours" class="text-5xl sm:text-6xl text-white tracking-tight block transition-transform duration-300">00</span>
+                    <!-- Ambient Glow -->
+                    <div class="absolute bottom-[-20%] right-[-10%] w-[300px] h-[300px] bg-[#47ffde]/[0.05] rounded-full blur-[60px] pointer-events-none z-0 transition-opacity group-hover:opacity-100"></div>
+
+                    <div class="relative z-10 w-full flex flex-col items-center justify-center h-full">
+                        <div class="flex items-center gap-3 mb-12 w-full justify-center">
+                            <svg class="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <h3 class="text-neutral-300 text-sm uppercase tracking-[0.2em] font-semibold text-center">Closing Time Remaining</h3>
                         </div>
-                        <span class="text-[10px] text-neutral-500 mt-2 uppercase tracking-widest">Hours</span>
-                    </div>
 
-                    <div class="text-4xl text-neutral-600 font-light mt-1">:</div>
+                        <div id="timer-container" class="flex gap-3 sm:gap-4 md:gap-6 items-center justify-center w-full">
+                            
+                            <!-- Days -->
+                            <div class="flex flex-col items-center">
+                                <div class="bg-black/60 border border-white/10 rounded-2xl p-4 sm:p-6 shadow-inner backdrop-blur-md relative overflow-hidden group/time min-w-[70px] sm:min-w-[90px]">
+                                    <div class="absolute inset-0 bg-white/5 opacity-0 group-hover/time:opacity-100 transition-opacity duration-300"></div>
+                                    <div class="relative overflow-hidden h-[1.1em] flex justify-center">
+                                        <span id="days" class="text-4xl sm:text-5xl lg:text-6xl text-white font-light tracking-tighter block transition-transform duration-300 text-center w-full">00</span>
+                                    </div>
+                                </div>
+                                <span class="text-[9px] sm:text-[11px] text-neutral-500 mt-4 uppercase tracking-[0.2em] font-semibold">Days</span>
+                            </div>
+                            
+                            <div class="text-2xl sm:text-3xl text-neutral-600 font-light mb-6">:</div>
+                            
+                            <!-- Hours -->
+                            <div class="flex flex-col items-center">
+                                <div class="bg-black/60 border border-white/10 rounded-2xl p-4 sm:p-6 shadow-inner backdrop-blur-md relative overflow-hidden group/time min-w-[70px] sm:min-w-[90px]">
+                                    <div class="absolute inset-0 bg-white/5 opacity-0 group-hover/time:opacity-100 transition-opacity duration-300"></div>
+                                    <div class="relative overflow-hidden h-[1.1em] flex justify-center">
+                                        <span id="hours" class="text-4xl sm:text-5xl lg:text-6xl text-white font-light tracking-tighter block transition-transform duration-300 text-center w-full">00</span>
+                                    </div>
+                                </div>
+                                <span class="text-[9px] sm:text-[11px] text-neutral-500 mt-4 uppercase tracking-[0.2em] font-semibold">Hours</span>
+                            </div>
 
-                    <!-- Minutes -->
-                    <div class="flex flex-col items-center">
-                        <div class="relative overflow-hidden h-[1.1em]">
-                            <span id="mins" class="text-5xl sm:text-6xl text-white tracking-tight block transition-transform duration-300">00</span>
+                            <div class="text-2xl sm:text-3xl text-neutral-600 font-light mb-6">:</div>
+
+                            <!-- Minutes -->
+                            <div class="flex flex-col items-center">
+                                <div class="bg-black/60 border border-white/10 rounded-2xl p-4 sm:p-6 shadow-inner backdrop-blur-md relative overflow-hidden group/time min-w-[70px] sm:min-w-[90px]">
+                                    <div class="absolute inset-0 bg-white/5 opacity-0 group-hover/time:opacity-100 transition-opacity duration-300"></div>
+                                    <div class="relative overflow-hidden h-[1.1em] flex justify-center">
+                                        <span id="mins" class="text-4xl sm:text-5xl lg:text-6xl text-white font-light tracking-tighter block transition-transform duration-300 text-center w-full">00</span>
+                                    </div>
+                                </div>
+                                <span class="text-[9px] sm:text-[11px] text-neutral-500 mt-4 uppercase tracking-[0.2em] font-semibold">Minutes</span>
+                            </div>
+
+                            <div class="text-2xl sm:text-3xl text-neutral-600 font-light mb-6">:</div>
+
+                            <!-- Seconds -->
+                            <div class="flex flex-col items-center">
+                                <div class="bg-[#1a202c]/80 border border-white/10 rounded-2xl p-4 sm:p-6 shadow-[inset_0_2px_15px_rgba(71,255,222,0.15)] backdrop-blur-md relative overflow-hidden min-w-[70px] sm:min-w-[90px]">
+                                    <div class="relative overflow-hidden h-[1.1em] flex justify-center">
+                                        <span id="secs" class="text-4xl sm:text-5xl lg:text-6xl text-[#47ffde] font-medium tracking-tighter block transition-transform duration-300 text-center w-full" style="text-shadow: 0 0 20px rgba(71,255,222,0.5);">00</span>
+                                    </div>
+                                </div>
+                                <span class="text-[9px] sm:text-[11px] text-[#47ffde]/70 mt-4 uppercase tracking-[0.2em] font-semibold">Seconds</span>
+                            </div>
+
                         </div>
-                        <span class="text-[10px] text-neutral-500 mt-2 uppercase tracking-widest">Minutes</span>
-                    </div>
-
-                    <div class="text-4xl text-neutral-600 font-light mt-1">:</div>
-
-                    <!-- Seconds -->
-                    <div class="flex flex-col items-center">
-                        <div class="relative overflow-hidden h-[1.1em]">
-                            <span id="secs" class="text-5xl sm:text-6xl text-white tracking-tight block transition-transform duration-300">00</span>
-                        </div>
-                        <span class="text-[10px] text-neutral-500 mt-2 uppercase tracking-widest">Seconds</span>
                     </div>
                 </div>
-            </div>
-            
-        </div> <!-- Close Left Content -->
 
-        <!-- Right Content (Interactive 3D Spline) -->
-        <div class="w-full lg:w-1/2 h-[50vh] lg:h-screen relative z-10 pointer-events-auto flex items-center justify-center overflow-visible">
-            <!-- Ensure it fills the space but doesn't get clipped weirdly -->
-            <div class="w-[120%] lg:w-[150%] h-[120%] lg:h-[150%] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
-                <spline-viewer 
-                    loading-anim-type="spinner-small-light" 
-                    class="w-full h-full" 
-                    url="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode">
-                </spline-viewer>
             </div>
-            <!-- Overlay to fade out spline into background on small screens -->
-            <div class="absolute inset-0 bg-gradient-to-r from-[#0d131f] via-transparent to-transparent hidden lg:block pointer-events-none"></div>
-            <div class="absolute inset-0 bg-gradient-to-t from-[#0d131f] via-[#0d131f]/50 to-transparent lg:hidden pointer-events-none"></div>
         </div>
-        
-    </div> <!-- Close Main Container -->
+    </div>
 
     <!-- Script for Countdown -->
     <script>
