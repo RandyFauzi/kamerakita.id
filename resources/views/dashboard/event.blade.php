@@ -93,11 +93,11 @@
         </div>
 
         <!-- Right Content (Interactive 3D Spline) -->
-        <div class="w-full lg:w-1/2 h-[50vh] lg:h-screen absolute top-0 right-0 opacity-40 lg:opacity-100 z-0 overflow-visible pointer-events-auto">
-            <!-- Geser Spline ke kanan dengan translate -->
+        <div class="w-full lg:w-1/2 h-[50vh] lg:h-screen absolute top-0 right-0 opacity-40 lg:opacity-100 z-0 overflow-visible pointer-events-auto flex justify-end items-center">
+            <!-- Geser Spline drastis ke kanan agar tidak menutupi teks -->
             <spline-viewer 
                 loading-anim-type="spinner-small-light" 
-                class="w-full h-full lg:w-[120%] lg:h-[120%] lg:absolute lg:top-[-10%] lg:right-[-15%]" 
+                class="w-full h-full lg:w-[140%] lg:h-[140%] lg:absolute lg:top-[-20%] lg:-right-[40%]" 
                 url="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode">
             </spline-viewer>
             <!-- Overlay to fade out spline into background on small screens -->
