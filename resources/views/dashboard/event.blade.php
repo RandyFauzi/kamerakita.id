@@ -5,10 +5,10 @@
         <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
                 <h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                    🔥 Target Akselerasi: Grup B
+                    🏆 Event: {{ $eventName }}
                 </h1>
                 <p class="text-sm text-gray-500 mt-1">
-                    Dasbor pemantauan sementara khusus pencapaian durasi video Grup B.
+                    Dasbor pemantauan kemajuan untuk event aktif.
                 </p>
             </div>
             
@@ -33,7 +33,7 @@
                             Pencapaian Target
                         </span>
                         <span class="text-sm font-bold text-gray-400">
-                            {{ $period3 ? $period3['start']->translatedFormat('d M') . ' - ' . $period3['end']->translatedFormat('d M Y') : 'Periode 3' }}
+                            {{ $periodTarget ? $periodTarget['start']->translatedFormat('d M') . ' - ' . $periodTarget['end']->translatedFormat('d M Y') : 'Semua Waktu' }}
                         </span>
                     </div>
 
@@ -42,7 +42,7 @@
                             <h2 class="text-5xl sm:text-7xl font-black text-slate-900 tracking-tighter">
                                 {{ number_format($totalHours, 1) }} <span class="text-2xl text-gray-400 font-bold">/ {{ $targetHours }} Jam</span>
                             </h2>
-                            <p class="text-gray-500 font-medium mt-2">Total video approved khusus pekerja Grup B</p>
+                            <p class="text-gray-500 font-medium mt-2">Total durasi video yang terkumpul untuk event ini</p>
                         </div>
                     </div>
 

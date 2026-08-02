@@ -1,0 +1,66 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\VideoWorkReport;
+use App\Services\PeriodService;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+
+class EventController extends Controller
+{
+    public function index(Request $request): View
+    {
+        // Konfigurasi Event Aktif (Bisa diganti atau ditambah nanti)
+        $activeEvent = [
+            'name' => 'Closing Project 1 Minutes',
+            'target_hours' => 200,
+            'deadline' => Carbon::parse('2026-08-03 11:00:00'),
+            'group_name' => 'Grup B',
+            'period_index' => 2, // 2 = Periode 3
+            'is_active' => true,
+        ];
+
+        if (!$activeEvent['is_active']) {
+            abort(404, 'Tidak ada event yang sedang aktif saat ini.');
+        }
+
+        // 1. Ambil semua rentang periode yang tersedia
+        $periods = PeriodService::getAvailablePeriods();
+        
+        $periodTarget = isset($periods[$activeEvent['period_index']]) ? $periods[$activeEvent['period_index']] : null;
+        $totalApprovedMinutes = 0;
+
+        if ($periodTarget) {
+            $startDate = $periodTarget['start']->format('Y-m-d');
+            $endDate = $periodTarget['end']->format('Y-m-d');
+
+            // 2. Query total menit approved khusus target grup di rentang Periode target
+            $totalApprovedMinutes = VideoWorkReport::where('qc_status', 'approved')
+                ->whereBetween('submission_date', [$startDate, $endDate])
+                ->when($activeEvent['group_name'], function ($query, $groupName) {
+                    $query->whereHas('partner', function ($q) use ($groupName) {
+                        $q->where('group_name', $groupName);
+                    });
+                })
+                ->sum('approved_duration_minutes');
+        }
+
+        $totalHours = round($totalApprovedMinutes / 60, 2);
+        
+        // Batasi maksimal persentase 100% agar bar tidak meluap
+        $rawPercentage = ($totalHours / $activeEvent['target_hours']) * 100;
+        $progressPercentage = min(100, $rawPercentage);
+
+        return view('dashboard.event', [
+            'eventName' => $activeEvent['name'],
+            'targetHours' => $activeEvent['target_hours'],
+            'targetDeadline' => $activeEvent['deadline'],
+            'totalHours' => $totalHours,
+            'progressPercentage' => $progressPercentage,
+            'rawPercentage' => $rawPercentage,
+            'periodTarget' => $periodTarget
+        ]);
+    }
+}
