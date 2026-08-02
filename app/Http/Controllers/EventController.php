@@ -18,7 +18,7 @@ class EventController extends Controller
             'target_hours' => 200,
             'deadline' => Carbon::parse('2026-08-03 11:00:00'),
             'group_name' => null, // null berarti mengambil semua laporan tanpa filter grup
-            'period_index' => 2, // 2 = Periode 3
+            'period_number' => 3, // Target Periode Ke-3
             'is_active' => true,
         ];
 
@@ -26,10 +26,13 @@ class EventController extends Controller
             abort(404, 'Tidak ada event yang sedang aktif saat ini.');
         }
 
-        // 1. Ambil semua rentang periode yang tersedia
-        $periods = PeriodService::getAvailablePeriods();
+        // 1. Ambil semua rentang periode yang tersedia (urutan descending/terbaru di atas)
+        $periods = collect(PeriodService::getAvailablePeriods());
         
-        $periodTarget = isset($periods[$activeEvent['period_index']]) ? $periods[$activeEvent['period_index']] : null;
+        // 2. Cari periode yang labelnya mengandung "Periode X" dengan akurat
+        $periodTarget = $periods->first(function ($p) use ($activeEvent) {
+            return str_contains($p['label'], 'Periode ' . $activeEvent['period_number']);
+        });
         $totalApprovedMinutes = 0;
 
         if ($periodTarget) {
