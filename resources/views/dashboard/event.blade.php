@@ -46,18 +46,34 @@
                         </div>
                     </div>
 
-                    <!-- Progress Bar -->
-                    <div class="mt-10">
-                        <div class="flex justify-between text-sm font-bold text-slate-700 mb-3">
-                            <span>Progress</span>
-                            <span class="text-indigo-600">{{ number_format($rawPercentage, 1) }}%</span>
-                        </div>
-                        <div class="w-full bg-gray-100 rounded-full h-6 sm:h-8 p-1 shadow-inner">
-                            <div class="bg-gradient-to-r from-indigo-500 to-purple-600 h-full rounded-full transition-all duration-1000 ease-out flex items-center justify-end px-3" 
-                                 style="width: {{ $progressPercentage }}%">
-                                 @if($progressPercentage > 5)
-                                    <span class="text-white text-xs font-black drop-shadow-md">🚀</span>
-                                 @endif
+                    <!-- Progress Bar (Neon Neumorphic Style) -->
+                    <div class="mt-8 bg-slate-900 rounded-[32px] p-4 sm:p-6 shadow-2xl border border-slate-800 relative overflow-hidden">
+                        <!-- Subtle dot pattern background -->
+                        <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(#475569 1px, transparent 1px); background-size: 12px 12px;"></div>
+                        
+                        <div class="relative z-10">
+                            <div class="flex justify-between text-sm font-bold text-slate-300 mb-4 tracking-wider">
+                                <span>PROGRESS PENCAPAIAN</span>
+                                <span class="text-lime-400">{{ number_format($rawPercentage, 1) }}%</span>
+                            </div>
+                            
+                            <!-- The Trench (Inner shadow dark track) -->
+                            <div class="w-full bg-slate-950 rounded-full h-10 sm:h-12 p-1.5 shadow-[inset_0_4px_10px_rgba(0,0,0,0.6)] border border-slate-800/50 flex items-center relative">
+                                
+                                <!-- The Neon Pill (Filled progress) -->
+                                <div class="bg-gradient-to-r from-lime-300 via-lime-400 to-green-500 h-full rounded-full transition-all duration-1000 ease-out shadow-[0_0_20px_rgba(163,230,53,0.5)] flex items-center justify-end px-3 relative group cursor-pointer" 
+                                     style="width: {{ $progressPercentage > 5 ? $progressPercentage : 5 }}%">
+                                     
+                                     <!-- The Icon (Rocket instead of airplane) -->
+                                     <svg class="w-5 h-5 text-green-950 transform rotate-45 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                                     </svg>
+                                </div>
+                                
+                                <!-- Remaining text on the right of the trench if space allows -->
+                                <div class="absolute right-4 text-xs font-bold text-slate-600">
+                                    {{ $targetHours - $totalHours > 0 ? '-'.number_format($targetHours - $totalHours, 1).' Jam' : 'SELESAI' }}
+                                </div>
                             </div>
                         </div>
                     </div>
