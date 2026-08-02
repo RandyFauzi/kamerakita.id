@@ -2,112 +2,98 @@
     <!-- Pastikan Spline script dimuat -->
     <script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.5/build/spline-viewer.js"></script>
 
-    <div class="py-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Full Black Canvas with Negative Margins to override layout padding -->
+    <div class="relative bg-black min-h-[calc(100vh-4rem)] -m-4 sm:-m-6 lg:-m-8 overflow-hidden text-white font-sans flex flex-col lg:flex-row items-center">
+        
+        <!-- Subtle Spotlight Effect -->
+        <div class="absolute top-0 right-0 w-[800px] h-[800px] bg-white/[0.03] rounded-full filter blur-[120px] pointer-events-none transform translate-x-1/3 -translate-y-1/3"></div>
+
+        <!-- Left Content (Text, Progress, Countdown) -->
+        <div class="w-full lg:w-1/2 px-8 sm:px-16 lg:px-24 py-12 flex flex-col justify-center relative z-10">
             
-            <!-- Splite 3D Card Design -->
-            <div class="w-full bg-slate-950 relative overflow-hidden rounded-3xl border border-white/10 shadow-2xl flex flex-col lg:flex-row min-h-[600px]">
-                
-                <!-- Spotlight Effect (Simulated via radial gradient) -->
-                <div class="absolute -top-40 left-0 md:left-60 md:-top-20 w-[600px] h-[600px] bg-white/[0.07] rounded-full filter blur-[100px] pointer-events-none"></div>
+            <h1 class="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400 tracking-tight mb-4">
+                {{ $eventName }}
+            </h1>
+            <p class="text-neutral-400 max-w-lg mb-12 text-sm leading-relaxed">
+                Pantau secara langsung pergerakan durasi video yang dilaporkan oleh mitra hingga batas waktu penutupan proyek.
+            </p>
 
-                <!-- Left Content -->
-                <div class="flex-1 p-8 sm:p-12 relative z-10 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-white/10">
-                    
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/20 bg-white/5 backdrop-blur-md w-max mb-6">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                        <span class="text-xs font-medium text-slate-300 tracking-wide uppercase">Live Event Active</span>
-                    </div>
-
-                    <h1 class="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400 tracking-tight mb-4">
-                        {{ $eventName }}
-                    </h1>
-                    <p class="text-neutral-300 max-w-lg mb-10 text-sm leading-relaxed">
-                        Pantau secara langsung pergerakan durasi video yang dilaporkan oleh mitra hingga batas waktu penutupan proyek.
-                    </p>
-
-                    <!-- Focus 1: Progress Bar -->
-                    <div class="mb-10 w-full max-w-md bg-white/5 p-6 rounded-2xl border border-white/10 backdrop-blur-sm">
-                        <div class="flex items-end gap-4 mb-6">
-                            <div>
-                                <p class="text-[10px] text-neutral-400 uppercase tracking-widest font-semibold mb-1">Acquired Volume</p>
-                                <div class="flex items-baseline gap-1">
-                                    <span class="text-4xl font-bold text-white tracking-tighter">{{ number_format($totalHours, 1) }}</span>
-                                    <span class="text-sm text-neutral-500 font-medium">HRS</span>
-                                </div>
-                            </div>
-                            <div class="pb-1 text-neutral-600 font-light text-2xl">/</div>
-                            <div class="pb-1">
-                                <p class="text-[10px] text-neutral-400 uppercase tracking-widest font-semibold mb-1">Target</p>
-                                <span class="text-xl text-neutral-400 font-medium">{{ $targetHours }} HRS</span>
-                            </div>
-                        </div>
-
-                        <div class="w-full">
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="text-xs font-medium text-neutral-400 uppercase tracking-wider">Progress</span>
-                                <span class="text-xs font-bold text-emerald-400">{{ number_format($rawPercentage, 1) }}%</span>
-                            </div>
-                            <!-- Track -->
-                            <div class="h-2 w-full bg-neutral-900 rounded-full overflow-hidden shadow-inner border border-white/5">
-                                <!-- Fill -->
-                                <div class="h-full bg-gradient-to-r from-emerald-600 to-emerald-400 rounded-full relative transition-all duration-1000 ease-out shadow-[0_0_15px_rgba(52,211,153,0.5)]" 
-                                     style="width: {{ $progressPercentage > 5 ? $progressPercentage : 5 }}%">
-                                </div>
-                            </div>
+            <!-- Progress Bar Section (Clean, no boxes) -->
+            <div class="mb-16 max-w-lg">
+                <div class="flex items-end gap-4 mb-4">
+                    <div>
+                        <div class="flex items-baseline gap-1">
+                            <span class="text-5xl font-light text-white tracking-tighter">{{ number_format($totalHours, 1) }}</span>
+                            <span class="text-sm text-neutral-500 font-medium">HRS</span>
                         </div>
                     </div>
-
-                    <!-- Focus 2: Countdown Timer -->
-                    <div class="w-full max-w-md bg-white/5 p-6 rounded-2xl border border-white/10 backdrop-blur-sm">
-                        <p class="text-[10px] text-neutral-400 uppercase tracking-widest font-semibold mb-4 text-center">T-Minus Countdown</p>
-                        
-                        <div id="timer-container" class="flex justify-between items-start w-full px-2 sm:px-4">
-                            <!-- Days -->
-                            <div class="flex flex-col items-center">
-                                <span id="days" class="text-3xl sm:text-4xl font-bold text-white tracking-tighter">00</span>
-                                <span class="text-[9px] text-neutral-500 mt-1 uppercase tracking-widest">Days</span>
-                            </div>
-                            <span class="text-2xl text-neutral-700 mt-1">:</span>
-                            
-                            <!-- Hours -->
-                            <div class="flex flex-col items-center">
-                                <span id="hours" class="text-3xl sm:text-4xl font-bold text-white tracking-tighter">00</span>
-                                <span class="text-[9px] text-neutral-500 mt-1 uppercase tracking-widest">Hours</span>
-                            </div>
-                            <span class="text-2xl text-neutral-700 mt-1">:</span>
-                            
-                            <!-- Minutes -->
-                            <div class="flex flex-col items-center">
-                                <span id="mins" class="text-3xl sm:text-4xl font-bold text-white tracking-tighter">00</span>
-                                <span class="text-[9px] text-neutral-500 mt-1 uppercase tracking-widest">Mins</span>
-                            </div>
-                            <span class="text-2xl text-neutral-700 mt-1">:</span>
-                            
-                            <!-- Seconds -->
-                            <div class="flex flex-col items-center">
-                                <div class="relative overflow-hidden h-[1.2em]">
-                                    <span id="secs" class="text-3xl sm:text-4xl font-bold text-white tracking-tighter block transition-transform duration-300">00</span>
-                                </div>
-                                <span class="text-[9px] text-neutral-500 mt-1 uppercase tracking-widest">Secs</span>
-                            </div>
-                        </div>
+                    <div class="pb-1 text-neutral-600 font-light text-3xl">/</div>
+                    <div class="pb-1">
+                        <span class="text-2xl text-neutral-500 font-light">{{ $targetHours }} HRS</span>
                     </div>
-
                 </div>
 
-                <!-- Right Content (Interactive 3D Spline) -->
-                <div class="flex-1 relative min-h-[400px] lg:min-h-full pointer-events-auto bg-black/40">
-                    <spline-viewer 
-                        loading-anim-type="spinner-small-light" 
-                        class="w-full h-full absolute inset-0" 
-                        url="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode">
-                    </spline-viewer>
+                <div class="w-full">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs font-medium text-neutral-500 uppercase tracking-wider">Progress</span>
+                        <span class="text-sm font-light text-white">{{ number_format($rawPercentage, 1) }}%</span>
+                    </div>
+                    <div class="h-1 w-full bg-neutral-900 rounded-full overflow-hidden">
+                        <div class="h-full bg-white rounded-full relative transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(255,255,255,0.5)]" 
+                             style="width: {{ $progressPercentage > 2 ? $progressPercentage : 2 }}%">
+                        </div>
+                    </div>
                 </div>
-                
             </div>
-            
+
+            <!-- Countdown Timer (Clean, thin font) -->
+            <div class="max-w-lg">
+                <div id="timer-container" class="flex justify-start items-start gap-4 sm:gap-6 font-light">
+                    <!-- Days -->
+                    <div class="flex flex-col items-center">
+                        <span id="days" class="text-5xl sm:text-6xl text-white tracking-tight">00</span>
+                        <span class="text-[10px] text-neutral-500 mt-2 uppercase tracking-widest">Days</span>
+                    </div>
+                    <span class="text-4xl text-neutral-600 mt-1">:</span>
+                    
+                    <!-- Hours -->
+                    <div class="flex flex-col items-center">
+                        <span id="hours" class="text-5xl sm:text-6xl text-white tracking-tight">00</span>
+                        <span class="text-[10px] text-neutral-500 mt-2 uppercase tracking-widest">Hours</span>
+                    </div>
+                    <span class="text-4xl text-neutral-600 mt-1">:</span>
+                    
+                    <!-- Minutes -->
+                    <div class="flex flex-col items-center">
+                        <span id="mins" class="text-5xl sm:text-6xl text-white tracking-tight">00</span>
+                        <span class="text-[10px] text-neutral-500 mt-2 uppercase tracking-widest">Minutes</span>
+                    </div>
+                    <span class="text-4xl text-neutral-600 mt-1">:</span>
+                    
+                    <!-- Seconds -->
+                    <div class="flex flex-col items-center">
+                        <div class="relative overflow-hidden h-[1.1em]">
+                            <span id="secs" class="text-5xl sm:text-6xl text-white tracking-tight block transition-transform duration-300">00</span>
+                        </div>
+                        <span class="text-[10px] text-neutral-500 mt-2 uppercase tracking-widest">Seconds</span>
+                    </div>
+                </div>
+            </div>
+
         </div>
+
+        <!-- Right Content (Interactive 3D Spline) -->
+        <div class="w-full lg:w-1/2 h-[50vh] lg:h-screen absolute lg:relative top-0 right-0 opacity-30 lg:opacity-100 pointer-events-none lg:pointer-events-auto">
+            <spline-viewer 
+                loading-anim-type="spinner-small-light" 
+                class="w-full h-full" 
+                url="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode">
+            </spline-viewer>
+            <!-- Overlay to fade out spline into background on small screens -->
+            <div class="absolute inset-0 bg-gradient-to-r from-black via-transparent to-transparent hidden lg:block"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent lg:hidden"></div>
+        </div>
+        
     </div>
 
     <!-- Script for Countdown -->
@@ -122,7 +108,7 @@
 
                 if (distance < 0) {
                     clearInterval(x);
-                    document.getElementById("timer-container").innerHTML = "<div class='text-2xl font-bold text-red-500 tracking-widest uppercase text-center w-full animate-pulse'>Data Locked</div>";
+                    document.getElementById("timer-container").innerHTML = "<div class='text-2xl font-light text-white tracking-widest uppercase'>Data Locked</div>";
                     return;
                 }
 
