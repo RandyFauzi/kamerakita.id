@@ -40,5 +40,6 @@
             </div>
         </div>
         <x-floating-calculator />
+        <x-push-prompt />
     </body>
 </html>

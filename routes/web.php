@@ -141,6 +141,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/payroll/mark-as-paid', [ExportPayrollDataController::class, 'markAsPaid'])
         ->middleware('role:superadmin,admin,finance')
         ->name('payroll.mark-as-paid');
+
+    // Web Push Subscriptions
+    Route::post('/push-subscriptions', [\App\Http\Controllers\PushSubscriptionController::class, 'update'])
+        ->name('push-subscriptions.update');
+    Route::delete('/push-subscriptions', [\App\Http\Controllers\PushSubscriptionController::class, 'destroy'])
+        ->name('push-subscriptions.destroy');
 });
 
 Route::middleware('auth')->group(function () {
