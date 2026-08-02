@@ -27,31 +27,39 @@
                 Pantau secara langsung pergerakan durasi video yang dilaporkan oleh mitra hingga batas waktu penutupan proyek.
             </p>
 
-            <!-- Progress Bar Section (Clean, no boxes) -->
-            <div class="mb-16 max-w-lg">
-                <div class="flex items-end gap-4 mb-4">
-                    <div>
-                        <div class="flex items-baseline gap-1">
-                            <span class="text-5xl font-light text-white tracking-tighter">{{ number_format($totalHours, 1) }}</span>
-                            <span class="text-sm text-neutral-500 font-medium">HRS</span>
-                        </div>
-                    </div>
-                    <div class="pb-1 text-neutral-600 font-light text-3xl">/</div>
-                    <div class="pb-1">
-                        <span class="text-2xl text-neutral-500 font-light">{{ $targetHours }} HRS</span>
-                    </div>
+            <!-- Progress Bar Section (Glowing Thick Style) -->
+            <div class="mb-16 max-w-lg w-full">
+                
+                <div class="flex items-center gap-3 mb-2">
+                    <svg class="w-5 h-5 text-neutral-400 animate-spin-slow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span class="text-xl font-medium text-white tracking-wide">Project Progress</span>
+                    <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-neutral-400 ml-2">{{ $eventName }}</span>
                 </div>
 
-                <div class="w-full">
-                    <div class="flex justify-between items-center mb-3">
-                        <span class="text-xs font-medium text-neutral-500 uppercase tracking-wider">Progress</span>
-                        <span class="text-sm font-light text-white">{{ number_format($rawPercentage, 1) }}%</span>
+                <div class="flex items-baseline gap-1 mb-6">
+                    <span class="text-7xl font-bold text-white tracking-tighter">{{ number_format($rawPercentage, 0) }}</span>
+                    <span class="text-3xl text-neutral-500 font-bold">%</span>
+                </div>
+
+                <!-- Thick Progress Bar -->
+                <div class="w-full h-14 bg-white/10 backdrop-blur-md rounded-full relative flex items-center pr-6 z-10 shadow-inner">
+                    <!-- Glowing Fill -->
+                    <div class="absolute top-0 left-0 h-full rounded-full bg-gradient-to-r from-[#a3ff47] to-[#47ffde] transition-all duration-1000 ease-out shadow-[0_0_40px_rgba(71,255,222,0.4)]" 
+                         style="width: {{ $progressPercentage > 15 ? $progressPercentage : 15 }}%">
                     </div>
-                    <div class="h-1 w-full bg-neutral-900 rounded-full overflow-hidden">
-                        <div class="h-full bg-white rounded-full relative transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(255,255,255,0.5)]" 
-                             style="width: {{ $progressPercentage > 2 ? $progressPercentage : 2 }}%">
-                        </div>
+                    
+                    <!-- Text inside right side of the bar -->
+                    <div class="relative w-full flex justify-end z-20 pointer-events-none">
+                        <span class="text-sm font-medium text-white/70 drop-shadow-md">Target: {{ $targetHours }} HRS</span>
                     </div>
+                </div>
+                
+                <!-- Acquired Detail -->
+                <div class="mt-4 flex gap-4 text-sm font-medium">
+                    <span class="text-neutral-400">Total Acquired:</span>
+                    <span class="text-white">{{ number_format($totalHours, 1) }} HRS</span>
                 </div>
             </div>
 
