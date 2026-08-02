@@ -17,7 +17,7 @@ class EventController extends Controller
             'name' => 'Closing Project 1 Minutes',
             'target_hours' => 200,
             'deadline' => Carbon::parse('2026-08-03 11:00:00'),
-            'group_name' => 'Grup B', // Dikembalikan filter Grup B
+            'group_name' => 'Group B', // Diperbaiki: Menggunakan "Group" bukan "Grup"
             'period_number' => 3, // Target Periode Ke-3
             'is_active' => true,
         ];
@@ -36,10 +36,11 @@ class EventController extends Controller
         $totalSubmittedMinutes = 0;
 
         if ($periodTarget) {
-            $startDate = $periodTarget['start']->format('Y-m-d');
-            $endDate = $periodTarget['end']->format('Y-m-d');
+            // Sesuai instruksi: ambil laporan user Group B dari tanggal 1-3 saja
+            $startDate = '2026-08-01';
+            $endDate = '2026-08-03';
 
-            // 2. Query total menit dilaporkan (tanpa memandang status approve) khusus target grup
+            // 2. Query total menit dilaporkan khusus target grup di tanggal 1-3
             $totalSubmittedMinutes = VideoWorkReport::whereBetween('submission_date', [$startDate, $endDate])
                 ->when($activeEvent['group_name'], function ($query, $groupName) {
                     $query->whereHas('partner', function ($q) use ($groupName) {
