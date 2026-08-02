@@ -27,39 +27,58 @@
                 Pantau secara langsung pergerakan durasi video yang dilaporkan oleh mitra hingga batas waktu penutupan proyek.
             </p>
 
-            <!-- Progress Bar Section (Glowing Thick Style) -->
-            <div class="mb-16 max-w-lg w-full">
+            <!-- Progress Bar Card -->
+            <div class="mb-16 max-w-lg w-full bg-[#1a1a1c] rounded-[2rem] p-6 sm:p-8 shadow-2xl border border-white/[0.08] relative overflow-hidden">
                 
-                <div class="flex items-center gap-3 mb-2">
-                    <svg class="w-5 h-5 text-neutral-400 animate-spin-slow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    <span class="text-xl font-medium text-white tracking-wide">Project Progress</span>
-                    <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-neutral-400 ml-2">{{ $eventName }}</span>
-                </div>
+                <!-- Subtle inner glow on top-left -->
+                <div class="absolute top-[-50px] left-[-50px] w-[200px] h-[200px] bg-white/[0.04] rounded-full blur-[50px] pointer-events-none"></div>
 
-                <div class="flex items-baseline gap-1 mb-6">
-                    <span class="text-7xl font-bold text-white tracking-tighter">{{ number_format($rawPercentage, 0) }}</span>
-                    <span class="text-3xl text-neutral-500 font-bold">%</span>
-                </div>
+                <div class="relative z-10">
+                    <div class="flex items-center gap-3 mb-1">
+                        <svg class="w-6 h-6 text-neutral-300 animate-spin-slow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="text-xl font-medium text-white tracking-wide">Project Progress</span>
+                        <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-neutral-400 ml-1">{{ $eventName }}</span>
+                    </div>
 
-                <!-- Thick Progress Bar -->
-                <div class="w-full h-14 bg-white/10 backdrop-blur-md rounded-full relative flex items-center pr-6 z-10 shadow-inner">
-                    <!-- Glowing Fill -->
-                    <div class="absolute top-0 left-0 h-full rounded-full bg-gradient-to-r from-[#a3ff47] to-[#47ffde] transition-all duration-1000 ease-out shadow-[0_0_40px_rgba(71,255,222,0.4)]" 
-                         style="width: {{ $progressPercentage > 15 ? $progressPercentage : 15 }}%">
+                    <div class="flex items-baseline gap-1 mb-6">
+                        <span class="text-7xl font-bold text-white tracking-tighter">{{ number_format($rawPercentage, 0) }}</span>
+                        <span class="text-3xl text-neutral-500 font-bold">%</span>
+                    </div>
+
+                    <!-- Thick Progress Bar -->
+                    <div class="w-full h-14 bg-white/10 backdrop-blur-md rounded-full relative flex items-center pr-6 mb-8 shadow-inner border border-white/5">
+                        <!-- Glowing Fill -->
+                        <div class="absolute top-0 left-0 h-full rounded-full bg-gradient-to-r from-[#a3ff47] to-[#47ffde] transition-all duration-1000 ease-out shadow-[0_0_30px_rgba(71,255,222,0.4)]" 
+                             style="width: {{ $progressPercentage > 15 ? $progressPercentage : 15 }}%">
+                        </div>
+                        
+                        <!-- Text inside right side of the bar -->
+                        <div class="relative w-full flex justify-end pointer-events-none">
+                            <span class="text-sm font-medium text-white/80 drop-shadow-md">Target: {{ $targetHours }} HRS</span>
+                        </div>
                     </div>
                     
-                    <!-- Text inside right side of the bar -->
-                    <div class="relative w-full flex justify-end z-20 pointer-events-none">
-                        <span class="text-sm font-medium text-white/70 drop-shadow-md">Target: {{ $targetHours }} HRS</span>
+                    <!-- Bottom section: Collaborators & Detail -->
+                    <div class="flex justify-between items-end mt-4">
+                        <div>
+                            <p class="text-xs text-neutral-400 font-medium mb-3">Total Acquired</p>
+                            <div class="flex -space-x-2">
+                                <div class="w-9 h-9 rounded-xl bg-[#2a2a2c] flex items-center justify-center border-2 border-[#1a1a1c] z-30">
+                                    <span class="text-xs text-white font-bold">{{ number_format($totalHours, 1) }}</span>
+                                </div>
+                                <div class="w-9 h-9 rounded-xl bg-[#3a3a3c] flex items-center justify-center border-2 border-[#1a1a1c] z-20">
+                                    <span class="text-[10px] text-white">HRS</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="px-4 py-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-white font-medium transition-colors flex items-center gap-2">
+                            More details 
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </button>
                     </div>
-                </div>
-                
-                <!-- Acquired Detail -->
-                <div class="mt-4 flex gap-4 text-sm font-medium">
-                    <span class="text-neutral-400">Total Acquired:</span>
-                    <span class="text-white">{{ number_format($totalHours, 1) }} HRS</span>
                 </div>
             </div>
 
