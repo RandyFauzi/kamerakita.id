@@ -15,8 +15,8 @@
         </div>
 
         <!-- The Central Widget -->
-        <div class="w-full max-w-[440px] mx-auto px-4 sm:px-0 relative z-10">
-            <div class="w-full rounded-[2.5rem] bg-white shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1),0_0_0_1px_rgba(0,0,0,0.02)] flex flex-col relative">
+        <div class="w-full px-4 sm:px-0 relative z-10 mx-auto" style="max-width: 480px;">
+            <div class="w-full rounded-[2.5rem] bg-white shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1),0_0_0_1px_rgba(0,0,0,0.02)] flex flex-col relative overflow-hidden">
                 
                 <!-- Top Section (White) -->
                 <div class="p-7 sm:p-8 pb-14 relative z-10 bg-white rounded-t-[2.5rem]">
@@ -91,7 +91,7 @@
         </div>
 
         <!-- Minimalist Countdown -->
-        <div class="mt-14 relative z-10 w-full max-w-[440px] px-4 sm:px-0 flex flex-col items-center">
+        <div class="mt-10 relative z-10 w-full px-4 sm:px-0 flex flex-col items-center mx-auto" style="max-width: 480px;">
             <span class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.25em] mb-4">Closing Deadline</span>
             
             <div id="timer-container" class="flex items-center justify-center gap-3 sm:gap-5 w-full">
