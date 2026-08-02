@@ -15,7 +15,7 @@
         </div>
 
         <!-- The Central Widget -->
-        <div class="w-full max-w-[440px] px-4 sm:px-0 relative z-10">
+        <div class="w-full max-w-[440px] mx-auto px-4 sm:px-0 relative z-10">
             <div class="w-full rounded-[2.5rem] bg-white shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1),0_0_0_1px_rgba(0,0,0,0.02)] flex flex-col relative">
                 
                 <!-- Top Section (White) -->
@@ -70,18 +70,20 @@
                         </div>
                     </div>
 
-                    <!-- Custom Progress Bar -->
-                    <div class="relative w-full h-2.5 sm:h-3 bg-white/5 rounded-full mb-2 mt-2">
-                        <!-- Fill -->
-                        <div class="absolute top-0 left-0 h-full rounded-full transition-all duration-1000 ease-out" 
-                             style="width: {{ $progressPercentage > 5 ? $progressPercentage : 5 }}%; background: linear-gradient(90deg, #00f2fe 0%, #4facfe 50%, #ff8a00 100%);">
+                    <!-- Semi-3D Thick Progress Bar (First Design) -->
+                    <div class="w-full h-12 lg:h-14 rounded-full relative flex items-center pr-4 mb-2 mt-4"
+                         style="background: rgba(0,0,0,0.5); box-shadow: inset 0 4px 12px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.03);">
+                        
+                        <!-- Glowing Fill with 3D Volume -->
+                        <div class="absolute top-0 left-0 h-full rounded-full transition-all duration-1000 ease-out z-10" 
+                             style="width: {{ $progressPercentage > 15 ? $progressPercentage : 15 }}%; 
+                                    background: linear-gradient(90deg, #a3ff47 0%, #47ffde 100%); 
+                                    box-shadow: inset 0 4px 8px rgba(255,255,255,0.5), inset 0 -4px 8px rgba(0,0,0,0.15), 0 0 35px rgba(71,255,222,0.4);">
                         </div>
-                        <!-- Flare/Orb Thumb -->
-                        <div class="absolute top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full transition-all duration-1000 ease-out z-20"
-                             style="left: calc({{ $progressPercentage > 5 ? $progressPercentage : 5 }}% - 20px); background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 50%, transparent 100%);">
-                            <div class="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-yellow-300 to-orange-500 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(255,165,0,0.6)] border-2 border-white/20">
-                                <span class="text-sm sm:text-base leading-none">🔥</span>
-                            </div>
+                        
+                        <!-- Text inside right side of the bar -->
+                        <div class="relative w-full flex justify-end z-20 pointer-events-none">
+                            <span class="text-xs font-bold text-white/80 drop-shadow-md tracking-wide">Target: {{ $targetHours }} HRS</span>
                         </div>
                     </div>
                 </div>
