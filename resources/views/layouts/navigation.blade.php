@@ -15,6 +15,13 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+
+                    @if(in_array(Auth::user()->role ?? '', ['superadmin', 'admin']))
+                        <x-nav-link :href="route('admin.temporary-target')" :active="request()->routeIs('admin.temporary-target')" class="text-indigo-600 font-bold">
+                            {{ __('Target Grup B') }}
+                        </x-nav-link>
+                    @endif
+
                     <x-nav-link :href="route('partners.index')" :active="request()->routeIs('partners.*')">
                         {{ __('Data Mitra') }}
                     </x-nav-link>

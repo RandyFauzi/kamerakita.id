@@ -57,6 +57,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware('role:superadmin,admin')
         ->name('activity-logs.index');
 
+    // FITUR SEMENTARA: Dasbor Target Grup B
+    Route::get('/admin/temporary-target', [\App\Http\Controllers\TargetGrupBController::class, 'index'])
+        ->middleware('role:superadmin,admin')
+        ->name('admin.temporary-target');
+
     // Rekruter Management Routes
     Route::get('/rekruter', [\App\Http\Controllers\RekruterController::class, 'index'])
         ->middleware('role:superadmin,admin')
