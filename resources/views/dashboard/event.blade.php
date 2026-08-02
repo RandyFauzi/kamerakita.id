@@ -3,15 +3,24 @@
     <script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.5/build/spline-viewer.js"></script>
 
     <!-- Full Black Canvas with Negative Margins to override layout padding -->
-    <div class="relative bg-black min-h-[calc(100vh-4rem)] -m-4 sm:-m-6 lg:-m-8 overflow-hidden text-white font-sans flex flex-col lg:flex-row items-center">
+    <!-- Custom style tag to forcefully override background just in case tailwind classes conflict -->
+    <style>
+        .event-dark-bg {
+            background: linear-gradient(135deg, #1f2937 0%, #030712 100%) !important;
+            color: #ffffff !important;
+        }
+    </style>
+
+    <div class="relative min-h-[calc(100vh-4rem)] -m-4 sm:-m-6 lg:-m-8 overflow-hidden flex flex-col lg:flex-row items-center event-dark-bg">
         
         <!-- Subtle Spotlight Effect -->
-        <div class="absolute top-0 right-0 w-[800px] h-[800px] bg-white/[0.03] rounded-full filter blur-[120px] pointer-events-none transform translate-x-1/3 -translate-y-1/3"></div>
+        <div class="absolute top-0 right-0 w-[800px] h-[800px] bg-white/[0.05] rounded-full filter blur-[120px] pointer-events-none transform translate-x-1/3 -translate-y-1/3 z-0"></div>
 
         <!-- Left Content (Text, Progress, Countdown) -->
-        <div class="w-full lg:w-1/2 px-8 sm:px-16 lg:px-24 py-12 flex flex-col justify-center relative z-10">
-            
-            <h1 class="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400 tracking-tight mb-4">
+        <div class="w-full lg:w-1/2 px-8 sm:px-16 lg:px-24 py-12 flex flex-col justify-center relative z-20 pointer-events-none">
+            <!-- Let left content text be pointer events none so it doesn't block Spline interactions -->
+            <div class="pointer-events-auto">
+                <h1 class="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-white to-gray-400 tracking-tight mb-4">
                 {{ $eventName }}
             </h1>
             <p class="text-neutral-400 max-w-lg mb-12 text-sm leading-relaxed">
@@ -79,19 +88,21 @@
                     </div>
                 </div>
             </div>
-
+            
+            </div>
         </div>
 
         <!-- Right Content (Interactive 3D Spline) -->
-        <div class="w-full lg:w-1/2 h-[50vh] lg:h-screen absolute lg:relative top-0 right-0 opacity-30 lg:opacity-100 pointer-events-none lg:pointer-events-auto">
+        <div class="w-full lg:w-1/2 h-[50vh] lg:h-screen absolute top-0 right-0 opacity-40 lg:opacity-100 z-0 overflow-visible pointer-events-auto">
+            <!-- Geser Spline ke kanan dengan translate -->
             <spline-viewer 
                 loading-anim-type="spinner-small-light" 
-                class="w-full h-full" 
+                class="w-full h-full lg:w-[120%] lg:h-[120%] lg:absolute lg:top-[-10%] lg:right-[-15%]" 
                 url="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode">
             </spline-viewer>
             <!-- Overlay to fade out spline into background on small screens -->
-            <div class="absolute inset-0 bg-gradient-to-r from-black via-transparent to-transparent hidden lg:block"></div>
-            <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent lg:hidden"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-[#111] via-transparent to-transparent hidden lg:block pointer-events-none"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-[#111] via-[#111]/50 to-transparent lg:hidden pointer-events-none"></div>
         </div>
         
     </div>
