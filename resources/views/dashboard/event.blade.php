@@ -1,175 +1,143 @@
 <x-app-layout>
-    <!-- Full Screen Wrapper for Video Background -->
-    <div class="relative min-h-[calc(100vh-4rem)] -m-4 sm:-m-6 lg:-m-8 overflow-hidden flex flex-col items-center justify-center bg-[#07090b]">
+    <!-- Light, clean background with subtle grid pattern -->
+    <div class="relative min-h-[calc(100vh-4rem)] -m-4 sm:-m-6 lg:-m-8 flex flex-col items-center justify-center bg-[#fafafa] font-sans"
+         style="background-image: linear-gradient(#f0f0f0 1px, transparent 1px), linear-gradient(90deg, #f0f0f0 1px, transparent 1px); background-size: 40px 40px;">
         
-        <!-- Video Background -->
-        <div class="absolute inset-0 w-full h-full z-0 overflow-hidden pointer-events-none">
-            <!-- Cipher Digital Video (Webm & MP4 Fallback) -->
-            <video autoplay loop muted playsinline class="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto object-cover transform -translate-x-1/2 -translate-y-1/2 opacity-75 mix-blend-screen filter contrast-125">
-                <source src="https://cipherdigital.com/wp-content/uploads/2026/04/Cipher_Hero_60fps.webm" type="video/webm">
-                <source src="https://cipherdigital.com/wp-content/uploads/2026/04/Cipher_Hero_60fps.mp4" type="video/mp4">
-            </video>
-            
-            <!-- Dark Vignette & Gradient Overlays for Readability -->
-            <div class="absolute inset-0 bg-gradient-to-b from-[#07090b]/80 via-transparent to-[#07090b]/90"></div>
-            <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-transparent via-[#07090b]/40 to-[#07090b]/95"></div>
+        <!-- Top Nav Badges (Aesthetic detail) -->
+        <div class="absolute top-6 left-6 hidden sm:block">
+            <span class="px-4 py-2 bg-white border border-gray-200 rounded-full text-xs font-semibold text-gray-600 flex items-center gap-2 shadow-sm">
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg> 
+                K-01
+            </span>
+        </div>
+        <div class="absolute top-6 right-6 hidden sm:block">
+            <span class="text-gray-400 text-sm font-medium">Dashboard progress</span>
         </div>
 
-        <!-- Main Content Grid -->
-        <div class="relative z-10 w-full max-w-[1400px] mx-auto px-6 sm:px-12 py-16 flex flex-col items-center justify-center">
-            
-            <!-- Header Section -->
-            <div class="text-center mb-12 lg:mb-20 max-w-4xl mx-auto">
-                <div class="inline-block mb-4 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-md">
-                    <span class="text-xs font-semibold tracking-[0.2em] text-[#a3ff47] uppercase">Live Monitoring Dashboard</span>
-                </div>
-                <h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-400 tracking-tighter drop-shadow-2xl mb-6">
-                    {{ $eventName }}
-                </h1>
-                <p class="text-neutral-400 text-lg md:text-xl font-light tracking-wide max-w-2xl mx-auto">
-                    Pantau secara langsung pergerakan durasi video yang dilaporkan oleh mitra hingga batas waktu penutupan proyek.
-                </p>
-            </div>
-
-            <!-- Cards Container (Side by side on Large Screens) -->
-            <div class="flex flex-col lg:flex-row items-stretch justify-center gap-8 lg:gap-10 w-full">
+        <!-- The Central Widget -->
+        <div class="w-full max-w-[440px] px-4 sm:px-0 relative z-10">
+            <div class="w-full rounded-[2.5rem] bg-white shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1),0_0_0_1px_rgba(0,0,0,0.02)] flex flex-col relative">
                 
-                <!-- Progress Card (Glassmorphism & Semi-3D) -->
-                <div class="w-full lg:w-1/2 max-w-xl rounded-[2.5rem] p-8 sm:p-10 relative overflow-hidden backdrop-blur-2xl transition-all duration-500 hover:-translate-y-2 group"
-                     style="background: rgba(15, 17, 21, 0.6); box-shadow: inset 0 1px 1px rgba(255,255,255,0.1), 0 30px 60px -15px rgba(0,0,0,0.9); border: 1px solid rgba(255,255,255,0.08);">
-                    
-                    <!-- Ambient Glow -->
-                    <div class="absolute top-[-20%] left-[-10%] w-[300px] h-[300px] bg-white/[0.03] rounded-full blur-[60px] pointer-events-none z-0 transition-opacity group-hover:opacity-100"></div>
-
-                    <div class="relative z-10 flex flex-col h-full justify-between">
-                        <div>
-                            <div class="flex items-center justify-between mb-8">
-                                <div class="flex items-center gap-3">
-                                    <svg class="w-6 h-6 text-[#a3ff47] animate-spin-slow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83" stroke-linecap="round" stroke-linejoin="round"/>
-                                    </svg>
-                                    <span class="text-xl font-medium text-white tracking-wide">Project Progress</span>
-                                </div>
-                                <span class="px-3 py-1 rounded-full text-xs font-bold tracking-wider text-[#a3ff47] bg-[#a3ff47]/10 border border-[#a3ff47]/20 flex items-center gap-2">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-[#a3ff47] animate-pulse"></span>
-                                    LIVE
-                                </span>
-                            </div>
-
-                            <div class="flex items-baseline gap-1 mb-6">
-                                <span class="text-7xl lg:text-8xl font-bold text-white tracking-tighter">{{ number_format($rawPercentage, 0) }}</span>
-                                <span class="text-4xl text-neutral-500 font-bold">%</span>
-                            </div>
-
-                            <!-- Semi-3D Thick Progress Bar -->
-                            <div class="w-full h-12 lg:h-14 rounded-full relative flex items-center mb-10"
-                                 style="background: rgba(0,0,0,0.6); box-shadow: inset 0 4px 12px rgba(0,0,0,0.9), inset 0 1px 1px rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.03);">
-                                
-                                <!-- Glowing Fill -->
-                                <div class="absolute top-0 left-0 h-full rounded-full transition-all duration-1000 ease-out z-10" 
-                                     style="width: {{ $progressPercentage > 15 ? $progressPercentage : 15 }}%; 
-                                            background: linear-gradient(90deg, #a3ff47 0%, #47ffde 100%); 
-                                            box-shadow: inset 0 4px 8px rgba(255,255,255,0.5), inset 0 -4px 8px rgba(0,0,0,0.2), 0 0 40px rgba(71,255,222,0.4);">
-                                </div>
-                                
-                                <div class="absolute right-5 z-20 pointer-events-none">
-                                    <span class="text-xs sm:text-sm font-bold text-white/90 drop-shadow-md">Target: {{ $targetHours }} HRS</span>
-                                </div>
-                            </div>
+                <!-- Top Section (White) -->
+                <div class="p-7 sm:p-8 pb-14 relative z-10 bg-white rounded-t-[2.5rem]">
+                    <div class="flex items-start gap-5">
+                        <!-- Thumbnail -->
+                        <div class="w-16 h-16 rounded-2xl bg-indigo-50 flex-shrink-0 flex items-center justify-center border border-indigo-100 shadow-inner">
+                            <svg class="w-8 h-8 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
                         </div>
                         
-                        <div class="flex justify-between items-end mt-4 pt-6 border-t border-white/10">
-                            <div>
-                                <p class="text-xs text-neutral-400 font-semibold uppercase tracking-[0.15em] mb-2">Total Acquired</p>
-                                <div class="flex items-baseline gap-1.5">
-                                    <span class="text-3xl sm:text-4xl font-bold text-white tracking-tight">{{ number_format($totalHours, 1) }}</span>
-                                    <span class="text-sm sm:text-base text-neutral-500 font-bold">HRS</span>
+                        <!-- Info -->
+                        <div class="flex-1">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="px-2.5 py-1 bg-green-50 text-green-600 text-[10px] font-bold uppercase tracking-wider rounded-md border border-green-100">Active</span>
+                                <div class="text-right flex items-center gap-2">
+                                    <span class="text-[11px] text-gray-400 font-medium">Target HRS</span>
+                                    <div class="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-white">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 15l7-7 7 7"></path></svg>
+                                    </div>
                                 </div>
                             </div>
-                            
-                            <button class="w-12 h-12 rounded-full bg-white/5 hover:bg-white/15 border border-white/10 text-white flex items-center justify-center transition-all hover:scale-110 shadow-lg">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                            </button>
+                            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 leading-tight mb-1 truncate" title="{{ $eventName }}">{{ $eventName }}</h2>
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-lg font-bold text-indigo-600">{{ number_format($totalHours, 1) }}</span>
+                                <span class="text-xs font-semibold text-gray-400 uppercase tracking-wide">Acquired / {{ $targetHours }} HRS</span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Countdown Timer Card (Matching Aesthetic) -->
-                <div class="w-full lg:w-1/2 max-w-xl rounded-[2.5rem] p-8 sm:p-10 relative overflow-hidden backdrop-blur-2xl transition-all duration-500 hover:-translate-y-2 flex flex-col justify-center items-center group"
-                     style="background: rgba(15, 17, 21, 0.6); box-shadow: inset 0 1px 1px rgba(255,255,255,0.1), 0 30px 60px -15px rgba(0,0,0,0.9); border: 1px solid rgba(255,255,255,0.08);">
+                <!-- Bottom Section (Dark Gradient) -->
+                <div class="p-7 sm:p-8 rounded-[2.5rem] -mt-8 relative z-20 overflow-hidden"
+                     style="background: linear-gradient(150deg, #181926 0%, #100b16 100%); box-shadow: 0 -10px 20px -10px rgba(0,0,0,0.2);">
                     
-                    <!-- Ambient Glow -->
-                    <div class="absolute bottom-[-20%] right-[-10%] w-[300px] h-[300px] bg-[#47ffde]/[0.05] rounded-full blur-[60px] pointer-events-none z-0 transition-opacity group-hover:opacity-100"></div>
+                    <!-- Inner warm glow at the bottom right -->
+                    <div class="absolute right-[-20%] bottom-[-50%] w-64 h-64 bg-orange-500/20 blur-[50px] pointer-events-none rounded-full"></div>
+                    <div class="absolute left-[-20%] top-[-20%] w-40 h-40 bg-blue-500/10 blur-[40px] pointer-events-none rounded-full"></div>
 
-                    <div class="relative z-10 w-full flex flex-col items-center justify-center h-full">
-                        <div class="flex items-center gap-3 mb-12 w-full justify-center">
-                            <svg class="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            <h3 class="text-neutral-300 text-sm uppercase tracking-[0.2em] font-semibold text-center">Closing Time Remaining</h3>
+                    <!-- Header -->
+                    <div class="text-center mb-6">
+                        <h3 class="text-gray-400 text-[10px] font-bold uppercase tracking-[0.25em]">Profit Progress</h3>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="flex justify-between items-end mb-4 relative z-10">
+                        <span class="text-4xl sm:text-5xl font-bold text-white tracking-tighter">{{ number_format($rawPercentage, 0) }}%</span>
+                        <div class="flex items-center gap-2 pb-1">
+                            <span class="text-gray-400 text-xs font-medium">Live monitoring</span>
+                            <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
                         </div>
+                    </div>
 
-                        <div id="timer-container" class="flex gap-3 sm:gap-4 md:gap-6 items-center justify-center w-full">
-                            
-                            <!-- Days -->
-                            <div class="flex flex-col items-center">
-                                <div class="bg-black/60 border border-white/10 rounded-2xl p-4 sm:p-6 shadow-inner backdrop-blur-md relative overflow-hidden group/time min-w-[70px] sm:min-w-[90px]">
-                                    <div class="absolute inset-0 bg-white/5 opacity-0 group-hover/time:opacity-100 transition-opacity duration-300"></div>
-                                    <div class="relative overflow-hidden h-[1.1em] flex justify-center">
-                                        <span id="days" class="text-4xl sm:text-5xl lg:text-6xl text-white font-light tracking-tighter block transition-transform duration-300 text-center w-full">00</span>
-                                    </div>
-                                </div>
-                                <span class="text-[9px] sm:text-[11px] text-neutral-500 mt-4 uppercase tracking-[0.2em] font-semibold">Days</span>
+                    <!-- Custom Progress Bar -->
+                    <div class="relative w-full h-2.5 sm:h-3 bg-white/5 rounded-full mb-2 mt-2">
+                        <!-- Fill -->
+                        <div class="absolute top-0 left-0 h-full rounded-full transition-all duration-1000 ease-out" 
+                             style="width: {{ $progressPercentage > 5 ? $progressPercentage : 5 }}%; background: linear-gradient(90deg, #00f2fe 0%, #4facfe 50%, #ff8a00 100%);">
+                        </div>
+                        <!-- Flare/Orb Thumb -->
+                        <div class="absolute top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full transition-all duration-1000 ease-out z-20"
+                             style="left: calc({{ $progressPercentage > 5 ? $progressPercentage : 5 }}% - 20px); background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 50%, transparent 100%);">
+                            <div class="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-yellow-300 to-orange-500 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(255,165,0,0.6)] border-2 border-white/20">
+                                <span class="text-sm sm:text-base leading-none">🔥</span>
                             </div>
-                            
-                            <div class="text-2xl sm:text-3xl text-neutral-600 font-light mb-6">:</div>
-                            
-                            <!-- Hours -->
-                            <div class="flex flex-col items-center">
-                                <div class="bg-black/60 border border-white/10 rounded-2xl p-4 sm:p-6 shadow-inner backdrop-blur-md relative overflow-hidden group/time min-w-[70px] sm:min-w-[90px]">
-                                    <div class="absolute inset-0 bg-white/5 opacity-0 group-hover/time:opacity-100 transition-opacity duration-300"></div>
-                                    <div class="relative overflow-hidden h-[1.1em] flex justify-center">
-                                        <span id="hours" class="text-4xl sm:text-5xl lg:text-6xl text-white font-light tracking-tighter block transition-transform duration-300 text-center w-full">00</span>
-                                    </div>
-                                </div>
-                                <span class="text-[9px] sm:text-[11px] text-neutral-500 mt-4 uppercase tracking-[0.2em] font-semibold">Hours</span>
-                            </div>
-
-                            <div class="text-2xl sm:text-3xl text-neutral-600 font-light mb-6">:</div>
-
-                            <!-- Minutes -->
-                            <div class="flex flex-col items-center">
-                                <div class="bg-black/60 border border-white/10 rounded-2xl p-4 sm:p-6 shadow-inner backdrop-blur-md relative overflow-hidden group/time min-w-[70px] sm:min-w-[90px]">
-                                    <div class="absolute inset-0 bg-white/5 opacity-0 group-hover/time:opacity-100 transition-opacity duration-300"></div>
-                                    <div class="relative overflow-hidden h-[1.1em] flex justify-center">
-                                        <span id="mins" class="text-4xl sm:text-5xl lg:text-6xl text-white font-light tracking-tighter block transition-transform duration-300 text-center w-full">00</span>
-                                    </div>
-                                </div>
-                                <span class="text-[9px] sm:text-[11px] text-neutral-500 mt-4 uppercase tracking-[0.2em] font-semibold">Minutes</span>
-                            </div>
-
-                            <div class="text-2xl sm:text-3xl text-neutral-600 font-light mb-6">:</div>
-
-                            <!-- Seconds -->
-                            <div class="flex flex-col items-center">
-                                <div class="bg-[#1a202c]/80 border border-white/10 rounded-2xl p-4 sm:p-6 shadow-[inset_0_2px_15px_rgba(71,255,222,0.15)] backdrop-blur-md relative overflow-hidden min-w-[70px] sm:min-w-[90px]">
-                                    <div class="relative overflow-hidden h-[1.1em] flex justify-center">
-                                        <span id="secs" class="text-4xl sm:text-5xl lg:text-6xl text-[#47ffde] font-medium tracking-tighter block transition-transform duration-300 text-center w-full" style="text-shadow: 0 0 20px rgba(71,255,222,0.5);">00</span>
-                                    </div>
-                                </div>
-                                <span class="text-[9px] sm:text-[11px] text-[#47ffde]/70 mt-4 uppercase tracking-[0.2em] font-semibold">Seconds</span>
-                            </div>
-
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
-    </div>
 
+        <!-- Minimalist Countdown -->
+        <div class="mt-14 relative z-10 w-full max-w-[440px] px-4 sm:px-0 flex flex-col items-center">
+            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.25em] mb-4">Closing Deadline</span>
+            
+            <div id="timer-container" class="flex items-center justify-center gap-3 sm:gap-5 w-full">
+                <!-- Days -->
+                <div class="flex flex-col items-center w-[60px] sm:w-[70px]">
+                    <div class="bg-white border border-gray-100 rounded-xl p-3 w-full shadow-sm">
+                        <span id="days" class="text-2xl sm:text-3xl text-gray-800 font-bold block text-center">00</span>
+                    </div>
+                    <span class="text-[9px] text-gray-400 mt-2 uppercase tracking-widest font-semibold">Days</span>
+                </div>
+                
+                <div class="text-xl text-gray-300 font-light mb-5">:</div>
+                
+                <!-- Hours -->
+                <div class="flex flex-col items-center w-[60px] sm:w-[70px]">
+                    <div class="bg-white border border-gray-100 rounded-xl p-3 w-full shadow-sm">
+                        <span id="hours" class="text-2xl sm:text-3xl text-gray-800 font-bold block text-center">00</span>
+                    </div>
+                    <span class="text-[9px] text-gray-400 mt-2 uppercase tracking-widest font-semibold">Hours</span>
+                </div>
+
+                <div class="text-xl text-gray-300 font-light mb-5">:</div>
+
+                <!-- Minutes -->
+                <div class="flex flex-col items-center w-[60px] sm:w-[70px]">
+                    <div class="bg-white border border-gray-100 rounded-xl p-3 w-full shadow-sm">
+                        <span id="mins" class="text-2xl sm:text-3xl text-gray-800 font-bold block text-center">00</span>
+                    </div>
+                    <span class="text-[9px] text-gray-400 mt-2 uppercase tracking-widest font-semibold">Minutes</span>
+                </div>
+
+                <div class="text-xl text-gray-300 font-light mb-5">:</div>
+
+                <!-- Seconds -->
+                <div class="flex flex-col items-center w-[60px] sm:w-[70px]">
+                    <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-3 w-full shadow-sm relative overflow-hidden">
+                        <span id="secs" class="text-2xl sm:text-3xl text-indigo-600 font-bold block text-center relative z-10">00</span>
+                    </div>
+                    <span class="text-[9px] text-indigo-400 mt-2 uppercase tracking-widest font-semibold">Seconds</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
     <!-- Script for Countdown -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Update the countdown timer every second
             const deadline = new Date("{{ $targetDeadline->format('Y-m-d\TH:i:s') }}").getTime();
 
             const x = setInterval(function() {
@@ -178,7 +146,7 @@
 
                 if (distance < 0) {
                     clearInterval(x);
-                    document.getElementById("timer-container").innerHTML = "<div class='text-2xl font-light text-white tracking-widest uppercase'>Data Locked</div>";
+                    document.getElementById("timer-container").innerHTML = "<div class='text-sm font-bold text-gray-500 tracking-widest uppercase bg-white px-6 py-3 rounded-xl border border-gray-100 shadow-sm'>Data Locked</div>";
                     return;
                 }
 
@@ -192,24 +160,8 @@
                 if(document.getElementById("days")) document.getElementById("days").innerHTML = pad(days);
                 if(document.getElementById("hours")) document.getElementById("hours").innerHTML = pad(hours);
                 if(document.getElementById("mins")) document.getElementById("mins").innerHTML = pad(minutes);
+                if(document.getElementById("secs")) document.getElementById("secs").innerHTML = pad(seconds);
                 
-                // Smooth sliding animation for seconds
-                const secElement = document.getElementById("secs");
-                if(secElement) {
-                    if(secElement.innerHTML !== pad(seconds)) {
-                        secElement.style.transform = 'translateY(-100%)';
-                        setTimeout(() => {
-                            secElement.style.transition = 'none';
-                            secElement.style.transform = 'translateY(100%)';
-                            secElement.innerHTML = pad(seconds);
-                            
-                            setTimeout(() => {
-                                secElement.style.transition = 'transform 300ms cubic-bezier(0.4, 0, 0.2, 1)';
-                                secElement.style.transform = 'translateY(0)';
-                            }, 20);
-                        }, 300);
-                    }
-                }
             }, 1000);
         });
     </script>
