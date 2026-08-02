@@ -27,35 +27,40 @@
                 Pantau secara langsung pergerakan durasi video yang dilaporkan oleh mitra hingga batas waktu penutupan proyek.
             </p>
 
-            <!-- Progress Bar Card -->
-            <div class="mb-16 max-w-lg w-full bg-[#1a1a1c] rounded-[2rem] p-6 sm:p-8 shadow-2xl border border-white/[0.08] relative overflow-hidden">
+            <!-- Progress Bar Card (Semi-3D) -->
+            <div class="mb-16 max-w-lg w-full rounded-[2rem] p-6 sm:p-8 relative overflow-hidden"
+                 style="background: linear-gradient(180deg, #262626 0%, #171717 100%); box-shadow: inset 0 1px 2px rgba(255,255,255,0.1), 0 25px 50px -12px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.05);">
                 
                 <!-- Subtle inner glow on top-left -->
-                <div class="absolute top-[-50px] left-[-50px] w-[200px] h-[200px] bg-white/[0.04] rounded-full blur-[50px] pointer-events-none"></div>
+                <div class="absolute top-[-50px] left-[-50px] w-[200px] h-[200px] bg-white/[0.04] rounded-full blur-[40px] pointer-events-none z-0"></div>
 
                 <div class="relative z-10">
                     <div class="flex items-center gap-3 mb-1">
                         <svg class="w-6 h-6 text-neutral-300 animate-spin-slow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
-                        <span class="text-xl font-medium text-white tracking-wide">Project Progress</span>
-                        <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-neutral-400 ml-1">{{ $eventName }}</span>
+                        <span class="text-xl font-medium text-white tracking-wide drop-shadow-sm">Project Progress</span>
+                        <span class="px-3 py-1 rounded-full text-xs text-neutral-400 ml-1" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);">{{ $eventName }}</span>
                     </div>
 
-                    <div class="flex items-baseline gap-1 mb-6">
-                        <span class="text-7xl font-bold text-white tracking-tighter">{{ number_format($rawPercentage, 0) }}</span>
-                        <span class="text-3xl text-neutral-500 font-bold">%</span>
+                    <div class="flex items-baseline gap-1 mb-5">
+                        <span class="text-7xl font-bold text-white tracking-tighter drop-shadow-lg">{{ number_format($rawPercentage, 0) }}</span>
+                        <span class="text-3xl text-neutral-500 font-bold drop-shadow-sm">%</span>
                     </div>
 
-                    <!-- Thick Progress Bar -->
-                    <div class="w-full h-14 bg-white/10 backdrop-blur-md rounded-full relative flex items-center pr-6 mb-8 shadow-inner border border-white/5">
-                        <!-- Glowing Fill -->
-                        <div class="absolute top-0 left-0 h-full rounded-full bg-gradient-to-r from-[#a3ff47] to-[#47ffde] transition-all duration-1000 ease-out shadow-[0_0_30px_rgba(71,255,222,0.4)]" 
-                             style="width: {{ $progressPercentage > 15 ? $progressPercentage : 15 }}%">
+                    <!-- Semi-3D Thick Progress Bar -->
+                    <div class="w-full h-14 rounded-full relative flex items-center pr-5 mb-8"
+                         style="background: rgba(0,0,0,0.5); box-shadow: inset 0 4px 12px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.03);">
+                        
+                        <!-- Glowing Fill with 3D Volume -->
+                        <div class="absolute top-0 left-0 h-full rounded-full transition-all duration-1000 ease-out z-10" 
+                             style="width: {{ $progressPercentage > 15 ? $progressPercentage : 15 }}%; 
+                                    background: linear-gradient(90deg, #a3ff47 0%, #47ffde 100%); 
+                                    box-shadow: inset 0 4px 8px rgba(255,255,255,0.5), inset 0 -4px 8px rgba(0,0,0,0.15), 0 0 35px rgba(71,255,222,0.4);">
                         </div>
                         
                         <!-- Text inside right side of the bar -->
-                        <div class="relative w-full flex justify-end pointer-events-none">
+                        <div class="relative w-full flex justify-end z-20 pointer-events-none">
                             <span class="text-sm font-medium text-white/80 drop-shadow-md">Target: {{ $targetHours }} HRS</span>
                         </div>
                     </div>
