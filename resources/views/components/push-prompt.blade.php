@@ -1,5 +1,5 @@
 <div x-data="pushNotificationPrompt()" x-show="showBanner" x-transition.opacity
-     class="fixed bottom-0 left-0 right-0 md:left-64 p-4 z-50 flex justify-center pb-20 md:pb-6" style="display: none;">
+     class="fixed bottom-0 left-0 right-0 md:left-64 p-4 z-50 flex justify-center pb-28 md:pb-6" style="display: none;">
     
     <div class="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100 p-5 md:p-6 w-full max-w-2xl flex flex-col sm:flex-row items-center gap-4 relative">
         

@@ -34,12 +34,17 @@
                 <x-navbar :header="$header ?? null" />
 
                 <!-- Main Content Slot -->
-                <main class="flex-1 min-w-0 px-4 pb-6 pt-3 sm:p-6">
+                @php
+                    $partner = \App\Models\Partner::where('user_id', Auth::id())->first();
+                    $isUser = $partner && in_array($partner->partner_role, ['worker', 'mitra'], true);
+                @endphp
+                <main class="flex-1 min-w-0 px-4 pt-3 sm:p-6 {{ $isUser ? 'pb-28 md:pb-6' : 'pb-6' }}">
                     {{ $slot }}
                 </main>
             </div>
         </div>
         <x-floating-calculator />
         <x-push-prompt />
+        <x-mobile-bottom-nav />
     </body>
 </html>
