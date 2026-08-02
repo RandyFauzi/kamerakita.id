@@ -11,7 +11,7 @@
         }
     </style>
 
-    <div class="relative min-h-[calc(100vh-4rem)] -m-4 sm:-m-6 lg:-m-8 overflow-hidden flex flex-col lg:flex-row items-center event-dark-bg">
+    <div class="relative min-h-[calc(100vh-4rem)] -m-4 sm:-m-6 lg:-m-8 overflow-hidden flex flex-col lg:flex-row event-dark-bg">
         
         <!-- Subtle Spotlight Effect -->
         <div class="absolute top-0 right-0 w-[800px] h-[800px] bg-white/[0.05] rounded-full filter blur-[120px] pointer-events-none transform translate-x-1/3 -translate-y-1/3 z-0"></div>
@@ -26,7 +26,7 @@
             </div>
 
             <!-- Progress Bar Card (Semi-3D) -->
-            <div class="mb-16 max-w-lg w-full rounded-[2rem] p-6 sm:p-8 relative overflow-hidden"
+            <div class="mb-16 max-w-lg w-full rounded-[2rem] p-6 sm:p-8 relative overflow-hidden pointer-events-auto"
                  style="background: linear-gradient(180deg, #262626 0%, #171717 100%); box-shadow: inset 0 1px 2px rgba(255,255,255,0.1), 0 25px 50px -12px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.05);">
                 
                 <!-- Subtle inner glow on top-left -->
@@ -81,30 +81,39 @@
                 </div>
             </div>
 
-            <!-- Countdown Timer (Clean, thin font) -->
-            <div class="max-w-lg">
-                <div id="timer-container" class="flex justify-start items-start gap-4 sm:gap-6 font-light">
+            <!-- Countdown Section -->
+            <div class="pointer-events-auto">
+                <div class="flex gap-4 sm:gap-6 md:gap-8 items-start">
                     <!-- Days -->
                     <div class="flex flex-col items-center">
-                        <span id="days" class="text-5xl sm:text-6xl text-white tracking-tight">00</span>
+                        <div class="relative overflow-hidden h-[1.1em]">
+                            <span id="days" class="text-5xl sm:text-6xl text-white tracking-tight block transition-transform duration-300">00</span>
+                        </div>
                         <span class="text-[10px] text-neutral-500 mt-2 uppercase tracking-widest">Days</span>
                     </div>
-                    <span class="text-4xl text-neutral-600 mt-1">:</span>
+                    
+                    <div class="text-4xl text-neutral-600 font-light mt-1">:</div>
                     
                     <!-- Hours -->
                     <div class="flex flex-col items-center">
-                        <span id="hours" class="text-5xl sm:text-6xl text-white tracking-tight">00</span>
+                        <div class="relative overflow-hidden h-[1.1em]">
+                            <span id="hours" class="text-5xl sm:text-6xl text-white tracking-tight block transition-transform duration-300">00</span>
+                        </div>
                         <span class="text-[10px] text-neutral-500 mt-2 uppercase tracking-widest">Hours</span>
                     </div>
-                    <span class="text-4xl text-neutral-600 mt-1">:</span>
-                    
+
+                    <div class="text-4xl text-neutral-600 font-light mt-1">:</div>
+
                     <!-- Minutes -->
                     <div class="flex flex-col items-center">
-                        <span id="mins" class="text-5xl sm:text-6xl text-white tracking-tight">00</span>
+                        <div class="relative overflow-hidden h-[1.1em]">
+                            <span id="mins" class="text-5xl sm:text-6xl text-white tracking-tight block transition-transform duration-300">00</span>
+                        </div>
                         <span class="text-[10px] text-neutral-500 mt-2 uppercase tracking-widest">Minutes</span>
                     </div>
-                    <span class="text-4xl text-neutral-600 mt-1">:</span>
-                    
+
+                    <div class="text-4xl text-neutral-600 font-light mt-1">:</div>
+
                     <!-- Seconds -->
                     <div class="flex flex-col items-center">
                         <div class="relative overflow-hidden h-[1.1em]">
@@ -118,10 +127,9 @@
             </div>
         </div>
 
-        <!-- Right Content (Interactive 3D Spline) -->
-        <div class="w-full lg:w-[55%] h-[50vh] lg:h-screen absolute top-0 right-0 opacity-40 lg:opacity-100 z-0 pointer-events-auto overflow-hidden">
-            <!-- Geser Spline secara eksplisit ke kanan menggunakan transform -->
-            <div class="w-full h-full flex justify-end items-center" style="transform: translateX(25%) scale(1.4); transform-origin: center right;">
+        <!-- Right Content (Interactive 3D Spline) - Real Side by Side -->
+        <div class="w-full lg:w-1/2 h-[50vh] lg:h-screen relative z-10 pointer-events-auto flex items-center justify-center">
+            <div class="w-full h-full max-w-[800px] relative">
                 <spline-viewer 
                     loading-anim-type="spinner-small-light" 
                     class="w-full h-full" 
