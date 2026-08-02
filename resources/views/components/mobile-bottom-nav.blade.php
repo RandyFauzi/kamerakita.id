@@ -175,8 +175,8 @@
     <a href="{{ route('video-submissions.submit-report.create') }}" class="center-fab-wrapper">
         <div class="fab-glow"></div>
         <div class="fab-button" id="fab-btn">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                <path d="M12 3L4 9v12h5v-7h6v7h5V9z"></path>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.125A59.769 59.769 0 0121.485 12 59.768 59.768 0 013.27 20.875L5.999 12Zm0 0h7.5" />
             </svg>
         </div>
     </a>
