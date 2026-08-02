@@ -17,7 +17,7 @@ class EventController extends Controller
             'name' => 'Closing Project 1 Minutes',
             'target_hours' => 200,
             'deadline' => Carbon::parse('2026-08-03 11:00:00'),
-            'group_name' => null, // null berarti mengambil semua laporan tanpa filter grup
+            'group_name' => 'Grup B', // Dikembalikan filter Grup B
             'period_number' => 3, // Target Periode Ke-3
             'is_active' => true,
         ];
@@ -33,24 +33,23 @@ class EventController extends Controller
         $periodTarget = $periods->first(function ($p) use ($activeEvent) {
             return str_contains($p['label'], 'Periode ' . $activeEvent['period_number']);
         });
-        $totalApprovedMinutes = 0;
+        $totalSubmittedMinutes = 0;
 
         if ($periodTarget) {
             $startDate = $periodTarget['start']->format('Y-m-d');
             $endDate = $periodTarget['end']->format('Y-m-d');
 
-            // 2. Query total menit approved khusus target grup di rentang Periode target
-            $totalApprovedMinutes = VideoWorkReport::where('qc_status', 'approved')
-                ->whereBetween('submission_date', [$startDate, $endDate])
+            // 2. Query total menit dilaporkan (tanpa memandang status approve) khusus target grup
+            $totalSubmittedMinutes = VideoWorkReport::whereBetween('submission_date', [$startDate, $endDate])
                 ->when($activeEvent['group_name'], function ($query, $groupName) {
                     $query->whereHas('partner', function ($q) use ($groupName) {
                         $q->where('group_name', $groupName);
                     });
                 })
-                ->sum('approved_duration_minutes');
+                ->sum('submitted_duration_minutes');
         }
 
-        $totalHours = round($totalApprovedMinutes / 60, 2);
+        $totalHours = round($totalSubmittedMinutes / 60, 2);
         
         // Batasi maksimal persentase 100% agar bar tidak meluap
         $rawPercentage = ($totalHours / $activeEvent['target_hours']) * 100;
