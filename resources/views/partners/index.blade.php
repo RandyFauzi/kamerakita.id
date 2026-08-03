@@ -704,6 +704,16 @@
                                                 </select>
                                             </div>
 
+                                            <!-- Client Registered bulk selection -->
+                                            <div>
+                                                <label for="bulk_is_client_registered" class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 font-mono">Status Terdaftar</label>
+                                                <select name="is_client_registered" id="bulk_is_client_registered" class="block w-full py-1.5 px-2.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white">
+                                                    <option value="no_change">Tidak Ada Perubahan</option>
+                                                    <option value="yes">Registered</option>
+                                                    <option value="no">Not Registered</option>
+                                                </select>
+                                            </div>
+
                                             <!-- Hourly rate bulk input -->
                                             <div>
                                                 <label for="bulk_rate" class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 font-mono">Nominal/Jam (Tarif)</label>
