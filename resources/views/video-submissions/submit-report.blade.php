@@ -23,8 +23,18 @@
                     </div>
                 @endif
 
-                <form action="{{ route('video-submissions.submit-report.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+                <form x-data="{ project_name: '{{ old('project_name', 'atlas') }}' }" action="{{ route('video-submissions.submit-report.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                     @csrf
+
+                    <!-- App Selection Dropdown -->
+                    <div>
+                        <label for="project_name" class="block text-sm font-semibold text-gray-700 mb-1">Pilih Aplikasi <span class="text-red-500">*</span></label>
+                        <select name="project_name" id="project_name" x-model="project_name" required class="block w-full min-h-11 px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="atlas">Atlas</option>
+                            <option value="minutes_data">Minutes Data</option>
+                        </select>
+                        @error('project_name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
                         <!-- Submission Date -->
@@ -55,24 +65,40 @@
                         </div>
                     </div>
 
-                    <!-- Evidence 1: Total duration & quality screenshot -->
+                    <!-- Evidence 1: Total duration (Changes label based on project_name) -->
                     <div class="bg-slate-50 border border-gray-100 rounded-xl sm:rounded-2xl p-4 sm:p-5 space-y-3">
                         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1.5 border-b border-gray-200/50 pb-2">
-                            <span class="text-sm font-bold text-slate-800">1. Screenshot Total Durasi & Kualitas di Aplikasi <span class="text-red-500">*</span></span>
+                            <span class="text-sm font-bold text-slate-800">
+                                1. <span x-show="project_name === 'atlas'">Screenshot Total Durasi & Kualitas di Aplikasi</span>
+                                   <span x-show="project_name === 'minutes_data'" style="display: none;">Screenshot Total Durasi di Aplikasi</span>
+                                 <span class="text-red-500">*</span>
+                            </span>
                             <span class="text-xs text-gray-400">Format: JPG, PNG, WEBP (Maks: 2MB)</span>
                         </div>
                         <input type="file" accept="image/jpeg,image/png,image/webp" name="evidence_email_image_path" id="evidence_email_image_path" required class="block w-full text-xs sm:text-sm text-gray-500 file:mr-3 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-55 file:text-indigo-700 hover:file:bg-indigo-100 file:transition-all">
                         @error('evidence_email_image_path') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                        <p class="text-xs text-gray-400 mt-1">Unggah tangkapan layar total durasi kerja dan kualitas yang tampil di aplikasi (dalam 1 gambar).</p>
+                        <p class="text-xs text-gray-400 mt-1" x-show="project_name === 'atlas'">Unggah tangkapan layar total durasi kerja dan kualitas yang tampil di aplikasi (dalam 1 gambar).</p>
+                        <p class="text-xs text-gray-400 mt-1" x-show="project_name === 'minutes_data'" style="display: none;">Unggah tangkapan layar total durasi kerja di aplikasi.</p>
                     </div>
 
-                    <!-- Evidence 2: Submitted images screenshot -->
-                    <div class="bg-slate-50 border border-gray-100 rounded-xl sm:rounded-2xl p-4 sm:p-5 space-y-3">
+                    <!-- Evidence 2 for Minutes Data: Quality -->
+                    <div class="bg-slate-50 border border-gray-100 rounded-xl sm:rounded-2xl p-4 sm:p-5 space-y-3" x-cloak x-show="project_name === 'minutes_data'">
+                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1.5 border-b border-gray-200/50 pb-2">
+                            <span class="text-sm font-bold text-slate-800">2. Screenshot Bagian Kualitas di Aplikasi <span class="text-red-500">*</span></span>
+                            <span class="text-xs text-gray-400">Format: JPG, PNG, WEBP (Maks: 2MB)</span>
+                        </div>
+                        <input type="file" accept="image/jpeg,image/png,image/webp" name="evidence_app_quality_image_path" id="evidence_app_quality_image_path" :required="project_name === 'minutes_data'" class="block w-full text-xs sm:text-sm text-gray-500 file:mr-3 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-55 file:text-indigo-700 hover:file:bg-indigo-100 file:transition-all">
+                        @error('evidence_app_quality_image_path') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        <p class="text-xs text-gray-400 mt-1">Unggah tangkapan layar khusus untuk bagian kualitas video dari aplikasi.</p>
+                    </div>
+
+                    <!-- Evidence 2 for Atlas: Submitted images screenshot -->
+                    <div class="bg-slate-50 border border-gray-100 rounded-xl sm:rounded-2xl p-4 sm:p-5 space-y-3" x-show="project_name === 'atlas'">
                         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1.5 border-b border-gray-200/50 pb-2">
                             <span class="text-sm font-bold text-slate-800">2. Screenshot Bagian Unggahan/Submitted <span class="text-red-500">*</span></span>
                             <span class="text-xs text-gray-400">Bisa pilih beberapa gambar. Format: JPG, PNG, WEBP (Maks: 2MB/file)</span>
                         </div>
-                        <input type="file" accept="image/jpeg,image/png,image/webp" name="evidence_submitted_image_paths[]" id="evidence_submitted_image_paths" multiple required class="block w-full text-xs sm:text-sm text-gray-500 file:mr-3 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-55 file:text-indigo-700 hover:file:bg-indigo-100 file:transition-all">
+                        <input type="file" accept="image/jpeg,image/png,image/webp" name="evidence_submitted_image_paths[]" id="evidence_submitted_image_paths" multiple :required="project_name === 'atlas'" class="block w-full text-xs sm:text-sm text-gray-500 file:mr-3 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-55 file:text-indigo-700 hover:file:bg-indigo-100 file:transition-all">
                         @error('evidence_submitted_image_paths') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         @error('evidence_submitted_image_paths.*') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         <p class="text-xs text-gray-400 mt-1">Unggah tangkapan layar bagian file yang diunggah/submited. Anda dapat memilih lebih dari 1 gambar sekaligus.</p>

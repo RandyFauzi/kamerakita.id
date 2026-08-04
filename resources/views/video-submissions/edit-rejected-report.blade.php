@@ -56,7 +56,9 @@
                     enctype="multipart/form-data"
                     class="space-y-6"
                     x-data="{
+                        projectName: '{{ old('project_name', $report->project_name) }}',
                         emailFile: null,
+                        qualityFile: null,
                         submittedFiles: [],
                         clientError: '',
                         attempted: false,
@@ -78,17 +80,6 @@
                             this.attempted = true;
                             this.clientError = '';
 
-                            if (!this.emailFile || !this.qualityFile) {
-                                event.preventDefault();
-                                this.clientError = 'Pilih kedua screenshot sebelum mengajukan ulang laporan.';
-                                this.$nextTick(() => {
-                                    const target = !this.emailFile ? this.$refs.emailInput : this.$refs.qualityInput;
-                                    target?.focus();
-                                    target?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                });
-                                return;
-                            }
-
                             this.submitting = true;
                         }
                     }"
@@ -96,6 +87,16 @@
                 >
                     @csrf
                     @method('PATCH')
+
+                    <!-- App Selection Dropdown -->
+                    <div>
+                        <label for="project_name" class="block text-sm font-semibold text-gray-700 mb-1">Pilih Aplikasi <span class="text-red-500">*</span></label>
+                        <select name="project_name" id="project_name" x-model="projectName" required class="block w-full min-h-11 px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="atlas">Atlas</option>
+                            <option value="minutes_data">Minutes Data</option>
+                        </select>
+                        @error('project_name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
 
                     <template x-if="clientError">
                         <div class="rounded-xl border border-red-200 bg-red-50 p-4" role="alert">
@@ -130,9 +131,14 @@
                         </div>
                     </div>
 
+                    <!-- Evidence 1: Total duration (Changes label based on project_name) -->
                     <div class="bg-slate-50 border rounded-xl sm:rounded-2xl p-4 sm:p-5 space-y-3 transition" :class="attempted && !emailFile ? 'border-red-300 bg-red-50/50' : 'border-gray-100'">
                         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1.5 border-b border-gray-200/50 pb-2">
-                            <span class="text-sm font-bold text-slate-800">1. Screenshot Total Durasi & Kualitas di Aplikasi <span class="text-red-500">*</span></span>
+                            <span class="text-sm font-bold text-slate-800">
+                                1. <span x-show="projectName === 'atlas'">Screenshot Total Durasi & Kualitas di Aplikasi</span>
+                                   <span x-show="projectName === 'minutes_data'" style="display: none;">Screenshot Total Durasi di Aplikasi</span>
+                                 <span class="text-red-500">*</span>
+                            </span>
                             <span class="text-xs text-gray-400">Format: JPG, PNG, WEBP (Maks: 2MB)</span>
                         </div>
                         
@@ -151,12 +157,37 @@
                         <p x-show="emailFile" class="text-xs font-semibold text-emerald-700">
                             File dipilih: <span x-text="emailFile?.name"></span>
                         </p>
-                        <p x-show="attempted && !emailFile" class="text-xs font-semibold text-red-600">Screenshot total durasi wajib dipilih.</p>
+                        <p x-show="attempted && !emailFile" class="text-xs font-semibold text-red-600">Screenshot total durasi wajib dipilih jika mengubah bukti.</p>
                         @error('evidence_email_image_path') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
-                    <!-- Evidence 2: Submitted Images Screenshot -->
-                    <div class="bg-indigo-50/30 border rounded-xl sm:rounded-2xl p-4 sm:p-5 space-y-3 relative overflow-hidden group hover:border-indigo-200 transition-colors" :class="attempted && (!submittedFiles || submittedFiles.length === 0) ? 'border-red-300 bg-red-50/50' : 'border-indigo-100/50'">
+                    <!-- Evidence 2 for Minutes Data: Quality Screenshot -->
+                    <div class="bg-slate-50 border rounded-xl sm:rounded-2xl p-4 sm:p-5 space-y-3 transition" :class="attempted && !qualityFile ? 'border-red-300 bg-red-50/50' : 'border-gray-100'" x-cloak x-show="projectName === 'minutes_data'">
+                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1.5 border-b border-gray-200/50 pb-2">
+                            <span class="text-sm font-bold text-slate-800">2. Screenshot Bagian Kualitas di Aplikasi <span class="text-red-500">*</span></span>
+                            <span class="text-xs text-gray-400">Format: JPG, PNG, WEBP (Maks: 2MB)</span>
+                        </div>
+                        
+                        <!-- Current Image Preview -->
+                        <div class="flex items-start gap-4" x-show="'{{ $report->evidence_app_quality_image_url }}'">
+                            <div class="w-20 h-20 shrink-0 bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
+                                <img src="{{ $report->evidence_app_quality_image_url }}" alt="Current Quality Evidence" class="w-full h-full object-cover">
+                            </div>
+                            <div class="flex-1 space-y-1">
+                                <p class="text-xs font-semibold text-gray-700">Gambar Saat Ini</p>
+                                <p class="text-[11px] text-gray-500">Jika Anda tidak memilih file baru, gambar lama akan tetap digunakan.</p>
+                            </div>
+                        </div>
+
+                        <input x-ref="qualityInput" @change="selectFile($event, 'qualityFile')" type="file" accept="image/jpeg,image/png,image/webp" name="evidence_app_quality_image_path" id="evidence_app_quality_image_path" class="block w-full text-xs sm:text-sm text-gray-500 file:mr-3 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 file:transition-all">
+                        <p x-show="qualityFile" class="text-xs font-semibold text-emerald-700">
+                            File dipilih: <span x-text="qualityFile?.name"></span>
+                        </p>
+                        @error('evidence_app_quality_image_path') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+
+                    <!-- Evidence 2 for Atlas: Submitted Images Screenshot -->
+                    <div class="bg-indigo-50/30 border rounded-xl sm:rounded-2xl p-4 sm:p-5 space-y-3 relative overflow-hidden group hover:border-indigo-200 transition-colors border-indigo-100/50" x-show="projectName === 'atlas'">
                         <div class="flex flex-col gap-1.5 border-b border-indigo-100 pb-2">
                             <span class="text-sm font-bold text-slate-800">2. Screenshot Bagian Unggahan/Submitted</span>
                             <span class="text-xs text-gray-500 leading-relaxed">Bisa pilih beberapa gambar. Biarkan kosong jika tidak ingin mengubah screenshot sebelumnya. Format: JPG, PNG, WEBP (Maks: 2MB/file)</span>

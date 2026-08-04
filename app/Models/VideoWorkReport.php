@@ -14,6 +14,7 @@ class VideoWorkReport extends Model
 
     protected $fillable = [
         'partner_id',
+        'project_name',
         'submission_date',
         'evidence_email_image_path',
         'evidence_app_quality_image_path',

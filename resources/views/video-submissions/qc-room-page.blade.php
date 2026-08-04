@@ -317,7 +317,12 @@
                                                             @foreach($partner->period_reports as $report)
                                                                 <tr class="hover:bg-slate-50/50 transition-colors">
                                                                     <td class="px-4 py-2 whitespace-nowrap text-xs font-mono text-gray-500">
-                                                                        {{ substr($report->id, 0, 8) }}...
+                                                                        <div class="flex flex-col gap-0.5">
+                                                                            <span>{{ substr($report->id, 0, 8) }}...</span>
+                                                                            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[8px] font-bold {{ $report->project_name === 'atlas' ? 'bg-indigo-50 text-indigo-700' : 'bg-gray-100 text-gray-600' }} uppercase w-fit">
+                                                                                {{ str_replace('_', ' ', $report->project_name ?? 'minutes data') }}
+                                                                            </span>
+                                                                        </div>
                                                                     </td>
                                                                     <td class="px-4 py-2 whitespace-nowrap text-xs font-semibold text-slate-700">
                                                                         {{ $report->submission_date->translatedFormat('d F Y') }}
@@ -340,11 +345,13 @@
                                                                             <button type="button" 
                                                                                     @click="activeDailyReport = {{ json_encode([
                                                                                         'id' => $report->id,
+                                                                                        'project_name' => $report->project_name,
                                                                                         'date' => $report->submission_date->translatedFormat('d F Y'),
                                                                                         'duration' => $report->submitted_duration_formatted,
                                                                                         'status' => $partner->approval_status === 'paid' ? 'Paid (Lunas)' : ($partner->approval_status === 'approved' ? 'Rilis (Approved)' : ($partner->approval_status === 'draft' ? 'Draf (Admin)' : 'Belum Diperiksa')),
                                                                                         'approved_min' => $report->approved_duration_minutes,
                                                                                         'email_img' => $report->evidence_email_image_url,
+                                                                                        'quality_img' => $report->evidence_app_quality_image_url,
                                                                                         'submitted_imgs' => $report->evidence_submitted_image_urls,
                                                                                         'device' => $report->device_type ?: '-',
                                                                                         'headstrap' => $report->has_headstrap ? 'Ya' : 'Tidak',
@@ -460,7 +467,7 @@
                             <!-- Email image -->
                             <div class="space-y-1.5" x-show="activeDailyReport.email_img">
                                 <span class="block text-[9px] text-gray-400 uppercase font-mono">Bukti Email Register</span>
-                                <span class="text-[9px] font-bold text-slate-500 uppercase tracking-wider font-mono block mb-1">Durasi & Kualitas</span>
+                                <span class="text-[9px] font-bold text-slate-500 uppercase tracking-wider font-mono block mb-1" x-text="activeDailyReport.project_name === 'atlas' ? 'Durasi & Kualitas' : 'Durasi App'">Durasi & Kualitas</span>
                                 <a :href="activeDailyReport.email_img" target="_blank" class="relative group block w-full overflow-hidden rounded-xl border border-slate-200">
                                     <img :src="activeDailyReport.email_img" class="w-full h-24 object-cover group-hover:scale-105 transition duration-150">
                                     <div class="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/10 transition flex items-center justify-center">
@@ -469,8 +476,20 @@
                                 </a>
                             </div>
                             
-                            <!-- Submitted images -->
-                            <div class="space-y-1.5 col-span-2 mt-2" x-show="activeDailyReport.submitted_imgs && activeDailyReport.submitted_imgs.length > 0">
+                            <!-- Quality image (Minutes Data only) -->
+                            <div class="space-y-1.5" x-show="activeDailyReport.project_name !== 'atlas' && activeDailyReport.quality_img">
+                                <span class="block text-[9px] text-gray-400 uppercase font-mono">Bukti Kualitas Video</span>
+                                <span class="text-[9px] font-bold text-slate-500 uppercase tracking-wider font-mono block mb-1">Kualitas App</span>
+                                <a :href="activeDailyReport.quality_img" target="_blank" class="relative group block w-full overflow-hidden rounded-xl border border-slate-200">
+                                    <img :src="activeDailyReport.quality_img" class="w-full h-24 object-cover group-hover:scale-105 transition duration-150">
+                                    <div class="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/10 transition flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <!-- Submitted images (Atlas only) -->
+                            <div class="space-y-1.5 col-span-2 mt-2" x-show="activeDailyReport.project_name === 'atlas' && activeDailyReport.submitted_imgs && activeDailyReport.submitted_imgs.length > 0">
                                 <span class="block text-[9px] text-gray-400 uppercase font-mono">Bukti Unggahan/Submitted</span>
                                 <div class="grid grid-cols-2 gap-3">
                                     <template x-for="(img, idx) in activeDailyReport.submitted_imgs" :key="idx">

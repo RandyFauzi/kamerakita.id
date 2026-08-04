@@ -164,7 +164,10 @@
                                 <div class="flex-1 min-w-0 pr-4 space-y-1">
                                     <div class="flex items-center gap-2">
                                         <span class="text-[8px] font-black bg-indigo-50 border border-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded font-mono">NO. {{ $reportIndex + 1 }}</span>
-                                        <span class="text-[9px] font-mono text-gray-400">ID: {{ $report->id }}</span>
+                                        <span class="text-[9px] font-mono text-gray-400">ID: {{ substr($report->id, 0, 8) }}</span>
+                                        <span class="text-[8px] font-black {{ $report->project_name === 'atlas' ? 'bg-indigo-50 text-indigo-700 border border-indigo-100' : 'bg-gray-100 text-gray-600 border border-gray-200' }} px-1.5 py-0.5 rounded font-mono uppercase">
+                                            {{ str_replace('_', ' ', $report->project_name ?? 'minutes data') }}
+                                        </span>
                                     </div>
                                     <div class="grid grid-cols-3 gap-2 pt-1 text-[10px] text-gray-700">
                                         <div>
@@ -197,19 +200,29 @@
                                 <div class="flex flex-col gap-1 shrink-0 ml-4">
                                     @if($report->evidence_email_image_url)
                                         <a href="{{ $report->evidence_email_image_url }}" target="_blank" class="block w-full px-3 py-1.5 text-[9px] font-bold text-center bg-indigo-50 text-indigo-700 rounded-md border border-indigo-100 hover:bg-indigo-100 uppercase tracking-wide">
-                                            Total Hour & Quality Evidence ↗
+                                            @if($report->project_name === 'atlas')
+                                                Total Hour & Quality Evidence ↗
+                                            @else
+                                                Total Hour Evidence ↗
+                                            @endif
                                         </a>
                                     @else
                                         <span class="text-[9px] text-gray-400 font-mono text-right">No Total Hour Evidence</span>
                                     @endif
 
-                                    @if(!empty($report->evidence_submitted_image_urls))
+                                    @if($report->project_name !== 'atlas' && $report->evidence_app_quality_image_url)
+                                        <a href="{{ $report->evidence_app_quality_image_url }}" target="_blank" class="block w-full px-3 py-1.5 text-[9px] font-bold text-center bg-sky-50 text-sky-700 rounded-md border border-sky-100 hover:bg-sky-100 uppercase tracking-wide mt-1">
+                                            Quality Evidence ↗
+                                        </a>
+                                    @endif
+
+                                    @if($report->project_name === 'atlas' && !empty($report->evidence_submitted_image_urls))
                                         @foreach($report->evidence_submitted_image_urls as $index => $url)
                                             <a href="{{ $url }}" target="_blank" class="block w-full px-3 py-1.5 text-[9px] font-bold text-center bg-emerald-50 text-emerald-700 rounded-md border border-emerald-100 hover:bg-emerald-100 uppercase tracking-wide mt-1">
                                                 Submitted Evidence {{ $index + 1 }} ↗
                                             </a>
                                         @endforeach
-                                    @else
+                                    @elseif($report->project_name === 'atlas')
                                         <span class="text-[9px] text-gray-400 font-mono text-right mt-1">No Submitted Evidence</span>
                                     @endif
                                 </div>
