@@ -33,7 +33,6 @@ class EditRejectedVideoWorkReportController extends Controller
             'submission_date' => 'required|date|before_or_equal:today',
             'submitted_duration_minutes' => 'required|integer|min:1|max:1440',
             'evidence_email_image_path' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'evidence_app_quality_image_path' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'evidence_submitted_image_paths' => 'nullable|array',
             'evidence_submitted_image_paths.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ], [
@@ -43,27 +42,21 @@ class EditRejectedVideoWorkReportController extends Controller
             'submitted_duration_minutes.min' => 'Durasi menit minimal adalah 1 menit.',
             'evidence_email_image_path.required' => 'Screenshot total durasi di aplikasi wajib diunggah ulang.',
             'evidence_email_image_path.image' => 'File screenshot durasi aplikasi harus berupa gambar.',
-            'evidence_app_quality_image_path.required' => 'Screenshot bagian kualitas di aplikasi wajib diunggah ulang.',
-            'evidence_app_quality_image_path.image' => 'File screenshot kualitas aplikasi harus berupa gambar.',
             'evidence_submitted_image_paths.array' => 'Format screenshot bagian unggahan tidak valid.',
             'evidence_submitted_image_paths.*.image' => 'Setiap file screenshot unggahan harus berupa gambar.',
         ]);
 
         $oldPaths = array_filter(array_merge(
-            [$report->evidence_email_image_path, $report->evidence_app_quality_image_path],
+            [$report->evidence_email_image_path],
             (array) ($report->evidence_submitted_image_paths ?? [])
         ));
         $newEmailPath = null;
-        $newQualityPath = null;
         $newSubmittedPaths = null;
 
         try {
             $imageStorage = app(StoreEvidenceImageService::class);
             if ($request->hasFile('evidence_email_image_path')) {
                 $newEmailPath = $imageStorage->store($request->file('evidence_email_image_path'), 'evidences/email');
-            }
-            if ($request->hasFile('evidence_app_quality_image_path')) {
-                $newQualityPath = $imageStorage->store($request->file('evidence_app_quality_image_path'), 'evidences/app-quality');
             }
             if ($request->hasFile('evidence_submitted_image_paths')) {
                 $newSubmittedPaths = [];
@@ -72,7 +65,7 @@ class EditRejectedVideoWorkReportController extends Controller
                 }
             }
 
-            DB::transaction(function () use ($report, $validated, $newEmailPath, $newQualityPath, $newSubmittedPaths): void {
+            DB::transaction(function () use ($report, $validated, $newEmailPath, $newSubmittedPaths): void {
                 $updates = [
                     'submission_date' => $validated['submission_date'],
                     'submitted_duration_minutes' => $validated['submitted_duration_minutes'],
@@ -87,9 +80,6 @@ class EditRejectedVideoWorkReportController extends Controller
                 if ($newEmailPath) {
                     $updates['evidence_email_image_path'] = $newEmailPath;
                 }
-                if ($newQualityPath) {
-                    $updates['evidence_app_quality_image_path'] = $newQualityPath;
-                }
                 if ($newSubmittedPaths !== null) {
                     $updates['evidence_submitted_image_paths'] = $newSubmittedPaths;
                 }
@@ -98,7 +88,6 @@ class EditRejectedVideoWorkReportController extends Controller
 
                 $backup = app(EvidenceFileBackupService::class);
                 if ($newEmailPath) $backup->backup($newEmailPath);
-                if ($newQualityPath) $backup->backup($newQualityPath);
                 if ($newSubmittedPaths !== null) {
                     foreach ($newSubmittedPaths as $path) {
                         $backup->backup($path);
@@ -108,7 +97,7 @@ class EditRejectedVideoWorkReportController extends Controller
 
             \App\Services\ActivityLogger::log('report.revise', "Merevisi laporan video ID {$report->id} tanggal {$validated['submission_date']} dengan durasi {$validated['submitted_duration_minutes']} menit.");
         } catch (Throwable $exception) {
-            $rollbackPaths = array_filter(array_merge([$newEmailPath, $newQualityPath], (array) $newSubmittedPaths));
+            $rollbackPaths = array_filter(array_merge([$newEmailPath], (array) $newSubmittedPaths));
             $this->deleteEvidenceFiles($rollbackPaths, true);
 
             Log::error('Failed to resubmit rejected video work report.', [

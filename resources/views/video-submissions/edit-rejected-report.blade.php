@@ -57,7 +57,6 @@
                     class="space-y-6"
                     x-data="{
                         emailFile: null,
-                        qualityFile: null,
                         submittedFiles: [],
                         clientError: '',
                         attempted: false,
@@ -133,9 +132,21 @@
 
                     <div class="bg-slate-50 border rounded-xl sm:rounded-2xl p-4 sm:p-5 space-y-3 transition" :class="attempted && !emailFile ? 'border-red-300 bg-red-50/50' : 'border-gray-100'">
                         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1.5 border-b border-gray-200/50 pb-2">
-                            <span class="text-sm font-bold text-slate-800">1. Screenshot total durasi di aplikasi <span class="text-red-500">*</span></span>
+                            <span class="text-sm font-bold text-slate-800">1. Screenshot Total Durasi & Kualitas di Aplikasi <span class="text-red-500">*</span></span>
                             <span class="text-xs text-gray-400">Format: JPG, PNG, WEBP (Maks: 2MB)</span>
                         </div>
+                        
+                        <!-- Current Image Preview -->
+                        <div class="flex items-start gap-4">
+                            <div class="w-20 h-20 shrink-0 bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
+                                <img src="{{ $report->evidence_email_image_url }}" alt="Current Email Evidence" class="w-full h-full object-cover">
+                            </div>
+                            <div class="flex-1 space-y-1">
+                                <p class="text-xs font-semibold text-gray-700">Gambar Saat Ini</p>
+                                <p class="text-[11px] text-gray-500">Jika Anda tidak memilih file baru, gambar lama akan tetap digunakan.</p>
+                            </div>
+                        </div>
+
                         <input x-ref="emailInput" @change="selectFile($event, 'emailFile')" type="file" accept="image/jpeg,image/png,image/webp" name="evidence_email_image_path" id="evidence_email_image_path" class="block w-full text-xs sm:text-sm text-gray-500 file:mr-3 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 file:transition-all">
                         <p x-show="emailFile" class="text-xs font-semibold text-emerald-700">
                             File dipilih: <span x-text="emailFile?.name"></span>
@@ -144,23 +155,10 @@
                         @error('evidence_email_image_path') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
-                    <div class="bg-slate-50 border rounded-xl sm:rounded-2xl p-4 sm:p-5 space-y-3 transition" :class="attempted && !qualityFile ? 'border-red-300 bg-red-50/50' : 'border-gray-100'">
-                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1.5 border-b border-gray-200/50 pb-2">
-                            <span class="text-sm font-bold text-slate-800">2. Screenshot Bagian Kualitas di Aplikasi <span class="text-red-500">*</span></span>
-                            <span class="text-xs text-gray-400">Format: JPG, PNG, WEBP (Maks: 2MB)</span>
-                        </div>
-                        <input x-ref="qualityInput" @change="selectFile($event, 'qualityFile')" type="file" accept="image/jpeg,image/png,image/webp" name="evidence_app_quality_image_path" id="evidence_app_quality_image_path" class="block w-full text-xs sm:text-sm text-gray-500 file:mr-3 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 file:transition-all">
-                        <p x-show="qualityFile" class="text-xs font-semibold text-emerald-700">
-                            File dipilih: <span x-text="qualityFile?.name"></span>
-                        </p>
-                        <p x-show="attempted && !qualityFile" class="text-xs font-semibold text-red-600">Screenshot bagian kualitas wajib dipilih.</p>
-                        @error('evidence_app_quality_image_path') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                    </div>
-
-                    <!-- Evidence 3: Submitted Images Screenshot -->
+                    <!-- Evidence 2: Submitted Images Screenshot -->
                     <div class="bg-indigo-50/30 border rounded-xl sm:rounded-2xl p-4 sm:p-5 space-y-3 relative overflow-hidden group hover:border-indigo-200 transition-colors" :class="attempted && (!submittedFiles || submittedFiles.length === 0) ? 'border-red-300 bg-red-50/50' : 'border-indigo-100/50'">
                         <div class="flex flex-col gap-1.5 border-b border-indigo-100 pb-2">
-                            <span class="text-sm font-bold text-slate-800">3. Screenshot Bagian Unggahan/Submitted</span>
+                            <span class="text-sm font-bold text-slate-800">2. Screenshot Bagian Unggahan/Submitted</span>
                             <span class="text-xs text-gray-500 leading-relaxed">Bisa pilih beberapa gambar. Biarkan kosong jika tidak ingin mengubah screenshot sebelumnya. Format: JPG, PNG, WEBP (Maks: 2MB/file)</span>
                         </div>
                         <input x-ref="submittedInput" @change="submittedFiles = Array.from($event.target.files)" type="file" multiple accept="image/jpeg,image/png,image/webp" name="evidence_submitted_image_paths[]" id="evidence_submitted_image_paths" class="block w-full text-xs sm:text-sm text-gray-500 file:mr-3 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 file:transition-all">

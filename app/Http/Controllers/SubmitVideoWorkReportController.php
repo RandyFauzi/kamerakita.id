@@ -39,7 +39,6 @@ class SubmitVideoWorkReportController extends Controller
             'submission_date' => 'required|date|before_or_equal:today',
             'submitted_duration_minutes' => 'required|integer|min:1|max:1440',
             'evidence_email_image_path' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'evidence_app_quality_image_path' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'evidence_submitted_image_paths' => 'required|array|min:1',
             'evidence_submitted_image_paths.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ], [
@@ -49,20 +48,16 @@ class SubmitVideoWorkReportController extends Controller
             'submitted_duration_minutes.min' => 'Durasi menit minimal adalah 1 menit.',
             'evidence_email_image_path.required' => 'Screenshot total durasi di aplikasi wajib diunggah.',
             'evidence_email_image_path.image' => 'File screenshot total durasi harus berupa gambar.',
-            'evidence_app_quality_image_path.required' => 'Screenshot bagian kualitas di aplikasi wajib diunggah.',
-            'evidence_app_quality_image_path.image' => 'File screenshot kualitas aplikasi harus berupa gambar.',
             'evidence_submitted_image_paths.required' => 'Screenshot bagian unggahan wajib diunggah minimal 1 gambar.',
             'evidence_submitted_image_paths.*.image' => 'Setiap file screenshot unggahan harus berupa gambar.',
         ]);
 
         $emailPath = null;
-        $qualityPath = null;
         $submittedPaths = [];
 
         try {
             $imageStorage = app(StoreEvidenceImageService::class);
             $emailPath = $imageStorage->store($request->file('evidence_email_image_path'), 'evidences/email');
-            $qualityPath = $imageStorage->store($request->file('evidence_app_quality_image_path'), 'evidences/app-quality');
 
             if ($request->hasFile('evidence_submitted_image_paths')) {
                 foreach ($request->file('evidence_submitted_image_paths') as $file) {
@@ -70,12 +65,12 @@ class SubmitVideoWorkReportController extends Controller
                 }
             }
 
-            DB::transaction(function () use ($partner, $validated, $emailPath, $qualityPath, $submittedPaths): void {
+            DB::transaction(function () use ($partner, $validated, $emailPath, $submittedPaths): void {
                 VideoWorkReport::create([
                     'partner_id' => $partner->id,
                     'submission_date' => $validated['submission_date'],
                     'evidence_email_image_path' => $emailPath,
-                    'evidence_app_quality_image_path' => $qualityPath,
+                    'evidence_app_quality_image_path' => null,
                     'evidence_submitted_image_paths' => $submittedPaths,
                     'submitted_duration_minutes' => $validated['submitted_duration_minutes'],
                     'approved_duration_minutes' => 0,
@@ -85,14 +80,13 @@ class SubmitVideoWorkReportController extends Controller
 
                 $backup = app(EvidenceFileBackupService::class);
                 $backup->backup($emailPath);
-                $backup->backup($qualityPath);
 
                 app(PartnerActivityStatusService::class)->markActiveAfterReport($partner);
             });
 
             \App\Services\ActivityLogger::log('report.submit', "Mengirimkan laporan harian baru untuk tanggal {$validated['submission_date']} dengan durasi {$validated['submitted_duration_minutes']} menit.");
         } catch (Throwable $exception) {
-            foreach ([$emailPath, $qualityPath] as $path) {
+            foreach ([$emailPath] as $path) {
                 try {
                     if ($path && Storage::disk('evidence')->exists($path)) {
                         Storage::disk('evidence')->delete($path);
