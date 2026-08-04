@@ -49,6 +49,7 @@
                     x-data="{
                         emailFile: null,
                         qualityFile: null,
+                        submittedFiles: [],
                         clientError: '',
                         attempted: false,
                         submitting: false,
@@ -145,6 +146,21 @@
                         </p>
                         <p x-show="attempted && !qualityFile" class="text-xs font-semibold text-red-600">Screenshot bagian kualitas wajib dipilih.</p>
                         @error('evidence_app_quality_image_path') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+
+                    <!-- Evidence 3: Submitted Images Screenshot -->
+                    <div class="bg-indigo-50/30 border rounded-xl sm:rounded-2xl p-4 sm:p-5 space-y-3 relative overflow-hidden group hover:border-indigo-200 transition-colors" :class="attempted && (!submittedFiles || submittedFiles.length === 0) ? 'border-red-300 bg-red-50/50' : 'border-indigo-100/50'">
+                        <div class="flex flex-col gap-1.5 border-b border-indigo-100 pb-2">
+                            <span class="text-sm font-bold text-slate-800">3. Screenshot Bagian Unggahan/Submitted</span>
+                            <span class="text-xs text-gray-500 leading-relaxed">Bisa pilih beberapa gambar. Biarkan kosong jika tidak ingin mengubah screenshot sebelumnya. Format: JPG, PNG, WEBP (Maks: 2MB/file)</span>
+                        </div>
+                        <input x-ref="submittedInput" @change="submittedFiles = Array.from($event.target.files)" type="file" multiple accept="image/jpeg,image/png,image/webp" name="evidence_submitted_image_paths[]" id="evidence_submitted_image_paths" class="block w-full text-xs sm:text-sm text-gray-500 file:mr-3 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 file:transition-all">
+                        @error('evidence_submitted_image_paths') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        @error('evidence_submitted_image_paths.*') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        
+                        <p x-show="submittedFiles && submittedFiles.length > 0" class="text-xs font-semibold text-emerald-700">
+                            <span x-text="submittedFiles.length"></span> File dipilih
+                        </p>
                     </div>
 
                     <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-4 border-t border-gray-100">

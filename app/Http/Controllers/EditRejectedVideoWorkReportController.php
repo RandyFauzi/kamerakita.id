@@ -32,53 +32,84 @@ class EditRejectedVideoWorkReportController extends Controller
         $validated = $request->validate([
             'submission_date' => 'required|date|before_or_equal:today',
             'submitted_duration_minutes' => 'required|integer|min:1|max:1440',
-            'evidence_email_image_path' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'evidence_app_quality_image_path' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'evidence_email_image_path' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'evidence_app_quality_image_path' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'evidence_submitted_image_paths' => 'nullable|array',
+            'evidence_submitted_image_paths.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ], [
             'submission_date.required' => 'Tanggal pengiriman wajib diisi.',
             'submission_date.before_or_equal' => 'Tanggal pengiriman tidak boleh melebihi hari ini.',
             'submitted_duration_minutes.required' => 'Durasi menit wajib diisi.',
             'submitted_duration_minutes.min' => 'Durasi menit minimal adalah 1 menit.',
             'evidence_email_image_path.required' => 'Screenshot total durasi di aplikasi wajib diunggah ulang.',
-            'evidence_email_image_path.image' => 'File screenshot total durasi harus berupa gambar.',
+            'evidence_email_image_path.image' => 'File screenshot durasi aplikasi harus berupa gambar.',
             'evidence_app_quality_image_path.required' => 'Screenshot bagian kualitas di aplikasi wajib diunggah ulang.',
             'evidence_app_quality_image_path.image' => 'File screenshot kualitas aplikasi harus berupa gambar.',
+            'evidence_submitted_image_paths.array' => 'Format screenshot bagian unggahan tidak valid.',
+            'evidence_submitted_image_paths.*.image' => 'Setiap file screenshot unggahan harus berupa gambar.',
         ]);
 
-        $oldPaths = [
-            $report->evidence_email_image_path,
-            $report->evidence_app_quality_image_path,
-        ];
+        $oldPaths = array_filter(array_merge(
+            [$report->evidence_email_image_path, $report->evidence_app_quality_image_path],
+            (array) ($report->evidence_submitted_image_paths ?? [])
+        ));
         $newEmailPath = null;
         $newQualityPath = null;
+        $newSubmittedPaths = null;
 
         try {
             $imageStorage = app(StoreEvidenceImageService::class);
-            $newEmailPath = $imageStorage->store($request->file('evidence_email_image_path'), 'evidences/email');
-            $newQualityPath = $imageStorage->store($request->file('evidence_app_quality_image_path'), 'evidences/app-quality');
+            if ($request->hasFile('evidence_email_image_path')) {
+                $newEmailPath = $imageStorage->store($request->file('evidence_email_image_path'), 'evidences/email');
+            }
+            if ($request->hasFile('evidence_app_quality_image_path')) {
+                $newQualityPath = $imageStorage->store($request->file('evidence_app_quality_image_path'), 'evidences/app-quality');
+            }
+            if ($request->hasFile('evidence_submitted_image_paths')) {
+                $newSubmittedPaths = [];
+                foreach ($request->file('evidence_submitted_image_paths') as $file) {
+                    $newSubmittedPaths[] = $imageStorage->store($file, 'evidences/submitted');
+                }
+            }
 
-            DB::transaction(function () use ($report, $validated, $newEmailPath, $newQualityPath): void {
-                $report->update([
+            DB::transaction(function () use ($report, $validated, $newEmailPath, $newQualityPath, $newSubmittedPaths): void {
+                $updates = [
                     'submission_date' => $validated['submission_date'],
                     'submitted_duration_minutes' => $validated['submitted_duration_minutes'],
-                    'evidence_email_image_path' => $newEmailPath,
-                    'evidence_app_quality_image_path' => $newQualityPath,
                     'approved_duration_minutes' => 0,
                     'qc_status' => 'pending',
                     'payment_status' => 'unpaid',
                     'verifier_notes' => null,
                     'verified_by' => null,
                     'verified_at' => null,
-                ]);
+                ];
+
+                if ($newEmailPath) {
+                    $updates['evidence_email_image_path'] = $newEmailPath;
+                }
+                if ($newQualityPath) {
+                    $updates['evidence_app_quality_image_path'] = $newQualityPath;
+                }
+                if ($newSubmittedPaths !== null) {
+                    $updates['evidence_submitted_image_paths'] = $newSubmittedPaths;
+                }
+
+                $report->update($updates);
 
                 $backup = app(EvidenceFileBackupService::class);
-                $backup->backup($newEmailPath);
-                $backup->backup($newQualityPath);
+                if ($newEmailPath) $backup->backup($newEmailPath);
+                if ($newQualityPath) $backup->backup($newQualityPath);
+                if ($newSubmittedPaths !== null) {
+                    foreach ($newSubmittedPaths as $path) {
+                        $backup->backup($path);
+                    }
+                }
             });
 
             \App\Services\ActivityLogger::log('report.revise', "Merevisi laporan video ID {$report->id} tanggal {$validated['submission_date']} dengan durasi {$validated['submitted_duration_minutes']} menit.");
         } catch (Throwable $exception) {
-            $this->deleteEvidenceFiles([$newEmailPath, $newQualityPath], true);
+            $rollbackPaths = array_filter(array_merge([$newEmailPath, $newQualityPath], (array) $newSubmittedPaths));
+            $this->deleteEvidenceFiles($rollbackPaths, true);
 
             Log::error('Failed to resubmit rejected video work report.', [
                 'report_id' => $report->id,

@@ -210,6 +210,16 @@
                                     @else
                                         <span class="text-[9px] text-gray-400 font-mono text-right">No Account's Quality Evidence</span>
                                     @endif
+
+                                    @if(!empty($report->evidence_submitted_image_urls))
+                                        @foreach($report->evidence_submitted_image_urls as $index => $url)
+                                            <a href="{{ $url }}" target="_blank" class="block w-full px-3 py-1.5 text-[9px] font-bold text-center bg-emerald-50 text-emerald-700 rounded-md border border-emerald-100 hover:bg-emerald-100 uppercase tracking-wide mt-1">
+                                                Submitted Evidence {{ $index + 1 }} ↗
+                                            </a>
+                                        @endforeach
+                                    @else
+                                        <span class="text-[9px] text-gray-400 font-mono text-right mt-1">No Submitted Evidence</span>
+                                    @endif
                                 </div>
                             </div>
                         @empty

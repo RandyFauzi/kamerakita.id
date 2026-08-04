@@ -17,6 +17,7 @@ class VideoWorkReport extends Model
         'submission_date',
         'evidence_email_image_path',
         'evidence_app_quality_image_path',
+        'evidence_submitted_image_paths',
         'submitted_duration_minutes',
         'approved_duration_minutes',
         'qc_status',
@@ -32,6 +33,7 @@ class VideoWorkReport extends Model
         'submission_date' => 'date',
         'verified_at' => 'datetime',
         'paid_at' => 'datetime',
+        'evidence_submitted_image_paths' => 'array',
     ];
 
     protected $appends = [
@@ -40,6 +42,7 @@ class VideoWorkReport extends Model
         'payment_proof_url',
         'submitted_duration_formatted',
         'approved_duration_formatted',
+        'evidence_submitted_image_urls',
     ];
 
     public function partner(): BelongsTo
@@ -92,15 +95,31 @@ class VideoWorkReport extends Model
         return $this->signedEvidenceUrl('payment', $this->payment_reference_proof_path);
     }
 
-    private function signedEvidenceUrl(string $type, ?string $path): ?string
+    public function getEvidenceSubmittedImageUrlsAttribute(): array
+    {
+        $paths = $this->evidence_submitted_image_paths ?? [];
+        $urls = [];
+        foreach ($paths as $index => $path) {
+            $urls[] = $this->signedEvidenceUrl('submitted', $path, $index);
+        }
+        return $urls;
+    }
+
+    private function signedEvidenceUrl(string $type, ?string $path, ?int $index = null): ?string
     {
         if (! $path) {
             return null;
         }
 
-        return URL::signedRoute('video-submissions.evidence.show', [
+        $params = [
             'report' => $this->id,
             'type' => $type
-        ], null, false); // Generate relative signed URL for universal cross-host reliability
+        ];
+
+        if ($index !== null) {
+            $params['index'] = $index;
+        }
+
+        return URL::signedRoute('video-submissions.evidence.show', $params, null, false); // Generate relative signed URL for universal cross-host reliability
     }
 }

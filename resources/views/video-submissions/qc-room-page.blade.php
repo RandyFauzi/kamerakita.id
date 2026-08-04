@@ -346,6 +346,7 @@
                                                                                         'approved_min' => $report->approved_duration_minutes,
                                                                                         'email_img' => $report->evidence_email_image_url,
                                                                                         'quality_img' => $report->evidence_app_quality_image_url,
+                                                                                        'submitted_imgs' => $report->evidence_submitted_image_urls,
                                                                                         'device' => $report->device_type ?: '-',
                                                                                         'headstrap' => $report->has_headstrap ? 'Ya' : 'Tidak',
                                                                                         'notes' => $report->verifier_notes ?: 'Tidak ada catatan'
@@ -481,6 +482,23 @@
                                         </svg>
                                     </div>
                                 </a>
+                            </div>
+                            
+                            <!-- Submitted images -->
+                            <div class="space-y-1.5 col-span-2 mt-2" x-show="activeDailyReport.submitted_imgs && activeDailyReport.submitted_imgs.length > 0">
+                                <span class="block text-[9px] text-gray-400 uppercase font-mono">Bukti Unggahan/Submitted</span>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <template x-for="(img, idx) in activeDailyReport.submitted_imgs" :key="idx">
+                                        <a :href="img" target="_blank" class="relative group block w-full overflow-hidden rounded-xl border border-slate-200">
+                                            <img :src="img" class="w-full h-24 object-cover group-hover:scale-105 transition duration-150">
+                                            <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                                                </svg>
+                                            </div>
+                                        </a>
+                                    </template>
+                                </div>
                             </div>
                         </div>
                     </div>

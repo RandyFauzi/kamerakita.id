@@ -40,6 +40,8 @@ class SubmitVideoWorkReportController extends Controller
             'submitted_duration_minutes' => 'required|integer|min:1|max:1440',
             'evidence_email_image_path' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'evidence_app_quality_image_path' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'evidence_submitted_image_paths' => 'required|array|min:1',
+            'evidence_submitted_image_paths.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ], [
             'submission_date.required' => 'Tanggal pengiriman wajib diisi.',
             'submission_date.before_or_equal' => 'Tanggal pengiriman tidak boleh melebihi hari ini.',
@@ -49,22 +51,32 @@ class SubmitVideoWorkReportController extends Controller
             'evidence_email_image_path.image' => 'File screenshot total durasi harus berupa gambar.',
             'evidence_app_quality_image_path.required' => 'Screenshot bagian kualitas di aplikasi wajib diunggah.',
             'evidence_app_quality_image_path.image' => 'File screenshot kualitas aplikasi harus berupa gambar.',
+            'evidence_submitted_image_paths.required' => 'Screenshot bagian unggahan wajib diunggah minimal 1 gambar.',
+            'evidence_submitted_image_paths.*.image' => 'Setiap file screenshot unggahan harus berupa gambar.',
         ]);
 
         $emailPath = null;
         $qualityPath = null;
+        $submittedPaths = [];
 
         try {
             $imageStorage = app(StoreEvidenceImageService::class);
             $emailPath = $imageStorage->store($request->file('evidence_email_image_path'), 'evidences/email');
             $qualityPath = $imageStorage->store($request->file('evidence_app_quality_image_path'), 'evidences/app-quality');
 
-            DB::transaction(function () use ($partner, $validated, $emailPath, $qualityPath): void {
+            if ($request->hasFile('evidence_submitted_image_paths')) {
+                foreach ($request->file('evidence_submitted_image_paths') as $file) {
+                    $submittedPaths[] = $imageStorage->store($file, 'evidences/submitted');
+                }
+            }
+
+            DB::transaction(function () use ($partner, $validated, $emailPath, $qualityPath, $submittedPaths): void {
                 VideoWorkReport::create([
                     'partner_id' => $partner->id,
                     'submission_date' => $validated['submission_date'],
                     'evidence_email_image_path' => $emailPath,
                     'evidence_app_quality_image_path' => $qualityPath,
+                    'evidence_submitted_image_paths' => $submittedPaths,
                     'submitted_duration_minutes' => $validated['submitted_duration_minutes'],
                     'approved_duration_minutes' => 0,
                     'qc_status' => 'pending',

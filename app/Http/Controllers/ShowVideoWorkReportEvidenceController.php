@@ -22,6 +22,9 @@ class ShowVideoWorkReportEvidenceController extends Controller
             'email' => $report->evidence_email_image_path,
             'app-quality' => $report->evidence_app_quality_image_path,
             'payment' => $report->payment_reference_proof_path,
+            'submitted' => request()->has('index') && is_array($report->evidence_submitted_image_paths)
+                ? ($report->evidence_submitted_image_paths[request('index')] ?? null)
+                : null,
             default => abort(404),
         };
 
