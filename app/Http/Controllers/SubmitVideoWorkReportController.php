@@ -95,13 +95,19 @@ class SubmitVideoWorkReportController extends Controller
                 if ($qualityPath) {
                     $backup->backup($qualityPath);
                 }
+                if (!empty($submittedPaths)) {
+                    foreach ($submittedPaths as $path) {
+                        $backup->backup($path);
+                    }
+                }
 
                 app(PartnerActivityStatusService::class)->markActiveAfterReport($partner);
             });
 
             \App\Services\ActivityLogger::log('report.submit', "Mengirimkan laporan harian baru untuk tanggal {$validated['submission_date']} dengan durasi {$validated['submitted_duration_minutes']} menit.");
         } catch (Throwable $exception) {
-            foreach ([$emailPath] as $path) {
+            $pathsToDelete = array_filter(array_merge([$emailPath, $qualityPath], $submittedPaths));
+            foreach ($pathsToDelete as $path) {
                 try {
                     if ($path && Storage::disk('evidence')->exists($path)) {
                         Storage::disk('evidence')->delete($path);

@@ -110,10 +110,18 @@ class EditRejectedVideoWorkReportController extends Controller
 
             \App\Services\ActivityLogger::log('report.revise', "Merevisi laporan video ID {$report->id} tanggal {$validated['submission_date']} dengan durasi {$validated['submitted_duration_minutes']} menit.");
         } catch (Throwable $exception) {
-            $rollbackPaths = array_filter(array_merge([$newEmailPath], (array) $newSubmittedPaths));
-            $this->deleteEvidenceFiles($rollbackPaths, true);
+            $pathsToDelete = array_filter(array_merge([$newEmailPath, $newQualityPath], (array)$newSubmittedPaths));
+            foreach ($pathsToDelete as $path) {
+                try {
+                    if ($path && Storage::disk('evidence')->exists($path)) {
+                        Storage::disk('evidence')->delete($path);
+                    }
+                } catch (Throwable) {
+                    // The original upload failure is the actionable error.
+                }
+            }
 
-            Log::error('Failed to resubmit rejected video work report.', [
+            Log::error('Failed to update rejected video work report.', [
                 'report_id' => $report->id,
                 'message' => $exception->getMessage(),
             ]);
