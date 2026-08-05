@@ -1,9 +1,4 @@
 <section>
-    <header class="border-b border-gray-100 pb-4">
-        <span class="block text-xs font-black tracking-widest text-indigo-650 uppercase font-mono mb-1">PROFILE</span>
-        <h3 class="text-lg font-bold text-gray-900">Informasi Akun & Data Diri</h3>
-        <p class="text-xs text-gray-400">Email login dikunci untuk menjaga keamanan akun. Hubungi superadmin jika email perlu diganti.</p>
-    </header>
 
     <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-8">
         @csrf

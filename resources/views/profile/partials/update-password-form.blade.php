@@ -1,9 +1,4 @@
 <section>
-    <header class="border-b border-gray-100 pb-4">
-        <span class="block text-xs font-black tracking-widest text-indigo-650 uppercase font-mono mb-1">KEAMANAN</span>
-        <h3 class="text-lg font-bold text-gray-900">Ubah Password</h3>
-        <p class="text-xs text-gray-400">Gunakan password yang kuat dan berbeda dari layanan lain.</p>
-    </header>
 
     <form method="post" action="{{ route('password.update') }}" class="mt-6 space-y-6">
         @csrf
