@@ -51,38 +51,17 @@
         @endif
 
         <!-- Dynamic Holographic Card & Info Balance -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-            <!-- Left: Glass Orb balance card (2 cols) -->
-            <div class="lg:col-span-2">
-                <x-glass-orb-card 
-                    title="Rp{{ number_format($metrics['total_earnings'], 0, ',', '.') }}"
-                    subtitle="ESTIMASI PENDAPATAN (Rp{{ number_format($metrics['hourly_rate'], 0, ',', '.') }}/JAM)"
-                    label1="TOTAL JAM"
-                    value1="{{ $metrics['all_time_hours_formatted'] }}"
-                    label2="KETERANGAN"
-                    value2="Gaji berdasar jam approved"
-                    actionText="Kirim Laporan Baru"
-                    actionUrl="{{ route('video-submissions.submit-report.create') }}"
-                />
-            </div>
-
-            <!-- Right: Investment balance card (1 col) -->
-            <div class="bg-white rounded-2xl sm:rounded-[32px] p-5 sm:p-8 border border-gray-150 shadow-sm flex flex-col justify-between gap-5 min-h-[180px] sm:min-h-[220px]">
-                <div>
-                    <span class="block text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">PENDAPATAN PENDING</span>
-                    <h3 class="text-2xl font-black text-slate-800 mt-3">Rp{{ number_format($metrics['pending_earnings'], 0, ',', '.') }}</h3>
-                    <div class="flex items-center gap-2 mt-2">
-                        <span class="text-xs text-slate-400">Durasi pending:</span>
-                        <span class="bg-amber-50 border border-amber-100 text-amber-700 text-[10px] font-bold px-2 py-0.5 rounded-full">
-                            {{ $metrics['pending_hours_formatted'] }}
-                        </span>
-                    </div>
-                </div>
-
-                <a href="https://wa.me/6287886272647?text=Halo%20Koordinator%20Kamerakita.id,%20saya%20ingin%20bertanya%20terkait%20status%20laporan%20video%20kerja%20saya." target="_blank" class="w-full py-3.5 bg-gray-50 border border-gray-200 hover:bg-gray-100 text-gray-800 font-bold text-xs rounded-2xl shadow-sm transition flex items-center justify-center">
-                    Hubungi Koordinator
-                </a>
-            </div>
+        <div class="w-full">
+            <x-glass-orb-card 
+                title="Rp{{ number_format($metrics['total_earnings'], 0, ',', '.') }}"
+                subtitle="ESTIMASI PENDAPATAN (Rp{{ number_format($metrics['hourly_rate'], 0, ',', '.') }}/JAM)"
+                label1="TOTAL JAM"
+                value1="{{ $metrics['all_time_hours_formatted'] }}"
+                label2="KETERANGAN"
+                value2="Gaji berdasar jam approved"
+                actionText="Kirim Laporan Baru"
+                actionUrl="{{ route('video-submissions.submit-report.create') }}"
+            />
         </div>
 
         <!-- OTHER FEATURES Section -->
