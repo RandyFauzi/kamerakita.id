@@ -99,7 +99,7 @@
 
 <div class="orb-card-container flex flex-col h-full justify-between">
     
-    <!-- MAGIC ORB -->
+    <!-- MAGIC ORB (DESKTOP) -->
     <div class="orb-wrapper hidden sm:block">
         <div class="orb-glow"></div>
         <div class="orb-sphere">
@@ -109,8 +109,8 @@
         <div class="orb-glass-layer"></div>
     </div>
 
-    <!-- MAGIC ORB (MOBILE POSITIONING) -->
-    <div class="orb-wrapper sm:hidden" style="right: -10px; top: -10px; opacity: 0.6;">
+    <!-- MAGIC ORB (MOBILE) -->
+    <div class="orb-wrapper sm:hidden" style="right: -20px; top: 0px; opacity: 0.5; transform: scale(0.8);">
         <div class="orb-glow"></div>
         <div class="orb-sphere">
             <div class="orb-color-orange"></div>
@@ -120,43 +120,47 @@
     </div>
 
     <!-- TOP CONTENT -->
-    <div class="relative z-10 pt-7 px-7 pb-6">
+    <div class="relative z-10 pt-6 sm:pt-8 px-6 sm:px-8 pb-6 flex-1 flex flex-col justify-center">
         
-        <!-- Header -->
-        <div class="mb-8 pr-8 sm:pr-28">
-            <div class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 font-mono mb-2">{{ $subtitle }}</div>
-            <div class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight break-all">{!! $title !!}</div>
-        </div>
-
-        <!-- Grid Info -->
-        <div class="flex flex-wrap items-center gap-5">
-            <!-- Left -->
-            <div class="flex flex-col">
-                <span class="text-[11px] text-gray-400 font-medium mb-1 uppercase tracking-wider">{{ $label1 }}</span>
-                <span class="text-sm font-bold text-gray-700">{{ $value1 }}</span>
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 w-full">
+            <!-- Header -->
+            <div class="pr-0 sm:pr-20">
+                <div class="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-slate-500 font-mono mb-2">{{ $subtitle }}</div>
+                <div class="text-4xl sm:text-5xl font-black text-slate-900 tracking-tight break-words">{{ $title }}</div>
             </div>
 
-            <!-- Divider -->
-            <div class="w-px h-8 bg-gray-200"></div>
+            <!-- Grid Info -->
+            <div class="flex items-center gap-5 sm:gap-6 shrink-0 bg-white/40 p-4 rounded-2xl backdrop-blur-sm border border-white/60">
+                <!-- Left -->
+                <div class="flex flex-col">
+                    <span class="text-[10px] sm:text-[11px] text-slate-500 font-bold mb-1 uppercase tracking-wider font-mono">{{ $label1 }}</span>
+                    <span class="text-sm sm:text-base font-bold text-slate-800">{{ $value1 }}</span>
+                </div>
 
-            <!-- Right -->
-            <div class="flex flex-col">
-                <span class="text-[11px] text-gray-400 font-medium mb-1 uppercase tracking-wider">{{ $label2 }}</span>
-                <span class="text-sm font-bold text-gray-700">{{ $value2 }}</span>
+                <!-- Divider -->
+                <div class="w-px h-10 bg-slate-200/80"></div>
+
+                <!-- Right -->
+                <div class="flex flex-col">
+                    <span class="text-[10px] sm:text-[11px] text-slate-500 font-bold mb-1 uppercase tracking-wider font-mono">{{ $label2 }}</span>
+                    <span class="text-sm sm:text-base font-bold text-slate-800">{{ $value2 }}</span>
+                </div>
             </div>
         </div>
 
     </div>
 
     <!-- HORIZONTAL DIVIDER -->
-    <div class="h-px w-full bg-gradient-to-r from-slate-200/20 via-slate-200/80 to-slate-200/20 relative z-10 mt-auto"></div>
+    <div class="h-px w-full bg-gradient-to-r from-slate-200/20 via-slate-200/80 to-slate-200/20 relative z-10"></div>
 
     <!-- BOTTOM ACTION -->
     @if(isset($actionSlot))
-        {{ $actionSlot }}
+        <div class="relative z-10 bg-white/20 hover:bg-white/40 transition-colors backdrop-blur-md rounded-b-[28px]">
+            {{ $actionSlot }}
+        </div>
     @else
-        <a href="{{ $actionUrl }}" class="relative z-10 px-7 py-4 cursor-pointer hover:bg-black/5 transition-colors flex justify-between items-center rounded-b-[28px] group">
-            <span class="text-sm font-bold text-indigo-700 group-hover:text-indigo-800">{{ $actionText }}</span>
+        <a href="{{ $actionUrl }}" class="relative z-10 px-6 sm:px-8 py-4 sm:py-5 cursor-pointer bg-white/20 hover:bg-white/40 transition-colors backdrop-blur-md flex justify-between sm:justify-start sm:gap-3 items-center rounded-b-[28px] group">
+            <span class="text-sm sm:text-base font-bold text-indigo-700 group-hover:text-indigo-900">{{ $actionText }}</span>
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="text-indigo-600 transition-transform group-hover:translate-x-1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12"></line>
                 <polyline points="12 5 19 12 12 19"></polyline>
