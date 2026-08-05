@@ -11,13 +11,41 @@
     </x-slot>
 
     <div class="py-8" x-data="{ role: '{{ $partner->partner_role }}' }">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-            <form action="{{ route('partners.update', $partner) }}" method="POST" class="space-y-8">
-                @csrf
-                @method('PUT')
+        <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
+            <div class="flex flex-col lg:flex-row gap-6">
+                
+                <!-- Kiri: Info Profil (Desktop: Sidebar) -->
+                <div class="lg:w-1/3 space-y-6">
+                    <div class="bg-white rounded-[32px] shadow-sm border border-gray-150 p-6 flex flex-col items-center relative overflow-hidden">
+                        <!-- Avatar Foto -->
+                        <div class="w-24 h-24 rounded-full overflow-hidden mb-4 border-[3px] border-white shadow-lg bg-gray-50 flex items-center justify-center relative z-10">
+                            <svg class="w-12 h-12 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                            </svg>
+                        </div>
+                        
+                        <!-- Nama & Kontak -->
+                        <h2 class="text-[20px] font-bold text-gray-900 mb-1 text-center relative z-10">{{ $partner->full_name }}</h2>
+                        <p class="text-[11px] text-gray-500 mb-4 font-medium text-center relative z-10">{{ $partner->email ?? $partner->user?->email }} | {{ $partner->whatsapp_number }}</p>
+                        
+                        <!-- Badge Status -->
+                        <div class="flex items-center gap-1.5 text-blue-600 bg-blue-50 px-3 py-1.5 rounded-full border border-blue-100 relative z-10">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            </svg>
+                            <span class="text-[10px] font-bold tracking-wide uppercase" x-text="role"></span>
+                        </div>
+                    </div>
+                </div>
 
-                <!-- BAGIAN 1: Informasi Identitas & Kontak -->
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-[32px] border border-gray-150 p-8 space-y-6">
+                <!-- Kanan: Form Pengaturan (Desktop: Main Content) -->
+                <div class="lg:w-2/3">
+                    <form action="{{ route('partners.update', $partner) }}" method="POST" class="space-y-6">
+                        @csrf
+                        @method('PUT')
+
+                        <!-- BAGIAN 1: Informasi Identitas & Kontak -->
+                        <div class="bg-white overflow-hidden shadow-sm rounded-[32px] border border-gray-150 p-6 lg:p-8 space-y-6">
                     <div class="border-b border-gray-100 pb-4">
                         <span class="block text-xs font-black tracking-widest text-indigo-650 uppercase font-mono mb-1">BAGIAN 1</span>
                         <h3 class="text-lg font-bold text-gray-900">Informasi Identitas & Kontak</h3>
@@ -225,6 +253,9 @@
                     </button>
                 </div>
             </form>
+            </div>
+            
+            </div>
         </div>
     </div>
 </x-app-layout>
