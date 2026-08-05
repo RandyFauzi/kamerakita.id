@@ -66,7 +66,7 @@
                 >
                     <x-slot name="actionSlot">
                         <div class="grid grid-cols-2 divide-x divide-slate-200/50 w-full">
-                            <a href="{{ route('video-submissions.report-history') }}" class="py-4 text-center text-sm font-bold text-indigo-700 hover:bg-black/5 transition-colors">
+                            <a href="{{ route('video-submissions.report-history') }}" class="py-4 text-center text-sm font-bold text-blue-700 hover:bg-black/5 transition-colors">
                                 Riwayat Laporan
                             </a>
                             <a href="{{ route('profile.edit') }}" class="py-4 text-center text-sm font-bold text-slate-700 hover:bg-black/5 transition-colors">

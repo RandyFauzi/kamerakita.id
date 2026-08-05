@@ -40,7 +40,7 @@
         inset: -15px;
         border-radius: 50%;
         background: radial-gradient(circle at 30% 70%, rgba(255, 157, 118, 0.4), transparent 60%),
-                    radial-gradient(circle at 70% 30%, rgba(139, 117, 255, 0.4), transparent 60%);
+                    radial-gradient(circle at 70% 30%, rgba(37, 99, 235, 0.4), transparent 60%);
         filter: blur(15px);
         z-index: -1;
     }
@@ -72,7 +72,7 @@
         right: -15%;
         width: 85%;
         height: 85%;
-        background: #8b75ff; 
+        background: #2563eb; 
         border-radius: 50%;
         filter: blur(12px);
     }
@@ -160,8 +160,8 @@
         </div>
     @else
         <a href="{{ $actionUrl }}" class="relative z-10 px-6 sm:px-8 py-4 sm:py-5 cursor-pointer bg-white/20 hover:bg-white/40 transition-colors backdrop-blur-md flex justify-between sm:justify-start sm:gap-3 items-center rounded-b-[28px] group">
-            <span class="text-sm sm:text-base font-bold text-indigo-700 group-hover:text-indigo-900">{{ $actionText }}</span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="text-indigo-600 transition-transform group-hover:translate-x-1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <span class="text-sm sm:text-base font-bold text-blue-700 group-hover:text-blue-900">{{ $actionText }}</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="text-blue-600 transition-transform group-hover:translate-x-1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12"></line>
                 <polyline points="12 5 19 12 12 19"></polyline>
             </svg>
