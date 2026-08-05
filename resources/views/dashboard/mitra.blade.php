@@ -55,26 +55,26 @@
         <!-- Dynamic Holographic Card & Info Balance -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
             <!-- Left: Holographic balance card (2 cols) - KOMISI TIM -->
-            <div class="lg:col-span-2 bg-gradient-to-r from-teal-200 via-indigo-100 to-pink-100 rounded-2xl sm:rounded-[32px] p-5 sm:p-8 border border-white/40 shadow-sm flex flex-col justify-between min-h-[200px] sm:min-h-[220px] relative overflow-hidden group">
-                <div class="absolute inset-0 bg-white/10 backdrop-blur-[1px] pointer-events-none"></div>
-
-                <div class="relative z-10">
-                    <span class="block text-xs font-bold uppercase tracking-wider text-slate-550 font-mono">KOMISI TIM WORKER (RATE Rp{{ number_format($metrics['commission_hourly_rate'], 0, ',', '.') }}/JAM)</span>
-                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-1 mt-3 min-w-0">
-                        <span class="text-3xl sm:text-4xl font-black text-slate-900 break-all">Rp{{ number_format($metrics['commission_paid_earnings'] + $metrics['commission_pending_earnings'], 0, ',', '.') }}</span>
-                        <span class="text-xs text-slate-550 font-bold uppercase font-mono">Pending: Rp{{ number_format($metrics['commission_pending_earnings'], 0, ',', '.') }}</span>
-                    </div>
-                    <span class="block text-xs text-slate-450 font-medium mt-1">Dihitung dari total jam kerja approved tim Worker: <strong>{{ $metrics['total_all_time_hours_formatted'] }}</strong></span>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4 mt-6 relative z-10">
-                    <a href="{{ route('video-submissions.report-history') }}" class="flex items-center justify-center gap-2 py-3.5 bg-white hover:bg-gray-50 text-gray-800 font-bold text-xs rounded-2xl shadow-sm transition">
-                        Riwayat Laporan
-                    </a>
-                    <a href="{{ route('profile.edit') }}" class="flex items-center justify-center gap-2 py-3.5 bg-white/60 hover:bg-white/80 text-gray-800 font-bold text-xs rounded-2xl shadow-sm transition">
-                        Edit Profil
-                    </a>
-                </div>
+            <div class="lg:col-span-2">
+                <x-glass-orb-card 
+                    title="Rp{{ number_format($metrics['commission_paid_earnings'] + $metrics['commission_pending_earnings'], 0, ',', '.') }}"
+                    subtitle="KOMISI TIM WORKER (RATE Rp{{ number_format($metrics['commission_hourly_rate'], 0, ',', '.') }}/JAM)"
+                    label1="PENDING KOMISI"
+                    value1="Rp{{ number_format($metrics['commission_pending_earnings'], 0, ',', '.') }}"
+                    label2="TOTAL JAM KERJA"
+                    value2="{{ $metrics['total_all_time_hours_formatted'] }}"
+                >
+                    <x-slot name="actionSlot">
+                        <div class="grid grid-cols-2 divide-x divide-slate-200/50 w-full">
+                            <a href="{{ route('video-submissions.report-history') }}" class="py-4 text-center text-sm font-bold text-indigo-700 hover:bg-black/5 transition-colors">
+                                Riwayat Laporan
+                            </a>
+                            <a href="{{ route('profile.edit') }}" class="py-4 text-center text-sm font-bold text-slate-700 hover:bg-black/5 transition-colors">
+                                Edit Profil
+                            </a>
+                        </div>
+                    </x-slot>
+                </x-glass-orb-card>
             </div>
 
             <!-- Right: Investment balance card (1 col) - PENDAPATAN PRIBADI -->

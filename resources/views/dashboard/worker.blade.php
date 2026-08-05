@@ -52,29 +52,18 @@
 
         <!-- Dynamic Holographic Card & Info Balance -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-            <!-- Left: Holographic balance card (2 cols) -->
-            <div class="lg:col-span-2 bg-gradient-to-r from-sky-200 via-pink-100 to-yellow-100 rounded-2xl sm:rounded-[32px] p-5 sm:p-8 border border-white/40 shadow-sm flex flex-col justify-between min-h-[200px] sm:min-h-[220px] relative overflow-hidden group">
-                <!-- Soft grid blur overlay for holographic look -->
-                <div class="absolute inset-0 bg-white/20 backdrop-blur-[1px] pointer-events-none"></div>
-
-                <div class="relative z-10">
-                    <span class="block text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-550 font-mono leading-5">ESTIMASI PENDAPATAN (Rp{{ number_format($metrics['hourly_rate'], 0, ',', '.') }}/JAM)</span>
-                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-1 mt-3 min-w-0">
-                        <span class="text-3xl sm:text-4xl font-black text-slate-900 break-all">Rp{{ number_format($metrics['total_earnings'], 0, ',', '.') }}</span>
-                        <span class="text-xs text-slate-550 font-bold uppercase font-mono">Total ({{ $metrics['all_time_hours_formatted'] }})</span>
-                    </div>
-                    <span class="block text-xs text-slate-450 font-medium mt-1">Gaji terhitung otomatis berdasarkan jam approved.</span>
-                </div>
-
-                <!-- Minimalist Actions -->
-                <div class="mt-6 relative z-10">
-                    <a href="{{ route('video-submissions.submit-report.create') }}" class="flex items-center justify-center gap-2 py-3.5 bg-white hover:bg-gray-50 text-gray-800 font-bold text-xs rounded-2xl shadow-sm transition">
-                        <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
-                        </svg>
-                        Kirim Laporan
-                    </a>
-                </div>
+            <!-- Left: Glass Orb balance card (2 cols) -->
+            <div class="lg:col-span-2">
+                <x-glass-orb-card 
+                    title="Rp{{ number_format($metrics['total_earnings'], 0, ',', '.') }}"
+                    subtitle="ESTIMASI PENDAPATAN (Rp{{ number_format($metrics['hourly_rate'], 0, ',', '.') }}/JAM)"
+                    label1="TOTAL JAM"
+                    value1="{{ $metrics['all_time_hours_formatted'] }}"
+                    label2="KETERANGAN"
+                    value2="Gaji berdasar jam approved"
+                    actionText="Kirim Laporan Baru"
+                    actionUrl="{{ route('video-submissions.submit-report.create') }}"
+                />
             </div>
 
             <!-- Right: Investment balance card (1 col) -->
