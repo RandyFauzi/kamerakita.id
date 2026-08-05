@@ -20,7 +20,7 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-3 w-full md:w-auto">
-                    <a href="{{ route('video-submissions.submit-report.create') }}" class="w-full md:w-auto min-h-11 inline-flex items-center justify-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 rounded-xl text-xs font-bold text-white shadow-sm transition">
+                    <a href="{{ route('video-submissions.submit-report.create') }}" class="w-full md:w-auto min-h-11 inline-flex items-center justify-center px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-xl text-xs font-bold text-white shadow-md shadow-blue-500/30 transition-all duration-300 transform hover:-translate-y-0.5">
                         Kirim Laporan Baru
                     </a>
                     <button type="button" aria-label="Tutup pemberitahuan" @click="showBanner = false" class="absolute top-4 right-4 w-9 h-9 inline-flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-lg">
@@ -68,51 +68,65 @@
         <div class="space-y-3">
             <span class="block text-xs font-black tracking-widest text-slate-400 uppercase font-mono">FITUR LAINNYA</span>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+                
                 <!-- Feature 1: Gaji Dibayarkan -->
-                <div class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-5 border border-gray-150 shadow-sm flex flex-col items-center justify-center text-center space-y-2 hover:shadow-md transition min-h-32">
-                    <div class="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl">
+                <div class="group bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md hover:border-emerald-300 transition-all duration-300 flex flex-col justify-between min-h-[140px] relative overflow-hidden">
+                    <div class="absolute -right-8 -top-8 w-24 h-24 bg-gradient-to-br from-emerald-100 to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div class="relative z-10 w-fit p-3 bg-emerald-50 text-emerald-600 rounded-2xl group-hover:scale-110 transition-transform duration-300">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                     </div>
-                    <span class="block text-xs font-bold text-gray-800">Telah Dicairkan</span>
-                    <span class="block text-[10px] text-gray-400 font-medium">Rp{{ number_format($metrics['paid_earnings'], 0, ',', '.') }}</span>
+                    <div class="relative z-10 mt-4">
+                        <span class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Telah Dicairkan</span>
+                        <span class="block text-base font-black text-slate-800">Rp{{ number_format($metrics['paid_earnings'], 0, ',', '.') }}</span>
+                    </div>
                 </div>
 
                 <!-- Feature 2: Bank Info -->
-                <div class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-5 border border-gray-150 shadow-sm flex flex-col items-center justify-center text-center space-y-2 hover:shadow-md transition min-h-32">
-                    <div class="p-2.5 bg-indigo-50 text-indigo-650 rounded-xl">
+                <div class="group bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-300 flex flex-col justify-between min-h-[140px] relative overflow-hidden">
+                    <div class="absolute -right-8 -top-8 w-24 h-24 bg-gradient-to-br from-blue-100 to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div class="relative z-10 w-fit p-3 bg-blue-50 text-blue-600 rounded-2xl group-hover:scale-110 transition-transform duration-300">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
                         </svg>
                     </div>
-                    <span class="block text-xs font-bold text-gray-800">Rekening Bank</span>
-                    <span class="block text-[10px] text-gray-450 font-bold font-mono">{{ $partner->bank_name ?? '-' }}</span>
+                    <div class="relative z-10 mt-4">
+                        <span class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Rekening Bank</span>
+                        <span class="block text-base font-black text-slate-800 truncate">{{ $partner->bank_name ?? '-' }}</span>
+                    </div>
                 </div>
 
                 <!-- Feature 3: Smartphone -->
-                <div class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-5 border border-gray-150 shadow-sm flex flex-col items-center justify-center text-center space-y-2 hover:shadow-md transition min-h-32">
-                    <div class="p-2.5 bg-blue-50 text-blue-600 rounded-xl">
+                <div class="group bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md hover:border-indigo-300 transition-all duration-300 flex flex-col justify-between min-h-[140px] relative overflow-hidden">
+                    <div class="absolute -right-8 -top-8 w-24 h-24 bg-gradient-to-br from-indigo-100 to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div class="relative z-10 w-fit p-3 bg-indigo-50 text-indigo-600 rounded-2xl group-hover:scale-110 transition-transform duration-300">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
                         </svg>
                     </div>
-                    <span class="block text-xs font-bold text-gray-800">Perangkat Rekam</span>
-                    <span class="block text-[10px] text-gray-400 font-medium">Kualitas Terverifikasi</span>
+                    <div class="relative z-10 mt-4">
+                        <span class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Perangkat Rekam</span>
+                        <span class="block text-sm font-black text-slate-800 leading-tight">Terverifikasi</span>
+                    </div>
                 </div>
 
                 <!-- Feature 4: Status Pajak / Akun -->
-                <div class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-5 border border-gray-150 shadow-sm flex flex-col items-center justify-center text-center space-y-2 hover:shadow-md transition relative min-h-32">
-                    <div class="p-2.5 bg-purple-50 text-purple-600 rounded-xl">
+                <div class="group bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md hover:border-violet-300 transition-all duration-300 flex flex-col justify-between min-h-[140px] relative overflow-hidden">
+                    <div class="absolute -right-8 -top-8 w-24 h-24 bg-gradient-to-br from-violet-100 to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div class="relative z-10 w-fit p-3 bg-violet-50 text-violet-600 rounded-2xl group-hover:scale-110 transition-transform duration-300">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.952 11.952 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                         </svg>
                     </div>
-                    <span class="block text-xs font-bold text-gray-800">Status Kemitraan</span>
-                    <span class="border text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider {{ $partner->statusBadgeClasses() }}">
-                        {{ $partner->statusLabel() }}
-                    </span>
+                    <div class="relative z-10 mt-4 flex justify-between items-end">
+                        <span class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">Kemitraan</span>
+                        <span class="border border-slate-200 text-[10px] font-black px-2.5 py-1 rounded-md uppercase tracking-wider {{ $partner->statusBadgeClasses() }}">
+                            {{ $partner->statusLabel() }}
+                        </span>
+                    </div>
                 </div>
+                
             </div>
         </div>
 
