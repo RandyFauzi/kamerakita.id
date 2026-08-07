@@ -1,5 +1,6 @@
 import defaultTheme from 'tailwindcss/defaultTheme';
 import forms from '@tailwindcss/forms';
+import colors from 'tailwindcss/colors';
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -15,7 +16,7 @@ export default {
                 sans: ['Inter', ...defaultTheme.fontFamily.sans],
             },
             colors: {
-                indigo: defaultTheme.colors.blue, // Override indigo with vibrant blue
+                indigo: colors.blue, // Override indigo with vibrant blue
                 // Premium HSL-based palette
                 premium: {
                     50: 'hsl(230, 80%, 98%)',
