@@ -364,7 +364,7 @@
                                                                             @if($partner->approval_status !== 'paid')
                                                                                 @if($report->qc_status === 'rejected')
                                                                                     <!-- Restore/Undo Rejection Action -->
-                                                                                    <form action="{{ route('video-submissions.restore-report', $report->id) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan status revisi dan mengembalikan laporan ini ke antrean review?')">
+                                                                                    <form action="{{ route('video-submissions.restore-report', $report->id) }}" method="POST" class="inline" onsubmit="event.preventDefault(); confirmRestore(this)">
                                                                                         @csrf
                                                                                         <button type="submit" class="inline-flex items-center px-2 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-lg text-[9px] font-bold border border-emerald-200 transition">
                                                                                             Batal Tolak
@@ -372,7 +372,7 @@
                                                                                     </form>
                                                                                 @else
                                                                                     <!-- Reject/Revision Action -->
-                                                                                    <form action="{{ route('video-submissions.reject-report', $report->id) }}" method="POST" class="inline" onsubmit="return confirmRejection(this)">
+                                                                                    <form action="{{ route('video-submissions.reject-report', $report->id) }}" method="POST" class="inline" onsubmit="event.preventDefault(); confirmRejection(this)">
                                                                                         @csrf
                                                                                         <input type="hidden" name="reason" class="reject-reason-input">
                                                                                         <button type="submit" class="inline-flex items-center px-2 py-1 bg-amber-55 hover:bg-amber-100 text-amber-855 rounded-lg text-[9px] font-bold border border-amber-200 transition">
@@ -382,7 +382,7 @@
                                                                                 @endif
 
                                                                                 <!-- Delete Action -->
-                                                                                <form action="{{ route('video-submissions.destroy', $report->id) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus laporan harian ini secara permanen?')">
+                                                                                <form action="{{ route('video-submissions.destroy', $report->id) }}" method="POST" class="inline" onsubmit="event.preventDefault(); confirmDelete(this)">
                                                                                     @csrf
                                                                                     @method('DELETE')
                                                                                     <button type="submit" class="inline-flex items-center px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-800 rounded-lg text-[9px] font-bold border border-rose-200 transition">
@@ -516,16 +516,73 @@
                 </div>
             </div>
         </div>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
+            const swalOptions = {
+                confirmButtonColor: '#0f766e',
+                cancelButtonColor: '#bae6fd',
+                customClass: {
+                    popup: 'rounded-3xl shadow-2xl border border-gray-100',
+                    confirmButton: 'rounded-xl px-6 py-2.5 font-bold shadow-md hover:shadow-lg transition-all',
+                    cancelButton: 'rounded-xl px-6 py-2.5 font-bold text-slate-700 shadow-sm hover:bg-sky-200 transition-all ml-3'
+                },
+                buttonsStyling: true
+            };
+
+            function confirmDelete(form) {
+                Swal.fire({
+                    ...swalOptions,
+                    title: 'Hapus Laporan?',
+                    text: "Apakah Anda yakin ingin menghapus laporan harian ini secara permanen?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Hapus',
+                    cancelButtonText: 'Batal',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            }
+
+            function confirmRestore(form) {
+                Swal.fire({
+                    ...swalOptions,
+                    title: 'Batal Tolak?',
+                    text: "Apakah Anda yakin ingin membatalkan status revisi dan mengembalikan laporan ini ke antrean review?",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Kembalikan',
+                    cancelButtonText: 'Batal',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            }
+
             function confirmRejection(form) {
-                let reason = prompt("Masukkan alasan penolakan / instruksi revisi untuk mitra:");
-                if (reason === null) return false; // Dibatalkan oleh admin
-                if (reason.trim() === "") {
-                    alert("Alasan penolakan wajib diisi!");
-                    return false;
-                }
-                form.querySelector('.reject-reason-input').value = reason;
-                return true;
+                Swal.fire({
+                    ...swalOptions,
+                    title: 'Revisi Laporan',
+                    text: 'Masukkan alasan penolakan / instruksi revisi untuk mitra:',
+                    input: 'textarea',
+                    inputPlaceholder: 'Ketik alasan di sini...',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Tolak & Revisi',
+                    cancelButtonText: 'Batal',
+                    inputValidator: (value) => {
+                        if (!value || value.trim() === '') {
+                            return 'Alasan penolakan wajib diisi!'
+                        }
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.querySelector('.reject-reason-input').value = result.value;
+                        form.submit();
+                    }
+                });
             }
         </script>
     </div>
