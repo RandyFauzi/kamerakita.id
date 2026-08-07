@@ -15,14 +15,15 @@ export default {
                 sans: ['Inter', ...defaultTheme.fontFamily.sans],
             },
             colors: {
+                indigo: defaultTheme.colors.blue, // Override indigo with vibrant blue
                 // Premium HSL-based palette
                 premium: {
                     50: 'hsl(230, 80%, 98%)',
                     100: 'hsl(230, 80%, 95%)',
-                    500: 'hsl(230, 80%, 60%)',
-                    600: 'hsl(230, 80%, 50%)', // primary Indigo/Blue
-                    700: 'hsl(230, 80%, 40%)',
-                    900: 'hsl(230, 80%, 20%)',
+                    500: 'hsl(210, 100%, 60%)', // Adjusted to bright blue
+                    600: 'hsl(210, 100%, 50%)', // Adjusted to bright blue
+                    700: 'hsl(210, 100%, 40%)',
+                    900: 'hsl(210, 100%, 20%)',
                 },
                 slate: {
                     ...defaultTheme.colors.slate,

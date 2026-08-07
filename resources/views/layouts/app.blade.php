@@ -23,7 +23,7 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="antialiased bg-[#f8f8f6] text-slate-800 overflow-x-hidden">
+    <body class="antialiased bg-gradient-to-b from-blue-100 to-white text-slate-800 overflow-x-hidden min-h-screen">
         <div class="min-h-screen flex min-w-0">
             <!-- Sidebar Navigation -->
             <x-sidebar />
