@@ -127,36 +127,45 @@
                 </div>
 
                 <!-- 2. Target Harian Laps -->
-                <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl p-5 sm:p-6 border border-slate-700 shadow-lg relative overflow-hidden text-white flex flex-col justify-between" x-data="dailyTargetData({{ $metrics['today_submitted_minutes'] }})">
-                    <div class="absolute right-0 bottom-0 w-32 h-32 rounded-full blur-3xl opacity-20 -mr-10 -mb-10 transition-colors duration-700" :class="glowClass"></div>
+                <div class="relative w-full bg-white/70 backdrop-blur-xl border border-slate-200 rounded-[28px] p-6 sm:p-7 shadow-[0_20px_40px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,1)] overflow-hidden transition-all duration-400 hover:-translate-y-1 hover:shadow-[0_30px_50px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,1)] flex flex-col justify-between" x-data="dailyTargetData({{ $metrics['today_submitted_minutes'] }})">
+                    
+                    <!-- Halftone Pattern -->
+                    <div class="absolute inset-x-0 top-0 h-[60%] pointer-events-none z-0" style="background-image: radial-gradient(rgba(0,0,0,0.04) 1px, transparent 1px); background-size: 6px 6px; mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%); -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);"></div>
+                    
                     <div class="relative z-10 flex-grow">
-                        <div class="flex justify-between items-center mb-1">
-                            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Target Harian</h3>
-                            <div class="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider transition-colors duration-500" :class="lapBadgeClass" x-text="lapText"></div>
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-[13px] font-bold text-slate-400 uppercase tracking-widest">Target Harian</h3>
+                            <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider" x-text="lapText"></div>
                         </div>
                         
-                        <div class="flex items-baseline gap-1.5 mb-5 mt-2">
-                            <span class="text-3xl font-black" x-text="hours">0</span>
+                        <div class="flex items-baseline gap-2 mb-6">
+                            <span class="text-5xl font-black text-slate-800 tracking-tighter" x-text="hours">0</span>
                             <span class="text-sm font-bold text-slate-400">jam</span>
-                            <span class="text-3xl font-black ml-1" x-text="minutes">0</span>
+                            <span class="text-5xl font-black text-slate-800 tracking-tighter ml-1" x-text="minutes">0</span>
                             <span class="text-sm font-bold text-slate-400">menit</span>
                         </div>
                     </div>
                         
-                    <div class="relative z-10 mt-2">
-                        <!-- Progress Bar segmented for Laps -->
-                        <div class="relative w-full h-4 bg-slate-700/50 rounded-full overflow-hidden shadow-inner">
-                            <div class="absolute top-0 left-0 h-full transition-all duration-1000 ease-out rounded-full" :class="barColorClass" :style="'width: ' + progressPercent + '%'"></div>
-                            <!-- Markers -->
-                            <div class="absolute top-0 left-[33.33%] w-px h-full bg-slate-800/80 z-10"></div>
-                            <div class="absolute top-0 left-[66.66%] w-px h-full bg-slate-800/80 z-10"></div>
+                    <div class="relative z-10 mt-2 w-full">
+                        <!-- Progress Track -->
+                        <div class="relative w-full h-5 bg-slate-200/80 rounded-full flex items-center shadow-[inset_0_2px_4px_rgba(0,0,0,0.05)] overflow-hidden">
+                            
+                            <!-- Laps Markers / Dots -->
+                            <div class="absolute top-1/2 left-[33.33%] -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full z-10 transition-colors duration-500" :class="target1Active ? 'bg-transparent' : (currentLap === 1 ? 'bg-[#b8ff29] shadow-[0_0_8px_#b8ff29]' : 'bg-black/10 shadow-[inset_0_1px_1px_rgba(0,0,0,0.1)]')"></div>
+                            
+                            <div class="absolute top-1/2 left-[66.66%] -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full z-10 transition-colors duration-500" :class="target2Active ? 'bg-transparent' : (currentLap === 2 ? 'bg-[#b8ff29] shadow-[0_0_8px_#b8ff29]' : 'bg-black/10 shadow-[inset_0_1px_1px_rgba(0,0,0,0.1)]')"></div>
+
+                            <!-- Fill -->
+                            <div class="absolute top-0 left-0 h-full rounded-full transition-all duration-1000 ease-out bg-gradient-to-r from-lime-500 to-[#b8ff29] z-0" :style="'width: ' + progressPercent + '%'">
+                                <!-- Flare -->
+                                <div class="absolute right-0 top-1/2 -translate-y-1/2 w-8 h-4 bg-white rounded-full blur-[5px] shadow-[0_0_20px_8px_rgba(184,255,41,0.6)]" :class="mins > 0 ? 'opacity-100' : 'opacity-0'"></div>
+                            </div>
                         </div>
                         
-                        <div class="flex justify-between mt-2 text-[10px] font-bold text-slate-400 px-1 relative h-4">
+                        <!-- Labels -->
+                        <div class="flex justify-between mt-3 text-[11px] font-bold text-slate-400 px-1 relative h-4 uppercase tracking-wider">
                             <span>0j</span>
-                            <span class="absolute left-[33.33%] -translate-x-1/2 transition-colors duration-500" :class="target1Active ? 'text-blue-400' : ''">2j</span>
-                            <span class="absolute left-[66.66%] -translate-x-1/2 transition-colors duration-500" :class="target2Active ? 'text-amber-400' : ''">4j</span>
-                            <span class="absolute right-0 transition-colors duration-500" :class="target3Active ? 'text-emerald-400' : ''">6j</span>
+                            <span class="absolute right-0 transition-colors duration-500" :class="target3Active ? 'text-slate-700' : ''">6j</span>
                         </div>
                     </div>
                 </div>
