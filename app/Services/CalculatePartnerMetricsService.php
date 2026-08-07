@@ -17,12 +17,19 @@ class CalculatePartnerMetricsService
      */
     public function getWorkerMetrics(Partner $worker): array
     {
-        $approvedReports = VideoWorkReport::query()
+        $allReports = VideoWorkReport::query()
             ->where('partner_id', $worker->id)
-            ->where('qc_status', 'approved')
             ->get();
 
+        $approvedReports = $allReports->where('qc_status', 'approved');
+
+        $totalSubmittedMinutes = $allReports->sum('submitted_duration_minutes');
         $allTimeMinutes = $approvedReports->sum('approved_duration_minutes');
+        
+        $todayReports = $allReports->filter(function ($report) {
+            return $report->submission_date ? $report->submission_date->isSameDay(now()) : false;
+        });
+        $todaySubmittedMinutes = $todayReports->sum('submitted_duration_minutes');
         
         $paidMinutes = $approvedReports->where('payment_status', 'paid')
             ->sum('approved_duration_minutes');
@@ -36,6 +43,8 @@ class CalculatePartnerMetricsService
         $totalEarnings = $paidEarnings + $pendingEarnings;
 
         return [
+            'total_submitted_minutes' => $totalSubmittedMinutes,
+            'today_submitted_minutes' => $todaySubmittedMinutes,
             'all_time_minutes' => $allTimeMinutes,
             'paid_minutes' => $paidMinutes,
             'pending_minutes' => $pendingMinutes,

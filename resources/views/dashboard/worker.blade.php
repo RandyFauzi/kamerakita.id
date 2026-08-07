@@ -64,71 +64,139 @@
             />
         </div>
 
-        <!-- OTHER FEATURES Section -->
-        <div class="space-y-3">
-            <span class="block text-xs font-black tracking-widest text-slate-400 uppercase font-mono">FITUR LAINNYA</span>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+        <!-- Statistik Progres Video Section -->
+        <div class="space-y-4 sm:space-y-6">
+            <span class="block text-xs font-black tracking-widest text-slate-400 uppercase font-mono">Statistik Progres Video</span>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 
-                <!-- Feature 1: Gaji Dibayarkan -->
-                <div class="group bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md hover:border-emerald-300 transition-all duration-300 flex flex-col justify-between min-h-[140px] relative overflow-hidden">
-                    <div class="absolute -right-8 -top-8 w-24 h-24 bg-gradient-to-br from-emerald-100 to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    <div class="relative z-10 w-fit p-3 bg-emerald-50 text-emerald-600 rounded-2xl group-hover:scale-110 transition-transform duration-300">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
+                <!-- 1. Total Kirim vs Approved -->
+                <div class="bg-white rounded-3xl p-5 sm:p-6 border border-gray-150 shadow-sm relative overflow-hidden flex flex-col justify-between">
+                    <div class="absolute right-0 top-0 w-32 h-32 bg-blue-50 rounded-full blur-3xl opacity-50 -mr-10 -mt-10"></div>
+                    <div class="relative z-10 flex-grow">
+                        <div class="flex justify-between items-end mb-4">
+                            <div>
+                                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Total Jam Approved</h3>
+                                <div class="text-2xl font-black text-slate-800 flex items-baseline gap-1">
+                                    {{ floor($metrics['all_time_minutes'] / 60) }}<span class="text-base text-gray-500 font-bold">j</span> {{ $metrics['all_time_minutes'] % 60 }}<span class="text-base text-gray-500 font-bold">m</span>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <h3 class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Total Dikirim</h3>
+                                <div class="text-lg font-bold text-slate-600">
+                                    {{ floor($metrics['total_submitted_minutes'] / 60) }}j {{ $metrics['total_submitted_minutes'] % 60 }}m
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="relative z-10 mt-4">
-                        <span class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Telah Dicairkan</span>
-                        <span class="block text-base font-black text-slate-800">Rp{{ number_format($metrics['paid_earnings'], 0, ',', '.') }}</span>
-                    </div>
-                </div>
-
-                <!-- Feature 2: Bank Info -->
-                <div class="group bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-300 flex flex-col justify-between min-h-[140px] relative overflow-hidden">
-                    <div class="absolute -right-8 -top-8 w-24 h-24 bg-gradient-to-br from-blue-100 to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    <div class="relative z-10 w-fit p-3 bg-blue-50 text-blue-600 rounded-2xl group-hover:scale-110 transition-transform duration-300">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
-                        </svg>
-                    </div>
-                    <div class="relative z-10 mt-4">
-                        <span class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Rekening Bank</span>
-                        <span class="block text-base font-black text-slate-800 truncate">{{ $partner->bank_name ?? '-' }}</span>
-                    </div>
-                </div>
-
-                <!-- Feature 3: Smartphone -->
-                <div class="group bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md hover:border-indigo-300 transition-all duration-300 flex flex-col justify-between min-h-[140px] relative overflow-hidden">
-                    <div class="absolute -right-8 -top-8 w-24 h-24 bg-gradient-to-br from-indigo-100 to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    <div class="relative z-10 w-fit p-3 bg-indigo-50 text-indigo-600 rounded-2xl group-hover:scale-110 transition-transform duration-300">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-                        </svg>
-                    </div>
-                    <div class="relative z-10 mt-4">
-                        <span class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Perangkat Rekam</span>
-                        <span class="block text-sm font-black text-slate-800 leading-tight">Terverifikasi</span>
+                        
+                    @php
+                        $totalSub = $metrics['total_submitted_minutes'];
+                        $totalApp = $metrics['all_time_minutes'];
+                        $percentApp = $totalSub > 0 ? min(100, round(($totalApp / $totalSub) * 100)) : 0;
+                    @endphp
+                    
+                    <div class="relative z-10 space-y-2 mt-2">
+                        <div class="flex justify-between text-xs font-bold text-gray-500">
+                            <span>Tingkat Approval</span>
+                            <span class="text-blue-600">{{ $percentApp }}%</span>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
+                            <div class="bg-gradient-to-r from-blue-500 to-indigo-600 h-full rounded-full transition-all duration-1000" style="width: {{ $percentApp }}%"></div>
+                        </div>
+                        <p class="text-[10px] text-gray-400 text-center mt-2">Dari seluruh video yang dikirim, sebanyak {{ $percentApp }}% berhasil lolos QC.</p>
                     </div>
                 </div>
 
-                <!-- Feature 4: Status Pajak / Akun -->
-                <div class="group bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md hover:border-violet-300 transition-all duration-300 flex flex-col justify-between min-h-[140px] relative overflow-hidden">
-                    <div class="absolute -right-8 -top-8 w-24 h-24 bg-gradient-to-br from-violet-100 to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    <div class="relative z-10 w-fit p-3 bg-violet-50 text-violet-600 rounded-2xl group-hover:scale-110 transition-transform duration-300">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.952 11.952 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                        </svg>
+                <!-- 2. Target Harian Laps -->
+                <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl p-5 sm:p-6 border border-slate-700 shadow-lg relative overflow-hidden text-white flex flex-col justify-between" x-data="dailyTargetData({{ $metrics['today_submitted_minutes'] }})">
+                    <div class="absolute right-0 bottom-0 w-32 h-32 rounded-full blur-3xl opacity-20 -mr-10 -mb-10 transition-colors duration-700" :class="glowClass"></div>
+                    <div class="relative z-10 flex-grow">
+                        <div class="flex justify-between items-center mb-1">
+                            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Target Harian</h3>
+                            <div class="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider transition-colors duration-500" :class="lapBadgeClass" x-text="lapText"></div>
+                        </div>
+                        
+                        <div class="flex items-baseline gap-1.5 mb-5 mt-2">
+                            <span class="text-3xl font-black" x-text="hours">0</span>
+                            <span class="text-sm font-bold text-slate-400">jam</span>
+                            <span class="text-3xl font-black ml-1" x-text="minutes">0</span>
+                            <span class="text-sm font-bold text-slate-400">menit</span>
+                        </div>
                     </div>
-                    <div class="relative z-10 mt-4 flex justify-between items-end">
-                        <span class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">Kemitraan</span>
-                        <span class="border border-slate-200 text-[10px] font-black px-2.5 py-1 rounded-md uppercase tracking-wider {{ $partner->statusBadgeClasses() }}">
-                            {{ $partner->statusLabel() }}
-                        </span>
+                        
+                    <div class="relative z-10 mt-2">
+                        <!-- Progress Bar segmented for Laps -->
+                        <div class="relative w-full h-4 bg-slate-700/50 rounded-full overflow-hidden shadow-inner">
+                            <div class="absolute top-0 left-0 h-full transition-all duration-1000 ease-out rounded-full" :class="barColorClass" :style="'width: ' + progressPercent + '%'"></div>
+                            <!-- Markers -->
+                            <div class="absolute top-0 left-[33.33%] w-px h-full bg-slate-800/80 z-10"></div>
+                            <div class="absolute top-0 left-[66.66%] w-px h-full bg-slate-800/80 z-10"></div>
+                        </div>
+                        
+                        <div class="flex justify-between mt-2 text-[10px] font-bold text-slate-400 px-1 relative h-4">
+                            <span>0j</span>
+                            <span class="absolute left-[33.33%] -translate-x-1/2 transition-colors duration-500" :class="target1Active ? 'text-blue-400' : ''">2j</span>
+                            <span class="absolute left-[66.66%] -translate-x-1/2 transition-colors duration-500" :class="target2Active ? 'text-amber-400' : ''">4j</span>
+                            <span class="absolute right-0 transition-colors duration-500" :class="target3Active ? 'text-emerald-400' : ''">6j</span>
+                        </div>
                     </div>
                 </div>
-                
             </div>
         </div>
+        
+        <script>
+            document.addEventListener('alpine:init', () => {
+                Alpine.data('dailyTargetData', (submittedMins) => ({
+                    mins: submittedMins,
+                    
+                    get hours() { return Math.floor(this.mins / 60); },
+                    get minutes() { return this.mins % 60; },
+                    
+                    get currentLap() {
+                        if (this.mins >= 360) return 3; // Maxed out
+                        if (this.mins >= 240) return 3; // Working towards 6h
+                        if (this.mins >= 120) return 2; // Working towards 4h
+                        return 1; // Working towards 2h
+                    },
+                    
+                    get lapText() {
+                        if (this.mins >= 360) return 'MAX LAP REACHED 🏁';
+                        return `LAP ${this.currentLap}`;
+                    },
+                    
+                    get lapBadgeClass() {
+                        if (this.mins >= 360) return 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+                        if (this.currentLap === 3) return 'bg-amber-500/20 text-amber-400 border border-amber-500/30';
+                        if (this.currentLap === 2) return 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30';
+                        return 'bg-slate-700 text-slate-300';
+                    },
+                    
+                    get barColorClass() {
+                        if (this.mins >= 360) return 'bg-gradient-to-r from-emerald-400 to-emerald-500 shadow-[0_0_10px_rgba(52,211,153,0.5)]';
+                        if (this.currentLap === 3) return 'bg-gradient-to-r from-amber-400 to-amber-500 shadow-[0_0_10px_rgba(251,191,36,0.5)]';
+                        if (this.currentLap === 2) return 'bg-gradient-to-r from-indigo-400 to-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]';
+                        return 'bg-gradient-to-r from-blue-400 to-blue-500';
+                    },
+                    
+                    get glowClass() {
+                        if (this.mins >= 360) return 'bg-emerald-500';
+                        if (this.currentLap === 3) return 'bg-amber-500';
+                        if (this.currentLap === 2) return 'bg-indigo-500';
+                        return 'bg-blue-500';
+                    },
+                    
+                    get progressPercent() {
+                        // Max cap at 360 mins (6 hours)
+                        return Math.min(100, (this.mins / 360) * 100);
+                    },
+                    
+                    get target1Active() { return this.mins >= 120; },
+                    get target2Active() { return this.mins >= 240; },
+                    get target3Active() { return this.mins >= 360; },
+                }))
+            })
+        </script>
 
         <!-- Recent reports list -->
         <div class="bg-white rounded-2xl sm:rounded-[32px] p-4 sm:p-6 border border-gray-150 shadow-sm">
