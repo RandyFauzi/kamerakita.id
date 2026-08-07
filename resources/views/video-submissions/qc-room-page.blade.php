@@ -371,11 +371,21 @@
                                                                                         </button>
                                                                                     </form>
                                                                                 @else
+                                                                                    <!-- Approve Action -->
+                                                                                    <form action="{{ route('video-submissions.approve-report', $report->id) }}" method="POST" class="inline" onsubmit="event.preventDefault(); confirmApproveReport(this, {{ $report->submitted_duration_minutes }})">
+                                                                                        @csrf
+                                                                                        <input type="hidden" name="adjusted_minutes" class="adjusted-minutes-input">
+                                                                                        <input type="hidden" name="admin_note" class="admin-note-input">
+                                                                                        <button type="submit" class="inline-flex items-center px-2 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-lg text-[9px] font-bold border border-emerald-200 transition">
+                                                                                            Setujui
+                                                                                        </button>
+                                                                                    </form>
+
                                                                                     <!-- Reject/Revision Action -->
                                                                                     <form action="{{ route('video-submissions.reject-report', $report->id) }}" method="POST" class="inline" onsubmit="event.preventDefault(); confirmRejection(this)">
                                                                                         @csrf
                                                                                         <input type="hidden" name="reason" class="reject-reason-input">
-                                                                                        <button type="submit" class="inline-flex items-center px-2 py-1 bg-amber-55 hover:bg-amber-100 text-amber-855 rounded-lg text-[9px] font-bold border border-amber-200 transition">
+                                                                                        <button type="submit" class="inline-flex items-center px-2 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 rounded-lg text-[9px] font-bold border border-amber-200 transition">
                                                                                             Revisi
                                                                                         </button>
                                                                                     </form>
@@ -580,6 +590,47 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         form.querySelector('.reject-reason-input').value = result.value;
+                        form.submit();
+                    }
+                });
+            }
+
+            function confirmApproveReport(form, defaultMinutes) {
+                Swal.fire({
+                    ...swalOptions,
+                    title: 'Setujui Laporan & Durasi',
+                    html: `
+                        <div class="space-y-4 mt-4 text-left">
+                            <p class="text-sm text-gray-500">Durasi yang diajukan oleh mitra adalah <strong>${defaultMinutes} menit</strong>. Sesuaikan jika bukti tidak mendukung penuh.</p>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Durasi Disetujui (Menit)</label>
+                                <input type="number" id="swal-adjusted-minutes" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 font-bold" value="${defaultMinutes}" min="0">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Catatan Penyesuaian (Opsional)</label>
+                                <textarea id="swal-admin-note" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 text-sm" rows="2" placeholder="Catatan jika durasi dikurangi..."></textarea>
+                            </div>
+                        </div>
+                    `,
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonText: 'Simpan & Setujui',
+                    cancelButtonText: 'Batal',
+                    confirmButtonColor: '#059669', // emerald-600
+                    preConfirm: () => {
+                        const minutes = document.getElementById('swal-adjusted-minutes').value;
+                        if (!minutes || minutes < 0) {
+                            Swal.showValidationMessage('Durasi tidak valid!');
+                        }
+                        return {
+                            minutes: minutes,
+                            note: document.getElementById('swal-admin-note').value
+                        }
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.querySelector('.adjusted-minutes-input').value = result.value.minutes;
+                        form.querySelector('.admin-note-input').value = result.value.note;
                         form.submit();
                     }
                 });

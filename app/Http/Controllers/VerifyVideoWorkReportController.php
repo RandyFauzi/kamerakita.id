@@ -270,6 +270,24 @@ class VerifyVideoWorkReportController extends Controller
         return redirect()->back()->with('success', 'Persetujuan periode berhasil difinalisasi dan dirilis ke mitra.');
     }
 
+    public function approveReport(Request $request, VideoWorkReport $report)
+    {
+        $validated = $request->validate([
+            'adjusted_minutes' => 'required|integer|min:0',
+            'admin_note' => 'nullable|string|max:1000',
+        ]);
+
+        $report->update([
+            'qc_status' => 'approved',
+            'approved_duration_minutes' => $validated['adjusted_minutes'],
+            'verified_by' => Auth::id(),
+            'verified_at' => now(),
+            'verifier_notes' => $validated['admin_note'],
+        ]);
+
+        return redirect()->back()->with('success', 'Laporan berhasil disetujui dengan durasi ' . $validated['adjusted_minutes'] . ' menit.');
+    }
+
     public function destroy(VideoWorkReport $report)
     {
         if (Auth::user()->role !== 'superadmin' && Auth::user()->role !== 'admin') {
