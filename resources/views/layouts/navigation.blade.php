@@ -16,6 +16,10 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
 
+                    <x-nav-link :href="route('leaderboard.index')" :active="request()->routeIs('leaderboard.index')">
+                        {{ __('Leaderboard') }}
+                    </x-nav-link>
+
                     <x-nav-link :href="route('partners.index')" :active="request()->routeIs('partners.*')">
                         {{ __('Data Mitra') }}
                     </x-nav-link>
@@ -78,6 +82,9 @@
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('leaderboard.index')" :active="request()->requestIs('leaderboard.index')">
+                {{ __('Leaderboard') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('partners.index')" :active="request()->routeIs('partners.*')">
                 {{ __('Data Mitra') }}

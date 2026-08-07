@@ -34,6 +34,10 @@ Route::get('/dashboard', RenderDashboardOverviewController::class)
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
+Route::get('/leaderboard', [\App\Http\Controllers\LeaderboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('leaderboard.index');
+
 Route::get('/video-work-reports/{report}/evidence/{type}', ShowVideoWorkReportEvidenceController::class)
     ->middleware(['signed:relative'])
     ->name('video-submissions.evidence.show');
