@@ -34,7 +34,7 @@ class LeaderboardController extends Controller
             return $scores->map(function ($score) {
                 $name = $score->partner->full_name ?? 'Mitra KameraKita';
                 // Fallback avatar using ui-avatars since there's no avatar column
-                $avatar = 'https://ui-avatars.com/api/?name=' . urlencode($name) . '&background=0f766e&color=fff&bold=true';
+                $avatar = 'https://ui-avatars.com/api/?name=' . urlencode($name) . '&background=3b82f6&color=fff&bold=true';
                 
                 return [
                     'name' => $name,
