@@ -47,6 +47,13 @@
                 Ringkasan
             </a>
 
+            <a href="{{ route('leaderboard.index') }}" class="flex items-center px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('leaderboard.index') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
+                <svg class="w-5 h-5 mr-3 {{ request()->routeIs('leaderboard.index') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.504-1.125-1.125-1.125h-.871m-4.008 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M18.75 4.236c.982.143 1.954.317 2.916.52a6.003 6.003 0 01-5.395 4.972m0 0a8.001 8.001 0 00-1.588-4.982m-1.226 0H9.102m1.226 0a8.001 8.001 0 011.588-4.982" />
+                </svg>
+                Leaderboard
+            </a>
+
             @if(in_array(Auth::user()->role ?? '', ['superadmin', 'admin']))
                 <a href="{{ route('admin.event') }}" class="flex items-center px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('admin.event') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
                     <svg class="w-5 h-5 mr-3 {{ request()->routeIs('admin.event') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
