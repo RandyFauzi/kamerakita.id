@@ -211,7 +211,7 @@
                                 <div class="text-left md:text-right">
                                     <span class="block text-[10px] font-bold text-gray-450 uppercase tracking-wider">Total Tagihan</span>
                                     <span class="block text-lg font-black text-indigo-600 leading-tight">Rp {{ number_format($w['total_amount'], 0, ',', '.') }}</span>
-                                    <span class="block text-[10px] font-medium text-gray-400" x-text="'Untuk ' + {{ count($w['reports']) }} + ' Laporan' "></span>
+                                    <span class="block text-[10px] font-medium text-gray-400">Untuk {{ count($w['reports']) }} Laporan ({{ floor($w['total_minutes'] / 60) }}j {{ $w['total_minutes'] % 60 }}m Approved)</span>
                                 </div>
 
                                 <div class="flex items-center gap-2">
