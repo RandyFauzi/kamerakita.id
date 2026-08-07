@@ -286,6 +286,28 @@
                         customElements.define('mission-card', MissionCard);
                     }
                 </script>
+            </div>
+
+            <!-- Leaderboard Mobile Banner -->
+            <a href="{{ route('leaderboard.index') }}" class="group relative block w-full rounded-[28px] overflow-hidden bg-gradient-to-br from-amber-500 to-orange-600 p-[1px] shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 transition-all duration-300 transform hover:-translate-y-1 mt-6">
+                <div class="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div class="relative bg-gradient-to-br from-amber-400 to-orange-500 rounded-[27px] p-5 sm:p-6 flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 sm:w-14 sm:h-14 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/30 text-2xl sm:text-3xl shadow-inner shrink-0">
+                            🏆
+                        </div>
+                        <div>
+                            <h3 class="text-white font-extrabold text-lg sm:text-xl tracking-tight leading-tight">Papan Peringkat</h3>
+                            <p class="text-amber-50 text-[11px] sm:text-xs font-medium mt-1 opacity-90 leading-tight">Lihat posisi Anda di antara mitra KameraKita lainnya!</p>
+                        </div>
+                    </div>
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-full flex items-center justify-center shadow-md transform group-hover:translate-x-1 transition-transform duration-300 shrink-0">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-orange-600 ml-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </div>
+                </div>
+            </a>
 
         <!-- Recent reports list -->
         <div class="bg-white rounded-2xl sm:rounded-[32px] p-4 sm:p-6 border border-gray-150 shadow-sm">
