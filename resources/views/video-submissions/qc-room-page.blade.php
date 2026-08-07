@@ -299,13 +299,36 @@
                                             </div>
 
                                             <!-- Right Panel (7 columns): Daftar Laporan Kerja Harian -->
-                                            <div class="lg:col-span-7 flex flex-col">
-                                                <h4 class="text-xs font-black text-slate-800 uppercase tracking-widest mb-3 font-mono">Daftar Laporan Kerja Harian</h4>
+                                            <div class="lg:col-span-7 flex flex-col" x-data="{
+                                                partnerSelectedReports: [],
+                                                get totalSelectedMinutes() {
+                                                    let total = 0;
+                                                    this.partnerSelectedReports.forEach(id => {
+                                                        const el = document.getElementById('report-minutes-' + id);
+                                                        if (el) total += parseInt(el.value) || 0;
+                                                    });
+                                                    return total;
+                                                },
+                                                toggleAll() {
+                                                    const checkboxes = document.querySelectorAll('.report-checkbox-{{ $partner->id }}');
+                                                    if (this.partnerSelectedReports.length === checkboxes.length) {
+                                                        this.partnerSelectedReports = [];
+                                                    } else {
+                                                        this.partnerSelectedReports = Array.from(checkboxes).map(cb => cb.value);
+                                                    }
+                                                }
+                                            }">
+                                                <h4 class="text-xs font-black text-slate-800 uppercase tracking-widest mb-3 font-mono flex items-center justify-between">
+                                                    <span>Daftar Laporan Kerja Harian</span>
+                                                </h4>
                                                 
                                                 <div class="overflow-x-auto border border-slate-100 rounded-2xl">
                                                     <table class="min-w-full divide-y divide-gray-100">
                                                         <thead class="bg-slate-50">
                                                             <tr>
+                                                                <th class="px-4 py-2 text-left text-[10px] font-bold text-slate-500 uppercase font-mono w-8">
+                                                                    <input type="checkbox" @click="toggleAll" :checked="partnerSelectedReports.length > 0 && partnerSelectedReports.length === document.querySelectorAll('.report-checkbox-{{ $partner->id }}').length" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 transition cursor-pointer">
+                                                                </th>
                                                                 <th class="px-4 py-2 text-left text-[10px] font-bold text-slate-500 uppercase font-mono">ID Laporan</th>
                                                                 <th class="px-4 py-2 text-left text-[10px] font-bold text-slate-500 uppercase font-mono">Tanggal Kerja</th>
                                                                 <th class="px-4 py-2 text-center text-[10px] font-bold text-slate-500 uppercase font-mono">Durasi Kirim</th>
@@ -316,6 +339,12 @@
                                                         <tbody class="divide-y divide-gray-100 bg-white">
                                                             @foreach($partner->period_reports as $report)
                                                                 <tr class="hover:bg-slate-50/50 transition-colors">
+                                                                    <td class="px-4 py-2 whitespace-nowrap text-center" @click.stop>
+                                                                        @if($report->qc_status !== 'approved' && $partner->approval_status !== 'paid')
+                                                                            <input type="checkbox" x-model="partnerSelectedReports" value="{{ $report->id }}" class="report-checkbox-{{ $partner->id }} rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 transition cursor-pointer">
+                                                                            <input type="hidden" id="report-minutes-{{ $report->id }}" value="{{ $report->submitted_duration_minutes }}">
+                                                                        @endif
+                                                                    </td>
                                                                     <td class="px-4 py-2 whitespace-nowrap text-xs font-mono text-gray-500">
                                                                         <div class="flex flex-col gap-0.5">
                                                                             <span>{{ substr($report->id, 0, 8) }}...</span>
@@ -406,6 +435,18 @@
                                                             @endforeach
                                                         </tbody>
                                                     </table>
+                                                </div>
+
+                                                <!-- Floating Action Bar for Batch Approve -->
+                                                <div x-show="partnerSelectedReports.length > 0" x-transition x-cloak class="mt-4 p-4 bg-indigo-50 border border-indigo-200 rounded-2xl flex items-center justify-between shadow-sm">
+                                                    <div class="text-xs font-bold text-indigo-800">
+                                                        <span x-text="partnerSelectedReports.length"></span> Laporan Dipilih
+                                                        <span class="opacity-50 mx-2">|</span>
+                                                        Total Kirim: <span x-text="totalSelectedMinutes"></span> menit
+                                                    </div>
+                                                    <button type="button" @click="confirmBatchApprove('{{ $partner->id }}', partnerSelectedReports, totalSelectedMinutes)" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-sm transition">
+                                                        Setujui Terpilih
+                                                    </button>
                                                 </div>
                                             </div>
                                             
@@ -631,6 +672,50 @@
                     if (result.isConfirmed) {
                         form.querySelector('.adjusted-minutes-input').value = result.value.minutes;
                         form.querySelector('.admin-note-input').value = result.value.note;
+                        form.submit();
+                    }
+                });
+            }
+            function confirmBatchApprove(partnerId, reportIds, totalReportedMinutes) {
+                Swal.fire({
+                    ...swalOptions,
+                    title: 'Persetujuan Kolektif (Batch Approve)',
+                    html: `
+                        <div class="space-y-4 mt-4 text-left">
+                            <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 text-xs text-indigo-800">
+                                Mengapprove <strong>${reportIds.length} laporan</strong> secara bersamaan.<br>
+                                Total durasi diajukan: <strong>${totalReportedMinutes} menit</strong>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Total Durasi Disetujui (Menit)</label>
+                                <input type="number" id="swal-batch-minutes" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 font-bold text-lg text-indigo-700" value="${totalReportedMinutes}" min="0">
+                            </div>
+                        </div>
+                        <form id="batch-approve-form-${partnerId}" method="POST" action="{{ route('video-submissions.batch-approve') }}" class="hidden">
+                            @csrf
+                            <input type="hidden" name="report_ids" id="batch-report-ids-${partnerId}">
+                            <input type="hidden" name="total_approved_minutes" id="batch-total-minutes-${partnerId}">
+                        </form>
+                    `,
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonText: 'Simpan & Approve Semua',
+                    cancelButtonText: 'Batal',
+                    confirmButtonColor: '#4f46e5', // indigo-600
+                    preConfirm: () => {
+                        const minutes = document.getElementById('swal-batch-minutes').value;
+                        if (!minutes || minutes < 0) {
+                            Swal.showValidationMessage('Durasi tidak valid!');
+                        }
+                        return {
+                            minutes: minutes
+                        }
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const form = document.getElementById(`batch-approve-form-${partnerId}`);
+                        document.getElementById(`batch-report-ids-${partnerId}`).value = reportIds.join(',');
+                        document.getElementById(`batch-total-minutes-${partnerId}`).value = result.value.minutes;
                         form.submit();
                     }
                 });

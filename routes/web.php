@@ -115,6 +115,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/qc-room/{report}', [VerifyVideoWorkReportController::class, 'destroy'])
         ->middleware('role:superadmin,admin')
         ->name('video-submissions.destroy');
+    Route::post('/qc-room/batch-approve', [VerifyVideoWorkReportController::class, 'batchApprove'])
+        ->middleware('role:superadmin,admin')
+        ->name('video-submissions.batch-approve');
     Route::post('/qc-room/{report}/approve', [VerifyVideoWorkReportController::class, 'approveReport'])
         ->middleware('role:superadmin,admin')
         ->name('video-submissions.approve-report');

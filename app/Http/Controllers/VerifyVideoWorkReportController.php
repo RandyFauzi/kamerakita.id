@@ -288,6 +288,68 @@ class VerifyVideoWorkReportController extends Controller
         return redirect()->back()->with('success', 'Laporan berhasil disetujui dengan durasi ' . $validated['adjusted_minutes'] . ' menit.');
     }
 
+    public function batchApprove(Request $request)
+    {
+        if (Auth::user()->role !== 'superadmin' && Auth::user()->role !== 'admin') {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'report_ids' => 'required|string',
+            'total_approved_minutes' => 'required|integer|min:0',
+        ]);
+
+        $reportIds = explode(',', $validated['report_ids']);
+        $totalApprovedMinutes = (int) $validated['total_approved_minutes'];
+
+        $reports = VideoWorkReport::whereIn('id', $reportIds)
+            ->where('qc_status', '!=', 'approved')
+            ->orderBy('submission_date', 'asc')
+            ->get();
+
+        if ($reports->isEmpty()) {
+            return redirect()->back()->with('error', 'Laporan tidak ditemukan atau sudah disetujui sebelumnya.');
+        }
+
+        $partnerId = $reports->first()->partner_id;
+        $totalReported = $reports->sum('submitted_duration_minutes');
+
+        DB::transaction(function () use ($reports, $totalApprovedMinutes, $totalReported) {
+            $distributed = 0;
+            
+            foreach ($reports as $index => $report) {
+                if ($totalReported == 0) {
+                    $appDur = 0;
+                } else {
+                    if ($index === count($reports) - 1) {
+                        $appDur = max(0, $totalApprovedMinutes - $distributed);
+                    } else {
+                        $appDur = min($report->submitted_duration_minutes, max(0, $totalApprovedMinutes - $distributed));
+                    }
+                }
+                
+                $distributed += $appDur;
+
+                $report->update([
+                    'qc_status' => 'approved',
+                    'approved_duration_minutes' => $appDur,
+                    'verified_by' => Auth::id(),
+                    'verified_at' => now(),
+                    'verifier_notes' => 'Batch Approved',
+                ]);
+            }
+        });
+
+        $partner = Partner::find($partnerId);
+        if ($partner) {
+            \App\Services\ActivityLogger::log('report.batch_approve', "Menyetujui " . count($reports) . " laporan terpilih untuk mitra {$partner->full_name} dengan total durasi {$totalApprovedMinutes} menit.");
+            
+            CheckRecruiterMilestone::check($partner);
+        }
+
+        return redirect()->back()->with('success', count($reports) . ' laporan berhasil disetujui dengan total durasi ' . $totalApprovedMinutes . ' menit.');
+    }
+
     public function destroy(VideoWorkReport $report)
     {
         if (Auth::user()->role !== 'superadmin' && Auth::user()->role !== 'admin') {
