@@ -293,8 +293,10 @@
                 <div class="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <div class="relative bg-gradient-to-br from-white to-sky-50/80 rounded-[27px] p-5 sm:p-6 flex items-center justify-between">
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 sm:w-14 sm:h-14 bg-sky-100/50 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-sky-200/50 text-2xl sm:text-3xl shadow-sm shrink-0">
-                            🏆
+                        <div class="w-12 h-12 sm:w-14 sm:h-14 bg-sky-100/50 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-sky-200/50 shadow-sm shrink-0">
+                            <svg class="w-6 h-6 sm:w-8 sm:h-8 text-sky-600 drop-shadow-sm" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.504-1.125-1.125-1.125h-.871m-4.008 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M18.75 4.236c.982.143 1.954.317 2.916.52a6.003 6.003 0 01-5.395 4.972m0 0a8.001 8.001 0 00-1.588-4.982m-1.226 0H9.102m1.226 0a8.001 8.001 0 011.588-4.982" />
+                            </svg>
                         </div>
                         <div>
                             <h3 class="text-slate-800 font-extrabold text-lg sm:text-xl tracking-tight leading-tight">Papan Peringkat</h3>
