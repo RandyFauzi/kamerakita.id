@@ -127,45 +127,50 @@
                 </div>
 
                 <!-- 2. Target Harian Laps -->
-                <div class="relative w-full bg-white/70 backdrop-blur-xl border border-slate-200 rounded-[28px] p-6 sm:p-7 shadow-[0_20px_40px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,1)] overflow-hidden transition-all duration-400 hover:-translate-y-1 hover:shadow-[0_30px_50px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,1)] flex flex-col justify-between" x-data="dailyTargetData({{ $metrics['today_submitted_minutes'] }})">
+                <div class="relative w-full bg-white/70 backdrop-blur-xl border border-slate-200 rounded-[32px] p-6 sm:p-8 shadow-[0_20px_40px_rgba(0,0,0,0.05),inset_0_1px_0_rgba(255,255,255,1)] overflow-hidden transition-all duration-400 hover:-translate-y-1 hover:shadow-[0_30px_50px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,1)] flex flex-col justify-between translate-y-8 opacity-0" :class="mounted ? '!translate-y-0 !opacity-100' : ''" x-data="dailyTargetData({{ $metrics['today_submitted_minutes'] }})" x-init="initComponent()">
                     
                     <!-- Halftone Pattern -->
-                    <div class="absolute inset-x-0 top-0 h-[60%] pointer-events-none z-0" style="background-image: radial-gradient(rgba(0,0,0,0.04) 1px, transparent 1px); background-size: 6px 6px; mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%); -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);"></div>
+                    <div class="absolute inset-x-0 top-0 h-[60%] pointer-events-none z-0" style="background-image: radial-gradient(rgba(0,0,0,0.05) 1px, transparent 1px); background-size: 4px 4px; mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%); -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);"></div>
                     
-                    <div class="relative z-10 flex-grow">
-                        <div class="flex justify-between items-center mb-6">
-                            <h3 class="text-[13px] font-bold text-slate-400 uppercase tracking-widest">Target Harian</h3>
+                    <div class="relative z-10 flex-grow text-left">
+                        <!-- Header -->
+                        <div class="flex justify-between items-center mb-8">
+                            <h3 class="text-[13px] font-bold text-slate-500 uppercase tracking-widest">Target Harian</h3>
                             <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider" x-text="lapText"></div>
                         </div>
                         
-                        <div class="flex items-baseline gap-2 mb-6">
+                        <!-- Big Numbers -->
+                        <div class="flex items-baseline gap-2 mb-8">
                             <span class="text-5xl font-black text-slate-800 tracking-tighter" x-text="hours">0</span>
-                            <span class="text-sm font-bold text-slate-400">jam</span>
+                            <span class="text-sm font-bold text-slate-500">jam</span>
                             <span class="text-5xl font-black text-slate-800 tracking-tighter ml-1" x-text="minutes">0</span>
-                            <span class="text-sm font-bold text-slate-400">menit</span>
+                            <span class="text-sm font-bold text-slate-500">menit</span>
                         </div>
-                    </div>
-                        
-                    <div class="relative z-10 mt-2 w-full">
-                        <!-- Progress Track -->
-                        <div class="relative w-full h-5 bg-slate-200/80 rounded-full flex items-center shadow-[inset_0_2px_4px_rgba(0,0,0,0.05)] overflow-hidden">
                             
-                            <!-- Laps Markers / Dots -->
-                            <div class="absolute top-1/2 left-[33.33%] -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full z-10 transition-colors duration-500" :class="target1Active ? 'bg-transparent' : (currentLap === 1 ? 'bg-[#b8ff29] shadow-[0_0_8px_#b8ff29]' : 'bg-black/10 shadow-[inset_0_1px_1px_rgba(0,0,0,0.1)]')"></div>
-                            
-                            <div class="absolute top-1/2 left-[66.66%] -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full z-10 transition-colors duration-500" :class="target2Active ? 'bg-transparent' : (currentLap === 2 ? 'bg-[#b8ff29] shadow-[0_0_8px_#b8ff29]' : 'bg-black/10 shadow-[inset_0_1px_1px_rgba(0,0,0,0.1)]')"></div>
+                        <div class="relative z-10 w-full mb-1">
+                            <!-- Progress Track -->
+                            <div class="relative w-full h-5 bg-slate-200 rounded-full flex items-center shadow-[inset_0_2px_4px_rgba(0,0,0,0.05)] overflow-hidden">
+                                
+                                <!-- Fill with width animation -->
+                                <div class="absolute top-0 left-0 h-full rounded-full transition-all duration-[1500ms] ease-[cubic-bezier(0.16,1,0.3,1)] bg-gradient-to-r from-lime-600 to-[#b8ff29] z-0" style="width: 0%" :style="showAnimations ? 'width: ' + progressPercent + '%' : 'width: 0%'">
+                                    <!-- Flare -->
+                                    <div class="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-5 bg-white rounded-full blur-[8px] shadow-[0_0_30px_15px_rgba(184,255,41,0.8)] transition-opacity duration-[1500ms] ease-[cubic-bezier(0.16,1,0.3,1)] delay-500 opacity-0" :class="showAnimations && mins > 0 ? '!opacity-100' : ''"></div>
+                                </div>
 
-                            <!-- Fill -->
-                            <div class="absolute top-0 left-0 h-full rounded-full transition-all duration-1000 ease-out bg-gradient-to-r from-lime-500 to-[#b8ff29] z-0" :style="'width: ' + progressPercent + '%'">
-                                <!-- Flare -->
-                                <div class="absolute right-0 top-1/2 -translate-y-1/2 w-8 h-4 bg-white rounded-full blur-[5px] shadow-[0_0_20px_8px_rgba(184,255,41,0.6)]" :class="mins > 0 ? 'opacity-100' : 'opacity-0'"></div>
+                                <!-- Laps Markers / Dots (Aligned to the right like in JS) -->
+                                <div class="absolute right-5 flex gap-7 z-10">
+                                    <template x-for="i in remainingLaps" :key="i">
+                                        <div class="w-1.5 h-1.5 rounded-full transition-all duration-500" 
+                                             :class="i === 1 ? 'bg-[#b8ff29] shadow-[0_0_10px_#b8ff29]' : 'bg-black/10 shadow-[inset_0_1px_2px_rgba(0,0,0,0.1)]'"></div>
+                                    </template>
+                                </div>
                             </div>
                         </div>
-                        
+
                         <!-- Labels -->
-                        <div class="flex justify-between mt-3 text-[11px] font-bold text-slate-400 px-1 relative h-4 uppercase tracking-wider">
+                        <div class="flex justify-between mt-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider relative h-4">
                             <span>0j</span>
-                            <span class="absolute right-0 transition-colors duration-500" :class="target3Active ? 'text-slate-700' : ''">6j</span>
+                            <span>6j</span>
                         </div>
                     </div>
                 </div>
@@ -176,6 +181,13 @@
             document.addEventListener('alpine:init', () => {
                 Alpine.data('dailyTargetData', (submittedMins) => ({
                     mins: submittedMins,
+                    mounted: false,
+                    showAnimations: false,
+                    
+                    initComponent() {
+                        setTimeout(() => this.mounted = true, 50);
+                        setTimeout(() => this.showAnimations = true, 500); // Trigger fill bar after mount
+                    },
                     
                     get hours() { return Math.floor(this.mins / 60); },
                     get minutes() { return this.mins % 60; },
@@ -187,40 +199,23 @@
                         return 1; // Working towards 2h
                     },
                     
+                    get completedLaps() {
+                        return Math.min(3, Math.floor(this.mins / 120));
+                    },
+                    
+                    get remainingLaps() {
+                        return 3 - this.completedLaps;
+                    },
+
                     get lapText() {
                         if (this.mins >= 360) return 'MAX LAP REACHED 🏁';
                         return `LAP ${this.currentLap}`;
                     },
                     
-                    get lapBadgeClass() {
-                        if (this.mins >= 360) return 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
-                        if (this.currentLap === 3) return 'bg-amber-500/20 text-amber-400 border border-amber-500/30';
-                        if (this.currentLap === 2) return 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30';
-                        return 'bg-slate-700 text-slate-300';
-                    },
-                    
-                    get barColorClass() {
-                        if (this.mins >= 360) return 'bg-gradient-to-r from-emerald-400 to-emerald-500 shadow-[0_0_10px_rgba(52,211,153,0.5)]';
-                        if (this.currentLap === 3) return 'bg-gradient-to-r from-amber-400 to-amber-500 shadow-[0_0_10px_rgba(251,191,36,0.5)]';
-                        if (this.currentLap === 2) return 'bg-gradient-to-r from-indigo-400 to-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]';
-                        return 'bg-gradient-to-r from-blue-400 to-blue-500';
-                    },
-                    
-                    get glowClass() {
-                        if (this.mins >= 360) return 'bg-emerald-500';
-                        if (this.currentLap === 3) return 'bg-amber-500';
-                        if (this.currentLap === 2) return 'bg-indigo-500';
-                        return 'bg-blue-500';
-                    },
-                    
                     get progressPercent() {
                         // Max cap at 360 mins (6 hours)
                         return Math.min(100, (this.mins / 360) * 100);
-                    },
-                    
-                    get target1Active() { return this.mins >= 120; },
-                    get target2Active() { return this.mins >= 240; },
-                    get target3Active() { return this.mins >= 360; },
+                    }
                 }))
             })
         </script>
