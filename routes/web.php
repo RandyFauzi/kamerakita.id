@@ -131,6 +131,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/payments/manage', [\App\Http\Controllers\ManagePaymentsController::class, 'index'])
         ->middleware('role:superadmin,admin,finance')
         ->name('payments.manage');
+    Route::post('/payments/manage/batch-pay', [\App\Http\Controllers\ManagePaymentsController::class, 'batchPay'])
+        ->middleware('role:superadmin')
+        ->name('payments.batch-pay');
     Route::post('/payments/manage/{partner}/pay', [\App\Http\Controllers\ManagePaymentsController::class, 'processPayment'])
         ->middleware('role:superadmin,admin,finance')
         ->name('payments.process');

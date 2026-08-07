@@ -199,6 +199,71 @@ class ManagePaymentsController extends Controller
     }
 
     /**
+     * Process batch payout for all unpaid approved reports.
+     * Accessible only by superadmin.
+     */
+    public function batchPay(Request $request)
+    {
+        $validated = $request->validate([
+            'period_start_date' => 'required|string',
+            'period_end_date' => 'required|string',
+        ]);
+
+        $reportsQuery = VideoWorkReport::where('qc_status', 'approved')
+            ->where('payment_status', 'unpaid');
+            
+        $startDate = null;
+        $endDate = null;
+        if ($validated['period_start_date'] !== 'all' && $validated['period_end_date'] !== 'all') {
+            $startDate = Carbon::parse($validated['period_start_date']);
+            $endDate = Carbon::parse($validated['period_end_date']);
+            $reportsQuery->whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')]);
+        }
+        
+        $reports = $reportsQuery->get();
+
+        if ($reports->isEmpty()) {
+            return redirect()->back()->with('error', 'Tidak ada laporan yang perlu dibayar pada periode tersebut.');
+        }
+
+        try {
+            DB::transaction(function () use ($reports, $startDate, $endDate) {
+                $now = now();
+                $dummyProofPath = 'payment_proofs/dummy_batch.jpg';
+                
+                foreach ($reports as $report) {
+                    $report->update([
+                        'payment_status' => 'paid',
+                        'paid_at' => $now,
+                        'payment_reference_proof_path' => $dummyProofPath,
+                    ]);
+                }
+
+                if ($startDate && $endDate) {
+                    $partnerIds = $reports->pluck('partner_id')->unique();
+                    foreach ($partnerIds as $partnerId) {
+                        PeriodApproval::updateOrCreate([
+                            'partner_id' => $partnerId,
+                            'period_start_date' => $startDate->format('Y-m-d'),
+                            'period_end_date' => $endDate->format('Y-m-d'),
+                        ], [
+                            'status' => 'paid',
+                        ]);
+                    }
+                }
+            });
+
+            $logPeriod = $startDate && $endDate ? "periode {$startDate->format('Y-m-d')} s/d {$endDate->format('Y-m-d')}" : "semua periode";
+            \App\Services\ActivityLogger::log('payment.batch_process', "Memproses pembayaran batch (semua mitra) untuk {$logPeriod} dengan bukti dummy.");
+
+            return redirect()->back()->with('success', 'Pembayaran batch berhasil diproses dengan bukti transfer dummy.');
+        } catch (Throwable $e) {
+            Log::error('Error processing batch payment: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal memproses pembayaran batch: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * Cancel/Revert a payment batch.
      */
     public function cancelPayment(Request $request)

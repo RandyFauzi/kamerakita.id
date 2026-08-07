@@ -154,9 +154,22 @@
                         @endforeach
                     </select>
                 </form>
-                
-                <div class="text-xs font-semibold text-gray-400">
-                    Rentang Laporan: <span class="text-slate-800 font-bold font-mono">{{ $startDate ? $startDate->translatedFormat('d M Y') . ' - ' . $endDate->translatedFormat('d M Y') : 'Semua Waktu' }}</span>
+                <div class="flex flex-col sm:flex-row items-end sm:items-center gap-3">
+                    <div class="text-xs font-semibold text-gray-400 text-right">
+                        Rentang Laporan: <span class="text-slate-800 font-bold font-mono">{{ $startDate ? $startDate->translatedFormat('d M Y') . ' - ' . $endDate->translatedFormat('d M Y') : 'Semua Waktu' }}</span>
+                    </div>
+
+                    @if(auth()->user()->role === 'superadmin' && count($workers) > 0)
+                        <form action="{{ route('payments.batch-pay') }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin memproses SEMUA pembayaran untuk periode ini dengan bukti dummy?');">
+                            @csrf
+                            <input type="hidden" name="period_start_date" value="{{ $startDate ? $startDate->format('Y-m-d') : 'all' }}">
+                            <input type="hidden" name="period_end_date" value="{{ $endDate ? $endDate->format('Y-m-d') : 'all' }}">
+                            <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl transition shadow-sm shadow-indigo-200 whitespace-nowrap">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                Batch Pay
+                            </button>
+                        </form>
+                    @endif
                 </div>
             </div>
 
