@@ -127,125 +127,165 @@
                 </div>
 
                 <!-- 2. Target Harian Laps -->
-                <div class="relative w-full bg-white/70 backdrop-blur-xl border border-slate-200 rounded-[32px] p-6 sm:p-8 shadow-[0_20px_40px_rgba(0,0,0,0.05),inset_0_1px_0_rgba(255,255,255,1)] overflow-hidden transition-all duration-400 hover:-translate-y-1 hover:shadow-[0_30px_50px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,1)] flex flex-col justify-between" x-data="dailyTargetData({{ $metrics['today_submitted_minutes'] }})" x-init="initComponent()">
+                @php
+                    $mins = $metrics['today_submitted_minutes'];
+                    $hours = floor($mins / 60);
+                    $completedLaps = min(3, floor($mins / 120));
                     
-                    <style>
-                        @keyframes pulse-glow-badge {
-                            from { opacity: 0.5; transform: scale(0.95); }
-                            to { opacity: 1; transform: scale(1.05); }
-                        }
-                    </style>
-
-                    <!-- Halftone Pattern -->
-                    <div class="absolute inset-x-0 top-0 h-[60%] pointer-events-none z-0 opacity-50" style="background-image: radial-gradient(rgba(0,0,0,0.06) 1px, transparent 1px); background-size: 5px 5px; mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%); -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);"></div>
-                    
-                    <div class="relative z-10 flex-grow text-left">
-                        
-                        <!-- Header / Badge + Text -->
-                        <div class="flex items-center gap-4 sm:gap-5 mb-8">
-                            
-                            <!-- Glowing 3D Badge -->
-                            <div class="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-rose-500/10 flex justify-center items-center shadow-[inset_0_0_20px_rgba(255,60,0,0.15)] shrink-0">
-                                <!-- Outer Glow -->
-                                <div class="absolute inset-[-10px] bg-[radial-gradient(circle,rgba(255,60,0,0.25)_0%,transparent_70%)] blur-[8px] -z-10 animate-[pulse-glow-badge_3s_infinite_alternate]"></div>
-                                <!-- 3D Proxy Object -->
-                                <div class="w-7 h-9 sm:w-8 sm:h-10 rounded-md relative overflow-hidden transform -rotate-[15deg] skew-x-[10deg] shadow-[-2px_2px_5px_rgba(0,0,0,0.3),inset_2px_2px_4px_rgba(255,255,255,0.4),0_0_15px_rgba(255,60,0,0.6)]" style="background: linear-gradient(135deg, #ff4d4d, #b30000);">
-                                    <!-- 3D Proxy Details (the 3 dots) -->
-                                    <div class="absolute top-[5px] right-[5px] w-1 h-1 bg-white rounded-full opacity-60 shadow-[0_7px_0_white,0_14px_0_white]"></div>
-                                </div>
-                            </div>
-                            
-                            <!-- Motivating Text -->
-                            <div>
-                                <h2 class="text-slate-900 text-base sm:text-lg leading-snug sm:leading-tight mb-1 font-medium">
-                                    <span class="font-extrabold" x-text="titleBold"></span> <span x-text="titleNormal"></span>
-                                </h2>
-                                <p class="text-slate-600 text-xs sm:text-[13px] leading-snug sm:leading-tight m-0" x-text="subtitle"></p>
-                            </div>
-                        </div>
-
-                        <!-- Progress Track -->
-                        <div class="mb-4 relative w-full">
-                            <div class="relative w-full h-5 bg-slate-200/80 rounded-full flex items-center shadow-[inset_0_2px_4px_rgba(0,0,0,0.05)] overflow-hidden">
-                                
-                                <!-- Fill with width animation (BLUE GRADIENT) -->
-                                <div class="absolute top-0 left-0 h-full rounded-full transition-all duration-[1500ms] ease-[cubic-bezier(0.16,1,0.3,1)] bg-gradient-to-r from-blue-600 to-cyan-400 z-0" style="width: 0%" :style="showAnimations ? 'width: ' + progressPercent + '%' : 'width: 0%'">
-                                    <!-- Flare / Glow at tip -->
-                                    <div class="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-5 bg-white rounded-full blur-[6px] shadow-[0_0_20px_10px_rgba(34,211,238,0.7)] transition-opacity duration-[1500ms] ease-[cubic-bezier(0.16,1,0.3,1)] delay-500 opacity-0" :class="showAnimations && mins > 0 ? '!opacity-100' : ''"></div>
-                                </div>
-
-                                <!-- Laps Markers / Dots -->
-                                <div class="absolute right-5 flex gap-5 sm:gap-7 z-10">
-                                    <template x-for="i in remainingLaps" :key="i">
-                                        <div class="w-1.5 h-1.5 rounded-full transition-all duration-500" 
-                                             :class="i === 1 ? 'bg-cyan-300 shadow-[0_0_10px_#22d3ee]' : 'bg-black/10 shadow-[inset_0_1px_2px_rgba(0,0,0,0.1)]'"></div>
-                                    </template>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Footer -->
-                        <div class="flex justify-between items-center px-1">
-                            <span class="text-slate-500 text-[10px] sm:text-[11px] font-bold tracking-wider uppercase"><span x-text="completedLaps"></span> Lap Diselesaikan</span>
-                            <span class="text-slate-500 text-[10px] sm:text-[11px] font-bold tracking-wider uppercase"><span x-text="remainingLaps"></span> Lap Tersisa</span>
-                        </div>
-                        
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <script>
-            document.addEventListener('alpine:init', () => {
-                Alpine.data('dailyTargetData', (submittedMins) => ({
-                    mins: submittedMins,
-                    mounted: false,
-                    showAnimations: false,
-                    
-                    initComponent() {
-                        setTimeout(() => this.mounted = true, 50);
-                        setTimeout(() => this.showAnimations = true, 500); // Trigger fill bar after mount
-                    },
-                    
-                    get completedLaps() {
-                        return Math.min(3, Math.floor(this.mins / 120));
-                    },
-                    
-                    get remainingLaps() {
-                        return 3 - this.completedLaps;
-                    },
-
-                    get titleBold() {
-                        if (this.mins === 0) return 'Ayo Mulai!';
-                        if (this.mins < 120) return 'Sedikit lagi!';
-                        if (this.mins < 240) return 'Hebat!';
-                        if (this.mins < 360) return 'Luar Biasa!';
-                        return 'Misi Selesai!';
-                    },
-                    
-                    get titleNormal() {
-                        if (this.mins === 0) return 'Semangat kerjakan';
-                        if (this.mins < 120) return `Selesaikan target`;
-                        if (this.mins < 240) return 'Anda melewati 2 jam.';
-                        if (this.mins < 360) return 'Menuju batas maksimal.';
-                        return 'Target maksimal tercapai.';
-                    },
-                    
-                    get subtitle() {
-                        if (this.mins === 0) return 'video pertama Anda hari ini.';
-                        if (this.mins < 120) return `menuju 2 jam pertama Anda.`;
-                        if (this.mins < 240) return 'Lanjut selesaikan menuju 4 jam?';
-                        if (this.mins < 360) return 'Sedikit lagi capai 6 jam!';
-                        return 'Silakan beristirahat dengan tenang.';
-                    },
-                    
-                    get progressPercent() {
-                        // Max cap at 360 mins (6 hours)
-                        return Math.min(100, (this.mins / 360) * 100);
+                    if ($mins == 0) {
+                        $tb = "Ayo Mulai!";
+                        $tn = "Semangat kerjakan";
+                        $sub = "video pertama Anda hari ini.";
+                    } elseif ($mins < 120) {
+                        $tb = "Sedikit lagi!";
+                        $tn = "Selesaikan target";
+                        $sub = "menuju 2 jam pertama Anda.";
+                    } elseif ($mins < 240) {
+                        $tb = "Hebat!";
+                        $tn = "Anda melewati 2 jam.";
+                        $sub = "Lanjut selesaikan menuju 4 jam?";
+                    } elseif ($mins < 360) {
+                        $tb = "Luar Biasa!";
+                        $tn = "Menuju batas maksimal.";
+                        $sub = "Sedikit lagi capai 6 jam!";
+                    } else {
+                        $tb = "Misi Selesai!";
+                        $tn = "Target tercapai.";
+                        $sub = "Lebih dari 6 jam pun tetap dihitung!";
                     }
-                }))
-            })
-        </script>
+                    
+                    $percentage = min(100, round(($mins / 360) * 100));
+                    $fLeft = $hours . " jam diselesaikan";
+                    $fRight = "Total tertinggi 6 jam";
+                @endphp
+
+                <mission-card 
+                    theme="light" 
+                    completed="{{ $completedLaps }}" 
+                    total="3" 
+                    percentage="{{ $percentage }}"
+                    title-bold="{{ $tb }}" 
+                    title-normal="{{ $tn }}" 
+                    subtitle="{{ $sub }}"
+                    footer-left="{{ $fLeft }}"
+                    footer-right="{{ $fRight }}">
+                </mission-card>
+
+                <script>
+                    class MissionCard extends HTMLElement {
+                        connectedCallback() {
+                            const completed = this.getAttribute('completed') || '0';
+                            const total = this.getAttribute('total') || '3';
+                            const titleBold = this.getAttribute('title-bold') || 'Good job!';
+                            const titleNormal = this.getAttribute('title-normal') || '';
+                            const subtitle = this.getAttribute('subtitle') || '';
+                            const theme = this.getAttribute('theme') || 'light';
+                            const rawPercentage = this.getAttribute('percentage');
+                            
+                            const percentage = rawPercentage !== null ? parseInt(rawPercentage) : Math.round((parseInt(completed) / parseInt(total)) * 100);
+                            const remaining = parseInt(total) - parseInt(completed);
+
+                            const footerLeft = this.getAttribute('footer-left') || `${completed} Missions Completed`;
+                            const footerRight = this.getAttribute('footer-right') || `${remaining} Missions Remaining`;
+
+                            let dotsHtml = '';
+                            for (let i = 0; i < remaining; i++) {
+                                dotsHtml += `<div class="track-dot ${i === 0 ? 'active-next' : ''}"></div>`;
+                            }
+
+                            const isLight = theme === 'light';
+                            const cardBg = isLight ? 'rgba(255, 255, 255, 0.7)' : 'rgba(255, 255, 255, 0.03)';
+                            const cardBorder = isLight ? 'rgba(226, 232, 240, 1)' : 'rgba(255, 255, 255, 0.08)';
+                            const cardShadow = isLight 
+                                ? '0 20px 40px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 1)' 
+                                : '0 30px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1)';
+                            const cardHoverShadow = isLight 
+                                ? '0 30px 50px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 1)' 
+                                : '0 40px 80px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.2)';
+                                
+                            const textColor1 = isLight ? '#111827' : '#ffffff';
+                            const textColor2 = isLight ? '#4b5563' : '#d1d5db';
+                            const textColor3 = isLight ? '#6b7280' : '#9ca3af';
+
+                            const trackBg = isLight ? 'rgba(226, 232, 240, 1)' : 'rgba(0, 0, 0, 0.4)';
+                            const trackShadow = isLight ? 'inset 0 2px 4px rgba(0,0,0,0.05)' : 'inset 0 2px 10px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.05)';
+                            const dotBg = isLight ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.2)';
+
+                            // Override warna ke Biru sesuai permintaan
+                            const barGradient = 'linear-gradient(90deg, #3b82f6 0%, #22d3ee 100%)';
+                            const activeDotColor = '#22d3ee';
+                            const activeDotShadow = '0 0 10px #22d3ee';
+                            const flareShadow = '0 0 30px 15px rgba(34, 211, 238, 0.8)';
+
+                            this.innerHTML = `
+                                <style>
+                                    .mc-container-${theme} { font-family: 'Inter', sans-serif; width: 100%; height: 100%; }
+                                    .glass-card {
+                                        position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center;
+                                        background: ${cardBg}; backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); 
+                                        border: 1px solid ${cardBorder}; border-radius: 32px; padding: 32px; box-shadow: ${cardShadow}; 
+                                        overflow: hidden; transition: transform 0.4s ease, box-shadow 0.4s ease;
+                                    }
+                                    .glass-card:hover { transform: translateY(-5px); box-shadow: ${cardHoverShadow}; }
+                                    .card-pattern { position: absolute; top: 0; left: 0; right: 0; height: 60%; background-image: radial-gradient(${isLight ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.15)'} 1px, transparent 1px); background-size: 4px 4px; -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%); mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%); z-index: 0; pointer-events: none; }
+                                    .badge-container { position: relative; width: 64px; height: 64px; border-radius: 50%; background: ${isLight ? 'rgba(255, 60, 0, 0.1)' : 'rgba(0, 0, 0, 0.5)'}; display: flex; justify-content: center; align-items: center; box-shadow: inset 0 0 20px rgba(255, 60, 0, 0.2); }
+                                    .badge-glow { position: absolute; inset: -10px; background: radial-gradient(circle, rgba(255, 60, 0, ${isLight ? '0.3' : '0.6'}) 0%, transparent 70%); filter: blur(12px); z-index: -1; animation: pulse-glow 3s infinite alternate; }
+                                    .badge-3d-proxy { width: 32px; height: 40px; background: linear-gradient(135deg, #ff4d4d, #990000); border-radius: 6px; transform: rotate(-15deg) skewX(10deg); box-shadow: -2px 2px 5px rgba(0,0,0,0.5), inset 2px 2px 4px rgba(255,255,255,0.4), 0 0 15px rgba(255, 60, 0, 0.8); position: relative; overflow: hidden; }
+                                    .badge-3d-proxy::after { content: ''; position: absolute; top: 5px; right: 5px; width: 4px; height: 4px; background: white; border-radius: 50%; box-shadow: 0 8px 0 white, 0 16px 0 white; opacity: 0.5; }
+                                    .progress-track { position: relative; width: 100%; height: 20px; background: ${trackBg}; border-radius: 999px; box-shadow: ${trackShadow}; display: flex; align-items: center; }
+                                    .progress-fill { position: absolute; left: 0; top: 0; height: 100%; width: 0%; background: ${barGradient}; border-radius: 999px; animation: fill-bar 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; animation-delay: 0.5s; }
+                                    .progress-flare { content: ''; position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 40px; height: 20px; background: #ffffff; border-radius: 50%; filter: blur(8px); box-shadow: ${flareShadow}; opacity: 0; animation: flare-ignite 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; animation-delay: 0.5s; }
+                                    .track-dots { position: absolute; right: 20px; display: flex; gap: 28px; }
+                                    .track-dot { width: 6px; height: 6px; border-radius: 50%; background: ${dotBg}; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1); }
+                                    .track-dot.active-next { background: ${activeDotColor}; box-shadow: ${activeDotShadow}; }
+                                    @keyframes fill-bar { to { width: ${percentage}%; } }
+                                    @keyframes flare-ignite { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 1; } }
+                                    @keyframes pulse-glow { from { opacity: 0.6; transform: scale(0.95); } to { opacity: 1; transform: scale(1.05); } }
+                                    @keyframes entrance { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+                                    .animate-entrance { animation: entrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+                                </style>
+                                <div class="mc-container-${theme}">
+                                    <div class="glass-card animate-entrance">
+                                        <div class="card-pattern"></div>
+                                        <div class="relative z-10 text-left">
+                                            <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 32px;">
+                                                <div class="badge-container" style="flex-shrink: 0;">
+                                                    <div class="badge-glow"></div>
+                                                    <div class="badge-3d-proxy"></div>
+                                                </div>
+                                                <div>
+                                                    <h2 style="color: ${textColor1}; font-size: 18px; line-height: 1.2; margin: 0 0 4px 0; font-weight: 500;">
+                                                        <span style="font-weight: 700;">${titleBold}</span> ${titleNormal}
+                                                    </h2>
+                                                    <p style="color: ${textColor2}; font-size: 14px; line-height: 1.2; margin: 0;">
+                                                        ${subtitle}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div style="margin-bottom: 12px;">
+                                                <div class="progress-track">
+                                                    <div class="progress-fill">
+                                                        <div class="progress-flare"></div>
+                                                    </div>
+                                                    <div class="track-dots">
+                                                        ${dotsHtml}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 4px;">
+                                                <span style="color: ${textColor3}; font-size: 12px; font-weight: 500; letter-spacing: 0.02em;">${footerLeft}</span>
+                                                <span style="color: ${textColor3}; font-size: 12px; font-weight: 500; letter-spacing: 0.02em;">${footerRight}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    }
+                    if (!customElements.get('mission-card')) {
+                        customElements.define('mission-card', MissionCard);
+                    }
+                </script>
 
         <!-- Recent reports list -->
         <div class="bg-white rounded-2xl sm:rounded-[32px] p-4 sm:p-6 border border-gray-150 shadow-sm">
