@@ -72,6 +72,19 @@ class PeriodService
             ];
         }
 
+        // Jika hari ini Jumat, tambahkan periode berikutnya (besok Sabtu - Kamis depan) ke dropdown
+        if (now()->dayOfWeek === Carbon::FRIDAY) {
+            $nextStart = now()->addDay()->startOfDay(); // Sabtu
+            $nextEnd = $nextStart->copy()->addDays(5)->endOfDay(); // Kamis depan
+            $nextKey = $nextStart->format('Y-m-d') . '|' . $nextEnd->format('Y-m-d');
+            if (!isset($periods[$nextKey])) {
+                $periods[$nextKey] = [
+                    'start' => $nextStart,
+                    'end' => $nextEnd,
+                ];
+            }
+        }
+
         // Sort chronologically ascending to assign Periode 1, Periode 2, etc.
         uasort($periods, function($a, $b) {
             return $a['start']->timestamp <=> $b['start']->timestamp;
