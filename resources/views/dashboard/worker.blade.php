@@ -71,40 +71,58 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 
                 <!-- 1. Total Kirim vs Approved -->
-                <div class="bg-white rounded-3xl p-5 sm:p-6 border border-gray-150 shadow-sm relative overflow-hidden flex flex-col justify-between">
-                    <div class="absolute right-0 top-0 w-32 h-32 bg-blue-50 rounded-full blur-3xl opacity-50 -mr-10 -mt-10"></div>
-                    <div class="relative z-10 flex-grow">
-                        <div class="flex justify-between items-end mb-4">
-                            <div>
-                                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Total Jam Approved</h3>
-                                <div class="text-2xl font-black text-slate-800 flex items-baseline gap-1">
-                                    {{ floor($metrics['all_time_minutes'] / 60) }}<span class="text-base text-gray-500 font-bold">j</span> {{ $metrics['all_time_minutes'] % 60 }}<span class="text-base text-gray-500 font-bold">m</span>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <h3 class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Total Dikirim</h3>
-                                <div class="text-lg font-bold text-slate-600">
-                                    {{ floor($metrics['total_submitted_minutes'] / 60) }}j {{ $metrics['total_submitted_minutes'] % 60 }}m
-                                </div>
-                            </div>
-                        </div>
+                @php
+                    $totalSub = $metrics['total_submitted_minutes'];
+                    $totalApp = $metrics['all_time_minutes'];
+                    $percentApp = $totalSub > 0 ? min(100, round(($totalApp / $totalSub) * 100)) : 0;
+                @endphp
+                <div class="bg-slate-200/50 rounded-[28px] p-2 flex flex-col h-full">
+                    <div class="text-center py-2 pb-3">
+                        <span class="text-[13px] font-bold text-slate-500">Statistik Anda</span>
                     </div>
+                    <div class="bg-[#f0f1f3] rounded-[24px] p-5 sm:p-6 flex-grow flex flex-col justify-center border border-white/60 shadow-sm">
                         
-                    @php
-                        $totalSub = $metrics['total_submitted_minutes'];
-                        $totalApp = $metrics['all_time_minutes'];
-                        $percentApp = $totalSub > 0 ? min(100, round(($totalApp / $totalSub) * 100)) : 0;
-                    @endphp
-                    
-                    <div class="relative z-10 space-y-2 mt-2">
-                        <div class="flex justify-between text-xs font-bold text-gray-500">
-                            <span>Tingkat Approval</span>
-                            <span class="text-blue-600">{{ $percentApp }}%</span>
+                        <div class="flex justify-between items-center text-center">
+                            <!-- Dikirim -->
+                            <div class="flex-1">
+                                <h3 class="text-[13px] font-semibold text-slate-400 mb-2">Dikirim</h3>
+                                <div class="text-2xl sm:text-3xl font-bold text-slate-800 tracking-tight">
+                                    {{ $metrics['total_submitted_minutes'] }}
+                                </div>
+                            </div>
+                            
+                            <!-- Divider -->
+                            <div class="w-px h-10 bg-slate-200/80"></div>
+                            
+                            <!-- Approved -->
+                            <div class="flex-1">
+                                <h3 class="text-[13px] font-semibold text-slate-400 mb-2">Approved</h3>
+                                <div class="text-2xl sm:text-3xl font-bold text-slate-800 tracking-tight">
+                                    {{ $metrics['all_time_minutes'] }}
+                                </div>
+                            </div>
+                            
+                            <!-- Divider -->
+                            <div class="w-px h-10 bg-slate-200/80"></div>
+                            
+                            <!-- Rate -->
+                            <div class="flex-1">
+                                <h3 class="text-[13px] font-semibold text-slate-400 mb-2">Tingkat</h3>
+                                <div class="text-2xl sm:text-3xl font-bold text-slate-800 tracking-tight">
+                                    {{ $percentApp }}<span class="text-base sm:text-lg text-slate-800 font-bold ml-0.5">%</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
-                            <div class="bg-gradient-to-r from-blue-500 to-indigo-600 h-full rounded-full transition-all duration-1000" style="width: {{ $percentApp }}%"></div>
+                        
+                        <!-- Badge at bottom -->
+                        <div class="mt-6 flex justify-start">
+                            <div class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 border border-slate-200 rounded-full text-[11px] font-bold text-indigo-700 shadow-sm">
+                                <svg class="w-3.5 h-3.5 text-rose-500" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2L14.5 9L22 10.5L16 15.5L17.5 23L12 19L6.5 23L8 15.5L2 10.5L9.5 9L12 2Z" />
+                                </svg>
+                                Selalu perhatikan kualitas
+                            </div>
                         </div>
-                        <p class="text-[10px] text-gray-400 text-center mt-2">Dari seluruh video yang dikirim, sebanyak {{ $percentApp }}% berhasil lolos QC.</p>
                     </div>
                 </div>
 
