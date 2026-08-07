@@ -423,11 +423,16 @@ class VerifyVideoWorkReportController extends Controller
             $selectedPeriodKey = $periods[0]['start']->format('Y-m-d') . '|' . $periods[0]['end']->format('Y-m-d');
         }
 
-        if ($selectedPeriodKey) {
+        $startDate = null;
+        $endDate = null;
+
+        if ($selectedPeriodKey && $selectedPeriodKey !== 'all') {
             $parts = explode('|', $selectedPeriodKey);
-            $startDate = Carbon::parse($parts[0])->startOfDay();
-            $endDate = Carbon::parse($parts[1])->endOfDay();
-        } else {
+            if (count($parts) === 2) {
+                $startDate = Carbon::parse($parts[0])->startOfDay();
+                $endDate = Carbon::parse($parts[1])->endOfDay();
+            }
+        } elseif ($selectedPeriodKey === null) {
             $range = PeriodService::getPeriodRange(now());
             $startDate = $range['start'];
             $endDate = $range['end'];
@@ -436,7 +441,9 @@ class VerifyVideoWorkReportController extends Controller
         // 2. Fetch partners who submitted reports in this period
         $group = $request->input('group');
         $query = Partner::whereHas('videoWorkReports', function ($q) use ($startDate, $endDate) {
-            $q->whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')]);
+            if ($startDate && $endDate) {
+                $q->whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')]);
+            }
         });
 
         if ($group) {
@@ -446,17 +453,21 @@ class VerifyVideoWorkReportController extends Controller
         $partners = $query->get();
 
         foreach ($partners as $partner) {
-            $reports = VideoWorkReport::where('partner_id', $partner->id)
-                ->whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
-                ->orderBy('submission_date', 'asc')
-                ->get();
+            $reportsQuery = VideoWorkReport::where('partner_id', $partner->id)->orderBy('submission_date', 'asc');
+            if ($startDate && $endDate) {
+                $reportsQuery->whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')]);
+            }
+            $reports = $reportsQuery->get();
 
             $totalReportedMinutes = $reports->sum('submitted_duration_minutes');
             
-            $approval = PeriodApproval::where('partner_id', $partner->id)
-                ->where('period_start_date', $startDate->format('Y-m-d'))
-                ->where('period_end_date', $endDate->format('Y-m-d'))
-                ->first();
+            $approval = null;
+            if ($startDate && $endDate) {
+                $approval = PeriodApproval::where('partner_id', $partner->id)
+                    ->where('period_start_date', $startDate->format('Y-m-d'))
+                    ->where('period_end_date', $endDate->format('Y-m-d'))
+                    ->first();
+            }
 
             $partner->period_reports = $reports;
             $partner->total_reported_minutes = $totalReportedMinutes;
@@ -466,8 +477,8 @@ class VerifyVideoWorkReportController extends Controller
             $partner->approval_status = $approval ? $approval->status : 'none';
         }
 
-        $periodLabel = '';
-        if ($selectedPeriodKey && !empty($periods)) {
+        $periodLabel = 'Semua Periode';
+        if ($selectedPeriodKey && $selectedPeriodKey !== 'all' && !empty($periods)) {
             foreach ($periods as $p) {
                 $key = $p['start']->format('Y-m-d') . '|' . $p['end']->format('Y-m-d');
                 if ($key === $selectedPeriodKey) {
