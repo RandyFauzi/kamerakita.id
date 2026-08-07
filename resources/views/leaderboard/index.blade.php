@@ -9,16 +9,16 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-3xl p-8 max-w-lg mx-auto">
                 <div class="text-center mb-8">
-                    <h3 class="text-2xl font-extrabold text-slate-800 tracking-tight">KameraKita <span class="text-teal-600">Top Workers</span></h3>
-                    <p class="text-slate-500 mt-2">Peringkat kontributor terbaik berdasarkan total durasi video disetujui.</p>
+                    <h3 class="text-2xl font-extrabold text-slate-800 tracking-tight">KameraKita <span class="text-sky-600">Top Workers</span></h3>
+                    <p class="text-sm text-slate-500 max-w-sm mx-auto">Peringkat kontributor terbaik berdasarkan total durasi video disetujui.</p>
                 </div>
 
                 <!-- Tabs -->
-                <div class="flex p-1 bg-slate-100 rounded-2xl mb-8">
-                    <button @click="currentTab = 'weekly'" :class="{ 'bg-white shadow-sm text-teal-700': currentTab === 'weekly', 'text-slate-500 hover:text-slate-700': currentTab !== 'weekly' }" class="flex-1 py-2.5 px-4 rounded-xl font-bold text-sm transition-all duration-200">
+                <div class="flex gap-2 p-1 bg-slate-100 rounded-2xl mb-8">
+                    <button @click="currentTab = 'weekly'" :class="{ 'bg-white shadow-sm text-sky-700': currentTab === 'weekly', 'text-slate-500 hover:text-slate-700': currentTab !== 'weekly' }" class="flex-1 py-2.5 px-4 rounded-xl font-bold text-sm transition-all duration-200">
                         Minggu Ini
                     </button>
-                    <button @click="currentTab = 'allTime'" :class="{ 'bg-white shadow-sm text-teal-700': currentTab === 'allTime', 'text-slate-500 hover:text-slate-700': currentTab !== 'allTime' }" class="flex-1 py-2.5 px-4 rounded-xl font-bold text-sm transition-all duration-200">
+                    <button @click="currentTab = 'allTime'" :class="{ 'bg-white shadow-sm text-sky-700': currentTab === 'allTime', 'text-slate-500 hover:text-slate-700': currentTab !== 'allTime' }" class="flex-1 py-2.5 px-4 rounded-xl font-bold text-sm transition-all duration-200">
                         Sepanjang Waktu
                     </button>
                 </div>
@@ -193,7 +193,7 @@
                 
                 // Colors for Rank 1
                 let textColor = isFirst ? '#111827' : (isLight ? '#1f2937' : '#f3f4f6');
-                let scoreColor = isFirst ? '#111827' : (isLight ? '#0f766e' : '#14b8a6');
+                let scoreColor = isFirst ? '#111827' : (isLight ? '#0369a1' : '#38bdf8');
                 let badgeBg = isFirst ? 'rgba(255,255,255,0.2)' : (isLight ? '#f1f5f9' : 'rgba(255,255,255,0.05)');
                 let badgeBorder = isFirst ? 'rgba(255,255,255,0.3)' : (isLight ? '#e2e8f0' : 'rgba(255,255,255,0.1)');
                 let badgeText = isFirst ? '#ffffff' : (isLight ? '#64748b' : '#9ca3af');
