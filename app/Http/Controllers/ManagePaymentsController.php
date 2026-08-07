@@ -32,7 +32,10 @@ class ManagePaymentsController extends Controller
             $selectedPeriodKey = $periods[0]['start']->format('Y-m-d') . '|' . $periods[0]['end']->format('Y-m-d');
         }
 
-        if ($selectedPeriodKey) {
+        if ($selectedPeriodKey === 'all') {
+            $startDate = null;
+            $endDate = null;
+        } elseif ($selectedPeriodKey) {
             $parts = explode('|', $selectedPeriodKey);
             $startDate = Carbon::parse($parts[0])->startOfDay();
             $endDate = Carbon::parse($parts[1])->endOfDay();
@@ -43,11 +46,15 @@ class ManagePaymentsController extends Controller
         }
 
         // 2. Fetch unpaid approved reports for the selected period
-        $unpaidReports = VideoWorkReport::with('partner')
+        $unpaidReportsQuery = VideoWorkReport::with('partner')
             ->where('qc_status', 'approved')
-            ->where('payment_status', 'unpaid')
-            ->whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
-            ->get();
+            ->where('payment_status', 'unpaid');
+            
+        if ($startDate && $endDate) {
+            $unpaidReportsQuery->whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')]);
+        }
+        
+        $unpaidReports = $unpaidReportsQuery->get();
 
         $grouped = $unpaidReports->groupBy('partner_id');
 
@@ -59,10 +66,13 @@ class ManagePaymentsController extends Controller
             }
 
             // Get period approval info if exists
-            $periodApproval = PeriodApproval::where('partner_id', $partnerId)
-                ->where('period_start_date', $startDate->format('Y-m-d'))
-                ->where('period_end_date', $endDate->format('Y-m-d'))
-                ->first();
+            $periodApproval = null;
+            if ($startDate && $endDate) {
+                $periodApproval = PeriodApproval::where('partner_id', $partnerId)
+                    ->where('period_start_date', $startDate->format('Y-m-d'))
+                    ->where('period_end_date', $endDate->format('Y-m-d'))
+                    ->first();
+            }
 
             $totalMinutes = $reports->sum('approved_duration_minutes');
             $hours = $totalMinutes / 60;
@@ -127,25 +137,30 @@ class ManagePaymentsController extends Controller
     {
         $validated = $request->validate([
             'payment_proof' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
-            'period_start_date' => 'required|date',
-            'period_end_date' => 'required|date',
+            'period_start_date' => 'required|string',
+            'period_end_date' => 'required|string',
         ]);
 
-        $startDate = Carbon::parse($validated['period_start_date']);
-        $endDate = Carbon::parse($validated['period_end_date']);
-
-        $reports = VideoWorkReport::where('partner_id', $partner->id)
+        $reportsQuery = VideoWorkReport::where('partner_id', $partner->id)
             ->where('qc_status', 'approved')
-            ->where('payment_status', 'unpaid')
-            ->whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
-            ->get();
+            ->where('payment_status', 'unpaid');
+            
+        $startDate = null;
+        $endDate = null;
+        if ($validated['period_start_date'] !== 'all' && $validated['period_end_date'] !== 'all') {
+            $startDate = Carbon::parse($validated['period_start_date']);
+            $endDate = Carbon::parse($validated['period_end_date']);
+            $reportsQuery->whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')]);
+        }
+        
+        $reports = $reportsQuery->get();
 
         if ($reports->isEmpty()) {
             return redirect()->back()->with('error', 'Tidak ada laporan yang perlu dibayar untuk mitra ini pada periode tersebut.');
         }
 
         try {
-            DB::transaction(function () use ($partner, $reports, $request, $imageService, $backupService, $startDate, $endDate) {
+            DB::transaction(function () use ($partner, $reports, $request, $imageService, $backupService, $startDate, $endDate, $validated) {
                 // Upload payment proof
                 $uploadedPath = $imageService->store($request->file('payment_proof'), 'payment_proofs');
                 
@@ -161,17 +176,20 @@ class ManagePaymentsController extends Controller
                     ]);
                 }
 
-                // Update PeriodApproval record status to paid
-                PeriodApproval::updateOrCreate([
-                    'partner_id' => $partner->id,
-                    'period_start_date' => $startDate->format('Y-m-d'),
-                    'period_end_date' => $endDate->format('Y-m-d'),
-                ], [
-                    'status' => 'paid',
-                ]);
+                if ($startDate && $endDate) {
+                    // Update PeriodApproval record status to paid
+                    PeriodApproval::updateOrCreate([
+                        'partner_id' => $partner->id,
+                        'period_start_date' => $startDate->format('Y-m-d'),
+                        'period_end_date' => $endDate->format('Y-m-d'),
+                    ], [
+                        'status' => 'paid',
+                    ]);
+                }
             });
 
-            \App\Services\ActivityLogger::log('payment.process', "Memproses pembayaran gaji untuk mitra {$partner->full_name} untuk periode {$startDate->format('Y-m-d')} s/d {$endDate->format('Y-m-d')}");
+            $logPeriod = $startDate && $endDate ? "periode {$startDate->format('Y-m-d')} s/d {$endDate->format('Y-m-d')}" : "semua periode";
+            \App\Services\ActivityLogger::log('payment.process', "Memproses pembayaran gaji untuk mitra {$partner->full_name} untuk {$logPeriod}");
 
             return redirect()->back()->with('success', 'Pembayaran gaji mitra berhasil diproses dan disimpan.');
         } catch (Throwable $e) {

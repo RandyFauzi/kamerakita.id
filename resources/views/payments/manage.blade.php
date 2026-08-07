@@ -145,6 +145,7 @@
                 <form action="{{ route('payments.manage') }}" method="GET" class="w-full sm:w-auto flex items-center gap-3">
                     <label for="period" class="shrink-0 text-xs font-bold text-gray-500 uppercase tracking-wider font-mono">Periode Pembayaran:</label>
                     <select name="period" id="period" onchange="this.form.submit()" class="block w-full sm:w-80 px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-gray-700 font-medium">
+                        <option value="all" {{ $selectedPeriodKey === 'all' ? 'selected' : '' }}>Semua Periode</option>
                         @foreach($periods as $p)
                             <option value="{{ $p['start']->format('Y-m-d') . '|' . $p['end']->format('Y-m-d') }}" 
                                 {{ $selectedPeriodKey === ($p['start']->format('Y-m-d') . '|' . $p['end']->format('Y-m-d')) ? 'selected' : '' }}>
@@ -155,7 +156,7 @@
                 </form>
                 
                 <div class="text-xs font-semibold text-gray-400">
-                    Rentang Laporan: <span class="text-slate-800 font-bold font-mono">{{ $startDate->translatedFormat('d M Y') }} - {{ $endDate->translatedFormat('d M Y') }}</span>
+                    Rentang Laporan: <span class="text-slate-800 font-bold font-mono">{{ $startDate ? $startDate->translatedFormat('d M Y') . ' - ' . $endDate->translatedFormat('d M Y') : 'Semua Waktu' }}</span>
                 </div>
             </div>
 
@@ -399,8 +400,8 @@
                     <!-- Modal Body Form -->
                     <form :action="'/payments/manage/' + activeWorker.partner.id + '/pay'" method="POST" enctype="multipart/form-data" class="flex-1 p-6 space-y-5">
                         @csrf
-                        <input type="hidden" name="period_start_date" value="{{ $startDate->format('Y-m-d') }}">
-                        <input type="hidden" name="period_end_date" value="{{ $endDate->format('Y-m-d') }}">
+                        <input type="hidden" name="period_start_date" value="{{ $startDate ? $startDate->format('Y-m-d') : 'all' }}">
+                        <input type="hidden" name="period_end_date" value="{{ $endDate ? $endDate->format('Y-m-d') : 'all' }}">
                         
                         <!-- Earnings Summary Card -->
                         <div class="bg-gradient-to-br from-indigo-500 to-indigo-700 text-white rounded-2xl p-5 shadow-inner flex justify-between items-center">
