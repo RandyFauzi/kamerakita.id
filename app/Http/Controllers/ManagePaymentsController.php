@@ -99,7 +99,7 @@ class ManagePaymentsController extends Controller
 
         $groupedPaid = $paidReports->groupBy(function ($item) {
             $paidAt = $item->paid_at instanceof Carbon ? $item->paid_at : Carbon::parse($item->paid_at);
-            return $paidAt->format('Y-m-d H:i:s') . '_' . $item->payment_reference_proof_path;
+            return $item->partner_id . '_' . $paidAt->format('Y-m-d H:i:s') . '_' . $item->payment_reference_proof_path;
         });
 
         $payoutHistory = [];
@@ -123,7 +123,7 @@ class ManagePaymentsController extends Controller
                 'reports' => $reports->sortByDesc('submission_date'),
                 'total_minutes' => $totalMinutes,
                 'total_amount' => $totalAmount,
-                'batch_id' => base64_encode($first->paid_at->format('Y-m-d H:i:s') . '|' . $first->payment_reference_proof_path),
+                'batch_id' => base64_encode($partner->id . '|' . $first->paid_at->format('Y-m-d H:i:s') . '|' . $first->payment_reference_proof_path),
             ];
         }
 
@@ -275,17 +275,30 @@ class ManagePaymentsController extends Controller
         try {
             $decoded = base64_decode($validated['batch_id']);
             $parts = explode('|', $decoded);
-            if (count($parts) < 2) {
-                return redirect()->back()->with('error', 'ID Batch pembayaran tidak valid.');
+            if (count($parts) < 3) {
+                // Support legacy format for backward compatibility
+                if (count($parts) === 2) {
+                    $partnerId = null;
+                    $paidAtStr = $parts[0];
+                    $proofPath = $parts[1];
+                } else {
+                    return redirect()->back()->with('error', 'ID Batch pembayaran tidak valid.');
+                }
+            } else {
+                $partnerId = $parts[0];
+                $paidAtStr = $parts[1];
+                $proofPath = $parts[2];
             }
 
-            $paidAtStr = $parts[0];
-            $proofPath = $parts[1];
-
-            $reports = VideoWorkReport::where('payment_status', 'paid')
+            $reportsQuery = VideoWorkReport::where('payment_status', 'paid')
                 ->where('paid_at', $paidAtStr)
-                ->where('payment_reference_proof_path', $proofPath)
-                ->get();
+                ->where('payment_reference_proof_path', $proofPath);
+
+            if ($partnerId) {
+                $reportsQuery->where('partner_id', $partnerId);
+            }
+
+            $reports = $reportsQuery->get();
 
             if ($reports->isEmpty()) {
                 return redirect()->back()->with('error', 'Tidak ditemukan batch pembayaran yang sesuai.');
