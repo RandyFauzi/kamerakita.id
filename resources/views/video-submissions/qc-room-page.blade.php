@@ -399,6 +399,14 @@
                                                                                             Batal Tolak
                                                                                         </button>
                                                                                     </form>
+                                                                                @elseif($report->qc_status === 'approved')
+                                                                                    <!-- Undo Approval Action -->
+                                                                                    <form action="{{ route('video-submissions.restore-report', $report->id) }}" method="POST" class="inline" onsubmit="event.preventDefault(); confirmCancelApproval(this)">
+                                                                                        @csrf
+                                                                                        <button type="submit" class="inline-flex items-center px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg text-[9px] font-bold border border-slate-200 transition">
+                                                                                            Batal
+                                                                                        </button>
+                                                                                    </form>
                                                                                 @else
                                                                                     <!-- Approve Action -->
                                                                                     <form action="{{ route('video-submissions.approve-report', $report->id) }}" method="POST" class="inline" onsubmit="event.preventDefault(); confirmApproveReport(this, {{ $report->submitted_duration_minutes }})">
@@ -420,14 +428,16 @@
                                                                                     </form>
                                                                                 @endif
 
-                                                                                <!-- Delete Action -->
-                                                                                <form action="{{ route('video-submissions.destroy', $report->id) }}" method="POST" class="inline" onsubmit="event.preventDefault(); confirmDelete(this)">
-                                                                                    @csrf
-                                                                                    @method('DELETE')
-                                                                                    <button type="submit" class="inline-flex items-center px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-800 rounded-lg text-[9px] font-bold border border-rose-200 transition">
-                                                                                        Hapus
-                                                                                    </button>
-                                                                                </form>
+                                                                                @if($report->qc_status !== 'approved')
+                                                                                    <!-- Delete Action -->
+                                                                                    <form action="{{ route('video-submissions.destroy', $report->id) }}" method="POST" class="inline" onsubmit="event.preventDefault(); confirmDelete(this)">
+                                                                                        @csrf
+                                                                                        @method('DELETE')
+                                                                                        <button type="submit" class="inline-flex items-center px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-800 rounded-lg text-[9px] font-bold border border-rose-200 transition">
+                                                                                            Hapus
+                                                                                        </button>
+                                                                                    </form>
+                                                                                @endif
                                                                             @endif
                                                                         </div>
                                                                     </td>
@@ -605,6 +615,22 @@
                     showCancelButton: true,
                     confirmButtonText: 'Ya, Kembalikan',
                     cancelButtonText: 'Batal',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            }
+
+            function confirmCancelApproval(form) {
+                Swal.fire({
+                    ...swalOptions,
+                    title: 'Batalkan Persetujuan?',
+                    text: "Apakah Anda yakin ingin membatalkan status approved dan mengembalikan laporan ini ke antrean review?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Batalkan',
+                    cancelButtonText: 'Tutup',
                 }).then((result) => {
                     if (result.isConfirmed) {
                         form.submit();
