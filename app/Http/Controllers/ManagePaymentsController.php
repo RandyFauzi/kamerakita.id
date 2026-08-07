@@ -45,6 +45,8 @@ class ManagePaymentsController extends Controller
             $endDate = $range['end'];
         }
 
+        $search = $request->input('search');
+
         // 2. Fetch unpaid approved reports for the selected period
         $unpaidReportsQuery = VideoWorkReport::with('partner')
             ->where('qc_status', 'approved')
@@ -52,6 +54,16 @@ class ManagePaymentsController extends Controller
             
         if ($startDate && $endDate) {
             $unpaidReportsQuery->whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')]);
+        }
+
+        if ($search) {
+            $unpaidReportsQuery->whereHas('partner', function ($q) use ($search) {
+                $q->where('full_name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhereHas('user', function ($uq) use ($search) {
+                      $uq->where('email', 'like', "%{$search}%");
+                  });
+            });
         }
         
         $unpaidReports = $unpaidReportsQuery->get();
@@ -91,11 +103,22 @@ class ManagePaymentsController extends Controller
         }
 
         // 3. Fetch payout history (all payouts, order by date)
-        $paidReports = VideoWorkReport::with('partner')
+        $paidReportsQuery = VideoWorkReport::with('partner')
             ->where('payment_status', 'paid')
             ->whereNotNull('paid_at')
-            ->orderBy('paid_at', 'desc')
-            ->get();
+            ->orderBy('paid_at', 'desc');
+
+        if ($search) {
+            $paidReportsQuery->whereHas('partner', function ($q) use ($search) {
+                $q->where('full_name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhereHas('user', function ($uq) use ($search) {
+                      $uq->where('email', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        $paidReports = $paidReportsQuery->get();
 
         $groupedPaid = $paidReports->groupBy(function ($item) {
             $paidAt = $item->paid_at instanceof Carbon ? $item->paid_at : Carbon::parse($item->paid_at);
@@ -127,7 +150,7 @@ class ManagePaymentsController extends Controller
             ];
         }
 
-        return view('payments.manage', compact('workers', 'payoutHistory', 'periods', 'selectedPeriodKey', 'startDate', 'endDate'));
+        return view('payments.manage', compact('workers', 'payoutHistory', 'periods', 'selectedPeriodKey', 'startDate', 'endDate', 'search'));
     }
 
     /**

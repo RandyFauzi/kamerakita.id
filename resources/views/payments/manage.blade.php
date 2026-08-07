@@ -142,17 +142,29 @@
 
             <!-- Dropdown Pilihan Periode Mingguan -->
             <div class="bg-white/80 backdrop-blur-md overflow-hidden shadow-sm sm:rounded-2xl border border-gray-150 p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <form action="{{ route('payments.manage') }}" method="GET" class="w-full sm:w-auto flex items-center gap-3">
-                    <label for="period" class="shrink-0 text-xs font-bold text-gray-500 uppercase tracking-wider font-mono">Periode Pembayaran:</label>
-                    <select name="period" id="period" onchange="this.form.submit()" class="block w-full sm:w-80 px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-gray-700 font-medium">
-                        <option value="all" {{ $selectedPeriodKey === 'all' ? 'selected' : '' }}>Semua Periode</option>
-                        @foreach($periods as $p)
-                            <option value="{{ $p['start']->format('Y-m-d') . '|' . $p['end']->format('Y-m-d') }}" 
-                                {{ $selectedPeriodKey === ($p['start']->format('Y-m-d') . '|' . $p['end']->format('Y-m-d')) ? 'selected' : '' }}>
-                                {{ $p['label'] }}
-                            </option>
-                        @endforeach
-                    </select>
+                <form action="{{ route('payments.manage') }}" method="GET" class="w-full sm:w-auto flex flex-col sm:flex-row items-center gap-3">
+                    <div class="flex items-center gap-3 w-full sm:w-auto">
+                        <label for="period" class="shrink-0 text-xs font-bold text-gray-500 uppercase tracking-wider font-mono">Periode:</label>
+                        <select name="period" id="period" onchange="this.form.submit()" class="block w-full sm:w-48 px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-gray-700 font-medium">
+                            <option value="all" {{ $selectedPeriodKey === 'all' ? 'selected' : '' }}>Semua Periode</option>
+                            @foreach($periods as $p)
+                                <option value="{{ $p['start']->format('Y-m-d') . '|' . $p['end']->format('Y-m-d') }}" 
+                                    {{ $selectedPeriodKey === ($p['start']->format('Y-m-d') . '|' . $p['end']->format('Y-m-d')) ? 'selected' : '' }}>
+                                    {{ $p['label'] }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="relative w-full sm:w-auto flex items-center">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama atau email..." class="block w-full sm:w-64 pl-9 pr-3 py-2 border border-gray-200 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <button type="submit" class="hidden">Search</button>
                 </form>
                 <div class="flex flex-col sm:flex-row items-end sm:items-center gap-3">
                     <div class="text-xs font-semibold text-gray-400 text-right">
