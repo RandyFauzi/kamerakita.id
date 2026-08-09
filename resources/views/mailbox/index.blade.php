@@ -3,12 +3,54 @@
             selectedEmail: null,
             emails: {{ Js::from($emails) }},
             search: '',
+            filterMode: 'all',
             get filteredEmails() {
-                if (this.search === '') return this.emails;
-                return this.emails.filter(e => e.subject?.toLowerCase().includes(this.search.toLowerCase()) || e.sender_address.toLowerCase().includes(this.search.toLowerCase()));
+                let list = this.emails;
+                if (this.search !== '') {
+                    list = list.filter(e => e.subject?.toLowerCase().includes(this.search.toLowerCase()) || e.sender_address.toLowerCase().includes(this.search.toLowerCase()));
+                }
+                if (this.filterMode === 'unread') {
+                    list = list.filter(e => !e.is_read);
+                } else if (this.filterMode === 'read') {
+                    list = list.filter(e => e.is_read);
+                } else if (this.filterMode === 'starred') {
+                    list = list.filter(e => e.is_starred);
+                }
+                return list;
             },
             selectEmail(id) {
                 this.selectedEmail = this.emails.find(e => e.id === id);
+                if (this.selectedEmail && !this.selectedEmail.is_read) {
+                    this.toggleRead(id, true);
+                }
+            },
+            toggleRead(id, status) {
+                let email = this.emails.find(e => e.id === id);
+                if (email) {
+                    email.is_read = status;
+                    fetch(`/mailbox/${id}/read`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
+                        },
+                        body: JSON.stringify({ is_read: status })
+                    }).catch(console.error);
+                }
+            },
+            toggleStar(id) {
+                let email = this.emails.find(e => e.id === id);
+                if (email) {
+                    email.is_starred = !email.is_starred;
+                    fetch(`/mailbox/${id}/star`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
+                        },
+                        body: JSON.stringify({ is_starred: email.is_starred })
+                    }).catch(console.error);
+                }
             },
             formatDate(dateStr) {
                 const d = new Date(dateStr);
@@ -75,42 +117,73 @@
         <!-- Email List (Middle Column) -->
         <div class="w-full md:w-80 lg:w-96 flex-shrink-0 border-r border-slate-100 flex flex-col bg-white z-10" :class="{'hidden md:flex': selectedEmail}">
             
-            <!-- List Header & Search -->
-            <div class="h-20 flex items-center px-6 border-b border-slate-100 shrink-0 gap-4">
-                <div class="relative w-full">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <!-- List Header -->
+            <div class="px-4 py-3 flex items-center justify-between border-b border-slate-200 shrink-0 bg-[#e2e4e7]">
+                <h2 class="text-lg font-bold text-slate-800">Kotak Masuk</h2>
+                <div class="flex items-center gap-2 text-slate-500">
+                    <button class="hover:text-slate-800 p-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg></button>
+                    <div class="flex items-center text-xs">
+                        <button class="opacity-50 hover:opacity-100 p-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></button>
+                        <span class="px-1 font-medium">1/1</span>
+                        <button class="opacity-50 hover:opacity-100 p-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></button>
                     </div>
-                    <input x-model="search" type="text" class="block w-full pl-9 pr-3 py-2 border border-slate-200 rounded-lg leading-5 bg-slate-50 text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-colors" placeholder="Search emails...">
                 </div>
             </div>
 
             <!-- List Filter -->
-            <div class="flex items-center px-6 py-3 border-b border-slate-50 bg-[#FBFBFC] text-xs font-semibold text-slate-400 shrink-0">
-                <div class="flex gap-4">
-                    <span class="text-indigo-600 border-b-2 border-indigo-600 pb-1 cursor-pointer">Newest</span>
-                    <span class="hover:text-slate-600 cursor-pointer pb-1">Unread</span>
+            <div class="px-4 py-2.5 border-b border-slate-300 flex items-center gap-3 overflow-x-auto bg-[#e2e4e7] shrink-0">
+                <div class="flex items-center gap-1 shrink-0 text-slate-500 cursor-pointer hover:text-slate-700">
+                    <input type="checkbox" class="rounded border-slate-400 text-slate-800 focus:ring-slate-800 w-4 h-4 cursor-pointer bg-transparent">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                    <button @click="filterMode = 'all'" :class="filterMode === 'all' ? 'bg-slate-900 text-white' : 'bg-slate-200 text-slate-700 hover:bg-slate-300 border border-slate-300/50'" class="px-3.5 py-1 rounded-full text-xs font-semibold transition-colors">Semua email</button>
+                    <button @click="filterMode = 'unread'" :class="filterMode === 'unread' ? 'bg-slate-900 text-white' : 'bg-slate-200 text-slate-700 hover:bg-slate-300 border border-slate-300/50'" class="px-3.5 py-1 rounded-full text-xs font-semibold transition-colors">Belum dibaca</button>
+                    <button @click="filterMode = 'read'" :class="filterMode === 'read' ? 'bg-slate-900 text-white' : 'bg-slate-200 text-slate-700 hover:bg-slate-300 border border-slate-300/50'" class="px-3.5 py-1 rounded-full text-xs font-semibold transition-colors">Dibaca</button>
+                    <button @click="filterMode = 'starred'" :class="filterMode === 'starred' ? 'bg-slate-900 text-white' : 'bg-slate-200 text-slate-700 hover:bg-slate-300 border border-slate-300/50'" class="px-3.5 py-1 rounded-full text-xs font-semibold transition-colors">Berbintang</button>
+                </div>
+            </div>
+            
+            <!-- Search Bar -->
+            <div class="px-4 py-2 border-b border-slate-300 bg-[#e2e4e7] shrink-0">
+                <div class="relative w-full">
+                    <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+                        <svg class="h-3.5 w-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    </div>
+                    <input x-model="search" type="text" class="block w-full pl-8 pr-3 py-1.5 border border-slate-300 rounded bg-[#f3f4f6] text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400 text-xs transition-colors" placeholder="Telusuri...">
                 </div>
             </div>
 
             <!-- List Items -->
-            <div class="flex-1 overflow-y-auto">
+            <div class="flex-1 overflow-y-auto bg-[#e2e4e7]">
                 <template x-for="email in filteredEmails" :key="email.id">
                     <div @click="selectEmail(email.id)" 
-                         :class="{'bg-indigo-50/50 border-l-2 border-indigo-600': selectedEmail && selectedEmail.id === email.id, 'border-l-2 border-transparent hover:bg-slate-50': !selectedEmail || selectedEmail.id !== email.id}"
-                         class="p-5 border-b border-slate-100 cursor-pointer transition-colors relative group">
+                         :class="{'bg-[#d2d4d9]': selectedEmail && selectedEmail.id === email.id, 'hover:bg-[#dadae0]': !selectedEmail || selectedEmail.id !== email.id}"
+                         class="px-4 py-3 border-b border-slate-300/60 cursor-pointer transition-colors relative flex items-start gap-3">
                         
-                        <div class="flex justify-between items-start mb-1">
-                            <div class="flex items-center gap-2">
-                                <div class="w-6 h-6 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-[10px] font-bold" x-text="email.sender_address.charAt(0).toUpperCase()"></div>
-                                <h3 class="text-sm font-semibold text-slate-800 truncate max-w-[120px] lg:max-w-[150px]" x-text="email.sender_address.split('@')[0]"></h3>
-                            </div>
-                            <span class="text-[10px] font-medium text-slate-400 whitespace-nowrap" x-text="formatDate(email.received_at)"></span>
+                        <!-- Checkbox -->
+                        <div class="pt-0.5 shrink-0" @click.stop>
+                            <input type="checkbox" class="rounded border-slate-400 text-slate-800 focus:ring-slate-800 w-4 h-4 cursor-pointer bg-transparent">
                         </div>
                         
-                        <div class="pl-8">
-                            <p class="text-sm font-bold text-slate-900 mb-1 truncate group-hover:text-indigo-600 transition-colors" x-text="email.subject || '(No Subject)'"></p>
-                            <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed" x-text="email.message_content.replace(/(<([^>]+)>)/gi, '').substring(0, 100) + '...'"></p>
+                        <!-- Content -->
+                        <div class="flex-1 min-w-0">
+                            <div class="flex justify-between items-baseline mb-0.5">
+                                <h3 class="text-[13px] text-slate-800 truncate pr-2" :class="email.is_read ? '' : 'font-bold'" x-text="email.sender_address.split('@')[0]"></h3>
+                                <div class="flex items-center gap-1.5 shrink-0">
+                                    <span class="text-[11px] text-slate-500 whitespace-nowrap" x-text="formatDate(email.received_at)"></span>
+                                    <!-- Unread Dot Indicator -->
+                                    <div class="w-1.5 h-1.5 rounded-full bg-indigo-600" x-show="!email.is_read"></div>
+                                    <div class="w-1.5 h-1.5" x-show="email.is_read"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-between items-start mt-0.5">
+                                <p class="text-[13px] text-slate-600 truncate pr-2" :class="email.is_read ? '' : 'font-bold text-slate-800'" x-text="email.subject || '(Tanpa Subjek)'"></p>
+                                <button @click.stop="toggleStar(email.id)" class="text-slate-400 hover:text-slate-600 focus:outline-none shrink-0" :class="email.is_starred ? 'text-slate-800 fill-current' : ''">
+                                    <svg class="w-4 h-4" :fill="email.is_starred ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </template>

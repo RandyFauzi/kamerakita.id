@@ -15,6 +15,8 @@ class CapturedEmail extends Model
         'subject',
         'message_content',
         'received_at',
+        'is_read',
+        'is_starred',
     ];
 
     protected $casts = [
