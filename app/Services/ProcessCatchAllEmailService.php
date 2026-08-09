@@ -101,6 +101,7 @@ class ProcessCatchAllEmailService
 
                 // Fitur Auto-Delete: Hapus pesan dari Hostinger jika umurnya lebih dari 14 hari
                 $twoWeeksAgo = now()->subDays(14);
+                $dateAttr = $message->getDate();
                 $messageDate = ($dateAttr && $dateAttr->count() > 0) ? $dateAttr->first() : null;
                 
                 if ($messageDate && $messageDate->lessThan($twoWeeksAgo)) {
