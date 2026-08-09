@@ -354,10 +354,21 @@
                             method: 'PATCH',
                             headers: {
                                 'Content-Type': 'application/json',
+                                'Accept': 'application/json',
                                 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
                             },
                             body: JSON.stringify({ is_read: status })
-                        }).catch(console.error);
+                        }).then(async res => {
+                            if (!res.ok) {
+                                email.is_read = !status; // Revert
+                                let text = await res.text();
+                                alert(`Gagal menyimpan status (Error ${res.status}): ${text.substring(0, 50)}`);
+                            }
+                        }).catch(err => {
+                            email.is_read = !status; // Revert
+                            console.error(err);
+                            alert("Koneksi gagal, tidak bisa menyimpan status.");
+                        });
                     }
                 },
                 toggleStar(id) {
@@ -368,10 +379,21 @@
                             method: 'PATCH',
                             headers: {
                                 'Content-Type': 'application/json',
+                                'Accept': 'application/json',
                                 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
                             },
                             body: JSON.stringify({ is_starred: email.is_starred })
-                        }).catch(console.error);
+                        }).then(async res => {
+                            if (!res.ok) {
+                                email.is_starred = !email.is_starred; // Revert
+                                let text = await res.text();
+                                alert(`Gagal menyimpan bintang (Error ${res.status}): ${text.substring(0, 50)}`);
+                            }
+                        }).catch(err => {
+                            email.is_starred = !email.is_starred; // Revert
+                            console.error(err);
+                            alert("Koneksi gagal, tidak bisa menyimpan bintang.");
+                        });
                     }
                 },
                 formatDate(dateStr) {

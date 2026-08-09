@@ -21,6 +21,8 @@ class CapturedEmail extends Model
 
     protected $casts = [
         'received_at' => 'datetime',
+        'is_read' => 'boolean',
+        'is_starred' => 'boolean',
     ];
 
     public function user()
