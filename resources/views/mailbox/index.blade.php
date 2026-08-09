@@ -71,11 +71,14 @@
             <div>
                 <!-- Header / Logo -->
                 <div class="h-20 flex items-center px-8 border-b border-slate-100">
-                    <div class="flex items-center gap-2">
-                        <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center shadow-indigo-200 shadow-md">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    <div class="flex items-center gap-3">
+                        <span class="w-10 h-10 rounded-xl overflow-hidden shrink-0 flex items-center justify-center bg-white shadow-sm border border-slate-100">
+                            <img src="{{ asset('images/Logo.webp') }}" alt="Kamerakita.ai" class="max-h-6 max-w-6 object-contain">
+                        </span>
+                        <div class="flex flex-col">
+                            <span class="font-bold text-[15px] tracking-tight leading-snug text-slate-800">Mailbox</span>
+                            <span class="font-bold text-[15px] tracking-tight leading-snug text-slate-800">KameraKita AI</span>
                         </div>
-                        <span class="font-bold text-lg tracking-tight">Mailbox KameraKita AI</span>
                     </div>
                 </div>
 
