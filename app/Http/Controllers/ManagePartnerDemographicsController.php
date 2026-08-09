@@ -146,6 +146,7 @@ class ManagePartnerDemographicsController extends Controller
             'mitra_id' => 'required|string|unique:partners,mitra_id',
             'nik' => 'nullable|string|max:30|unique:partners,nik',
             'full_name' => 'required|string|max:255',
+            'registration_date' => 'nullable|date',
             'whatsapp_number' => 'required|string|max:20',
             'email' => ['required', 'email', 'max:100', 'unique:partners,email', 'unique:users,email'],
             'password' => ['required', 'confirmed', Password::min(8)],
@@ -205,6 +206,7 @@ class ManagePartnerDemographicsController extends Controller
             'mitra_parent_id' => 'nullable|exists:partners,id',
             'nik' => 'nullable|string|max:30|unique:partners,nik,'.$partner->id,
             'full_name' => 'required|string|max:255',
+            'registration_date' => 'nullable|date',
             'whatsapp_number' => 'required|string|max:20',
             'email' => [
                 'required',

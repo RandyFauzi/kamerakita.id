@@ -30,6 +30,7 @@ class Partner extends Model
         'mitra_id',               // e.g., KMK-001
         'nik',
         'full_name',
+        'registration_date',
         'whatsapp_number',
         'email',
         'full_address',
@@ -55,6 +56,10 @@ class Partner extends Model
     protected static function booted(): void
     {
         static::creating(function (Partner $partner) {
+            if (empty($partner->registration_date)) {
+                $partner->registration_date = now()->toDateString();
+            }
+
             if (in_array($partner->partner_role, self::RECRUITER_ROLES) && empty($partner->referral_code)) {
                 do {
                     $code = 'REF-' . strtoupper(Str::random(6));

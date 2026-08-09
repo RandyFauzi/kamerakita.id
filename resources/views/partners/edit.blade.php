@@ -102,6 +102,13 @@
                                                 @error('full_name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                                             </div>
 
+                                            <!-- Tanggal Daftar (Opsional) -->
+                                            <div>
+                                                <label for="registration_date" class="block text-sm font-semibold text-gray-700 mb-1">Tanggal Daftar</label>
+                                                <input type="date" name="registration_date" id="registration_date" value="{{ old('registration_date', $partner->registration_date ? $partner->registration_date->format('Y-m-d') : '') }}" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-700">
+                                                @error('registration_date') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                                            </div>
+
                                             <!-- WhatsApp -->
                                             <div>
                                                 <label for="whatsapp_number" class="block text-sm font-semibold text-gray-700 mb-1">No. WhatsApp <span class="text-red-500">*</span></label>
