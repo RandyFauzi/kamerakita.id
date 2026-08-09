@@ -18,10 +18,6 @@ return [
         'key' => env('POSTMARK_API_KEY'),
     ],
 
-    'hostinger' => [
-        'webhook_secret' => env('HOSTINGER_WEBHOOK_SECRET'),
-    ],
-
     'resend' => [
         'key' => env('RESEND_API_KEY'),
     ],

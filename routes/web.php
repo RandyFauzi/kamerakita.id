@@ -162,10 +162,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('push-subscriptions.destroy');
 });
 
-// Hostinger Agentic Mail Webhook (No CSRF, Public)
-Route::post('/api/webhook/email-otp', [\App\Http\Controllers\EmailWebhookController::class, 'handle'])
-    ->name('webhook.email-otp');
-
 Route::middleware('auth')->group(function () {
     // Mailbox Internal
     Route::get('/mailbox', [App\Http\Controllers\MailboxController::class, 'index'])->name('mailbox.index');
