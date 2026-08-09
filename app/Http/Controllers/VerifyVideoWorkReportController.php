@@ -40,11 +40,27 @@ class VerifyVideoWorkReportController extends Controller
             $selectedPeriodKey = $startDate->format('Y-m-d') . '|' . $endDate->format('Y-m-d');
         }
 
+        // Day filter (optional — filter reports to a specific date)
+        $selectedDate = $request->input('date'); // format: Y-m-d
+        $filterDate   = ($selectedDate && $selectedDate !== 'all') ? Carbon::parse($selectedDate) : null;
+
+        // Build period day list for the strip (only when a specific period is selected)
+        $periodDays = [];
+        if ($startDate && $endDate) {
+            $day = $startDate->copy();
+            while ($day->lte($endDate)) {
+                $periodDays[] = $day->copy();
+                $day->addDay();
+            }
+        }
+
         // 2. Fetch partners who submitted reports in this period
         $search = $request->input('search');
         $selectedGroup = $request->input('group');
-        $query = Partner::whereHas('videoWorkReports', function ($q) use ($startDate, $endDate) {
-            if ($startDate && $endDate) {
+        $query = Partner::whereHas('videoWorkReports', function ($q) use ($startDate, $endDate, $filterDate) {
+            if ($filterDate) {
+                $q->whereDate('submission_date', $filterDate->format('Y-m-d'));
+            } elseif ($startDate && $endDate) {
                 $q->whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')]);
             }
         });
@@ -66,7 +82,9 @@ class VerifyVideoWorkReportController extends Controller
         // 3. For each partner, load their reports in this period and their period approval status
         foreach ($partners as $partner) {
             $reportsQuery = VideoWorkReport::where('partner_id', $partner->id)->orderBy('submission_date', 'asc');
-            if ($startDate && $endDate) {
+            if ($filterDate) {
+                $reportsQuery->whereDate('submission_date', $filterDate->format('Y-m-d'));
+            } elseif ($startDate && $endDate) {
                 $reportsQuery->whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')]);
             }
             $reports = $reportsQuery->get();
@@ -96,7 +114,10 @@ class VerifyVideoWorkReportController extends Controller
         $reportedQuery = VideoWorkReport::query();
         $approvedQuery = VideoWorkReport::where('qc_status', 'approved');
 
-        if ($startDate && $endDate) {
+        if ($filterDate) {
+            $reportedQuery->whereDate('submission_date', $filterDate->format('Y-m-d'));
+            $approvedQuery->whereDate('submission_date', $filterDate->format('Y-m-d'));
+        } elseif ($startDate && $endDate) {
             $reportedQuery->whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')]);
             $approvedQuery->whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')]);
         }
@@ -151,6 +172,8 @@ class VerifyVideoWorkReportController extends Controller
             'endDate',
             'search',
             'selectedGroup',
+            'selectedDate',
+            'periodDays',
             'totalPendingCount',
             'totalOnReviewCount',
             'filteredSubmittedDuration',
@@ -410,7 +433,7 @@ class VerifyVideoWorkReportController extends Controller
             'verified_at' => null,
         ]);
 
-        return redirect()->back()->with('success', 'Status penolakan laporan berhasil dibatalkan dan dikembalikan ke antrean review.');
+        return redirect()->back()->with('success', 'Status laporan berhasil dibatalkan dan dikembalikan ke antrean review.');
     }
 
     public function exportPdf(Request $request)
