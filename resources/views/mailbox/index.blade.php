@@ -170,24 +170,55 @@
                         </div>
                     </div>
                     
-                    <div class="flex-1 overflow-y-auto p-8 lg:p-12">
-                        <!-- Date Header -->
-                        <div class="text-xs font-medium text-slate-400 mb-6 flex items-center gap-4 before:h-px before:flex-1 before:bg-slate-100 after:h-px after:flex-1 after:bg-slate-100">
-                            <span x-text="formatFullDate(selectedEmail.received_at)"></span>
+                    <div class="flex-1 overflow-y-auto p-6 md:p-8 bg-slate-50">
+                        <!-- Subject -->
+                        <h1 class="text-xl md:text-2xl font-bold text-slate-900 tracking-tight mb-6" x-text="selectedEmail.subject || '(Tanpa Subjek)'"></h1>
+                        
+                        <!-- Email Container -->
+                        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-6">
+                            <!-- Email Header -->
+                            <div class="p-6 pb-4">
+                                <div class="flex items-start justify-between gap-4">
+                                    <div class="min-w-0">
+                                        <div class="text-sm text-slate-900 truncate">
+                                            <span class="font-bold">Dari</span> 
+                                            <span class="text-slate-500">&lt;<span x-text="selectedEmail.sender_email"></span>&gt;</span>
+                                        </div>
+                                        <div class="text-xs text-slate-500 mt-1 flex items-center gap-1">
+                                            <span x-text="`{{ auth()->user()->email }} `"></span>
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-3 shrink-0">
+                                        <span class="text-xs text-slate-500 hidden sm:inline" x-text="formatFullDate(selectedEmail.received_at)"></span>
+                                        <div class="flex items-center gap-1 text-slate-400">
+                                            <button class="hover:bg-slate-100 p-1.5 rounded-md transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg></button>
+                                            <button class="hover:bg-slate-100 p-1.5 rounded-md transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg></button>
+                                            <button class="hover:bg-slate-100 p-1.5 rounded-md transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/></svg></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <hr class="border-slate-100">
+                            
+                            <!-- Body -->
+                            <div class="p-6 overflow-x-auto">
+                                <div class="prose prose-slate max-w-none text-slate-800 text-sm leading-relaxed [&>blockquote]:border-l-4 [&>blockquote]:border-slate-300 [&>blockquote]:pl-4 [&>blockquote]:text-slate-500 [&>blockquote]:italic" x-html="selectedEmail.message_content"></div>
+                            </div>
                         </div>
                         
-                        <!-- Reader Header -->
-                        <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight mb-6" x-text="selectedEmail.subject || '(Tanpa Subjek)'"></h1>
-                        
-                        <!-- Tags -->
-                        <div class="flex gap-2 mb-8">
-                            <span class="px-3 py-1 bg-indigo-50 text-indigo-600 text-xs font-semibold rounded-md border border-indigo-100">Internal</span>
-                            <span class="px-3 py-1 bg-slate-50 text-slate-500 text-xs font-semibold rounded-md border border-slate-200">System</span>
+                        <!-- Action Buttons -->
+                        <div class="flex gap-3">
+                            <button class="px-5 py-2 bg-white border border-slate-300 rounded-full text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition flex items-center gap-2 cursor-not-allowed opacity-75" disabled title="Fungsi Balas dinonaktifkan (Receive-only)">
+                                <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
+                                Balas
+                            </button>
+                            <button class="px-5 py-2 bg-white border border-slate-300 rounded-full text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition flex items-center gap-2 cursor-not-allowed opacity-75" disabled title="Fungsi Teruskan dinonaktifkan (Receive-only)">
+                                <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                Teruskan
+                            </button>
                         </div>
-                        
-                        <!-- Body -->
-                        <div class="prose prose-slate prose-sm max-w-none text-slate-700 leading-loose" x-html="selectedEmail.message_content"></div>
-                        
                     </div>
                 </div>
             </template>
