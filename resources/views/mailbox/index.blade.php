@@ -120,19 +120,14 @@
                         <div class="flex-1 min-w-0">
                             <div class="flex justify-between items-baseline mb-0.5">
                                 <h3 class="text-[13px] text-slate-800 truncate pr-2" :class="email.is_read ? '' : 'font-bold'" x-text="email.sender_address.split('@')[0]"></h3>
-                                <div class="flex items-center shrink-0 relative h-5">
-                                    <div class="flex items-center gap-1.5 transition-opacity group-hover:opacity-0" :class="{'opacity-0': checkedEmails.includes(email.id)}">
+                                <div class="flex items-center shrink-0 h-5">
+                                    <div class="flex items-center gap-1.5 group-hover:hidden" :class="{'hidden': checkedEmails.includes(email.id)}">
                                         <span class="text-[11px] text-slate-500 whitespace-nowrap" x-text="formatDate(email.received_at)"></span>
                                         <!-- Unread Dot Indicator -->
                                         <div class="w-1.5 h-1.5 rounded-full bg-indigo-600" x-show="!email.is_read"></div>
                                         <div class="w-1.5 h-1.5" x-show="email.is_read"></div>
                                     </div>
-                                    <div class="absolute right-0 top-0 h-full flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity pl-2"
-                                         :class="{
-                                             'bg-[#d2d4d9]': selectedEmail && selectedEmail.id === email.id, 
-                                             'bg-[#e2e4e7] group-hover:bg-[#dadae0]': !selectedEmail || selectedEmail.id !== email.id,
-                                             'opacity-100': checkedEmails.includes(email.id)
-                                         }">
+                                    <div class="hidden group-hover:flex items-center gap-1" :class="{'!flex': checkedEmails.includes(email.id)}">
                                         <button @click.stop="toggleRead(email.id, !email.is_read)" class="text-slate-500 hover:text-slate-800 focus:outline-none p-1">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                                         </button>
