@@ -7,32 +7,24 @@ use Carbon\Carbon;
 class PeriodService
 {
     /**
-     * Get the Saturday (start) and Thursday (end) for the period containing the given date.
-     * Note: Friday belongs to the previous Saturday - Thursday period (extending it to Friday).
+     * Get the Wednesday (start) and Tuesday (end) for the 7-day period containing the given date.
+     * Periods run from Wednesday to Tuesday (inclusive).
      */
     public static function getPeriodRange(Carbon $date): array
     {
         $date = $date->copy()->startOfDay();
-        $dayOfWeek = $date->dayOfWeek; // 0 = Sunday, 1 = Monday, ..., 5 = Friday, 6 = Saturday
+        $dayOfWeek = $date->dayOfWeek; // 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
 
-        if ($dayOfWeek === Carbon::FRIDAY) {
-            // Friday: belongs to the period starting last Saturday and ending yesterday (Thursday)
-            $start = $date->copy()->subDays(6); // Previous Saturday
-            $end = $date->copy()->subDay(); // Yesterday (Thursday)
-        } elseif ($dayOfWeek === Carbon::SATURDAY) {
-            // Saturday: starts today, ends next Thursday
-            $start = $date->copy();
-            $end = $date->copy()->addDays(5);
-        } else {
-            // Sunday - Thursday: starts previous Saturday, ends this Thursday
-            $subDays = $dayOfWeek + 1;
-            $start = $date->copy()->subDays($subDays);
-            $end = $start->copy()->addDays(5); // Thursday of this week
-        }
+        // Days elapsed since the most recent Wednesday
+        // Wed=0, Thu=1, Fri=2, Sat=3, Sun=4, Mon=5, Tue=6
+        $daysSinceWednesday = ($dayOfWeek - Carbon::WEDNESDAY + 7) % 7;
+
+        $start = $date->copy()->subDays($daysSinceWednesday); // Wednesday
+        $end   = $start->copy()->addDays(6);                  // Tuesday
 
         return [
             'start' => $start,
-            'end' => $end,
+            'end'   => $end,
         ];
     }
 
@@ -72,15 +64,16 @@ class PeriodService
             ];
         }
 
-        // Jika hari ini Jumat, tambahkan periode berikutnya (besok Sabtu - Kamis depan) ke dropdown
-        if (now()->dayOfWeek === Carbon::FRIDAY) {
-            $nextStart = now()->addDay()->startOfDay(); // Sabtu
-            $nextEnd = $nextStart->copy()->addDays(5)->endOfDay(); // Kamis depan
-            $nextKey = $nextStart->format('Y-m-d') . '|' . $nextEnd->format('Y-m-d');
+        // Selasa (hari terakhir periode): tambahkan periode berikutnya (Rabu depan) ke dropdown
+        // agar pengguna bisa melihat periode mendatang sehari sebelum dimulai
+        if (now()->dayOfWeek === Carbon::TUESDAY) {
+            $nextStart = now()->addDay()->startOfDay(); // Rabu berikutnya
+            $nextEnd   = $nextStart->copy()->addDays(6)->endOfDay(); // Selasa depan
+            $nextKey   = $nextStart->format('Y-m-d') . '|' . $nextEnd->format('Y-m-d');
             if (!isset($periods[$nextKey])) {
                 $periods[$nextKey] = [
                     'start' => $nextStart,
-                    'end' => $nextEnd,
+                    'end'   => $nextEnd,
                 ];
             }
         }
