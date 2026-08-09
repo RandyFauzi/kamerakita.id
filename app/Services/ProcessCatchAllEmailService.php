@@ -75,7 +75,7 @@ class ProcessCatchAllEmailService
                         } else {
                             $receivedAt = now();
                         }
-                        $content = $message->getTextBody() ?: $message->getHTMLBody();
+                        $content = $message->getHTMLBody() ?: $message->getTextBody();
 
                         try {
                             // Gunakan firstOrCreate agar TIDAK DUPLIKAT meskipun ditarik berkali-kali
