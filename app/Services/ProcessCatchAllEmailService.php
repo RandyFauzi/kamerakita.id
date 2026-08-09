@@ -29,10 +29,27 @@ class ProcessCatchAllEmailService
                 $subject = $message->getSubject() ?: '(Tanpa Subjek)';
                 echo "📩 Memproses pesan: " . $subject . "\n";
                 
-                $toAddresses = $message->getTo();
+                // $message->getTo() returns an Attribute object.
+                // We MUST call ->all() or ->toArray() to get the array of Address objects for iteration.
+                $toAttribute = $message->getTo();
+                $toAddresses = $toAttribute ? $toAttribute->all() : [];
                 
                 if (empty($toAddresses)) {
-                    echo "⚠️ Pesan tidak memiliki tujuan (To:), dilewati.\n";
+                    echo "⚠️ Pesan tidak memiliki header 'To' standar.\n";
+                    echo "🔍 Memeriksa header alternatif (Delivered-To, Cc, Bcc)...\n";
+                    
+                    // Coba periksa header 'delivered-to' atau 'cc'
+                    $altTo = $message->getAttributes()['delivered_to'] ?? $message->getAttributes()['envelope_to'] ?? null;
+                    if ($altTo) {
+                        echo "✅ Ditemukan rute alternatif: " . json_encode($altTo) . "\n";
+                    }
+                    
+                    // Mari kita dump seluruh header untuk melihat apa yang sebenarnya ada
+                    $headers = $message->getAttributes();
+                    $headerKeys = array_keys($headers);
+                    echo "📋 Header yang tersedia: " . implode(', ', $headerKeys) . "\n";
+                    
+                    echo "⚠️ Melewati pesan karena tidak ada alamat tujuan yang bisa diparsing.\n";
                     continue;
                 }
 
