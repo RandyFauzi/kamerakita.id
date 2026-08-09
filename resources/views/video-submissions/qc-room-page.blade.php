@@ -117,13 +117,7 @@
                 @if(!empty($periodDays))
                     <div class="border-t border-gray-100 pt-4">
                         <div class="flex items-center justify-between mb-2">
-                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest font-mono">Filter Hari</span>
-                            @if($selectedDate && $selectedDate !== 'all')
-                                <a href="{{ route('video-submissions.qc-room', array_merge(request()->except('date'), ['period' => $selectedPeriodKey, 'search' => $search, 'group' => $selectedGroup])) }}"
-                                   class="text-[10px] font-bold text-indigo-500 hover:text-indigo-700 transition">
-                                    × Tampilkan Semua Hari
-                                </a>
-                            @endif
+                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest font-mono">Filter Hari (Opsional)</span>
                         </div>
 
                         <div class="flex gap-2 overflow-x-auto pb-1" style="scrollbar-width: none;">
@@ -132,8 +126,19 @@
                                     $dayKey   = $day->format('Y-m-d');
                                     $isActive = $selectedDate === $dayKey;
                                     $isToday  = $day->isToday();
+                                    
+                                    // Jika hari sudah aktif, klik lagi akan menghapus filter tanggal (toggle off)
+                                    $routeParams = array_merge(request()->except('date'), [
+                                        'period' => $selectedPeriodKey, 
+                                        'search' => $search, 
+                                        'group' => $selectedGroup
+                                    ]);
+                                    
+                                    if (!$isActive) {
+                                        $routeParams['date'] = $dayKey;
+                                    }
                                 @endphp
-                                <a href="{{ route('video-submissions.qc-room', array_merge(request()->except('date'), ['period' => $selectedPeriodKey, 'date' => $dayKey, 'search' => $search, 'group' => $selectedGroup])) }}"
+                                <a href="{{ route('video-submissions.qc-room', $routeParams) }}"
                                    class="flex-shrink-0 flex flex-col items-center px-3 py-2 rounded-2xl border transition-all duration-150 select-none cursor-pointer
                                    @if($isActive) bg-slate-900 border-slate-900 shadow-sm
                                    @elseif($isToday) bg-indigo-50 border-indigo-300
