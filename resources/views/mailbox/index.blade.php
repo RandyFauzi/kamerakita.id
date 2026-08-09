@@ -184,7 +184,7 @@
                                     <div class="min-w-0">
                                         <div class="text-sm text-slate-900 truncate">
                                             <span class="font-bold">Dari</span> 
-                                            <span class="text-slate-500">&lt;<span x-text="selectedEmail.sender_email"></span>&gt;</span>
+                                            <span class="text-slate-500">&lt;<span x-text="selectedEmail.sender_address"></span>&gt;</span>
                                         </div>
                                         <div class="text-xs text-slate-500 mt-1 flex items-center gap-1">
                                             <span x-text="`{{ auth()->user()->email }} `"></span>
@@ -195,8 +195,27 @@
                                         <span class="text-xs text-slate-500 hidden sm:inline" x-text="formatFullDate(selectedEmail.received_at)"></span>
                                         <div class="flex items-center gap-1 text-slate-400">
                                             <button class="hover:bg-slate-100 p-1.5 rounded-md transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg></button>
-                                            <button class="hover:bg-slate-100 p-1.5 rounded-md transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg></button>
-                                            <button class="hover:bg-slate-100 p-1.5 rounded-md transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/></svg></button>
+                                            
+                                            <!-- 3 Dots Dropdown -->
+                                            <div x-data="{ open: false }" class="relative">
+                                                <button @click="open = !open" @click.away="open = false" class="hover:bg-slate-100 p-1.5 rounded-md transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/></svg></button>
+                                                
+                                                <div x-show="open" style="display: none;" class="absolute right-0 mt-1 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-50 overflow-hidden">
+                                                    <button @click="window.print()" class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2">
+                                                        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                                                        Cetak Pesan
+                                                    </button>
+                                                    <button @click="navigator.clipboard.writeText(selectedEmail.sender_address)" class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2">
+                                                        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                                        Salin Pengirim
+                                                    </button>
+                                                    <div class="h-px bg-slate-100 my-1"></div>
+                                                    <button class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 font-medium">
+                                                        <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                                        Hapus Pesan
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -209,18 +228,7 @@
                                 <div class="prose prose-slate max-w-none text-slate-800 text-sm leading-relaxed [&>blockquote]:border-l-4 [&>blockquote]:border-slate-300 [&>blockquote]:pl-4 [&>blockquote]:text-slate-500 [&>blockquote]:italic" x-html="selectedEmail.message_content"></div>
                             </div>
                         </div>
-                        
-                        <!-- Action Buttons -->
-                        <div class="flex gap-3">
-                            <button class="px-5 py-2 bg-white border border-slate-300 rounded-full text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition flex items-center gap-2 cursor-not-allowed opacity-75" disabled title="Fungsi Balas dinonaktifkan (Receive-only)">
-                                <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
-                                Balas
-                            </button>
-                            <button class="px-5 py-2 bg-white border border-slate-300 rounded-full text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition flex items-center gap-2 cursor-not-allowed opacity-75" disabled title="Fungsi Teruskan dinonaktifkan (Receive-only)">
-                                <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-                                Teruskan
-                            </button>
-                        </div>
+
                     </div>
                 </div>
             </template>
