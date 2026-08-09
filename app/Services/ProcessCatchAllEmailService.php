@@ -22,8 +22,8 @@ class ProcessCatchAllEmailService
             // Select the INBOX folder
             $folder = $client->getFolder('INBOX');
 
-            // Fetch all UNSEEN emails
-            $messages = $folder->query()->unseen()->get();
+            // Fetch ALL emails (not just unseen)
+            $messages = $folder->query()->all()->get();
 
             foreach ($messages as $message) {
                 // Extract recipient addresses from the 'To' header
@@ -38,16 +38,31 @@ class ProcessCatchAllEmailService
                 $processed = false;
 
                 foreach ($toAddresses as $to) {
-                    $emailAddress = strtolower($to->mail);
+                    // Pastikan kita benar-benar mengambil email murni saja (menebas nama)
+                    $rawTo = $to->mail ?? $to->full ?? '';
+                    if (preg_match('/<([^>]+)>/', $rawTo, $matches)) {
+                        $emailAddress = strtolower($matches[1]);
+                    } else {
+                        // Jika tidak ada bracket <>, bersihkan whitespace
+                        $emailAddress = strtolower(trim($rawTo));
+                    }
                     
                     // Look for a user with this email
                     $user = User::where('email', $emailAddress)->first();
                     
                     if ($user) {
+                        // Bersihkan Sender Address juga
+                        $rawFrom = $message->getFrom()[0]->mail ?? $message->getFrom()[0]->full ?? 'unknown';
+                        if (preg_match('/<([^>]+)>/', $rawFrom, $matches)) {
+                            $senderAddress = strtolower($matches[1]);
+                        } else {
+                            $senderAddress = strtolower(trim($rawFrom));
+                        }
+
                         // Save the email to the captured_emails table
                         CapturedEmail::create([
                             'user_id' => $user->id,
-                            'sender_address' => $message->getFrom()[0]->mail ?? 'unknown',
+                            'sender_address' => $senderAddress,
                             'subject' => $message->getSubject() ?: '(No Subject)',
                             'message_content' => $message->getTextBody() ?: $message->getHTMLBody(),
                             'received_at' => $message->getDate() ? $message->getDate()->toDateTimeString() : now(),
