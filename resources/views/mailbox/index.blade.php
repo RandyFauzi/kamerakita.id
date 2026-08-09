@@ -1,126 +1,5 @@
 <x-mailbox-layout>
-    <div x-data="{ 
-            selectedEmail: null,
-            emails: {{ Js::from($emails) }},
-            search: '',
-            filterMode: 'all',
-            checkedEmails: [],
-            get allChecked() {
-                return this.filteredEmails.length > 0 && this.checkedEmails.length === this.filteredEmails.length;
-            },
-            toggleAll() {
-                if (this.allChecked) {
-                    this.checkedEmails = [];
-                } else {
-                    this.checkedEmails = this.filteredEmails.map(e => e.id);
-                }
-            },
-            get filteredEmails() {
-                let list = this.emails;
-                if (this.search !== '') {
-                    list = list.filter(e => e.subject?.toLowerCase().includes(this.search.toLowerCase()) || e.sender_address.toLowerCase().includes(this.search.toLowerCase()));
-                }
-                if (this.filterMode === 'unread') {
-                    list = list.filter(e => !e.is_read);
-                } else if (this.filterMode === 'read') {
-                    list = list.filter(e => e.is_read);
-                } else if (this.filterMode === 'starred') {
-                    list = list.filter(e => e.is_starred);
-                }
-                return list;
-            },
-            selectEmail(id) {
-                this.selectedEmail = this.emails.find(e => e.id === id);
-                if (this.selectedEmail && !this.selectedEmail.is_read) {
-                    this.toggleRead(id, true);
-                }
-            },
-            toggleRead(id, status) {
-                let email = this.emails.find(e => e.id === id);
-                if (email) {
-                    email.is_read = status;
-                    fetch(`/mailbox/${id}/read`, {
-                        method: 'PATCH',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
-                        },
-                        body: JSON.stringify({ is_read: status })
-                    }).catch(console.error);
-                }
-            },
-            toggleStar(id) {
-                let email = this.emails.find(e => e.id === id);
-                if (email) {
-                    email.is_starred = !email.is_starred;
-                    fetch(`/mailbox/${id}/star`, {
-                        method: 'PATCH',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
-                        },
-                        body: JSON.stringify({ is_starred: email.is_starred })
-                    }).catch(console.error);
-                }
-            },
-            formatDate(dateStr) {
-                const d = new Date(dateStr);
-                const today = new Date();
-                if (d.toDateString() === today.toDateString()) {
-                    return d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-                }
-                return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
-            },
-            formatFullDate(dateStr) {
-                return new Date(dateStr).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-            },
-            formatEmailBody(content) {
-                if (!content) return '';
-                
-                // If it already contains common HTML structure tags, return as-is
-                if (/<(br|p|div|html|body|table|a|span|blockquote)[^>]*>/i.test(content)) {
-                    return content;
-                }
-
-                // Otherwise, parse plain text into HTML with blockquotes
-                let escaped = content
-                    .replace(/&/g, "&amp;")
-                    .replace(/</g, "&lt;")
-                    .replace(/>/g, "&gt;");
-
-                let lines = escaped.split(/\r?\n/);
-                let html = '';
-                let quoteDepth = 0;
-
-                for (let line of lines) {
-                    let match = line.match(/^(?:(?:&gt;)\s*)+/);
-                    let currentDepth = 0;
-                    if (match) {
-                        currentDepth = (match[0].match(/&gt;/g) || []).length;
-                        line = line.substring(match[0].length);
-                    }
-
-                    while (quoteDepth < currentDepth) {
-                        html += `<div class="border-l-[3px] border-slate-300 pl-3 my-1.5 ml-1 text-slate-600 text-[13px]">`;
-                        quoteDepth++;
-                    }
-                    while (quoteDepth > currentDepth) {
-                        html += `</div>`;
-                        quoteDepth--;
-                    }
-
-                    html += line + '<br>';
-                }
-
-                while (quoteDepth > 0) {
-                    html += `</div>`;
-                    quoteDepth--;
-                }
-
-                return html;
-            }
-        }" 
-        class="flex w-full h-full bg-white text-slate-800">
+    <div x-data="mailboxApp()" class="flex w-full h-full bg-white text-slate-800">
         
         <!-- Sidebar (Left Column) -->
         <div class="w-64 flex-shrink-0 border-r border-slate-100 bg-[#F9FAFB] flex flex-col justify-between hidden md:flex">
@@ -428,4 +307,130 @@
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
+    
+    <script>
+        function mailboxApp() {
+            return {
+                selectedEmail: null,
+                emails: {{ Js::from($emails) }},
+                search: '',
+                filterMode: 'all',
+                checkedEmails: [],
+                get allChecked() {
+                    return this.filteredEmails.length > 0 && this.checkedEmails.length === this.filteredEmails.length;
+                },
+                toggleAll() {
+                    if (this.allChecked) {
+                        this.checkedEmails = [];
+                    } else {
+                        this.checkedEmails = this.filteredEmails.map(e => e.id);
+                    }
+                },
+                get filteredEmails() {
+                    let list = this.emails;
+                    if (this.search !== '') {
+                        list = list.filter(e => e.subject?.toLowerCase().includes(this.search.toLowerCase()) || e.sender_address.toLowerCase().includes(this.search.toLowerCase()));
+                    }
+                    if (this.filterMode === 'unread') {
+                        list = list.filter(e => !e.is_read);
+                    } else if (this.filterMode === 'read') {
+                        list = list.filter(e => e.is_read);
+                    } else if (this.filterMode === 'starred') {
+                        list = list.filter(e => e.is_starred);
+                    }
+                    return list;
+                },
+                selectEmail(id) {
+                    this.selectedEmail = this.emails.find(e => e.id === id);
+                    if (this.selectedEmail && !this.selectedEmail.is_read) {
+                        this.toggleRead(id, true);
+                    }
+                },
+                toggleRead(id, status) {
+                    let email = this.emails.find(e => e.id === id);
+                    if (email) {
+                        email.is_read = status;
+                        fetch(`/mailbox/${id}/read`, {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
+                            },
+                            body: JSON.stringify({ is_read: status })
+                        }).catch(console.error);
+                    }
+                },
+                toggleStar(id) {
+                    let email = this.emails.find(e => e.id === id);
+                    if (email) {
+                        email.is_starred = !email.is_starred;
+                        fetch(`/mailbox/${id}/star`, {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
+                            },
+                            body: JSON.stringify({ is_starred: email.is_starred })
+                        }).catch(console.error);
+                    }
+                },
+                formatDate(dateStr) {
+                    const d = new Date(dateStr);
+                    const today = new Date();
+                    if (d.toDateString() === today.toDateString()) {
+                        return d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+                    }
+                    return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+                },
+                formatFullDate(dateStr) {
+                    return new Date(dateStr).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+                },
+                formatEmailBody(content) {
+                    if (!content) return '';
+                    
+                    // If it already contains common HTML structure tags, return as-is
+                    if (/<(br|p|div|html|body|table|a|span|blockquote)[^>]*>/i.test(content)) {
+                        return content;
+                    }
+
+                    // Otherwise, parse plain text into HTML with blockquotes
+                    let escaped = content
+                        .replace(/&/g, "&amp;")
+                        .replace(/</g, "&lt;")
+                        .replace(/>/g, "&gt;");
+
+                    let lines = escaped.split(/\r?\n/);
+                    let html = '';
+                    let quoteDepth = 0;
+
+                    for (let line of lines) {
+                        let match = line.match(/^(?:(?:&gt;)\s*)+/);
+                        let currentDepth = 0;
+                        if (match) {
+                            currentDepth = (match[0].match(/&gt;/g) || []).length;
+                            line = line.substring(match[0].length);
+                        }
+
+                        while (quoteDepth < currentDepth) {
+                            html += `<div class="border-l-[3px] border-slate-300 pl-3 my-1.5 ml-1 text-slate-600 text-[13px]">`;
+                            quoteDepth++;
+                        }
+                        while (quoteDepth > currentDepth) {
+                            html += `</div>`;
+                            quoteDepth--;
+                        }
+
+                        html += line + '<br>';
+                    }
+
+                    while (quoteDepth > 0) {
+                        html += `</div>`;
+                        quoteDepth--;
+                    }
+
+                    return html;
+                }
+            };
+        }
+    </script>
 </x-mailbox-layout>
