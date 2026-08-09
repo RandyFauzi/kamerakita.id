@@ -73,6 +73,51 @@
             },
             formatFullDate(dateStr) {
                 return new Date(dateStr).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+            },
+            formatEmailBody(content) {
+                if (!content) return '';
+                
+                // If it already contains common HTML structure tags, return as-is
+                if (/<(br|p|div|html|body|table|a|span|blockquote)[^>]*>/i.test(content)) {
+                    return content;
+                }
+
+                // Otherwise, parse plain text into HTML with blockquotes
+                let escaped = content
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;");
+
+                let lines = escaped.split(/\r?\n/);
+                let html = '';
+                let quoteDepth = 0;
+
+                for (let line of lines) {
+                    let match = line.match(/^(?:(?:&gt;)\s*)+/);
+                    let currentDepth = 0;
+                    if (match) {
+                        currentDepth = (match[0].match(/&gt;/g) || []).length;
+                        line = line.substring(match[0].length);
+                    }
+
+                    while (quoteDepth < currentDepth) {
+                        html += `<div class="border-l-[3px] border-slate-300 pl-3 my-1.5 ml-1 text-slate-600 text-[13px]">`;
+                        quoteDepth++;
+                    }
+                    while (quoteDepth > currentDepth) {
+                        html += `</div>`;
+                        quoteDepth--;
+                    }
+
+                    html += line + '<br>';
+                }
+
+                while (quoteDepth > 0) {
+                    html += `</div>`;
+                    quoteDepth--;
+                }
+
+                return html;
             }
         }" 
         class="flex w-full h-full bg-white text-slate-800">
@@ -337,7 +382,7 @@
                             
                             <!-- Body -->
                             <div class="p-6 overflow-x-auto">
-                                <div class="prose prose-slate max-w-none text-slate-800 text-sm leading-relaxed [&>blockquote]:border-l-4 [&>blockquote]:border-slate-300 [&>blockquote]:pl-4 [&>blockquote]:text-slate-500 [&>blockquote]:italic" x-html="selectedEmail.message_content"></div>
+                                <div class="prose prose-slate max-w-none text-slate-800 text-sm leading-relaxed [&_blockquote]:border-l-[3px] [&_blockquote]:border-slate-300 [&_blockquote]:pl-3 [&_blockquote]:text-slate-600 [&_blockquote]:my-1.5 [&_blockquote]:ml-1" x-html="formatEmailBody(selectedEmail.message_content)"></div>
                             </div>
                         </div>
 
