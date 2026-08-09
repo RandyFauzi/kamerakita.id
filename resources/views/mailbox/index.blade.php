@@ -4,6 +4,17 @@
             emails: {{ Js::from($emails) }},
             search: '',
             filterMode: 'all',
+            checkedEmails: [],
+            get allChecked() {
+                return this.filteredEmails.length > 0 && this.checkedEmails.length === this.filteredEmails.length;
+            },
+            toggleAll() {
+                if (this.allChecked) {
+                    this.checkedEmails = [];
+                } else {
+                    this.checkedEmails = this.filteredEmails.map(e => e.id);
+                }
+            },
             get filteredEmails() {
                 let list = this.emails;
                 if (this.search !== '') {
@@ -133,17 +144,29 @@
                 </div>
             </div>
 
-            <!-- List Filter -->
-            <div class="px-4 py-2.5 border-b border-slate-300 flex items-center gap-3 overflow-x-auto bg-[#e2e4e7] shrink-0">
-                <div class="flex items-center gap-1 shrink-0 text-slate-500 cursor-pointer hover:text-slate-700">
-                    <input type="checkbox" class="rounded border-slate-400 text-slate-800 focus:ring-slate-800 w-4 h-4 cursor-pointer bg-transparent">
+            <!-- List Filter / Action Bar -->
+            <div class="px-4 py-2.5 border-b border-slate-300 flex items-center overflow-x-auto bg-[#e2e4e7] shrink-0 min-h-[44px]">
+                <!-- Checkbox -->
+                <div class="flex items-center gap-1 shrink-0 text-slate-500 cursor-pointer hover:text-slate-700 mr-3">
+                    <input type="checkbox" :checked="allChecked" @change="toggleAll()" class="rounded border-slate-400 text-indigo-600 focus:ring-indigo-600 w-4 h-4 cursor-pointer bg-white">
                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </div>
-                <div class="flex items-center gap-2 shrink-0">
+                
+                <!-- Filters (Show when no items checked) -->
+                <div x-show="checkedEmails.length === 0" class="flex items-center gap-2 shrink-0 transition-opacity duration-200">
                     <button @click="filterMode = 'all'" :class="filterMode === 'all' ? 'bg-slate-900 text-white' : 'bg-slate-200 text-slate-700 hover:bg-slate-300 border border-slate-300/50'" class="px-3.5 py-1 rounded-full text-xs font-semibold transition-colors">Semua email</button>
                     <button @click="filterMode = 'unread'" :class="filterMode === 'unread' ? 'bg-slate-900 text-white' : 'bg-slate-200 text-slate-700 hover:bg-slate-300 border border-slate-300/50'" class="px-3.5 py-1 rounded-full text-xs font-semibold transition-colors">Belum dibaca</button>
                     <button @click="filterMode = 'read'" :class="filterMode === 'read' ? 'bg-slate-900 text-white' : 'bg-slate-200 text-slate-700 hover:bg-slate-300 border border-slate-300/50'" class="px-3.5 py-1 rounded-full text-xs font-semibold transition-colors">Dibaca</button>
                     <button @click="filterMode = 'starred'" :class="filterMode === 'starred' ? 'bg-slate-900 text-white' : 'bg-slate-200 text-slate-700 hover:bg-slate-300 border border-slate-300/50'" class="px-3.5 py-1 rounded-full text-xs font-semibold transition-colors">Berbintang</button>
+                </div>
+
+                <!-- Actions (Show when items checked) -->
+                <div x-show="checkedEmails.length > 0" x-cloak class="flex items-center gap-3 shrink-0 text-slate-700 transition-opacity duration-200" style="display: none;">
+                    <button class="p-1 hover:bg-slate-300 rounded transition-colors text-slate-700" title="Tandai Belum Dibaca"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg></button>
+                    <button class="p-1 hover:bg-slate-300 rounded transition-colors text-slate-700" title="Tandai Spam"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg></button>
+                    <button class="p-1 hover:bg-slate-300 rounded transition-colors text-slate-700" title="Hapus"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                    <button class="p-1 hover:bg-slate-300 rounded transition-colors text-slate-700" title="Pindahkan"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg></button>
+                    <button class="p-1 hover:bg-slate-300 rounded transition-colors text-slate-700" title="Unduh"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg></button>
                 </div>
             </div>
             
@@ -162,30 +185,43 @@
                 <template x-for="email in filteredEmails" :key="email.id">
                     <div @click="selectEmail(email.id)" 
                          :class="{'bg-[#d2d4d9]': selectedEmail && selectedEmail.id === email.id, 'hover:bg-[#dadae0]': !selectedEmail || selectedEmail.id !== email.id}"
-                         class="px-4 py-3 border-b border-slate-300/60 cursor-pointer transition-colors relative flex items-start gap-3">
+                         class="px-4 py-3 border-b border-slate-300/60 cursor-pointer transition-colors relative flex items-start gap-3 group">
                         
                         <!-- Checkbox -->
                         <div class="pt-0.5 shrink-0" @click.stop>
-                            <input type="checkbox" class="rounded border-slate-400 text-slate-800 focus:ring-slate-800 w-4 h-4 cursor-pointer bg-transparent">
+                            <input type="checkbox" :value="email.id" x-model="checkedEmails" class="rounded border-slate-400 text-indigo-600 focus:ring-indigo-600 w-4 h-4 cursor-pointer bg-white">
                         </div>
                         
                         <!-- Content -->
                         <div class="flex-1 min-w-0">
                             <div class="flex justify-between items-baseline mb-0.5">
                                 <h3 class="text-[13px] text-slate-800 truncate pr-2" :class="email.is_read ? '' : 'font-bold'" x-text="email.sender_address.split('@')[0]"></h3>
-                                <div class="flex items-center gap-1.5 shrink-0">
-                                    <span class="text-[11px] text-slate-500 whitespace-nowrap" x-text="formatDate(email.received_at)"></span>
-                                    <!-- Unread Dot Indicator -->
-                                    <div class="w-1.5 h-1.5 rounded-full bg-indigo-600" x-show="!email.is_read"></div>
-                                    <div class="w-1.5 h-1.5" x-show="email.is_read"></div>
+                                <div class="flex items-center shrink-0 relative h-5">
+                                    <div class="flex items-center gap-1.5 transition-opacity group-hover:opacity-0" :class="{'opacity-0': checkedEmails.includes(email.id)}">
+                                        <span class="text-[11px] text-slate-500 whitespace-nowrap" x-text="formatDate(email.received_at)"></span>
+                                        <!-- Unread Dot Indicator -->
+                                        <div class="w-1.5 h-1.5 rounded-full bg-indigo-600" x-show="!email.is_read"></div>
+                                        <div class="w-1.5 h-1.5" x-show="email.is_read"></div>
+                                    </div>
+                                    <div class="absolute right-0 top-0 h-full flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-transparent" :class="{'opacity-100': checkedEmails.includes(email.id)}">
+                                        <button @click.stop="toggleRead(email.id, !email.is_read)" class="text-slate-500 hover:text-slate-800 focus:outline-none p-1">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                                        </button>
+                                        <button class="text-slate-500 hover:text-slate-800 focus:outline-none p-1">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                        </button>
+                                        <button class="text-slate-500 hover:text-slate-800 focus:outline-none p-1">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                        </button>
+                                        <button @click.stop="toggleStar(email.id)" class="text-slate-400 hover:text-slate-600 focus:outline-none p-1" :class="email.is_starred ? 'text-slate-800 fill-current' : ''">
+                                            <svg class="w-4 h-4" :fill="email.is_starred ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                             
                             <div class="flex justify-between items-start mt-0.5">
                                 <p class="text-[13px] text-slate-600 truncate pr-2" :class="email.is_read ? '' : 'font-bold text-slate-800'" x-text="email.subject || '(Tanpa Subjek)'"></p>
-                                <button @click.stop="toggleStar(email.id)" class="text-slate-400 hover:text-slate-600 focus:outline-none shrink-0" :class="email.is_starred ? 'text-slate-800 fill-current' : ''">
-                                    <svg class="w-4 h-4" :fill="email.is_starred ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
-                                </button>
                             </div>
                         </div>
                     </div>
