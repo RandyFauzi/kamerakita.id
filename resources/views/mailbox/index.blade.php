@@ -39,29 +39,7 @@
 
                 <!-- Navigation -->
                 <div class="p-6">
-                    <!-- User Email Highlight -->
-                    <div x-data="{ copied: false }" class="mb-6 bg-indigo-50/50 border border-indigo-100 rounded-xl p-3 flex flex-col gap-2 shadow-sm">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center shrink-0 border border-indigo-100 text-indigo-600 shadow-sm">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                            </div>
-                            <div class="flex-1">
-                                <p class="text-[10px] font-bold text-indigo-400 uppercase tracking-wider mb-0.5">Alamat Email Anda</p>
-                                <p class="text-xs font-semibold text-slate-800 break-all leading-tight">{{ Auth::user()->email }}</p>
-                            </div>
-                        </div>
-                        <button @click="navigator.clipboard.writeText('{{ Auth::user()->email }}'); copied = true; setTimeout(() => copied = false, 2000)" 
-                                class="w-full flex items-center justify-center gap-1.5 py-1.5 mt-1 bg-white border border-indigo-100 rounded-lg text-xs font-semibold text-indigo-600 hover:bg-indigo-50 transition-colors">
-                            
-                            <!-- Copy Icon -->
-                            <svg x-show="!copied" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                            <span x-show="!copied">Salin Email</span>
-                            
-                            <!-- Checkmark Icon -->
-                            <svg x-show="copied" style="display: none;" class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                            <span x-show="copied" style="display: none;" class="text-emerald-500">Tersalin!</span>
-                        </button>
-                    </div>
+
 
                     <a href="{{ route('mailbox.index') }}" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-xl shadow-sm transition-all duration-200 flex justify-center items-center gap-2 mb-8">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
@@ -150,25 +128,49 @@
 
         <!-- Email Reader (Right Column) -->
         <div class="flex-1 bg-white flex flex-col relative" :class="{'hidden md:flex': !selectedEmail}">
-            <template x-if="selectedEmail">
-                <div class="h-full flex flex-col animate-entrance">
+            <!-- Global Right Top Bar -->
+            <div class="h-20 flex items-center justify-between px-6 lg:px-8 border-b border-slate-100 shrink-0 bg-white z-20 relative">
+                <!-- Left contextual actions -->
+                <div class="flex items-center gap-2">
+                    <button class="md:hidden p-2 -ml-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-50" x-show="selectedEmail" @click="selectedEmail = null" style="display: none;">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    </button>
                     
-                    <!-- Top Action Bar -->
-                    <div class="h-20 flex items-center justify-between px-8 border-b border-slate-100 shrink-0">
-                        <button class="md:hidden p-2 -ml-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-50" @click="selectedEmail = null">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                        </button>
-                        
+                    <template x-if="selectedEmail">
                         <div class="flex items-center gap-2 hidden md:flex">
                             <button class="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
                             <button class="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg></button>
-                        </div>
-                        
-                        <div class="flex items-center gap-2">
+                            <div class="w-px h-6 bg-slate-200 mx-1"></div>
                             <button class="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg></button>
                             <button class="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg></button>
                         </div>
+                    </template>
+                </div>
+                
+                <!-- Right contextual actions (User Profile) -->
+                <div class="flex items-center gap-2 sm:gap-4">
+                    <button class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-full transition-colors relative">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                        <span class="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+                    </button>
+                    
+                    <div x-data="{ copied: false }" @click="navigator.clipboard.writeText('{{ Auth::user()->email }}'); copied = true; setTimeout(() => copied = false, 2000)" class="flex items-center gap-3 cursor-pointer hover:bg-slate-50 p-1 pr-2 rounded-full transition-colors">
+                        <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=6366f1&color=fff" alt="Avatar" class="w-8 h-8 rounded-full border border-slate-200">
+                        <div class="hidden lg:block text-left mr-1">
+                            <p class="text-xs font-bold text-slate-800 leading-tight">{{ Auth::user()->name }}</p>
+                            <p class="text-[10px] text-slate-500 leading-tight" x-text="copied ? 'Email tersalin!' : '{{ Auth::user()->email }}'"></p>
+                        </div>
+                        <svg class="w-4 h-4 text-slate-400 hidden lg:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </div>
+                    
+                    <button class="hidden md:block p-1 text-slate-400 hover:text-slate-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="flex-1 flex flex-col relative overflow-hidden">
+                <template x-if="selectedEmail">
+                    <div class="h-full flex flex-col animate-entrance">
                     
                     <div class="flex-1 overflow-y-auto p-6 md:p-8 bg-slate-50">
                         <!-- Subject -->
@@ -233,6 +235,7 @@
                     <p class="text-slate-500 text-sm max-w-xs">Pilih email di kolom tengah untuk membaca isi pesan sepenuhnya di sini.</p>
                 </div>
             </template>
+            </div>
         </div>
     </div>
     
