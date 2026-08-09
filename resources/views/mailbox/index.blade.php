@@ -40,14 +40,27 @@
                 <!-- Navigation -->
                 <div class="p-6">
                     <!-- User Email Highlight -->
-                    <div class="mb-6 bg-indigo-50/50 border border-indigo-100 rounded-xl p-3 flex items-center gap-3 shadow-sm">
-                        <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center shrink-0 border border-indigo-100 text-indigo-600 shadow-sm">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    <div x-data="{ copied: false }" class="mb-6 bg-indigo-50/50 border border-indigo-100 rounded-xl p-3 flex flex-col gap-2 shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center shrink-0 border border-indigo-100 text-indigo-600 shadow-sm">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-[10px] font-bold text-indigo-400 uppercase tracking-wider mb-0.5">Alamat Email Anda</p>
+                                <p class="text-xs font-semibold text-slate-800 break-all leading-tight">{{ Auth::user()->email }}</p>
+                            </div>
                         </div>
-                        <div class="overflow-hidden">
-                            <p class="text-[10px] font-bold text-indigo-400 uppercase tracking-wider mb-0.5">Alamat Email Anda</p>
-                            <p class="text-sm font-semibold text-slate-800 truncate" title="{{ Auth::user()->email }}">{{ Auth::user()->email }}</p>
-                        </div>
+                        <button @click="navigator.clipboard.writeText('{{ Auth::user()->email }}'); copied = true; setTimeout(() => copied = false, 2000)" 
+                                class="w-full flex items-center justify-center gap-1.5 py-1.5 mt-1 bg-white border border-indigo-100 rounded-lg text-xs font-semibold text-indigo-600 hover:bg-indigo-50 transition-colors">
+                            
+                            <!-- Copy Icon -->
+                            <svg x-show="!copied" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                            <span x-show="!copied">Salin Email</span>
+                            
+                            <!-- Checkmark Icon -->
+                            <svg x-show="copied" style="display: none;" class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            <span x-show="copied" style="display: none;" class="text-emerald-500">Tersalin!</span>
+                        </button>
                     </div>
 
                     <button class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg shadow-indigo-200 transition-all flex justify-center items-center gap-2 mb-8" disabled>
