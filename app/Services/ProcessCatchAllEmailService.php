@@ -24,6 +24,8 @@ class ProcessCatchAllEmailService
             $messages = $folder->query()->all()->get();
             echo "📥 Ditemukan " . $messages->count() . " pesan di INBOX.\n";
 
+            $deletedCount = 0;
+
             foreach ($messages as $message) {
                 echo "\n---------------------------------\n";
                 $subject = $message->getSubject() ?: '(Tanpa Subjek)';
@@ -96,10 +98,24 @@ class ProcessCatchAllEmailService
                         echo "❓ User tidak terdaftar di database, pesan diabaikan.\n";
                     }
                 }
+
+                // Fitur Auto-Delete: Hapus pesan dari Hostinger jika umurnya lebih dari 14 hari
+                $twoWeeksAgo = now()->subDays(14);
+                $messageDate = ($dateAttr && $dateAttr->count() > 0) ? $dateAttr->first() : null;
+                
+                if ($messageDate && $messageDate->lessThan($twoWeeksAgo)) {
+                    $message->delete();
+                    $deletedCount++;
+                    echo "🗑️ Pesan ini berusia lebih dari 14 hari dan otomatis DIHAPUS dari server Hostinger.\n";
+                }
             }
 
-            // Pesan TIDAK DIHAPUS dari Hostinger agar bisa kamu baca lagi jika perlu.
-            echo "\n🎉 Selesai memproses semua email!\n";
+            if ($deletedCount > 0) {
+                $client->expunge();
+                echo "\n🧹 $deletedCount pesan kadaluarsa telah permanen dihapus dari Hostinger!\n";
+            } else {
+                echo "\n🎉 Selesai memproses semua email! (Pesan terbaru tetap disimpan di server)\n";
+            }
 
         } catch (\Exception $e) {
             echo "\n💥 TERJADI ERROR FATAL: " . $e->getMessage() . "\n";
