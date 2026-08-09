@@ -63,7 +63,7 @@
                         </button>
                     </div>
 
-                    <button class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg shadow-indigo-200 transition-all flex justify-center items-center gap-2 mb-8" disabled>
+                    <button class="w-full bg-slate-200 text-slate-400 font-semibold py-3 px-4 rounded-xl cursor-not-allowed flex justify-center items-center gap-2 mb-8" disabled title="Mailbox ini bersifat Receive-Only (hanya menerima pesan/OTP dari aplikasi)">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                         New message
                     </button>
