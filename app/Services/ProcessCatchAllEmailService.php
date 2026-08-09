@@ -65,7 +65,8 @@ class ProcessCatchAllEmailService
                         echo "👤 User DITEMUKAN! (ID: " . $user->id . ")\n";
                         
                         $senderAddress = strtolower(trim($message->getFrom()[0]->mail ?? 'unknown'));
-                        $receivedAt = $message->getDate() ? $message->getDate()->toDateTimeString() : now();
+                        $dateAttr = $message->getDate();
+                        $receivedAt = ($dateAttr && $dateAttr->count() > 0) ? $dateAttr->first()->toDateTimeString() : now();
                         $content = $message->getTextBody() ?: $message->getHTMLBody();
 
                         try {
