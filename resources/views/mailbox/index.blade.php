@@ -248,7 +248,12 @@
                                         <div class="w-1.5 h-1.5 rounded-full bg-indigo-600" x-show="!email.is_read"></div>
                                         <div class="w-1.5 h-1.5" x-show="email.is_read"></div>
                                     </div>
-                                    <div class="absolute right-0 top-0 h-full flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-transparent" :class="{'opacity-100': checkedEmails.includes(email.id)}">
+                                    <div class="absolute right-0 top-0 h-full flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity pl-2"
+                                         :class="{
+                                             'bg-[#d2d4d9]': selectedEmail && selectedEmail.id === email.id, 
+                                             'bg-[#e2e4e7] group-hover:bg-[#dadae0]': !selectedEmail || selectedEmail.id !== email.id,
+                                             'opacity-100': checkedEmails.includes(email.id)
+                                         }">
                                         <button @click.stop="toggleRead(email.id, !email.is_read)" class="text-slate-500 hover:text-slate-800 focus:outline-none p-1">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                                         </button>
@@ -311,16 +316,26 @@
                         <span class="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
                     </button>
                     
-                    <div x-data="{ copied: false }" @click="navigator.clipboard.writeText('{{ Auth::user()->email }}'); copied = true; setTimeout(() => copied = false, 2000)" class="flex items-center gap-3 cursor-pointer hover:bg-slate-50 p-1 pr-2 rounded-full transition-colors">
-                        <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=6366f1&color=fff" alt="Avatar" class="w-8 h-8 rounded-full border border-slate-200">
-                        <div class="hidden lg:block text-left mr-1">
-                            <p class="text-xs font-bold text-slate-800 leading-tight">{{ Auth::user()->name }}</p>
-                            <p class="text-[10px] text-slate-500 leading-tight" x-text="copied ? 'Email tersalin!' : '{{ Auth::user()->email }}'"></p>
+                    <div x-data="{ open: false }" class="relative">
+                        <div @click="open = !open" class="flex items-center gap-3 cursor-pointer hover:bg-slate-50 p-1 pr-2 rounded-full transition-colors">
+                            <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=6366f1&color=fff" alt="Avatar" class="w-8 h-8 rounded-full border border-slate-200">
+                            <div class="hidden lg:block text-left mr-1">
+                                <p class="text-xs font-bold text-slate-800 leading-tight">{{ Auth::user()->name }}</p>
+                                <p class="text-[10px] text-slate-500 leading-tight">{{ Auth::user()->email }}</p>
+                            </div>
+                            <svg class="w-4 h-4 text-slate-400 hidden lg:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                         </div>
-                        <svg class="w-4 h-4 text-slate-400 hidden lg:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        
+                        <div x-show="open" @click.away="open = false" x-cloak style="display: none;" class="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-50 overflow-hidden">
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 font-medium transition-colors">
+                                    <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                                    Keluar (Logout)
+                                </button>
+                            </form>
+                        </div>
                     </div>
-                    
-                    <button class="hidden md:block p-1 text-slate-400 hover:text-slate-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg></button>
                 </div>
             </div>
 
