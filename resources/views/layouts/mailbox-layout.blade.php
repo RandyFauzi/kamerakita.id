@@ -14,8 +14,8 @@
     <!-- Scripts and Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="font-sans antialiased bg-[#F3F4F6] text-slate-900 h-screen overflow-hidden flex items-center justify-center selection:bg-indigo-200 selection:text-indigo-900">
-    <div class="w-full h-full max-w-[1600px] bg-white flex overflow-hidden shadow-2xl sm:rounded-[32px] sm:m-4 sm:h-[calc(100vh-2rem)] border border-slate-100">
+<body class="font-sans antialiased bg-white text-slate-900 h-screen w-screen overflow-hidden flex selection:bg-indigo-200 selection:text-indigo-900">
+    <div class="w-full h-full flex overflow-hidden">
         {{ $slot }}
     </div>
 </body>
