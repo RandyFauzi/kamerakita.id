@@ -68,7 +68,13 @@ class ProcessCatchAllEmailService
                         
                         $senderAddress = strtolower(trim($message->getFrom()[0]->mail ?? 'unknown'));
                         $dateAttr = $message->getDate();
-                        $receivedAt = ($dateAttr && $dateAttr->count() > 0) ? $dateAttr->first()->toDateTimeString() : now();
+                        if ($dateAttr && $dateAttr->count() > 0) {
+                            $carbonDate = $dateAttr->first();
+                            $carbonDate->setTimezone(config('app.timezone'));
+                            $receivedAt = $carbonDate->toDateTimeString();
+                        } else {
+                            $receivedAt = now();
+                        }
                         $content = $message->getTextBody() ?: $message->getHTMLBody();
 
                         try {
