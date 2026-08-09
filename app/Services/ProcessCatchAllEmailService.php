@@ -9,78 +9,82 @@ use Illuminate\Support\Facades\Log;
 
 class ProcessCatchAllEmailService
 {
-    /**
-     * Connect to the IMAP server, pull unseen emails, and process them.
-     */
     public function processEmails(): void
     {
+        echo "🔍 Menghubungkan ke server IMAP Hostinger...\n";
+        
         try {
-            // Get the default client (defined in config/imap.php or via env)
             $client = Client::account('default');
             $client->connect();
+            echo "✅ Berhasil terhubung ke server!\n";
 
-            // Select the INBOX folder
             $folder = $client->getFolder('INBOX');
-
-            // Fetch ALL emails (not just unseen)
+            
+            // Mengambil SEMUA pesan (dibaca maupun belum)
             $messages = $folder->query()->all()->get();
+            echo "📥 Ditemukan " . $messages->count() . " pesan di INBOX.\n";
 
             foreach ($messages as $message) {
-                // Extract recipient addresses from the 'To' header
+                echo "\n---------------------------------\n";
+                $subject = $message->getSubject() ?: '(Tanpa Subjek)';
+                echo "📩 Memproses pesan: " . $subject . "\n";
+                
                 $toAddresses = $message->getTo();
                 
                 if (empty($toAddresses)) {
-                    // Mark as read if it has no explicit recipient
-                    $message->setFlag('Seen');
+                    echo "⚠️ Pesan tidak memiliki tujuan (To:), dilewati.\n";
                     continue;
                 }
 
-                $processed = false;
-
                 foreach ($toAddresses as $to) {
-                    // Pastikan kita benar-benar mengambil email murni saja (menebas nama)
-                    $rawTo = $to->mail ?? $to->full ?? '';
-                    if (preg_match('/<([^>]+)>/', $rawTo, $matches)) {
-                        $emailAddress = strtolower($matches[1]);
-                    } else {
-                        // Jika tidak ada bracket <>, bersihkan whitespace
-                        $emailAddress = strtolower(trim($rawTo));
-                    }
+                    // Webklex otomatis mengambil email bersih di $to->mail
+                    $emailAddress = strtolower(trim($to->mail));
+                    echo "🎯 Alamat tujuan terdeteksi: " . $emailAddress . "\n";
                     
-                    // Look for a user with this email
+                    // Mencari user di database KameraKita
                     $user = User::where('email', $emailAddress)->first();
                     
                     if ($user) {
-                        // Bersihkan Sender Address juga
-                        $rawFrom = $message->getFrom()[0]->mail ?? $message->getFrom()[0]->full ?? 'unknown';
-                        if (preg_match('/<([^>]+)>/', $rawFrom, $matches)) {
-                            $senderAddress = strtolower($matches[1]);
-                        } else {
-                            $senderAddress = strtolower(trim($rawFrom));
+                        echo "👤 User DITEMUKAN! (ID: " . $user->id . ")\n";
+                        
+                        $senderAddress = strtolower(trim($message->getFrom()[0]->mail ?? 'unknown'));
+                        $receivedAt = $message->getDate() ? $message->getDate()->toDateTimeString() : now();
+                        $content = $message->getTextBody() ?: $message->getHTMLBody();
+
+                        try {
+                            // Gunakan firstOrCreate agar TIDAK DUPLIKAT meskipun ditarik berkali-kali
+                            $email = CapturedEmail::firstOrCreate(
+                                [
+                                    'user_id' => $user->id,
+                                    'subject' => $subject,
+                                    'received_at' => $receivedAt,
+                                ],
+                                [
+                                    'sender_address' => $senderAddress,
+                                    'message_content' => $content,
+                                ]
+                            );
+
+                            if ($email->wasRecentlyCreated) {
+                                echo "💾 BERHASIL: Pesan baru disimpan ke database!\n";
+                            } else {
+                                echo "⏭️ DILEWATI: Pesan sudah ada di database (Anti-Duplikat).\n";
+                            }
+
+                        } catch (\Exception $dbErr) {
+                            echo "❌ GAGAL MENYIMPAN KE DB: " . $dbErr->getMessage() . "\n";
                         }
-
-                        // Save the email to the captured_emails table
-                        CapturedEmail::create([
-                            'user_id' => $user->id,
-                            'sender_address' => $senderAddress,
-                            'subject' => $message->getSubject() ?: '(No Subject)',
-                            'message_content' => $message->getTextBody() ?: $message->getHTMLBody(),
-                            'received_at' => $message->getDate() ? $message->getDate()->toDateTimeString() : now(),
-                        ]);
-
-                        $processed = true;
+                    } else {
+                        echo "❓ User tidak terdaftar di database, pesan diabaikan.\n";
                     }
                 }
-
-                // If the email was processed (matched a user) or we want to clear the catch-all
-                // Best practice for a catch-all is to delete them or mark them as read so they don't pile up.
-                $message->delete(); 
             }
 
-            // Expunge the deleted messages from the server
-            $client->expunge();
+            // Pesan TIDAK DIHAPUS dari Hostinger agar bisa kamu baca lagi jika perlu.
+            echo "\n🎉 Selesai memproses semua email!\n";
 
         } catch (\Exception $e) {
+            echo "\n💥 TERJADI ERROR FATAL: " . $e->getMessage() . "\n";
             Log::error('Error processing IMAP catch-all emails: ' . $e->getMessage());
         }
     }
