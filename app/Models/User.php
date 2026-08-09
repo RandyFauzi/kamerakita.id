@@ -37,6 +37,11 @@ class User extends Authenticatable
         return $this->hasOne(Partner::class);
     }
 
+    public function capturedEmails(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(CapturedEmail::class);
+    }
+
     public function hasFullAdminAccess(): bool
     {
         return in_array($this->role, ['superadmin', 'admin'], true);

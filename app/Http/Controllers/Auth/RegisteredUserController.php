@@ -33,7 +33,11 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s]*$/'], // Enforce letters only for names
-            'email' => ['required', 'string', 'lowercase', 'email:rfc,dns', 'max:255', 'unique:'.User::class], // DNS lookup verification
+            'username' => ['required', 'string', 'lowercase', 'max:50', 'alpha_dash', function ($attribute, $value, $fail) {
+                if (User::where('email', $value . '@kamerakitaid.site')->exists()) {
+                    $fail('Username ini sudah digunakan.');
+                }
+            }],
             'password' => [
                 'required',
                 'confirmed',
@@ -44,7 +48,7 @@ class RegisteredUserController extends Controller
             'referral_code' => ['nullable', 'string', 'exists:partners,referral_code'],
         ], [
             'name.regex' => 'Nama hanya boleh mengandung huruf dan spasi.',
-            'email.email' => 'Format email tidak valid atau domain tidak terdaftar.',
+            'username.alpha_dash' => 'Username hanya boleh mengandung huruf, angka, strip, atau garis bawah.',
             'password.min' => 'Kata sandi minimal harus 8 karakter.',
             'activation_code.required' => 'Kode aktivasi wajib diisi.',
             'activation_code.exists' => 'Kode aktivasi tidak valid atau tidak terdaftar di sistem.',
@@ -60,9 +64,12 @@ class RegisteredUserController extends Controller
             $recruiterPartner = Partner::where('referral_code', $request->referral_code)->first();
         }
 
+        // Construct the internal email address
+        $internalEmail = $request->username . '@kamerakitaid.site';
+
         $user = User::create([
             'name' => $request->name,
-            'email' => $request->email,
+            'email' => $internalEmail,
             'password' => Hash::make($request->password),
             'role' => 'verifikator', // Default role
         ]);
@@ -82,7 +89,7 @@ class RegisteredUserController extends Controller
             'mitra_id' => $nextMitraId,
             'full_name' => $user->name,
             'whatsapp_number' => '08' . rand(100000000, 999999999),
-            'email' => $user->email,
+            'email' => $internalEmail,
             'has_headstrap' => false,
             'status' => 'active',
             'group_name' => $groupName,

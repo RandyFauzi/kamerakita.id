@@ -14,11 +14,17 @@
             <x-input-error :messages="$errors->get('name')" class="mt-1" />
         </div>
 
-        <!-- Email Address -->
+        <!-- Username -->
         <div>
-            <label for="email" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Alamat Email</label>
-            <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="username" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
-            <x-input-error :messages="$errors->get('email')" class="mt-1" />
+            <label for="username" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Username Baru</label>
+            <div class="flex items-stretch rounded-xl shadow-sm">
+                <input id="username" type="text" name="username" value="{{ old('username') }}" required autocomplete="username" class="block w-full px-3.5 py-2.5 border border-r-0 border-gray-200 rounded-l-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" placeholder="contoh: budi123">
+                <span class="inline-flex items-center px-4 bg-gray-50 border border-l-0 border-gray-200 rounded-r-xl text-gray-500 text-sm font-medium">
+                    @kamerakitaid.site
+                </span>
+            </div>
+            <p class="text-[10px] text-gray-400 mt-1.5 leading-tight">Gunakan huruf kecil dan angka tanpa spasi. Ini akan menjadi email internal Anda untuk menerima informasi tugas.</p>
+            <x-input-error :messages="$errors->get('username')" class="mt-1" />
         </div>
 
         <!-- Password -->
