@@ -11,6 +11,6 @@ Artisan::command('inspire', function () {
 Schedule::command('partners:sync-activity-status')->dailyAt('00:10');
 Schedule::command('partners:notify-inactive')->dailyAt('09:00');
 
-// Mailbox Catch-all Polling
-Schedule::command('app:pull-mailbox-emails')->everyMinute();
+// Mailbox Cleanup (Karena Webhook sudah real-time, script ini hanya perlu jalan 1x sehari untuk menghapus email lama dari Hostinger agar tidak penuh)
+Schedule::command('app:pull-mailbox-emails')->daily();
 Schedule::command('app:clean-expired-emails')->daily();
