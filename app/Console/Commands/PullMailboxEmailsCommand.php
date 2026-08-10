@@ -7,7 +7,7 @@ use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
 #[Signature('app:pull-mailbox-emails')]
-#[Description('Pull unseen emails from catch-all IMAP server')]
+#[Description('Fetch and process incoming emails from catch-all IMAP server')]
 class PullMailboxEmailsCommand extends Command
 {
     /**

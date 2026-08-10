@@ -9,21 +9,34 @@ class MailboxController extends Controller
 {
     public function index()
     {
-        $emails = Auth::user()->capturedEmails()->orderBy('received_at', 'desc')->get();
+        $emails = Auth::user()->capturedEmails()
+            ->select(['id', 'user_id', 'sender_address', 'subject', 'received_at', 'is_read', 'is_starred', 'message_content'])
+            ->orderBy('received_at', 'desc')
+            ->paginate(50);
         return view('mailbox.index', compact('emails'));
     }
 
     public function toggleRead(Request $request, \App\Models\CapturedEmail $email)
     {
-        if ($email->user_id !== Auth::id()) abort(403);
-        $email->update(['is_read' => $request->is_read]);
+        $this->authorize('update', $email);
+
+        $validated = $request->validate([
+            'is_read' => 'required|boolean',
+        ]);
+
+        $email->update($validated);
         return response()->json(['success' => true]);
     }
 
     public function toggleStarred(Request $request, \App\Models\CapturedEmail $email)
     {
-        if ($email->user_id !== Auth::id()) abort(403);
-        $email->update(['is_starred' => $request->is_starred]);
+        $this->authorize('update', $email);
+
+        $validated = $request->validate([
+            'is_starred' => 'required|boolean',
+        ]);
+
+        $email->update($validated);
         return response()->json(['success' => true]);
     }
 }

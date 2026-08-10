@@ -52,11 +52,11 @@
             </div>
         </div>
 
-        <!-- Email List (Middle Column) -->
-        <div class="w-full md:w-80 lg:w-96 flex-shrink-0 border-r border-slate-100 flex flex-col bg-white z-10" :class="{'hidden md:flex': selectedEmail}">
+        <!-- Email List -->
+        <div class="w-full md:w-[380px] lg:w-[420px] bg-slate-50 flex flex-col border-r border-slate-200 shrink-0 relative z-10" :class="{'hidden md:flex': selectedEmailId}">
             
             <!-- List Header -->
-            <div class="px-4 py-3 flex items-center justify-between border-b border-slate-200 shrink-0 bg-[#e2e4e7]">
+            <div class="h-20 flex items-center justify-between px-6 border-b border-slate-200 shrink-0 bg-slate-200">
                 <h2 class="text-lg font-bold text-slate-800">Kotak Masuk</h2>
                 <div class="flex items-center gap-2 text-slate-500">
                     <button class="hover:text-slate-800 p-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg></button>
@@ -69,10 +69,10 @@
             </div>
 
             <!-- List Filter / Action Bar -->
-            <div class="px-4 py-2.5 border-b border-slate-300 flex items-center overflow-x-auto bg-[#e2e4e7] shrink-0 min-h-[44px]">
+            <div class="px-4 py-2.5 border-b border-slate-300 flex items-center overflow-x-auto bg-slate-200 shrink-0 min-h-[44px]">
                 <!-- Checkbox -->
                 <div class="flex items-center gap-1 shrink-0 text-slate-500 cursor-pointer hover:text-slate-700 mr-3">
-                    <input type="checkbox" :checked="allChecked" @change="toggleAll()" class="rounded border-slate-400 text-indigo-600 focus:ring-indigo-600 w-4 h-4 cursor-pointer bg-white">
+                    <input type="checkbox" :checked="allChecked" @change="toggleSelectAll()" class="rounded border-slate-400 text-indigo-600 focus:ring-indigo-600 w-4 h-4 cursor-pointer bg-white">
                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </div>
                 
@@ -85,17 +85,17 @@
                 </div>
 
                 <!-- Actions (Show when items checked) -->
-                <div x-show="checkedEmails.length > 0" x-cloak class="flex items-center gap-3 shrink-0 text-slate-700 transition-opacity duration-200" style="display: none;">
-                    <button class="p-1 hover:bg-slate-300 rounded transition-colors text-slate-700" title="Tandai Belum Dibaca"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg></button>
-                    <button class="p-1 hover:bg-slate-300 rounded transition-colors text-slate-700" title="Tandai Spam"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg></button>
-                    <button class="p-1 hover:bg-slate-300 rounded transition-colors text-slate-700" title="Hapus"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
-                    <button class="p-1 hover:bg-slate-300 rounded transition-colors text-slate-700" title="Pindahkan"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg></button>
-                    <button class="p-1 hover:bg-slate-300 rounded transition-colors text-slate-700" title="Unduh"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg></button>
+                <div x-show="checkedEmails.length > 0" x-cloak class="flex items-center gap-3 shrink-0 text-slate-700 transition-opacity duration-200">
+                    <button @click="showToast('Fitur tandai belum dibaca massal akan segera hadir', 'info')" class="p-1 hover:bg-slate-300 rounded transition-colors text-slate-700" title="Tandai Belum Dibaca"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg></button>
+                    <button @click="showToast('Fitur tandai spam massal akan segera hadir', 'info')" class="p-1 hover:bg-slate-300 rounded transition-colors text-slate-700" title="Tandai Spam"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg></button>
+                    <button @click="showToast('Fitur hapus massal akan segera hadir', 'info')" class="p-1 hover:bg-slate-300 rounded transition-colors text-slate-700" title="Hapus"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                    <button @click="showToast('Fitur pindahkan massal akan segera hadir', 'info')" class="p-1 hover:bg-slate-300 rounded transition-colors text-slate-700" title="Pindahkan"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg></button>
+                    <button @click="showToast('Fitur unduh massal akan segera hadir', 'info')" class="p-1 hover:bg-slate-300 rounded transition-colors text-slate-700" title="Unduh"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg></button>
                 </div>
             </div>
             
             <!-- Search Bar -->
-            <div class="px-4 py-2 border-b border-slate-300 bg-[#e2e4e7] shrink-0">
+            <div class="px-4 py-2 border-b border-slate-300 bg-slate-200 shrink-0">
                 <div class="relative w-full">
                     <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
                         <svg class="h-3.5 w-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
@@ -105,10 +105,10 @@
             </div>
 
             <!-- List Items -->
-            <div class="flex-1 overflow-y-auto bg-[#e2e4e7]">
+            <div class="flex-1 overflow-y-auto bg-slate-200">
                 <template x-for="email in filteredEmails" :key="email.id">
                     <div @click="selectEmail(email.id)" 
-                         :class="{'bg-[#d2d4d9]': selectedEmail && selectedEmail.id === email.id, 'hover:bg-[#dadae0]': !selectedEmail || selectedEmail.id !== email.id}"
+                         :class="{'bg-[#d2d4d9]': selectedEmailId === email.id, 'hover:bg-[#dadae0]': selectedEmailId !== email.id}"
                          class="px-4 py-3 border-b border-slate-300/60 cursor-pointer transition-colors relative flex items-start gap-3 group">
                         
                         <!-- Checkbox -->
@@ -160,15 +160,20 @@
                     </div>
                 </template>
             </div>
+            
+            <!-- Pagination Laravel -->
+            <div class="p-2 border-t border-slate-300 bg-white shadow-sm mt-auto z-10 shrink-0">
+                {{ $emails->links() }}
+            </div>
         </div>
 
         <!-- Email Reader (Right Column) -->
-        <div class="flex-1 bg-white flex flex-col relative" :class="{'hidden md:flex': !selectedEmail}">
+        <div class="flex-1 bg-white flex flex-col relative" :class="{'hidden md:flex': !selectedEmailId}">
             <!-- Global Right Top Bar -->
             <div class="h-20 flex items-center justify-between px-6 lg:px-8 border-b border-slate-100 shrink-0 bg-white z-20 relative">
                 <!-- Left contextual actions -->
                 <div class="flex items-center gap-2">
-                    <button class="md:hidden p-2 -ml-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-50" x-show="selectedEmail" @click="selectedEmail = null" style="display: none;">
+                    <button class="md:hidden p-2 -ml-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-50" x-show="selectedEmailId" x-cloak @click="selectedEmailId = null">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                     </button>
                     
@@ -192,15 +197,17 @@
                     
                     <div x-data="{ open: false }" class="relative">
                         <div @click="open = !open" class="flex items-center gap-3 cursor-pointer hover:bg-slate-50 p-1 pr-2 rounded-full transition-colors">
-                            <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=6366f1&color=fff" alt="Avatar" class="w-8 h-8 rounded-full border border-slate-200">
+                            <div class="w-8 h-8 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center text-xs border border-slate-200 shrink-0">
+                                {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 2)) }}
+                            </div>
                             <div class="hidden lg:block text-left mr-1">
-                                <p class="text-xs font-bold text-slate-800 leading-tight">{{ Auth::user()->name }}</p>
-                                <p class="text-[10px] text-slate-500 leading-tight">{{ Auth::user()->email }}</p>
+                                <p class="text-xs font-bold text-slate-800 leading-tight">{{ auth()->user()->name }}</p>
+                                <p class="text-[10px] text-slate-500 leading-tight">{{ auth()->user()->email }}</p>
                             </div>
                             <svg class="w-4 h-4 text-slate-400 hidden lg:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                         </div>
                         
-                        <div x-show="open" @click.away="open = false" x-cloak style="display: none;" class="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-50 overflow-hidden">
+                        <div x-show="open" @click.away="open = false" x-cloak class="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-50 overflow-hidden">
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 font-medium transition-colors">
@@ -215,7 +222,7 @@
 
             <!-- Content Area -->
             <div class="flex-1 flex flex-col relative overflow-hidden">
-                <template x-if="selectedEmail">
+                <template x-if="selectedEmailId">
                     <div class="h-full flex flex-col animate-entrance">
                     
                     <div class="flex-1 overflow-y-auto p-6 md:p-8 bg-slate-50">
@@ -246,19 +253,14 @@
                                             <div x-data="{ open: false }" class="relative">
                                                 <button @click="open = !open" @click.away="open = false" class="hover:bg-slate-100 p-1.5 rounded-md transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/></svg></button>
                                                 
-                                                <div x-show="open" style="display: none;" class="absolute right-0 mt-1 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-50 overflow-hidden">
+                                                <div x-show="open" @click.away="open = false" x-cloak class="absolute right-0 mt-1 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-50 overflow-hidden">
                                                     <button @click="window.print()" class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2">
                                                         <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
                                                         Cetak Pesan
                                                     </button>
-                                                    <button @click="navigator.clipboard.writeText(selectedEmail.sender_address)" class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2">
-                                                        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                                                        Salin Pengirim
-                                                    </button>
-                                                    <div class="h-px bg-slate-100 my-1"></div>
-                                                    <button class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 font-medium">
-                                                        <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                                        Hapus Pesan
+                                                    <button @click="showToast('Fitur laporkan spam segera hadir', 'info')" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2">
+                                                        <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                                        Laporkan Spam
                                                     </button>
                                                 </div>
                                             </div>
@@ -280,7 +282,7 @@
             </template>
 
             <!-- Empty State -->
-            <template x-if="!selectedEmail">
+            <template x-if="!selectedEmailId">
                 <div class="flex-1 flex flex-col items-center justify-center text-center p-8 bg-[#FAFAFA]">
                     <div class="w-24 h-24 mb-6 rounded-full bg-white shadow-sm ring-1 ring-slate-900/5 flex items-center justify-center">
                         <svg class="w-10 h-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 19v-8.93a2 2 0 01.89-1.664l7-4.666a2 2 0 012.22 0l7 4.666A2 2 0 0121 10.07V19M3 19a2 2 0 002 2h14a2 2 0 002-2M3 19l6.75-4.5M21 19l-6.75-4.5M3 10l6.75 4.5M21 10l-6.75 4.5m0 0l-1.14.76a2 2 0 01-2.22 0l-1.14-.76"/></svg>
@@ -290,6 +292,12 @@
                 </div>
             </template>
             </div>
+        </div>
+        <!-- Toast UI -->
+        <div x-show="toast.show" x-cloak x-transition
+             class="fixed bottom-5 right-5 z-50 px-4 py-3 rounded-xl shadow-lg text-sm text-white flex items-center gap-2"
+             :class="toast.type === 'error' ? 'bg-red-600' : 'bg-emerald-600'">
+            <span x-text="toast.message"></span>
         </div>
     </div>
     
@@ -306,15 +314,20 @@
     <script>
         function mailboxApp() {
             return {
-                selectedEmail: null,
-                emails: {{ Js::from($emails) }},
+                selectedEmailId: null,
+                emails: @json($emails->items()),
                 search: '',
                 filterMode: 'all',
                 checkedEmails: [],
+                toast: { show: false, message: '', type: 'info' },
+
+                get selectedEmail() {
+                    return this.emails.find(e => e.id === this.selectedEmailId) || null;
+                },
                 get allChecked() {
                     return this.filteredEmails.length > 0 && this.checkedEmails.length === this.filteredEmails.length;
                 },
-                toggleAll() {
+                toggleSelectAll() {
                     if (this.allChecked) {
                         this.checkedEmails = [];
                     } else {
@@ -322,21 +335,25 @@
                     }
                 },
                 get filteredEmails() {
-                    let list = this.emails;
-                    if (this.search !== '') {
-                        list = list.filter(e => e.subject?.toLowerCase().includes(this.search.toLowerCase()) || e.sender_address.toLowerCase().includes(this.search.toLowerCase()));
-                    }
-                    if (this.filterMode === 'unread') {
-                        list = list.filter(e => !e.is_read);
-                    } else if (this.filterMode === 'read') {
-                        list = list.filter(e => e.is_read);
-                    } else if (this.filterMode === 'starred') {
-                        list = list.filter(e => e.is_starred);
-                    }
-                    return list;
+                    const query = this.search.trim().toLowerCase();
+                    return this.emails.filter(email => {
+                        const matchesSearch = !query || 
+                            (email.subject && email.subject.toLowerCase().includes(query)) || 
+                            (email.sender_address && email.sender_address.toLowerCase().includes(query));
+
+                        if (!matchesSearch) return false;
+                        if (this.filterMode === 'unread') return !email.is_read;
+                        if (this.filterMode === 'read') return email.is_read;
+                        if (this.filterMode === 'starred') return email.is_starred;
+                        return true;
+                    });
+                },
+                showToast(message, type = 'error') {
+                    this.toast = { show: true, message, type };
+                    setTimeout(() => { this.toast.show = false; }, 3500);
                 },
                 selectEmail(id) {
-                    this.selectedEmail = this.emails.find(e => e.id === id);
+                    this.selectedEmailId = id;
                     if (this.selectedEmail && !this.selectedEmail.is_read) {
                         this.toggleRead(id, true);
                     }
@@ -355,14 +372,12 @@
                             body: JSON.stringify({ is_read: status })
                         }).then(async res => {
                             if (!res.ok) {
-                                email.is_read = !status; // Revert
-                                let text = await res.text();
-                                alert(`Gagal menyimpan status (Error ${res.status}): ${text.substring(0, 50)}`);
+                                email.is_read = !status;
+                                this.showToast(`Gagal menyimpan status (Error ${res.status})`, 'error');
                             }
                         }).catch(err => {
-                            email.is_read = !status; // Revert
-                            console.error(err);
-                            alert("Koneksi gagal, tidak bisa menyimpan status.");
+                            email.is_read = !status;
+                            this.showToast("Koneksi gagal, tidak bisa menyimpan status.", 'error');
                         });
                     }
                 },
@@ -380,19 +395,20 @@
                             body: JSON.stringify({ is_starred: email.is_starred })
                         }).then(async res => {
                             if (!res.ok) {
-                                email.is_starred = !email.is_starred; // Revert
-                                let text = await res.text();
-                                alert(`Gagal menyimpan bintang (Error ${res.status}): ${text.substring(0, 50)}`);
+                                email.is_starred = !email.is_starred;
+                                this.showToast(`Gagal menyimpan bintang (Error ${res.status})`, 'error');
                             }
                         }).catch(err => {
-                            email.is_starred = !email.is_starred; // Revert
-                            console.error(err);
-                            alert("Koneksi gagal, tidak bisa menyimpan bintang.");
+                            email.is_starred = !email.is_starred;
+                            this.showToast("Koneksi gagal, tidak bisa menyimpan bintang.", 'error');
                         });
                     }
                 },
                 formatDate(dateStr) {
+                    if (!dateStr) return '-';
                     const d = new Date(dateStr);
+                    if (isNaN(d.getTime())) return '-';
+                    
                     const today = new Date();
                     if (d.toDateString() === today.toDateString()) {
                         return d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
@@ -405,47 +421,23 @@
                 formatEmailBody(content) {
                     if (!content) return '';
                     
-                    // If it already contains common HTML structure tags, return as-is
-                    if (/<(br|p|div|html|body|table|a|span|blockquote)[^>]*>/i.test(content)) {
-                        return content;
+                    let html = content;
+                    
+                    // If it lacks common HTML structure tags, parse plain text into HTML
+                    if (!/<(br|p|div|html|body|table|a|span|blockquote)[^>]*>/i.test(content)) {
+                        let escaped = content
+                            .replace(/&/g, "&amp;")
+                            .replace(/</g, "&lt;")
+                            .replace(/>/g, "&gt;");
+                        
+                        html = escaped.split(/\r?\n/).join('<br>');
                     }
 
-                    // Otherwise, parse plain text into HTML with blockquotes
-                    let escaped = content
-                        .replace(/&/g, "&amp;")
-                        .replace(/</g, "&lt;")
-                        .replace(/>/g, "&gt;");
-
-                    let lines = escaped.split(/\r?\n/);
-                    let html = '';
-                    let quoteDepth = 0;
-
-                    for (let line of lines) {
-                        let match = line.match(/^(?:(?:&gt;)\s*)+/);
-                        let currentDepth = 0;
-                        if (match) {
-                            currentDepth = (match[0].match(/&gt;/g) || []).length;
-                            line = line.substring(match[0].length);
-                        }
-
-                        while (quoteDepth < currentDepth) {
-                            html += `<div class="border-l-[3px] border-slate-300 pl-3 my-1.5 ml-1 text-slate-600 text-[13px]">`;
-                            quoteDepth++;
-                        }
-                        while (quoteDepth > currentDepth) {
-                            html += `</div>`;
-                            quoteDepth--;
-                        }
-
-                        html += line + '<br>';
+                    // Sanitize using DOMPurify
+                    if (typeof DOMPurify !== 'undefined') {
+                        return DOMPurify.sanitize(html, { ADD_ATTR: ['target'] });
                     }
-
-                    while (quoteDepth > 0) {
-                        html += `</div>`;
-                        quoteDepth--;
-                    }
-
-                    return html;
+                    return html; // Fallback
                 }
             };
         }

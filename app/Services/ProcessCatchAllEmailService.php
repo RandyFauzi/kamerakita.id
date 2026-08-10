@@ -6,30 +6,32 @@ use App\Models\User;
 use App\Models\CapturedEmail;
 use Webklex\IMAP\Facades\Client;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class ProcessCatchAllEmailService
 {
     public function processEmails(): void
     {
-        echo "🔍 Menghubungkan ke server IMAP Hostinger...\n";
+        Log::info("IMAP Catch-All: Menghubungkan ke server IMAP Hostinger...");
         
         try {
             $client = Client::account('default');
             $client->connect();
-            echo "✅ Berhasil terhubung ke server!\n";
+            Log::info("IMAP Catch-All: Berhasil terhubung ke server!");
 
             $folder = $client->getFolder('INBOX');
             
-            // Mengambil SEMUA pesan (dibaca maupun belum)
-            $messages = $folder->query()->all()->get();
-            echo "📥 Ditemukan " . $messages->count() . " pesan di INBOX.\n";
+            // Mengambil MAKSIMAL 50 pesan yang belum dibaca (Mencegah OOM)
+            $messages = $folder->query()->unseen()->limit(50)->get();
+
+            // Pre-load seluruh mapping email -> user_id ke memory (Menghindari N+1 Query)
+            $userMap = \App\Models\User::pluck('id', 'email')->keyBy(fn ($id, $email) => strtolower(trim($email)));
+            Log::info("IMAP Catch-All: Ditemukan " . $messages->count() . " pesan di INBOX.");
 
             $deletedCount = 0;
 
             foreach ($messages as $message) {
-                echo "\n---------------------------------\n";
                 $subject = $message->getSubject() ?: '(Tanpa Subjek)';
-                echo "📩 Memproses pesan: " . $subject . "\n";
                 
                 // $message->getTo() returns an Attribute object.
                 // We MUST call ->all() or ->toArray() to get the array of Address objects for iteration.
@@ -37,34 +39,27 @@ class ProcessCatchAllEmailService
                 $toAddresses = $toAttribute ? $toAttribute->all() : [];
                 
                 if (empty($toAddresses)) {
-                    echo "⚠️ Pesan tidak memiliki header 'To' standar.\n";
-                    echo "🔍 Memeriksa header alternatif (Delivered-To, Cc, Bcc)...\n";
+                    Log::info("IMAP Catch-All: Pesan '" . $subject . "' tidak memiliki header 'To' standar.");
                     
                     // Coba periksa header 'delivered-to' atau 'cc'
                     $altTo = $message->getAttributes()['delivered_to'] ?? $message->getAttributes()['envelope_to'] ?? null;
                     if ($altTo) {
-                        echo "✅ Ditemukan rute alternatif: " . json_encode($altTo) . "\n";
+                        Log::info("IMAP Catch-All: Ditemukan rute alternatif: " . json_encode($altTo));
                     }
                     
-                    // Mari kita dump seluruh header untuk melihat apa yang sebenarnya ada
-                    $headers = $message->getAttributes();
-                    $headerKeys = array_keys($headers);
-                    echo "📋 Header yang tersedia: " . implode(', ', $headerKeys) . "\n";
-                    
-                    echo "⚠️ Melewati pesan karena tidak ada alamat tujuan yang bisa diparsing.\n";
+                    Log::info("IMAP Catch-All: Melewati pesan karena tidak ada alamat tujuan yang bisa diparsing.");
                     continue;
                 }
 
                 foreach ($toAddresses as $to) {
                     // Webklex otomatis mengambil email bersih di $to->mail
                     $emailAddress = strtolower(trim($to->mail));
-                    echo "🎯 Alamat tujuan terdeteksi: " . $emailAddress . "\n";
                     
-                    // Mencari user di database KameraKita
-                    $user = User::where('email', $emailAddress)->first();
+                    // Mencari user di database menggunakan $userMap
+                    $userId = $userMap->get($emailAddress);
                     
-                    if ($user) {
-                        echo "👤 User DITEMUKAN! (ID: " . $user->id . ")\n";
+                    if ($userId) {
+                        Log::info("IMAP Catch-All: User DITEMUKAN! (ID: " . $userId . ")");
                         
                         $senderAddress = strtolower(trim($message->getFrom()[0]->mail ?? 'unknown'));
                         $dateAttr = $message->getDate();
@@ -81,7 +76,7 @@ class ProcessCatchAllEmailService
                             // Gunakan firstOrCreate agar TIDAK DUPLIKAT meskipun ditarik berkali-kali
                             $email = CapturedEmail::firstOrCreate(
                                 [
-                                    'user_id' => $user->id,
+                                    'user_id' => $userId,
                                     'subject' => $subject,
                                     'received_at' => $receivedAt,
                                 ],
@@ -92,16 +87,16 @@ class ProcessCatchAllEmailService
                             );
 
                             if ($email->wasRecentlyCreated) {
-                                echo "💾 BERHASIL: Pesan baru disimpan ke database!\n";
+                                Log::info("IMAP Catch-All: BERHASIL: Pesan baru disimpan ke database!");
                             } else {
-                                echo "⏭️ DILEWATI: Pesan sudah ada di database (Anti-Duplikat).\n";
+                                Log::info("IMAP Catch-All: DILEWATI: Pesan sudah ada di database (Anti-Duplikat).");
                             }
 
                         } catch (\Exception $dbErr) {
-                            echo "❌ GAGAL MENYIMPAN KE DB: " . $dbErr->getMessage() . "\n";
+                            Log::error("IMAP Catch-All: GAGAL MENYIMPAN KE DB: " . $dbErr->getMessage());
                         }
                     } else {
-                        echo "❓ User tidak terdaftar di database, pesan diabaikan.\n";
+                        Log::info("IMAP Catch-All: User tidak terdaftar di database (" . $emailAddress . "), pesan diabaikan.");
                     }
                 }
 
@@ -113,20 +108,23 @@ class ProcessCatchAllEmailService
                 if ($messageDate && $messageDate->lessThan($twoWeeksAgo)) {
                     $message->delete();
                     $deletedCount++;
-                    echo "🗑️ Pesan ini berusia lebih dari 14 hari dan otomatis DIHAPUS dari server Hostinger.\n";
+                    Log::info("IMAP Catch-All: Pesan ini berusia lebih dari 14 hari dan otomatis DIHAPUS dari server Hostinger.");
                 }
+
+                // Bebaskan memori per iterasi
+                unset($message, $content);
+                if (gc_enabled()) gc_collect_cycles();
             }
 
             if ($deletedCount > 0) {
                 $client->expunge();
-                echo "\n🧹 $deletedCount pesan kadaluarsa telah permanen dihapus dari Hostinger!\n";
+                Log::info("IMAP Catch-All: $deletedCount pesan kadaluarsa telah permanen dihapus dari Hostinger!");
             } else {
-                echo "\n🎉 Selesai memproses semua email! (Pesan terbaru tetap disimpan di server)\n";
+                Log::info("IMAP Catch-All: Selesai memproses semua email!");
             }
 
         } catch (\Exception $e) {
-            echo "\n💥 TERJADI ERROR FATAL: " . $e->getMessage() . "\n";
-            Log::error('Error processing IMAP catch-all emails: ' . $e->getMessage());
+            Log::error("IMAP Catch-All: TERJADI ERROR FATAL: " . $e->getMessage());
         }
     }
 }

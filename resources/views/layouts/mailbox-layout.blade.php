@@ -17,6 +17,17 @@
 
     <!-- Scripts and Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    
+    <!-- AlpineJS -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- DOMPurify -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.9/purify.min.js"></script>
+    
+    <style>
+        /* Sembunyikan elemen AlpineJS yang belum ter-load (Mencegah FOUC) */
+        [x-cloak] { display: none !important; }
+    </style>
 </head>
 <body class="font-sans antialiased bg-white text-slate-900 h-screen w-screen overflow-hidden flex selection:bg-indigo-200 selection:text-indigo-900">
     <div class="w-full h-full flex overflow-hidden">
