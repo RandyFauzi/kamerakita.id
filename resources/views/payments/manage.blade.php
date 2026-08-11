@@ -11,6 +11,33 @@
         $paidAmount = collect($payoutHistory)->sum('total_amount');
     @endphp
 
+    <style>
+        .premium-particles {
+            position: relative;
+        }
+        .premium-particles::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(251, 191, 36, 0.6) 1.5px, transparent 1.5px),
+                radial-gradient(circle at 80% 30%, rgba(251, 191, 36, 0.5) 1.5px, transparent 1.5px),
+                radial-gradient(circle at 40% 80%, rgba(251, 191, 36, 0.7) 1.5px, transparent 1.5px),
+                radial-gradient(circle at 60% 10%, rgba(251, 191, 36, 0.4) 1.5px, transparent 1.5px),
+                radial-gradient(circle at 90% 70%, rgba(251, 191, 36, 0.8) 2px, transparent 2px),
+                radial-gradient(circle at 10% 20%, rgba(251, 191, 36, 0.5) 1px, transparent 1px);
+            background-size: 80px 80px;
+            animation: particleDrift 6s linear infinite;
+            opacity: 0.8;
+            border-radius: inherit;
+        }
+        @keyframes particleDrift {
+            0% { background-position: 0px 0px, 0px 0px, 0px 0px, 0px 0px, 0px 0px, 0px 0px; }
+            100% { background-position: 80px 40px, -40px 80px, 40px -80px, -80px -40px, 80px 80px, -80px -80px; }
+        }
+    </style>
+
     <div class="py-2 sm:py-8" x-data="{
         currentTab: 'queue',
         showPayModal: false,
@@ -202,7 +229,7 @@
             <!-- Workers Payout Accordion Queue -->
             <div x-show="currentTab === 'queue'" class="space-y-4">
                 @forelse($workers as $index => $w)
-                    <div x-data="{ expanded: false }" class="rounded-2xl border shadow-sm overflow-hidden transition-all duration-300 {{ $w['has_custom_rate'] ? 'bg-amber-50/30 border-amber-200' : 'bg-white border-gray-150' }}" :class="expanded ? 'shadow-md {{ $w['has_custom_rate'] ? 'border-amber-400' : 'border-indigo-200' }}' : 'hover:shadow-sm'">
+                    <div x-data="{ expanded: false }" class="rounded-2xl border shadow-sm overflow-hidden transition-all duration-300 {{ $w['has_custom_rate'] ? 'bg-amber-50/30 border-amber-200 premium-particles' : 'bg-white border-gray-150' }}" :class="expanded ? 'shadow-md {{ $w['has_custom_rate'] ? 'border-amber-400' : 'border-indigo-200' }}' : 'hover:shadow-sm'">
                         <!-- Accordion Header -->
                         <div class="p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 cursor-pointer select-none" @click="expanded = !expanded">
                             <div class="flex items-center gap-4">
@@ -307,7 +334,7 @@
             <!-- Payout History Tab -->
             <div x-show="currentTab === 'history'" class="space-y-4" x-cloak>
                 @forelse($payoutHistory as $index => $pay)
-                    <div x-data="{ expanded: false }" class="rounded-2xl border shadow-sm overflow-hidden transition-all duration-300 {{ $pay['has_custom_rate'] ? 'bg-amber-50/30 border-amber-200' : 'bg-white border-gray-150' }}" :class="expanded ? 'shadow-md {{ $pay['has_custom_rate'] ? 'border-amber-400' : 'border-indigo-200' }}' : 'hover:shadow-sm'">
+                    <div x-data="{ expanded: false }" class="rounded-2xl border shadow-sm overflow-hidden transition-all duration-300 {{ $pay['has_custom_rate'] ? 'bg-amber-50/30 border-amber-200 premium-particles' : 'bg-white border-gray-150' }}" :class="expanded ? 'shadow-md {{ $pay['has_custom_rate'] ? 'border-amber-400' : 'border-indigo-200' }}' : 'hover:shadow-sm'">
                         <!-- Accordion Header -->
                         <div class="p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 cursor-pointer select-none" @click="expanded = !expanded">
                             <div class="flex items-center gap-4">

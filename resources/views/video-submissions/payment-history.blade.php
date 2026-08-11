@@ -5,6 +5,33 @@
         </h2>
     </x-slot>
 
+    <style>
+        .premium-particles {
+            position: relative;
+        }
+        .premium-particles::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(251, 191, 36, 0.6) 1.5px, transparent 1.5px),
+                radial-gradient(circle at 80% 30%, rgba(251, 191, 36, 0.5) 1.5px, transparent 1.5px),
+                radial-gradient(circle at 40% 80%, rgba(251, 191, 36, 0.7) 1.5px, transparent 1.5px),
+                radial-gradient(circle at 60% 10%, rgba(251, 191, 36, 0.4) 1.5px, transparent 1.5px),
+                radial-gradient(circle at 90% 70%, rgba(251, 191, 36, 0.8) 2px, transparent 2px),
+                radial-gradient(circle at 10% 20%, rgba(251, 191, 36, 0.5) 1px, transparent 1px);
+            background-size: 80px 80px;
+            animation: particleDrift 6s linear infinite;
+            opacity: 0.8;
+            border-radius: inherit;
+        }
+        @keyframes particleDrift {
+            0% { background-position: 0px 0px, 0px 0px, 0px 0px, 0px 0px, 0px 0px, 0px 0px; }
+            100% { background-position: 80px 40px, -40px 80px, 40px -80px, -80px -40px, 80px 80px, -80px -80px; }
+        }
+    </style>
+
     <div class="py-2 sm:py-8" x-data="{
         showProofModal: false,
         proofUrl: '',
@@ -48,7 +75,7 @@
             <!-- Payments List Accordions -->
             <div class="space-y-4">
                 @forelse($payments as $index => $pay)
-                    <div x-data="{ open: false }" class="border rounded-2xl overflow-hidden shadow-sm transition {{ $pay['has_custom_rate'] ? 'bg-amber-50/20 border-amber-200' : 'bg-white border-gray-150' }}" :class="open ? '{{ $pay['has_custom_rate'] ? 'border-amber-400 shadow-md' : 'border-indigo-200 shadow-md' }}' : 'hover:shadow-sm'">
+                    <div x-data="{ open: false }" class="border rounded-2xl overflow-hidden shadow-sm transition {{ $pay['has_custom_rate'] ? 'bg-amber-50/20 border-amber-200 premium-particles' : 'bg-white border-gray-150' }}" :class="open ? '{{ $pay['has_custom_rate'] ? 'border-amber-400 shadow-md' : 'border-indigo-200 shadow-md' }}' : 'hover:shadow-sm'">
                         <!-- Header -->
                         <div class="p-4 sm:p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 cursor-pointer select-none" @click="open = !open">
                             <!-- Left: Date info & Icon -->
