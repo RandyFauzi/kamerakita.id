@@ -89,7 +89,13 @@ class ManagePaymentsController extends Controller
             $totalMinutes = $reports->sum('approved_duration_minutes');
             $hours = $totalMinutes / 60;
             $rate = $partner->base_hourly_rate ?: self::DEFAULT_HOURLY_RATE_IDR;
-            $totalAmount = round($hours * $rate);
+            
+            $totalAmount = 0;
+            foreach ($reports as $r) {
+                $rRate = $r->rate_applied ?: $rate;
+                $totalAmount += ($r->approved_duration_minutes / 60) * $rRate;
+            }
+            $totalAmount = round($totalAmount);
 
             $workers[] = [
                 'partner' => $partner,
@@ -136,7 +142,13 @@ class ManagePaymentsController extends Controller
             $totalMinutes = $reports->sum('approved_duration_minutes');
             $hours = $totalMinutes / 60;
             $rate = $partner->base_hourly_rate ?: self::DEFAULT_HOURLY_RATE_IDR;
-            $totalAmount = round($hours * $rate);
+            
+            $totalAmount = 0;
+            foreach ($reports as $r) {
+                $rRate = $r->rate_applied ?: $rate;
+                $totalAmount += ($r->approved_duration_minutes / 60) * $rRate;
+            }
+            $totalAmount = round($totalAmount);
 
             $payoutHistory[] = [
                 'paid_at' => $first->paid_at,

@@ -21,6 +21,7 @@ class VideoWorkReport extends Model
         'evidence_submitted_image_paths',
         'submitted_duration_minutes',
         'approved_duration_minutes',
+        'rate_applied',
         'qc_status',
         'payment_status',
         'payment_reference_proof_path',

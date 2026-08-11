@@ -473,6 +473,7 @@
                                                                                         @csrf
                                                                                         <input type="hidden" name="adjusted_minutes" class="adjusted-minutes-input">
                                                                                         <input type="hidden" name="admin_note" class="admin-note-input">
+                                                                                        <input type="hidden" name="custom_rate" class="custom-rate-input">
                                                                                         <button type="submit" class="inline-flex items-center px-2 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-lg text-[9px] font-bold border border-emerald-200 transition">
                                                                                             Setujui
                                                                                         </button>
@@ -737,6 +738,15 @@
                                 <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Catatan Penyesuaian (Opsional)</label>
                                 <textarea id="swal-admin-note" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 text-sm" rows="2" placeholder="Catatan jika durasi dikurangi..."></textarea>
                             </div>
+                            <div class="pt-2 border-t border-gray-100">
+                                <label class="flex items-center gap-2 cursor-pointer mb-2">
+                                    <input type="checkbox" id="swal-toggle-custom-rate" class="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500" onchange="document.getElementById('swal-custom-rate-container').classList.toggle('hidden', !this.checked)">
+                                    <span class="text-xs font-bold text-gray-700 uppercase tracking-wider">Gunakan Rate Khusus (Custom Rate)</span>
+                                </label>
+                                <div id="swal-custom-rate-container" class="hidden">
+                                    <input type="number" id="swal-custom-rate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 text-sm" placeholder="Contoh: 55000" min="0">
+                                </div>
+                            </div>
                         </div>
                     `,
                     icon: 'info',
@@ -751,13 +761,15 @@
                         }
                         return {
                             minutes: minutes,
-                            note: document.getElementById('swal-admin-note').value
+                            note: document.getElementById('swal-admin-note').value,
+                            custom_rate: document.getElementById('swal-toggle-custom-rate').checked ? document.getElementById('swal-custom-rate').value : ''
                         }
                     }
                 }).then((result) => {
                     if (result.isConfirmed) {
                         form.querySelector('.adjusted-minutes-input').value = result.value.minutes;
                         form.querySelector('.admin-note-input').value = result.value.note;
+                        form.querySelector('.custom-rate-input').value = result.value.custom_rate;
                         form.submit();
                     }
                 });
@@ -776,11 +788,21 @@
                                 <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Total Durasi Disetujui (Menit)</label>
                                 <input type="number" id="swal-batch-minutes" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 font-bold text-lg text-indigo-700" value="${totalReportedMinutes}" min="0">
                             </div>
+                            <div class="pt-2 border-t border-gray-100">
+                                <label class="flex items-center gap-2 cursor-pointer mb-2">
+                                    <input type="checkbox" id="swal-batch-toggle-custom-rate" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" onchange="document.getElementById('swal-batch-custom-rate-container').classList.toggle('hidden', !this.checked)">
+                                    <span class="text-xs font-bold text-gray-700 uppercase tracking-wider">Gunakan Rate Khusus (Custom Rate)</span>
+                                </label>
+                                <div id="swal-batch-custom-rate-container" class="hidden">
+                                    <input type="number" id="swal-batch-custom-rate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-sm" placeholder="Contoh: 55000" min="0">
+                                </div>
+                            </div>
                         </div>
                         <form id="batch-approve-form-${partnerId}" method="POST" action="{{ route('video-submissions.batch-approve') }}" class="hidden">
                             @csrf
                             <input type="hidden" name="report_ids" id="batch-report-ids-${partnerId}">
                             <input type="hidden" name="total_approved_minutes" id="batch-total-minutes-${partnerId}">
+                            <input type="hidden" name="custom_rate" id="batch-custom-rate-${partnerId}">
                         </form>
                     `,
                     icon: 'info',
@@ -794,7 +816,8 @@
                             Swal.showValidationMessage('Durasi tidak valid!');
                         }
                         return {
-                            minutes: minutes
+                            minutes: minutes,
+                            custom_rate: document.getElementById('swal-batch-toggle-custom-rate').checked ? document.getElementById('swal-batch-custom-rate').value : ''
                         }
                     }
                 }).then((result) => {
@@ -802,6 +825,7 @@
                         const form = document.getElementById(`batch-approve-form-${partnerId}`);
                         document.getElementById(`batch-report-ids-${partnerId}`).value = reportIds.join(',');
                         document.getElementById(`batch-total-minutes-${partnerId}`).value = result.value.minutes;
+                        document.getElementById(`batch-custom-rate-${partnerId}`).value = result.value.custom_rate;
                         form.submit();
                     }
                 });

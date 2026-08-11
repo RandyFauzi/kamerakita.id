@@ -298,11 +298,17 @@ class VerifyVideoWorkReportController extends Controller
         $validated = $request->validate([
             'adjusted_minutes' => 'required|integer|min:0',
             'admin_note' => 'nullable|string|max:1000',
+            'custom_rate' => 'nullable|integer|min:0',
         ]);
+
+        $partner = $report->partner;
+        $rateApplied = $validated['custom_rate'] ?? ($partner ? $partner->base_hourly_rate : 50000);
+        $rateApplied = $rateApplied ?: 50000;
 
         $report->update([
             'qc_status' => 'approved',
             'approved_duration_minutes' => $validated['adjusted_minutes'],
+            'rate_applied' => $rateApplied,
             'verified_by' => Auth::id(),
             'verified_at' => now(),
             'verifier_notes' => $validated['admin_note'],
@@ -320,6 +326,7 @@ class VerifyVideoWorkReportController extends Controller
         $validated = $request->validate([
             'report_ids' => 'required|string',
             'total_approved_minutes' => 'required|integer|min:0',
+            'custom_rate' => 'nullable|integer|min:0',
         ]);
 
         $reportIds = explode(',', $validated['report_ids']);
@@ -335,9 +342,13 @@ class VerifyVideoWorkReportController extends Controller
         }
 
         $partnerId = $reports->first()->partner_id;
+        $partner = Partner::find($partnerId);
+        $rateApplied = $validated['custom_rate'] ?? ($partner ? $partner->base_hourly_rate : 50000);
+        $rateApplied = $rateApplied ?: 50000;
+
         $totalReported = $reports->sum('submitted_duration_minutes');
 
-        DB::transaction(function () use ($reports, $totalApprovedMinutes, $totalReported) {
+        DB::transaction(function () use ($reports, $totalApprovedMinutes, $totalReported, $rateApplied) {
             $distributed = 0;
             
             foreach ($reports as $index => $report) {
@@ -356,6 +367,7 @@ class VerifyVideoWorkReportController extends Controller
                 $report->update([
                     'qc_status' => 'approved',
                     'approved_duration_minutes' => $appDur,
+                    'rate_applied' => $rateApplied,
                     'verified_by' => Auth::id(),
                     'verified_at' => now(),
                     'verifier_notes' => 'Batch Approved',
