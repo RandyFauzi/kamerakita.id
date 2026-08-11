@@ -425,12 +425,53 @@
                     
                     // If it lacks common HTML structure tags, parse plain text into HTML
                     if (!/<(br|p|div|html|body|table|a|span|blockquote)[^>]*>/i.test(content)) {
-                        let escaped = content
-                            .replace(/&/g, "&amp;")
-                            .replace(/</g, "&lt;")
-                            .replace(/>/g, "&gt;");
-                        
-                        html = escaped.split(/\r?\n/).join('<br>');
+                        let lines = content.split(/\r?\n/);
+                        let inQuoteLevel = 0;
+                        let processedHtml = [];
+
+                        lines.forEach(line => {
+                            let match = line.match(/^(>+)\s*(.*)/);
+                            if (match) {
+                                let level = match[1].length;
+                                let text = match[2];
+                                
+                                // close quotes if level decreased
+                                while (inQuoteLevel > level) {
+                                    processedHtml.push('</blockquote>');
+                                    inQuoteLevel--;
+                                }
+                                // open quotes if level increased
+                                while (inQuoteLevel < level) {
+                                    processedHtml.push('<blockquote class="border-l-[3px] border-slate-300 pl-3 text-slate-600 my-1.5 ml-1">');
+                                    inQuoteLevel++;
+                                }
+                                
+                                let escapedText = text
+                                    .replace(/&/g, "&amp;")
+                                    .replace(/</g, "&lt;")
+                                    .replace(/>/g, "&gt;");
+                                processedHtml.push(escapedText + '<br>');
+                            } else {
+                                // close all quotes if it's a normal line
+                                while (inQuoteLevel > 0) {
+                                    processedHtml.push('</blockquote>');
+                                    inQuoteLevel--;
+                                }
+                                let escapedText = line
+                                    .replace(/&/g, "&amp;")
+                                    .replace(/</g, "&lt;")
+                                    .replace(/>/g, "&gt;");
+                                processedHtml.push(escapedText + '<br>');
+                            }
+                        });
+
+                        // close any remaining quotes
+                        while (inQuoteLevel > 0) {
+                            processedHtml.push('</blockquote>');
+                            inQuoteLevel--;
+                        }
+
+                        html = processedHtml.join('');
                     }
 
                     // Sanitize using DOMPurify
