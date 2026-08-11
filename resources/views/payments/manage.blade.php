@@ -202,11 +202,11 @@
             <!-- Workers Payout Accordion Queue -->
             <div x-show="currentTab === 'queue'" class="space-y-4">
                 @forelse($workers as $index => $w)
-                    <div x-data="{ expanded: false }" class="bg-white rounded-2xl border border-gray-150 shadow-sm overflow-hidden transition-all duration-300" :class="expanded ? 'shadow-md border-indigo-200' : 'hover:shadow-sm'">
+                    <div x-data="{ expanded: false }" class="rounded-2xl border shadow-sm overflow-hidden transition-all duration-300 {{ $w['has_custom_rate'] ? 'bg-amber-50/30 border-amber-200' : 'bg-white border-gray-150' }}" :class="expanded ? 'shadow-md {{ $w['has_custom_rate'] ? 'border-amber-400' : 'border-indigo-200' }}' : 'hover:shadow-sm'">
                         <!-- Accordion Header -->
                         <div class="p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 cursor-pointer select-none" @click="expanded = !expanded">
                             <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 bg-slate-50 border border-gray-200 rounded-xl flex items-center justify-center font-black text-lg text-slate-700">
+                                <div class="w-12 h-12 {{ $w['has_custom_rate'] ? 'bg-amber-100 border-amber-300 text-amber-700' : 'bg-slate-50 border-gray-200 text-slate-700' }} border rounded-xl flex items-center justify-center font-black text-lg">
                                     {{ strtoupper(substr($w['partner']->full_name, 0, 2)) }}
                                 </div>
                                 <div class="space-y-0.5">
@@ -222,10 +222,15 @@
                             <div class="flex items-center gap-6 w-full md:w-auto justify-between md:justify-end">
                                 <div class="text-left md:text-right">
                                     <span class="block text-[10px] font-bold text-gray-450 uppercase tracking-wider">Total Tagihan</span>
-                                    <span class="block text-lg font-black text-indigo-600 leading-tight">Rp {{ number_format($w['total_amount'], 0, ',', '.') }}</span>
+                                    <div class="flex items-center gap-2 justify-start md:justify-end">
+                                        @if($w['has_custom_rate'])
+                                            <span class="text-[9px] font-bold uppercase tracking-wider text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-200">Custom Rate</span>
+                                        @endif
+                                        <span class="block text-lg font-black {{ $w['has_custom_rate'] ? 'text-amber-600' : 'text-indigo-600' }} leading-tight">Rp {{ number_format($w['total_amount'], 0, ',', '.') }}</span>
+                                    </div>
                                     <div class="flex items-center gap-1.5 justify-start md:justify-end mt-0.5">
                                         <span class="text-[10px] font-medium text-gray-400">Untuk {{ count($w['reports']) }} Laporan</span>
-                                        <span class="text-[10px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 px-1.5 py-0.5 rounded">{{ $w['total_minutes'] }} Menit</span>
+                                        <span class="text-[10px] font-bold {{ $w['has_custom_rate'] ? 'text-amber-700 bg-amber-50 border-amber-200' : 'text-indigo-700 bg-indigo-50 border-indigo-100' }} border px-1.5 py-0.5 rounded">{{ $w['total_minutes'] }} Menit</span>
                                     </div>
                                 </div>
 
@@ -302,11 +307,11 @@
             <!-- Payout History Tab -->
             <div x-show="currentTab === 'history'" class="space-y-4" x-cloak>
                 @forelse($payoutHistory as $index => $pay)
-                    <div x-data="{ expanded: false }" class="bg-white rounded-2xl border border-gray-150 shadow-sm overflow-hidden transition-all duration-300" :class="expanded ? 'shadow-md border-indigo-200' : 'hover:shadow-sm'">
+                    <div x-data="{ expanded: false }" class="rounded-2xl border shadow-sm overflow-hidden transition-all duration-300 {{ $pay['has_custom_rate'] ? 'bg-amber-50/30 border-amber-200' : 'bg-white border-gray-150' }}" :class="expanded ? 'shadow-md {{ $pay['has_custom_rate'] ? 'border-amber-400' : 'border-indigo-200' }}' : 'hover:shadow-sm'">
                         <!-- Accordion Header -->
                         <div class="p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 cursor-pointer select-none" @click="expanded = !expanded">
                             <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 bg-slate-50 border border-gray-200 rounded-xl flex items-center justify-center font-black text-lg text-slate-700">
+                                <div class="w-12 h-12 {{ $pay['has_custom_rate'] ? 'bg-amber-100 border-amber-300 text-amber-700' : 'bg-slate-50 border-gray-200 text-slate-700' }} border rounded-xl flex items-center justify-center font-black text-lg">
                                     {{ strtoupper(substr($pay['partner']->full_name, 0, 2)) }}
                                 </div>
                                 <div class="space-y-0.5">
@@ -320,8 +325,13 @@
                             <div class="flex items-center gap-6 w-full md:w-auto justify-between md:justify-end">
                                 <div class="text-left md:text-right">
                                     <span class="block text-[10px] font-bold text-gray-450 uppercase tracking-wider">Total Dibayar</span>
-                                    <span class="block text-lg font-black text-emerald-600 leading-tight">Rp {{ number_format($pay['total_amount'], 0, ',', '.') }}</span>
-                                    <span class="block text-[10px] font-medium text-gray-400">Untuk {{ count($pay['reports']) }} Laporan</span>
+                                    <div class="flex items-center gap-2 justify-start md:justify-end">
+                                        @if($pay['has_custom_rate'])
+                                            <span class="text-[9px] font-bold uppercase tracking-wider text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-200">Custom Rate</span>
+                                        @endif
+                                        <span class="block text-lg font-black {{ $pay['has_custom_rate'] ? 'text-amber-600' : 'text-emerald-600' }} leading-tight">Rp {{ number_format($pay['total_amount'], 0, ',', '.') }}</span>
+                                    </div>
+                                    <span class="block text-[10px] font-medium text-gray-400 mt-0.5">Untuk {{ count($pay['reports']) }} Laporan</span>
                                 </div>
 
                                 <div class="flex items-center gap-3">

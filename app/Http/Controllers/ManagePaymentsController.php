@@ -91,8 +91,12 @@ class ManagePaymentsController extends Controller
             $rate = $partner->base_hourly_rate ?: self::DEFAULT_HOURLY_RATE_IDR;
             
             $totalAmount = 0;
+            $hasCustomRate = false;
             foreach ($reports as $r) {
                 $rRate = $r->rate_applied ?: $rate;
+                if ($rRate != $rate) {
+                    $hasCustomRate = true;
+                }
                 $totalAmount += ($r->approved_duration_minutes / 60) * $rRate;
             }
             $totalAmount = round($totalAmount);
@@ -104,6 +108,7 @@ class ManagePaymentsController extends Controller
                 'hours' => $hours,
                 'rate' => $rate,
                 'total_amount' => $totalAmount,
+                'has_custom_rate' => $hasCustomRate,
                 'period_approval' => $periodApproval,
             ];
         }
@@ -144,8 +149,12 @@ class ManagePaymentsController extends Controller
             $rate = $partner->base_hourly_rate ?: self::DEFAULT_HOURLY_RATE_IDR;
             
             $totalAmount = 0;
+            $hasCustomRate = false;
             foreach ($reports as $r) {
                 $rRate = $r->rate_applied ?: $rate;
+                if ($rRate != $rate) {
+                    $hasCustomRate = true;
+                }
                 $totalAmount += ($r->approved_duration_minutes / 60) * $rRate;
             }
             $totalAmount = round($totalAmount);
@@ -158,6 +167,7 @@ class ManagePaymentsController extends Controller
                 'reports' => $reports->sortByDesc('submission_date'),
                 'total_minutes' => $totalMinutes,
                 'total_amount' => $totalAmount,
+                'has_custom_rate' => $hasCustomRate,
                 'batch_id' => base64_encode($partner->id . '|' . $first->paid_at->format('Y-m-d H:i:s') . '|' . $first->payment_reference_proof_path),
             ];
         }

@@ -48,18 +48,18 @@
             <!-- Payments List Accordions -->
             <div class="space-y-4">
                 @forelse($payments as $index => $pay)
-                    <div x-data="{ open: false }" class="bg-white border border-gray-150 rounded-2xl overflow-hidden shadow-sm transition" :class="open ? 'border-indigo-200 shadow-md' : 'hover:shadow-sm'">
+                    <div x-data="{ open: false }" class="border rounded-2xl overflow-hidden shadow-sm transition {{ $pay['has_custom_rate'] ? 'bg-amber-50/20 border-amber-200' : 'bg-white border-gray-150' }}" :class="open ? '{{ $pay['has_custom_rate'] ? 'border-amber-400 shadow-md' : 'border-indigo-200 shadow-md' }}' : 'hover:shadow-sm'">
                         <!-- Header -->
                         <div class="p-4 sm:p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 cursor-pointer select-none" @click="open = !open">
                             <!-- Left: Date info & Icon -->
                             <div class="flex items-center gap-3 sm:gap-4">
-                                <div class="w-11 h-11 sm:w-12 sm:h-12 bg-emerald-50 border border-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center shrink-0">
+                                <div class="w-11 h-11 sm:w-12 sm:h-12 {{ $pay['has_custom_rate'] ? 'bg-amber-100 border-amber-200 text-amber-600' : 'bg-emerald-50 border-emerald-100 text-emerald-600' }} border rounded-xl flex items-center justify-center shrink-0">
                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
                                 </div>
                                 <div class="space-y-0.5">
-                                    <span class="block text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Transfer Selesai</span>
+                                    <span class="block text-[10px] font-bold {{ $pay['has_custom_rate'] ? 'text-amber-600' : 'text-emerald-600' }} uppercase tracking-wider">Transfer Selesai</span>
                                     <span class="block text-sm font-black text-slate-800">{{ $pay['paid_at']->translatedFormat('d F Y - H:i') }}</span>
                                 </div>
                             </div>
@@ -68,8 +68,13 @@
                             <div class="flex items-end gap-3 w-full md:w-auto justify-between md:justify-end pt-3 md:pt-0 border-t border-gray-100 md:border-0">
                                 <div class="text-left md:text-right">
                                     <span class="block text-[9px] font-bold text-gray-455 uppercase tracking-wider">Total Gaji Diterima</span>
-                                    <span class="block text-lg font-black text-slate-900 leading-tight">Rp {{ number_format($pay['total_amount'], 0, ',', '.') }}</span>
-                                    <span class="block text-[9px] font-semibold text-gray-400" x-text="'Untuk ' + {{ count($pay['reports']) }} + ' Laporan' "></span>
+                                    <div class="flex items-center gap-2 justify-start md:justify-end">
+                                        @if($pay['has_custom_rate'])
+                                            <span class="text-[9px] font-bold uppercase tracking-wider text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-200">Rate Khusus</span>
+                                        @endif
+                                        <span class="block text-lg font-black {{ $pay['has_custom_rate'] ? 'text-amber-600' : 'text-slate-900' }} leading-tight">Rp {{ number_format($pay['total_amount'], 0, ',', '.') }}</span>
+                                    </div>
+                                    <span class="block text-[9px] font-semibold text-gray-400 mt-0.5" x-text="'Untuk ' + {{ count($pay['reports']) }} + ' Laporan' "></span>
                                 </div>
 
                                 <div class="flex items-center gap-3">

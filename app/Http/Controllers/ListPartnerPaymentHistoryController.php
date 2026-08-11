@@ -38,7 +38,17 @@ class ListPartnerPaymentHistoryController extends Controller
             $totalMinutes = $reports->sum('approved_duration_minutes');
             $hours = $totalMinutes / 60;
             $rate = $partner->base_hourly_rate ?: self::DEFAULT_HOURLY_RATE_IDR;
-            $totalAmount = round($hours * $rate);
+            
+            $totalAmount = 0;
+            $hasCustomRate = false;
+            foreach ($reports as $r) {
+                $rRate = $r->rate_applied ?: $rate;
+                if ($rRate != $rate) {
+                    $hasCustomRate = true;
+                }
+                $totalAmount += ($r->approved_duration_minutes / 60) * $rRate;
+            }
+            $totalAmount = round($totalAmount);
 
             $payments[] = [
                 'paid_at' => $first->paid_at,
@@ -46,6 +56,7 @@ class ListPartnerPaymentHistoryController extends Controller
                 'reports' => $reports->sortByDesc('submission_date'),
                 'total_minutes' => $totalMinutes,
                 'total_amount' => $totalAmount,
+                'has_custom_rate' => $hasCustomRate,
             ];
         }
 
