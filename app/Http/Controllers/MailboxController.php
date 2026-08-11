@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Auth;
 
 class MailboxController extends Controller
 {
+    use \Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
     public function index()
     {
         $emails = Auth::user()->capturedEmails()
