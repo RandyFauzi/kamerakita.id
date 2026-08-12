@@ -9,7 +9,7 @@ class FastworkOnboardingController extends Controller
 {
     public function showForm()
     {
-        return view('onboarding.index');
+        return view('onboarding.form');
     }
 
     public function showRegisterForm()
