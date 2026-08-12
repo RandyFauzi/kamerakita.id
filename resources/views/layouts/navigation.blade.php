@@ -20,6 +20,10 @@
                         {{ __('Leaderboard') }}
                     </x-nav-link>
 
+                    <x-nav-link :href="route('mailbox.index')" :active="request()->routeIs('mailbox.*')">
+                        {{ __('Mailbox') }}
+                    </x-nav-link>
+
                     <x-nav-link :href="route('partners.index')" :active="request()->routeIs('partners.*')">
                         {{ __('Data Mitra') }}
                     </x-nav-link>
@@ -85,6 +89,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('leaderboard.index')" :active="request()->requestIs('leaderboard.index')">
                 {{ __('Leaderboard') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('mailbox.index')" :active="request()->routeIs('mailbox.*')">
+                {{ __('Mailbox') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('partners.index')" :active="request()->routeIs('partners.*')">
                 {{ __('Data Mitra') }}
