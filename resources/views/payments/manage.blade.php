@@ -457,8 +457,8 @@
                     <!-- Modal Body Form -->
                     <form :action="'/payments/manage/' + activeWorker.partner?.id + '/pay'" method="POST" enctype="multipart/form-data" class="flex-1 p-6 space-y-5">
                         @csrf
-                        <input type="hidden" name="period_start_date" value="{{ $startDate ? $startDate->format('Y-m-d') : 'all' }}">
-                        <input type="hidden" name="period_end_date" value="{{ $endDate ? $endDate->format('Y-m-d') : 'all' }}">
+                        <input type="hidden" name="period_start_date" value="all">
+                        <input type="hidden" name="period_end_date" value="all">
                         <input type="hidden" name="rate" :value="activeWorker.rate">
                         
                         <!-- Earnings Summary Card -->
