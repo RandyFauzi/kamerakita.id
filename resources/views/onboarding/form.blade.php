@@ -109,7 +109,7 @@
         </header>
 
         <!-- Form Card Container -->
-        <main class="bg-white rounded-[32px] shadow-[0px_4px_24px_rgba(0,0,0,0.08)] w-full overflow-hidden transition-all duration-300 relative">
+        <main :class="{'bg-white shadow-[0px_4px_24px_rgba(0,0,0,0.08)]': step === 1 || step === 6}" class="rounded-[32px] w-full overflow-hidden transition-all duration-300 relative">
             
             <form action="{{ route('onboarding.submit') }}" method="POST" @submit.prevent="submitForm">
                 @csrf
