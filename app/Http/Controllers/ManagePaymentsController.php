@@ -35,6 +35,8 @@ class ManagePaymentsController extends Controller
             $unpaidReportsQuery->whereHas('partner', function ($q) use ($search) {
                 $q->where('full_name', 'like', "%{$search}%")
                   ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('bank_account_number', 'like', "%{$search}%")
+                  ->orWhere('account_number', 'like', "%{$search}%")
                   ->orWhereHas('user', function ($uq) use ($search) {
                       $uq->where('email', 'like', "%{$search}%");
                   });
@@ -98,6 +100,8 @@ class ManagePaymentsController extends Controller
             $paidReportsQuery->whereHas('partner', function ($q) use ($search) {
                 $q->where('full_name', 'like', "%{$search}%")
                   ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('bank_account_number', 'like', "%{$search}%")
+                  ->orWhere('account_number', 'like', "%{$search}%")
                   ->orWhereHas('user', function ($uq) use ($search) {
                       $uq->where('email', 'like', "%{$search}%");
                   });
