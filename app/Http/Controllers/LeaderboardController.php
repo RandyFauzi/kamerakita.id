@@ -20,7 +20,7 @@ class LeaderboardController extends Controller
             ->get();
 
         // 2. Weekly Leaderboard
-        $weeklyScores = VideoWorkReport::selectRaw('partner_id, sum(approved_duration_minutes) as total_score')
+        $weeklyScores = VideoWorkReport::selectRaw('partner_id, sum(submitted_duration_minutes) as total_score')
             ->whereBetween('submission_date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
             ->groupBy('partner_id')
             ->having('total_score', '>', 0)

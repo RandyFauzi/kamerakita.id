@@ -10,7 +10,7 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-3xl p-8 max-w-lg mx-auto">
                 <div class="text-center mb-8">
                     <h3 class="text-2xl font-extrabold text-slate-800 tracking-tight">KameraKita <span class="text-sky-600">Top Workers</span></h3>
-                    <p class="text-sm text-slate-500 max-w-sm mx-auto">Peringkat kontributor terbaik berdasarkan total durasi video disetujui.</p>
+                    <p class="text-sm text-slate-500 max-w-sm mx-auto" x-text="currentTab === 'weekly' ? 'Peringkat kontributor berdasarkan total durasi video yang dikirim minggu ini.' : 'Peringkat kontributor terbaik berdasarkan total durasi video disetujui.'"></p>
                 </div>
 
                 <!-- Tabs -->
@@ -24,12 +24,19 @@
                 </div>
 
                 <!-- Leaderboards -->
-                <div class="flex justify-center min-h-[400px]">
+                <div class="flex flex-col items-center justify-start min-h-[400px]">
                     <template x-if="currentTab === 'weekly'">
-                        <interactive-leaderboard theme="light" players="{{ $weeklyData }}"></interactive-leaderboard>
+                        <div class="w-full flex flex-col items-center">
+                            <interactive-leaderboard theme="light" players="{{ $weeklyData }}"></interactive-leaderboard>
+                            <p class="mt-8 text-xs text-slate-400 italic text-center max-w-xs leading-relaxed">
+                                * Catatan: Angka di atas adalah total durasi terkirim. Durasi akan diverifikasi ulang dengan total disetujui, sehingga skor akhir dapat berubah.
+                            </p>
+                        </div>
                     </template>
                     <template x-if="currentTab === 'allTime'">
-                        <interactive-leaderboard theme="light" players="{{ $allTimeData }}"></interactive-leaderboard>
+                        <div class="w-full flex justify-center">
+                            <interactive-leaderboard theme="light" players="{{ $allTimeData }}"></interactive-leaderboard>
+                        </div>
                     </template>
                 </div>
             </div>
