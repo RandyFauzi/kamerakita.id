@@ -105,7 +105,7 @@
                         .leaderboard-wrapper:not(:hover) .rank-card:nth-child(1) { z-index: 40; }
                         .leaderboard-wrapper:not(:hover) .rank-card:nth-child(2) { z-index: 30; transform: translateY(-35px) scale(0.95); opacity: 0.9; }
                         .leaderboard-wrapper:not(:hover) .rank-card:nth-child(3) { z-index: 20; transform: translateY(-70px) scale(0.90); opacity: 0.7; }
-                        .leaderboard-wrapper:not(:hover) .rank-card:nth-child(4) { z-index: 10; transform: translateY(-105px) scale(0.85); opacity: 0.3; filter: blur(1px); }
+                        .leaderboard-wrapper:not(:hover) .rank-card:nth-child(4) { z-index: 10; transform: translateY(-105px) scale(0.85); opacity: 0.3; }
                         .leaderboard-wrapper:not(:hover) .rank-card:nth-child(n+5) { z-index: 5; transform: translateY(-135px) scale(0.80); opacity: 0; pointer-events: none; }
 
                         /* Expanded State (On Wrapper Hover) */
