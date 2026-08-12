@@ -103,9 +103,8 @@
     }" class="w-full max-w-[800px] mx-auto flex flex-col items-center gap-8">
 
         <!-- Top Header Logo -->
-        <header class="flex items-center gap-3">
-            <img src="{{ asset('images/Logo.webp') }}" alt="KameraKita AI Logo" class="w-10 h-10 object-contain">
-            <span class="font-logo text-[28px] text-brand-500 font-semibold tracking-wide">KameraKita AI</span>
+        <header class="flex items-center justify-center">
+            <img src="{{ asset('images/onboarding/kamerakita.png') }}" alt="KameraKita AI Logo" class="h-10 w-auto object-contain">
         </header>
 
         <!-- Form Card Container -->
@@ -118,7 +117,7 @@
                 <div x-show="step === 1" x-transition.opacity.duration.300ms class="flex flex-col">
                     <!-- Banner Graphic Area with Seamless White Gradient Fade -->
                     <div class="h-[340px] sm:h-[420px] relative overflow-hidden bg-white">
-                        <img src="{{ asset('assets/hero_contributor.jpg') }}" alt="Hero Banner" class="w-full h-full object-cover object-center">
+                        <img src="{{ asset('images/onboarding/Page 1 Thumbnail.jpg') }}" alt="Hero Banner" class="w-full h-full object-cover object-center">
                         
                         <!-- Smooth White Gradient Fade overlay (exact blend as Figma) -->
                         <div class="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-white via-white/85 to-transparent pointer-events-none z-10"></div>
@@ -147,9 +146,7 @@
                 <!-- ================= STEP 2: NAME INPUT ================= -->
                 <div x-show="step === 2" x-transition.opacity.duration.300ms class="p-8 sm:p-12 flex flex-col gap-8 max-w-[630px] mx-auto min-h-[446px] justify-between">
                     <div class="space-y-8 flex flex-col items-center">
-                        <div class="w-24 h-24 bg-amber-50 rounded-full flex items-center justify-center text-4xl shadow-inner border border-amber-100">
-                            👋
-                        </div>
+                        <img src="{{ asset('images/onboarding/page1.png') }}" alt="Ilustrasi Nama" class="w-32 h-32 object-contain mx-auto">
                         <h2 class="text-2xl sm:text-[32px] font-semibold text-center text-neutralText-dark leading-tight">Kenalan dulu yuk, siapa nama kamu?</h2>
                         
                         <div class="w-full bg-white border border-[#a7a7a7] rounded-[12px] px-5 py-4 flex items-center shadow-sm focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-500/20">
@@ -199,9 +196,7 @@
                 <!-- ================= STEP 4: IPHONE MODEL SELECT ================= -->
                 <div x-show="step === 4" x-transition.opacity.duration.300ms class="p-8 sm:p-12 flex flex-col gap-8 max-w-[630px] mx-auto min-h-[446px] justify-between">
                     <div class="space-y-8 flex flex-col items-center">
-                        <div class="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center text-slate-700 border border-slate-200">
-                            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-                        </div>
+                        <img src="{{ asset('images/onboarding/page3.png') }}" alt="Ilustrasi iPhone" class="w-32 h-32 object-contain mx-auto">
                         <h2 class="text-2xl sm:text-[32px] font-semibold text-center text-neutralText-dark leading-tight">Pakai seri iPhone apa sekarang?</h2>
                         
                         <div class="w-full bg-white border border-[#a7a7a7] rounded-[12px] px-5 py-4 flex items-center justify-between shadow-sm relative cursor-pointer">
@@ -237,9 +232,7 @@
                 <!-- ================= STEP 5: HEADSTRAP SELECTION ================= -->
                 <div x-show="step === 5" x-transition.opacity.duration.300ms class="p-8 sm:p-12 flex flex-col gap-8 max-w-[630px] mx-auto min-h-[446px] justify-between">
                     <div class="space-y-8 flex flex-col items-center">
-                        <div class="w-24 h-24 bg-brand-50 rounded-full flex items-center justify-center text-brand-500 border border-brand-100">
-                            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                        </div>
+                        <img src="{{ asset('images/onboarding/page4.png') }}" alt="Ilustrasi Headstrap" class="w-32 h-32 object-contain mx-auto">
                         <h2 class="text-2xl sm:text-[32px] font-semibold text-center text-neutralText-dark leading-tight">Udah punya Headstrap?</h2>
                         
                         <div class="flex flex-col sm:flex-row gap-4 w-full">
@@ -281,7 +274,7 @@
                 <div x-show="step === 6" x-transition.opacity.duration.300ms class="flex flex-col">
                     <!-- Banner Graphic Area with Seamless White Gradient Fade -->
                     <div class="h-[340px] sm:h-[420px] relative overflow-hidden bg-white">
-                        <img src="{{ asset('assets/success_cuan.jpg') }}" alt="Success Cuan" class="w-full h-full object-cover object-center">
+                        <img src="{{ asset('images/onboarding/Page 6 Thumbnail.jpg') }}" alt="Success Cuan" class="w-full h-full object-cover object-center">
                         
                         <!-- Smooth White Gradient Fade overlay -->
                         <div class="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-white via-white/85 to-transparent pointer-events-none z-10"></div>
