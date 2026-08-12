@@ -117,7 +117,7 @@
                 <div x-show="step === 1" x-transition.opacity.duration.300ms class="flex flex-col">
                     <!-- Banner Graphic Area with Seamless White Gradient Fade -->
                     <div class="h-[340px] sm:h-[420px] relative overflow-hidden bg-white">
-                        <img src="{{ asset('images/onboarding/Page 1 Thumbnail.jpg') }}" alt="Hero Banner" class="w-full h-full object-cover object-center">
+                        <img src="{{ asset('images/onboarding/page_1_thumbnail.jpg') }}" alt="Hero Banner" class="w-full h-full object-cover object-center">
                         
                         <!-- Smooth White Gradient Fade overlay (exact blend as Figma) -->
                         <div class="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-white via-white/85 to-transparent pointer-events-none z-10"></div>
@@ -274,7 +274,7 @@
                 <div x-show="step === 6" x-transition.opacity.duration.300ms class="flex flex-col">
                     <!-- Banner Graphic Area with Seamless White Gradient Fade -->
                     <div class="h-[340px] sm:h-[420px] relative overflow-hidden bg-white">
-                        <img src="{{ asset('images/onboarding/Page 6 Thumbnail.jpg') }}" alt="Success Cuan" class="w-full h-full object-cover object-center">
+                        <img src="{{ asset('images/onboarding/page_6_thumbnail.jpg') }}" alt="Success Cuan" class="w-full h-full object-cover object-center">
                         
                         <!-- Smooth White Gradient Fade overlay -->
                         <div class="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-white via-white/85 to-transparent pointer-events-none z-10"></div>
