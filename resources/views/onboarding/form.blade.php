@@ -104,12 +104,7 @@
 
         <!-- Top Header Logo -->
         <header class="flex items-center gap-3">
-            <div class="w-10 h-10 flex items-center justify-center text-brand-500 transform -rotate-12">
-                <svg class="w-9 h-9" viewBox="0 0 52 49" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M0 11.1L25.8 0L51.6 11.1V37.9L25.8 49L0 37.9V11.1Z" fill="currentColor" opacity="0.2"/>
-                    <path d="M25.8 5L45 13.5V35.5L25.8 44L6.6 35.5V13.5L25.8 5Z" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </div>
+            <img src="{{ asset('images/Logo.webp') }}" alt="KameraKita AI Logo" class="w-10 h-10 object-contain">
             <span class="font-logo text-[28px] text-brand-500 font-semibold tracking-wide">KameraKita AI</span>
         </header>
 
