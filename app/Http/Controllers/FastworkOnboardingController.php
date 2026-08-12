@@ -19,15 +19,18 @@ class FastworkOnboardingController extends Controller
             'whatsapp_number' => 'required|string|max:30',
             'device_type' => 'required|string|max:100',
             'fastwork_username' => 'nullable|string|max:100',
+            'has_headstrap' => 'nullable',
         ], [
-            'full_name.required' => 'Nama lengkap wajib diisi sesuai profil Fastwork Anda.',
+            'full_name.required' => 'Nama lengkap wajib diisi.',
             'whatsapp_number.required' => 'Nomor WhatsApp wajib diisi untuk koordinasi QC.',
             'device_type.required' => 'Tipe perangkat Apple Anda wajib dipilih.',
         ]);
 
+        $validated['has_headstrap'] = $request->has('has_headstrap');
+
         FastworkOnboarding::create($validated);
 
         // Redirect to official WhatsApp coordination group
-        return redirect()->away('https://chat.whatsapp.com/G50crzNGAa6GFPLuXWljK0');
+        return redirect()->away('https://chat.whatsapp.com/EWzTpticIllFogSNYx0TTt');
     }
 }

@@ -16,5 +16,6 @@ class FastworkOnboarding extends Model
         'whatsapp_number',
         'device_type',
         'fastwork_username',
+        'has_headstrap',
     ];
 }

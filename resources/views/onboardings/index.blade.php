@@ -3,9 +3,9 @@
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
                 <h2 class="font-bold text-2xl text-gray-800 leading-tight">
-                    Pendaftar Fastwork Onboarding
+                    Pendaftar Baru
                 </h2>
-                <p class="text-xs text-gray-400 mt-1">Daftar calon kontributor/mitra yang mendaftar melalui tautan eksternal Fastwork.</p>
+                <p class="text-xs text-gray-400 mt-1">Daftar calon kontributor/mitra yang baru mendaftar.</p>
             </div>
             <div class="flex items-center gap-2 bg-white px-4 py-2 border border-gray-150 rounded-2xl shadow-sm text-xs font-mono text-gray-500">
                 <span>Total Registrasi:</span>
@@ -64,6 +64,7 @@
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Username Fastwork</th>
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">No. WhatsApp</th>
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Tipe Perangkat Apple</th>
+                                <th scope="col" class="px-6 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Headstrap</th>
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Tanggal Daftar</th>
                                 <th scope="col" class="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Aksi</th>
                             </tr>
@@ -93,6 +94,17 @@
                                             {{ $item->device_type }}
                                         </span>
                                     </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        @if($item->has_headstrap)
+                                            <span class="inline-flex items-center justify-center w-6 h-6 bg-emerald-100 text-emerald-600 rounded-full">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center justify-center w-6 h-6 bg-rose-100 text-rose-600 rounded-full">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                            </span>
+                                        @endif
+                                    </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-500">
                                         {{ $item->created_at->translatedFormat('d F Y, H:i') }}
                                     </td>
@@ -111,8 +123,8 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="px-6 py-12 text-center text-gray-500">
-                                        <span class="text-sm">Belum ada pelamar Fastwork yang mendaftar.</span>
+                                    <td colspan="8" class="px-6 py-12 text-center text-gray-500">
+                                        <span class="text-sm">Belum ada pendaftar baru.</span>
                                     </td>
                                 </tr>
                             @endforelse
