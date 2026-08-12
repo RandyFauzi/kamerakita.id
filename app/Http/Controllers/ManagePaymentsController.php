@@ -24,37 +24,12 @@ class ManagePaymentsController extends Controller
      */
     public function index(Request $request)
     {
-        // 1. Get available periods
-        $periods = PeriodService::getAvailablePeriods();
-        
-        $selectedPeriodKey = $request->input('period');
-        if (!$selectedPeriodKey) {
-            $selectedPeriodKey = 'all';
-        }
-
-        if ($selectedPeriodKey === 'all') {
-            $startDate = null;
-            $endDate = null;
-        } elseif ($selectedPeriodKey) {
-            $parts = explode('|', $selectedPeriodKey);
-            $startDate = Carbon::parse($parts[0])->startOfDay();
-            $endDate = Carbon::parse($parts[1])->endOfDay();
-        } else {
-            $range = PeriodService::getPeriodRange(now());
-            $startDate = $range['start'];
-            $endDate = $range['end'];
-        }
-
         $search = $request->input('search');
 
-        // 2. Fetch unpaid approved reports for the selected period
+        // 2. Fetch all unpaid approved reports unconditionally
         $unpaidReportsQuery = VideoWorkReport::with('partner')
             ->where('qc_status', 'approved')
             ->where('payment_status', 'unpaid');
-            
-        if ($startDate && $endDate) {
-            $unpaidReportsQuery->whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')]);
-        }
 
         if ($search) {
             $unpaidReportsQuery->whereHas('partner', function ($q) use ($search) {
@@ -83,12 +58,6 @@ class ManagePaymentsController extends Controller
 
             // Get period approval info if exists
             $periodApproval = null;
-            if ($startDate && $endDate) {
-                $periodApproval = PeriodApproval::where('partner_id', $partner->id)
-                    ->where('period_start_date', $startDate->format('Y-m-d'))
-                    ->where('period_end_date', $endDate->format('Y-m-d'))
-                    ->first();
-            }
 
             $totalMinutes = $reports->sum('approved_duration_minutes');
             $hours = $totalMinutes / 60;
@@ -175,7 +144,7 @@ class ManagePaymentsController extends Controller
             ];
         }
 
-        return view('payments.manage', compact('workers', 'payoutHistory', 'periods', 'selectedPeriodKey', 'startDate', 'endDate', 'search', 'sort'));
+        return view('payments.manage', compact('workers', 'payoutHistory', 'search', 'sort'));
     }
 
     /**

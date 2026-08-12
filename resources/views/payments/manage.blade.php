@@ -170,18 +170,7 @@
             <!-- Dropdown Pilihan Periode Mingguan -->
             <div class="bg-white/80 backdrop-blur-md overflow-hidden shadow-sm sm:rounded-2xl border border-gray-150 p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <form action="{{ route('payments.manage') }}" method="GET" class="w-full sm:w-auto flex flex-col sm:flex-row items-center gap-3">
-                    <div class="flex items-center gap-3 w-full sm:w-auto">
-                        <label for="period" class="shrink-0 text-xs font-bold text-gray-500 uppercase tracking-wider font-mono">Periode:</label>
-                        <select name="period" id="period" onchange="this.form.submit()" class="block w-full sm:w-48 px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-gray-700 font-medium">
-                            <option value="all" {{ $selectedPeriodKey === 'all' ? 'selected' : '' }}>Semua Periode</option>
-                            @foreach($periods as $p)
-                                <option value="{{ $p['start']->format('Y-m-d') . '|' . $p['end']->format('Y-m-d') }}" 
-                                    {{ $selectedPeriodKey === ($p['start']->format('Y-m-d') . '|' . $p['end']->format('Y-m-d')) ? 'selected' : '' }}>
-                                    {{ $p['label'] }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
+
 
                     <div class="flex items-center gap-3 w-full sm:w-auto">
                         <select name="sort" onchange="this.form.submit()" class="block w-full sm:w-40 px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-gray-700 font-medium">
@@ -201,15 +190,11 @@
                     <button type="submit" class="hidden">Search</button>
                 </form>
                 <div class="flex flex-col sm:flex-row items-end sm:items-center gap-3">
-                    <div class="text-xs font-semibold text-gray-400 text-right">
-                        Rentang Laporan: <span class="text-slate-800 font-bold font-mono">{{ $startDate ? $startDate->translatedFormat('d M Y') . ' - ' . $endDate->translatedFormat('d M Y') : 'Semua Waktu' }}</span>
-                    </div>
-
                     @if(auth()->user()->role === 'superadmin' && count($workers) > 0)
-                        <form action="{{ route('payments.batch-pay') }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin memproses SEMUA pembayaran untuk periode ini dengan bukti dummy?');">
+                        <form action="{{ route('payments.batch-pay') }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin memproses SEMUA pembayaran untuk semua periode ini dengan bukti dummy?');">
                             @csrf
-                            <input type="hidden" name="period_start_date" value="{{ $startDate ? $startDate->format('Y-m-d') : 'all' }}">
-                            <input type="hidden" name="period_end_date" value="{{ $endDate ? $endDate->format('Y-m-d') : 'all' }}">
+                            <input type="hidden" name="period_start_date" value="all">
+                            <input type="hidden" name="period_end_date" value="all">
                             <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl transition shadow-sm shadow-indigo-200 whitespace-nowrap">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                                 Batch Pay
