@@ -12,6 +12,11 @@ class FastworkOnboardingController extends Controller
         return view('onboarding.index');
     }
 
+    public function showRegisterForm()
+    {
+        return view('onboarding.form');
+    }
+
     public function handleSubmission(Request $request)
     {
         $validated = $request->validate([

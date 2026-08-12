@@ -175,6 +175,7 @@ Route::middleware('auth')->group(function () {
 
 // Public Fastwork Onboarding routes
 Route::get('/onboarding', [\App\Http\Controllers\FastworkOnboardingController::class, 'showForm'])->name('onboarding.form');
+Route::get('/onboarding/register', [\App\Http\Controllers\FastworkOnboardingController::class, 'showRegisterForm'])->name('onboarding.register');
 Route::post('/onboarding', [\App\Http\Controllers\FastworkOnboardingController::class, 'handleSubmission'])->name('onboarding.submit');
 
 require __DIR__.'/auth.php';
