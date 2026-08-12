@@ -120,7 +120,7 @@
                         <img src="{{ asset('images/onboarding/page_1_thumbnail.jpg') }}" alt="Hero Banner" class="w-full h-full object-cover object-center">
                         
                         <!-- Smooth White Gradient Fade overlay (exact blend as Figma) -->
-                        <div class="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-white via-white/85 to-transparent pointer-events-none z-10"></div>
+                        <div class="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-white via-white/85 to-transparent pointer-events-none z-10"></div>
                     </div>
                     
                     <!-- Content & CTAs -->
@@ -277,7 +277,7 @@
                         <img src="{{ asset('images/onboarding/page_6_thumbnail.jpg') }}" alt="Success Cuan" class="w-full h-full object-cover object-center">
                         
                         <!-- Smooth White Gradient Fade overlay -->
-                        <div class="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-white via-white/85 to-transparent pointer-events-none z-10"></div>
+                        <div class="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-white via-white/85 to-transparent pointer-events-none z-10"></div>
                     </div>
 
                     <!-- Content & CTAs -->
