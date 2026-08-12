@@ -170,9 +170,7 @@
                 <!-- ================= STEP 3: WHATSAPP INPUT ================= -->
                 <div x-show="step === 3" x-transition.opacity.duration.300ms class="p-8 sm:p-12 flex flex-col gap-8 max-w-[630px] mx-auto min-h-[446px] justify-between">
                     <div class="space-y-8 flex flex-col items-center">
-                        <div class="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center text-green-500 border border-green-100">
-                            <svg class="w-12 h-12 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-1.099 4.019 4.142-1.087z"/></svg>
-                        </div>
+                        <img src="{{ asset('images/onboarding/page2.png') }}" alt="Ilustrasi WhatsApp" class="w-32 h-32 object-contain mx-auto">
                         <h2 class="text-2xl sm:text-[32px] font-semibold text-center text-neutralText-dark leading-tight">Berapa nomor WhatsApp kamu?</h2>
                         
                         <div class="w-full bg-white border border-[#a7a7a7] rounded-[12px] px-5 py-4 flex items-center shadow-sm focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-500/20">
