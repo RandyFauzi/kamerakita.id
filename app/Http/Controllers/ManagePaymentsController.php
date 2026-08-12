@@ -28,8 +28,8 @@ class ManagePaymentsController extends Controller
         $periods = PeriodService::getAvailablePeriods();
         
         $selectedPeriodKey = $request->input('period');
-        if (!$selectedPeriodKey && !empty($periods)) {
-            $selectedPeriodKey = $periods[0]['start']->format('Y-m-d') . '|' . $periods[0]['end']->format('Y-m-d');
+        if (!$selectedPeriodKey) {
+            $selectedPeriodKey = 'all';
         }
 
         if ($selectedPeriodKey === 'all') {
@@ -238,19 +238,34 @@ class ManagePaymentsController extends Controller
                 }
 
                 if ($startDate && $endDate) {
+                    $periodsToCheck = [['start' => $startDate->format('Y-m-d'), 'end' => $endDate->format('Y-m-d')]];
+                } else {
+                    // Extract unique periods from the reports being paid
+                    $periodsToCheck = collect();
+                    foreach ($reports as $report) {
+                        $range = \App\Services\PeriodService::getPeriodRange($report->submission_date);
+                        $periodsToCheck->push([
+                            'start' => $range['start']->format('Y-m-d'),
+                            'end' => $range['end']->format('Y-m-d')
+                        ]);
+                    }
+                    $periodsToCheck = $periodsToCheck->unique()->values()->all();
+                }
+
+                foreach ($periodsToCheck as $period) {
                     // Check if there are ANY unpaid reports left for this partner in this period
                     $remainingUnpaid = VideoWorkReport::where('partner_id', $partner->id)
                         ->where('qc_status', 'approved')
                         ->where('payment_status', 'unpaid')
-                        ->whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
+                        ->whereBetween('submission_date', [$period['start'], $period['end']])
                         ->count();
 
                     if ($remainingUnpaid === 0) {
                         // Update PeriodApproval record status to paid only if everything is paid
                         PeriodApproval::updateOrCreate([
                             'partner_id' => $partner->id,
-                            'period_start_date' => $startDate->format('Y-m-d'),
-                            'period_end_date' => $endDate->format('Y-m-d'),
+                            'period_start_date' => $period['start'],
+                            'period_end_date' => $period['end'],
                         ], [
                             'status' => 'paid',
                         ]);
@@ -310,15 +325,39 @@ class ManagePaymentsController extends Controller
                 }
 
                 if ($startDate && $endDate) {
-                    $partnerIds = $reports->pluck('partner_id')->unique();
-                    foreach ($partnerIds as $partnerId) {
-                        PeriodApproval::updateOrCreate([
-                            'partner_id' => $partnerId,
-                            'period_start_date' => $startDate->format('Y-m-d'),
-                            'period_end_date' => $endDate->format('Y-m-d'),
-                        ], [
-                            'status' => 'paid',
+                    $periodsToCheck = [['start' => $startDate->format('Y-m-d'), 'end' => $endDate->format('Y-m-d')]];
+                } else {
+                    // Extract unique periods from the reports being paid
+                    $periodsToCheck = collect();
+                    foreach ($reports as $report) {
+                        $range = \App\Services\PeriodService::getPeriodRange($report->submission_date);
+                        $periodsToCheck->push([
+                            'start' => $range['start']->format('Y-m-d'),
+                            'end' => $range['end']->format('Y-m-d')
                         ]);
+                    }
+                    $periodsToCheck = $periodsToCheck->unique()->values()->all();
+                }
+
+                $partnerIds = $reports->pluck('partner_id')->unique();
+                foreach ($partnerIds as $partnerId) {
+                    foreach ($periodsToCheck as $period) {
+                        // Check if there are ANY unpaid reports left for this partner in this period
+                        $remainingUnpaid = VideoWorkReport::where('partner_id', $partnerId)
+                            ->where('qc_status', 'approved')
+                            ->where('payment_status', 'unpaid')
+                            ->whereBetween('submission_date', [$period['start'], $period['end']])
+                            ->count();
+                            
+                        if ($remainingUnpaid === 0) {
+                            PeriodApproval::updateOrCreate([
+                                'partner_id' => $partnerId,
+                                'period_start_date' => $period['start'],
+                                'period_end_date' => $period['end'],
+                            ], [
+                                'status' => 'paid',
+                            ]);
+                        }
                     }
                 }
             });
