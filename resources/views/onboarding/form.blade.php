@@ -1,17 +1,17 @@
 <x-guest-layout>
-    <div x-data="onboardingForm()" x-init="initForm" class="-mx-8 -my-8">
+    <div x-data="onboardingForm()" x-init="initForm" class="w-full">
         
         <!-- Progress Bar -->
-        <div class="h-1.5 w-full bg-gray-100">
+        <div class="h-1.5 w-full bg-gray-100 rounded-full mb-8 overflow-hidden">
             <div class="h-1.5 bg-indigo-500 transition-all duration-500 ease-out" :style="'width: ' + ((step / 5) * 100) + '%'"></div>
         </div>
 
-        <form method="POST" action="{{ route('onboarding.submit') }}" class="flex flex-col relative min-h-96" id="registrationForm" @submit.prevent="submitForm">
+        <form method="POST" action="{{ route('onboarding.submit') }}" id="registrationForm" @submit.prevent="submitForm">
             @csrf
             
             <!-- Step 1: Name -->
-            <div x-show="step === 1" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-x-8" x-transition:enter-end="opacity-100 translate-x-0" class="flex flex-col pt-8" x-cloak>
-                <div class="px-8 flex flex-col justify-center pb-8">
+            <div x-show="step === 1" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-x-8" x-transition:enter-end="opacity-100 translate-x-0" x-cloak>
+                <div class="flex flex-col justify-center pb-8">
                     <img src="{{ asset('images/onboarding/step1.jpg') }}" alt="Welcome" class="w-48 h-48 mx-auto object-cover rounded-2xl mb-8 shadow-sm">
                     <h3 class="text-2xl font-black text-gray-900 leading-tight mb-2 text-center">Haloo, selamat bergabung di KameraKita AI! 👋</h3>
                     <p class="text-gray-500 text-sm mb-8 text-center">Siapa nama kamu?</p>
@@ -26,8 +26,8 @@
             </div>
 
             <!-- Step 2: WhatsApp -->
-            <div x-show="step === 2" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-x-8" x-transition:enter-end="opacity-100 translate-x-0" class="flex flex-col pt-8" x-cloak>
-                <div class="px-8 flex flex-col justify-center pb-8">
+            <div x-show="step === 2" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-x-8" x-transition:enter-end="opacity-100 translate-x-0" x-cloak>
+                <div class="flex flex-col justify-center pb-8">
                     <img src="{{ asset('images/onboarding/step2.jpg') }}" alt="Chat" class="w-48 h-48 mx-auto object-cover rounded-2xl mb-8 shadow-sm">
                     <h3 class="text-2xl font-black text-gray-900 leading-tight mb-2 text-center">Bisa kita terhubung lebih dekat? 📱</h3>
                     <p class="text-gray-500 text-sm mb-8 text-center">Masukkan nomor WhatsApp aktif kamu untuk koordinasi.</p>
@@ -42,8 +42,8 @@
             </div>
 
             <!-- Step 3: Fastwork -->
-            <div x-show="step === 3" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-x-8" x-transition:enter-end="opacity-100 translate-x-0" class="flex flex-col pt-8" x-cloak>
-                <div class="px-8 flex flex-col justify-center pb-8">
+            <div x-show="step === 3" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-x-8" x-transition:enter-end="opacity-100 translate-x-0" x-cloak>
+                <div class="flex flex-col justify-center pb-8">
                     <img src="{{ asset('images/onboarding/step3.jpg') }}" alt="Profile" class="w-48 h-48 mx-auto object-cover rounded-2xl mb-8 shadow-sm">
                     <h3 class="text-2xl font-black text-gray-900 leading-tight mb-2 text-center">Username Fastwork 💼</h3>
                     <p class="text-gray-500 text-sm mb-8 text-center">Jika ada, apa username Fastwork kamu? (Opsional)</p>
@@ -55,8 +55,8 @@
             </div>
 
             <!-- Step 4: Device -->
-            <div x-show="step === 4" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-x-8" x-transition:enter-end="opacity-100 translate-x-0" class="flex flex-col pt-8" x-cloak>
-                <div class="px-8 flex flex-col justify-center pb-8">
+            <div x-show="step === 4" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-x-8" x-transition:enter-end="opacity-100 translate-x-0" x-cloak>
+                <div class="flex flex-col justify-center pb-8">
                     <img src="{{ asset('images/onboarding/step4.jpg') }}" alt="Device" class="w-48 h-48 mx-auto object-cover rounded-2xl mb-8 shadow-sm">
                     <h3 class="text-2xl font-black text-gray-900 leading-tight mb-2 text-center">Tipe Perangkat Apple 🍎</h3>
                     <p class="text-gray-500 text-sm mb-8 text-center">Pilih seri iPhone yang kamu gunakan saat ini.</p>
@@ -82,8 +82,8 @@
             </div>
 
             <!-- Step 5: Headstrap -->
-            <div x-show="step === 5" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-x-8" x-transition:enter-end="opacity-100 translate-x-0" class="flex flex-col pt-8" x-cloak>
-                <div class="px-8 flex flex-col justify-center pb-8">
+            <div x-show="step === 5" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-x-8" x-transition:enter-end="opacity-100 translate-x-0" x-cloak>
+                <div class="flex flex-col justify-center pb-8">
                     <img src="{{ asset('images/onboarding/step5.jpg') }}" alt="Headstrap" class="w-48 h-48 mx-auto object-cover rounded-2xl mb-8 shadow-sm">
                     <h3 class="text-2xl font-black text-gray-900 leading-tight mb-2 text-center">Persiapan Alat 📸</h3>
                     <p class="text-gray-500 text-sm mb-8 text-center">Apakah kamu sudah memiliki aksesoris Headstrap?</p>
@@ -98,8 +98,8 @@
                 </div>
             </div>
 
-            <!-- Navigation Buttons (Fixed Bottom) -->
-            <div class="px-8 pb-8 pt-4 mt-auto">
+            <!-- Navigation Buttons -->
+            <div class="pt-2">
                 <div class="flex items-center gap-3">
                     <button type="button" x-show="step > 1" @click="prevStep" class="p-4 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-2xl transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
