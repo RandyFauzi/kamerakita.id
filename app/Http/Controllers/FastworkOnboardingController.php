@@ -35,6 +35,11 @@ class FastworkOnboardingController extends Controller
 
         FastworkOnboarding::create($validated);
 
+        // Return JSON if requested via AJAX
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true]);
+        }
+
         // Redirect to official WhatsApp coordination group
         return redirect()->away('https://chat.whatsapp.com/EWzTpticIllFogSNYx0TTt');
     }
