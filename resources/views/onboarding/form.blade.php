@@ -54,10 +54,10 @@
             full_name: '',
             whatsapp_number: '',
             device_type: '',
-            has_headstrap: '',
-            isSubmitting: false,
-            errorMessage: ''
+            has_headstrap: ''
         },
+        isSubmitting: false,
+        errorMessage: '',
         nextStep() {
             if (this.step < 6) this.step++;
         },
@@ -218,6 +218,7 @@
                                 <option value="iPhone 14 / 14 Plus">iPhone 14 / 14 Plus</option>
                                 <option value="iPhone 13 Series">iPhone 13 Series</option>
                                 <option value="iPhone 12 Series">iPhone 12 Series</option>
+                                <option value="Di bawah iPhone 12">Di bawah iPhone 12</option>
                             </select>
                             <div class="absolute right-5 pointer-events-none text-neutralText-muted">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
