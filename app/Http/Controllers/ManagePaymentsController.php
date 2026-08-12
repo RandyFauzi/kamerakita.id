@@ -68,10 +68,14 @@ class ManagePaymentsController extends Controller
         
         $unpaidReports = $unpaidReportsQuery->get();
 
-        $grouped = $unpaidReports->groupBy('partner_id');
+        $grouped = $unpaidReports->groupBy(function ($report) {
+            $partnerRate = $report->partner ? ($report->partner->base_hourly_rate ?: self::DEFAULT_HOURLY_RATE_IDR) : self::DEFAULT_HOURLY_RATE_IDR;
+            $appliedRate = $report->rate_applied ?: $partnerRate;
+            return $report->partner_id . '_' . $appliedRate;
+        });
 
         $workers = [];
-        foreach ($grouped as $partnerId => $reports) {
+        foreach ($grouped as $key => $reports) {
             $partner = $reports->first()->partner;
             if (! $partner) {
                 continue;
@@ -80,7 +84,7 @@ class ManagePaymentsController extends Controller
             // Get period approval info if exists
             $periodApproval = null;
             if ($startDate && $endDate) {
-                $periodApproval = PeriodApproval::where('partner_id', $partnerId)
+                $periodApproval = PeriodApproval::where('partner_id', $partner->id)
                     ->where('period_start_date', $startDate->format('Y-m-d'))
                     ->where('period_end_date', $endDate->format('Y-m-d'))
                     ->first();
@@ -88,18 +92,12 @@ class ManagePaymentsController extends Controller
 
             $totalMinutes = $reports->sum('approved_duration_minutes');
             $hours = $totalMinutes / 60;
-            $rate = $partner->base_hourly_rate ?: self::DEFAULT_HOURLY_RATE_IDR;
+            $partnerRate = $partner->base_hourly_rate ?: self::DEFAULT_HOURLY_RATE_IDR;
+            $rate = $reports->first()->rate_applied ?: $partnerRate;
             
-            $totalAmount = 0;
-            $hasCustomRate = false;
-            foreach ($reports as $r) {
-                $rRate = $r->rate_applied ?: $rate;
-                if ($rRate != $rate) {
-                    $hasCustomRate = true;
-                }
-                $totalAmount += ($r->approved_duration_minutes / 60) * $rRate;
-            }
+            $totalAmount = $hours * $rate;
             $totalAmount = round($totalAmount);
+            $hasCustomRate = ($rate != $partnerRate);
 
             $workers[] = [
                 'partner' => $partner,
@@ -110,7 +108,15 @@ class ManagePaymentsController extends Controller
                 'total_amount' => $totalAmount,
                 'has_custom_rate' => $hasCustomRate,
                 'period_approval' => $periodApproval,
+                'latest_date' => $reports->max('submission_date'),
             ];
+        }
+
+        $sort = $request->input('sort', 'date');
+        if ($sort === 'name') {
+            $workers = collect($workers)->sortBy(fn($w) => strtolower($w['partner']->full_name))->values()->all();
+        } else {
+            $workers = collect($workers)->sortByDesc(fn($w) => $w['latest_date'])->values()->all();
         }
 
         // 3. Fetch payout history (all payouts, order by date)
@@ -133,7 +139,9 @@ class ManagePaymentsController extends Controller
 
         $groupedPaid = $paidReports->groupBy(function ($item) {
             $paidAt = $item->paid_at instanceof Carbon ? $item->paid_at : Carbon::parse($item->paid_at);
-            return $item->partner_id . '_' . $paidAt->format('Y-m-d H:i:s') . '_' . $item->payment_reference_proof_path;
+            $partnerRate = $item->partner ? ($item->partner->base_hourly_rate ?: self::DEFAULT_HOURLY_RATE_IDR) : self::DEFAULT_HOURLY_RATE_IDR;
+            $appliedRate = $item->rate_applied ?: $partnerRate;
+            return $item->partner_id . '_' . $paidAt->format('Y-m-d H:i:s') . '_' . $item->payment_reference_proof_path . '_' . $appliedRate;
         });
 
         $payoutHistory = [];
@@ -146,18 +154,12 @@ class ManagePaymentsController extends Controller
 
             $totalMinutes = $reports->sum('approved_duration_minutes');
             $hours = $totalMinutes / 60;
-            $rate = $partner->base_hourly_rate ?: self::DEFAULT_HOURLY_RATE_IDR;
+            $partnerRate = $partner->base_hourly_rate ?: self::DEFAULT_HOURLY_RATE_IDR;
+            $rate = $first->rate_applied ?: $partnerRate;
             
-            $totalAmount = 0;
-            $hasCustomRate = false;
-            foreach ($reports as $r) {
-                $rRate = $r->rate_applied ?: $rate;
-                if ($rRate != $rate) {
-                    $hasCustomRate = true;
-                }
-                $totalAmount += ($r->approved_duration_minutes / 60) * $rRate;
-            }
+            $totalAmount = $hours * $rate;
             $totalAmount = round($totalAmount);
+            $hasCustomRate = ($rate != $partnerRate);
 
             $payoutHistory[] = [
                 'paid_at' => $first->paid_at,
@@ -168,11 +170,12 @@ class ManagePaymentsController extends Controller
                 'total_minutes' => $totalMinutes,
                 'total_amount' => $totalAmount,
                 'has_custom_rate' => $hasCustomRate,
-                'batch_id' => base64_encode($partner->id . '|' . $first->paid_at->format('Y-m-d H:i:s') . '|' . $first->payment_reference_proof_path),
+                'rate' => $rate,
+                'batch_id' => base64_encode($partner->id . '|' . $first->paid_at->format('Y-m-d H:i:s') . '|' . $first->payment_reference_proof_path . '|' . $rate),
             ];
         }
 
-        return view('payments.manage', compact('workers', 'payoutHistory', 'periods', 'selectedPeriodKey', 'startDate', 'endDate', 'search'));
+        return view('payments.manage', compact('workers', 'payoutHistory', 'periods', 'selectedPeriodKey', 'startDate', 'endDate', 'search', 'sort'));
     }
 
     /**
@@ -184,6 +187,7 @@ class ManagePaymentsController extends Controller
             'payment_proof' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'period_start_date' => 'required|string',
             'period_end_date' => 'required|string',
+            'rate' => 'required|numeric',
         ]);
 
         $reportsQuery = VideoWorkReport::where('partner_id', $partner->id)
@@ -196,6 +200,18 @@ class ManagePaymentsController extends Controller
             $startDate = Carbon::parse($validated['period_start_date']);
             $endDate = Carbon::parse($validated['period_end_date']);
             $reportsQuery->whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')]);
+        }
+
+        $rate = $validated['rate'];
+        $partnerRate = $partner->base_hourly_rate ?: self::DEFAULT_HOURLY_RATE_IDR;
+        
+        if ($rate == $partnerRate) {
+            $reportsQuery->where(function($q) use ($partnerRate) {
+                $q->whereNull('rate_applied')
+                  ->orWhere('rate_applied', $partnerRate);
+            });
+        } else {
+            $reportsQuery->where('rate_applied', $rate);
         }
         
         $reports = $reportsQuery->get();
@@ -222,14 +238,23 @@ class ManagePaymentsController extends Controller
                 }
 
                 if ($startDate && $endDate) {
-                    // Update PeriodApproval record status to paid
-                    PeriodApproval::updateOrCreate([
-                        'partner_id' => $partner->id,
-                        'period_start_date' => $startDate->format('Y-m-d'),
-                        'period_end_date' => $endDate->format('Y-m-d'),
-                    ], [
-                        'status' => 'paid',
-                    ]);
+                    // Check if there are ANY unpaid reports left for this partner in this period
+                    $remainingUnpaid = VideoWorkReport::where('partner_id', $partner->id)
+                        ->where('qc_status', 'approved')
+                        ->where('payment_status', 'unpaid')
+                        ->whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
+                        ->count();
+
+                    if ($remainingUnpaid === 0) {
+                        // Update PeriodApproval record status to paid only if everything is paid
+                        PeriodApproval::updateOrCreate([
+                            'partner_id' => $partner->id,
+                            'period_start_date' => $startDate->format('Y-m-d'),
+                            'period_end_date' => $endDate->format('Y-m-d'),
+                        ], [
+                            'status' => 'paid',
+                        ]);
+                    }
                 }
             });
 
@@ -320,6 +345,7 @@ class ManagePaymentsController extends Controller
         try {
             $decoded = base64_decode($validated['batch_id']);
             $parts = explode('|', $decoded);
+            $rate = null;
             if (count($parts) < 3) {
                 // Support legacy format for backward compatibility
                 if (count($parts) === 2) {
@@ -333,6 +359,9 @@ class ManagePaymentsController extends Controller
                 $partnerId = $parts[0];
                 $paidAtStr = $parts[1];
                 $proofPath = $parts[2];
+                if (count($parts) >= 4) {
+                    $rate = $parts[3];
+                }
             }
 
             $reportsQuery = VideoWorkReport::where('payment_status', 'paid')
@@ -341,6 +370,20 @@ class ManagePaymentsController extends Controller
 
             if ($partnerId) {
                 $reportsQuery->where('partner_id', $partnerId);
+                
+                if ($rate !== null) {
+                    $partner = Partner::find($partnerId);
+                    $partnerRate = $partner ? ($partner->base_hourly_rate ?: self::DEFAULT_HOURLY_RATE_IDR) : self::DEFAULT_HOURLY_RATE_IDR;
+                    
+                    if ($rate == $partnerRate) {
+                        $reportsQuery->where(function($q) use ($partnerRate) {
+                            $q->whereNull('rate_applied')
+                              ->orWhere('rate_applied', $partnerRate);
+                        });
+                    } else {
+                        $reportsQuery->where('rate_applied', $rate);
+                    }
+                }
             }
 
             $reports = $reportsQuery->get();
@@ -349,7 +392,7 @@ class ManagePaymentsController extends Controller
                 return redirect()->back()->with('error', 'Tidak ditemukan batch pembayaran yang sesuai.');
             }
 
-            DB::transaction(function () use ($reports, $proofPath) {
+            DB::transaction(function () use ($reports, $proofPath, $partnerId, $paidAtStr) {
                 foreach ($reports as $report) {
                     $startDate = PeriodService::getPeriodRange($report->submission_date)['start'];
                     $endDate = PeriodService::getPeriodRange($report->submission_date)['end'];
@@ -367,8 +410,17 @@ class ManagePaymentsController extends Controller
                         ->update(['status' => 'approved']);
                 }
 
-                // Delete local storage backup file of payment proof
-                if (Storage::disk('public')->exists($proofPath)) {
+                // Check if there are any remaining reports in this specific batch (e.g. if we only cancelled one rate group)
+                $remainingInBatch = VideoWorkReport::where('payment_status', 'paid')
+                    ->where('paid_at', $paidAtStr)
+                    ->where('payment_reference_proof_path', $proofPath);
+                
+                if ($partnerId) {
+                    $remainingInBatch->where('partner_id', $partnerId);
+                }
+                
+                // Delete local storage backup file of payment proof ONLY if no reports are using it anymore
+                if ($remainingInBatch->count() === 0 && Storage::disk('public')->exists($proofPath) && $proofPath !== 'payment_proofs/dummy_batch.jpg') {
                     Storage::disk('public')->delete($proofPath);
                 }
             });

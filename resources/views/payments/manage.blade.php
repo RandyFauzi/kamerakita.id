@@ -183,6 +183,13 @@
                         </select>
                     </div>
 
+                    <div class="flex items-center gap-3 w-full sm:w-auto">
+                        <select name="sort" onchange="this.form.submit()" class="block w-full sm:w-40 px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-gray-700 font-medium">
+                            <option value="date" {{ (request('sort') ?? 'date') === 'date' ? 'selected' : '' }}>Urut Terbaru</option>
+                            <option value="name" {{ request('sort') === 'name' ? 'selected' : '' }}>Urut Abjad (A-Z)</option>
+                        </select>
+                    </div>
+
                     <div class="relative w-full sm:w-auto flex items-center">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <svg class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
@@ -251,7 +258,7 @@
                                     <span class="block text-[10px] font-bold text-gray-450 uppercase tracking-wider">Total Tagihan</span>
                                     <div class="flex items-center gap-2 justify-start md:justify-end">
                                         @if($w['has_custom_rate'])
-                                            <span class="text-[9px] font-bold uppercase tracking-wider text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-200">Custom Rate</span>
+                                            <span class="text-[9px] font-bold uppercase tracking-wider text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-200">Custom (Rp {{ number_format($w['rate'], 0, ',', '.') }}/j)</span>
                                         @endif
                                         <span class="block text-lg font-black {{ $w['has_custom_rate'] ? 'text-amber-600' : 'text-indigo-600' }} leading-tight">Rp {{ number_format($w['total_amount'], 0, ',', '.') }}</span>
                                     </div>
@@ -354,7 +361,7 @@
                                     <span class="block text-[10px] font-bold text-gray-450 uppercase tracking-wider">Total Dibayar</span>
                                     <div class="flex items-center gap-2 justify-start md:justify-end">
                                         @if($pay['has_custom_rate'])
-                                            <span class="text-[9px] font-bold uppercase tracking-wider text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-200">Custom Rate</span>
+                                            <span class="text-[9px] font-bold uppercase tracking-wider text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-200">Custom (Rp {{ number_format($pay['rate'], 0, ',', '.') }}/j)</span>
                                         @endif
                                         <span class="block text-lg font-black {{ $pay['has_custom_rate'] ? 'text-amber-600' : 'text-emerald-600' }} leading-tight">Rp {{ number_format($pay['total_amount'], 0, ',', '.') }}</span>
                                     </div>
@@ -463,10 +470,11 @@
                     </div>
 
                     <!-- Modal Body Form -->
-                    <form :action="'/payments/manage/' + activeWorker.partner.id + '/pay'" method="POST" enctype="multipart/form-data" class="flex-1 p-6 space-y-5">
+                    <form :action="'/payments/manage/' + activeWorker.partner?.id + '/pay'" method="POST" enctype="multipart/form-data" class="flex-1 p-6 space-y-5">
                         @csrf
                         <input type="hidden" name="period_start_date" value="{{ $startDate ? $startDate->format('Y-m-d') : 'all' }}">
                         <input type="hidden" name="period_end_date" value="{{ $endDate ? $endDate->format('Y-m-d') : 'all' }}">
+                        <input type="hidden" name="rate" :value="activeWorker.rate">
                         
                         <!-- Earnings Summary Card -->
                         <div class="bg-gradient-to-br from-indigo-500 to-indigo-700 text-white rounded-2xl p-5 shadow-inner flex justify-between items-center">
