@@ -53,6 +53,9 @@ class McpServerController extends Controller
                 case 'anomaly_detector':
                     $result = $this->anomalyDetector($args);
                     break;
+                case 'top_partners':
+                    $result = $this->topPartners($args);
+                    break;
                 default:
                     return response()->json(['error' => "Unknown tool: {$tool}"], 400);
             }
@@ -274,6 +277,34 @@ class McpServerController extends Controller
             'message' => 'Pemindaian anomali selesai.',
             'anomalies_found' => count($anomalies['high_duration'] ?? []) + count($anomalies['stuck_pending'] ?? []),
             'data' => $anomalies
+        ];
+    }
+
+    private function topPartners(array $args)
+    {
+        $limit = $args['limit'] ?? 20;
+
+        $partners = Partner::with('user')
+            ->withCount('videoWorkReports as total_reports')
+            ->withSum('videoWorkReports as total_submitted', 'submitted_duration_minutes')
+            ->withSum('videoWorkReports as total_approved', 'approved_duration_minutes')
+            ->orderByDesc('total_reports')
+            ->limit($limit)
+            ->get()
+            ->map(function ($partner) {
+                return [
+                    'name' => $partner->user->name ?? 'Unknown',
+                    'email' => $partner->user->email ?? 'Unknown',
+                    'wa_number' => $partner->whatsapp_number ?? '-',
+                    'total_reports' => $partner->total_reports,
+                    'total_submitted_minutes' => $partner->total_submitted ?? 0,
+                    'total_approved_minutes' => $partner->total_approved ?? 0,
+                ];
+            });
+
+        return [
+            'message' => "Top {$limit} Partners by Reports",
+            'data' => $partners
         ];
     }
 }
