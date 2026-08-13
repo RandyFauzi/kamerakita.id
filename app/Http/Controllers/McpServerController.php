@@ -82,6 +82,9 @@ class McpServerController extends Controller
                     case 'top_partners':
                         $result = $this->topPartners($args);
                         break;
+                    case 'send_wa':
+                        $result = $this->sendWa($args);
+                        break;
                     default:
                         throw new \Exception("Unknown tool: {$toolName}");
                 }
@@ -200,6 +203,18 @@ class McpServerController extends Controller
                     'properties' => [
                         'limit' => ['type' => 'integer', 'description' => 'Jumlah maksimal partner (default 20)']
                     ]
+                ]
+            ],
+            [
+                'name' => 'send_wa',
+                'description' => 'Kirim pesan teks WhatsApp instan ke nomor HP (otomatis diubah ke kode negara).',
+                'parameters' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'phone' => ['type' => 'string', 'description' => 'Nomor HP tujuan (misal: 089536...)'],
+                        'message' => ['type' => 'string', 'description' => 'Isi pesan teks yang ingin dikirimkan']
+                    ],
+                    'required' => ['phone', 'message']
                 ]
             ]
         ];
@@ -420,6 +435,25 @@ class McpServerController extends Controller
         return [
             'message' => "Top {$limit} Partners by Reports",
             'data' => $partners
+        ];
+    }
+
+    private function sendWa(array $args)
+    {
+        $phone = $args['phone'] ?? null;
+        $message = $args['message'] ?? null;
+
+        if (!$phone || !$message) {
+            throw new \Exception("Parameter phone dan message wajib diisi.");
+        }
+
+        $waService = new \App\Services\HandcapWaService();
+        $response = $waService->sendMessage($phone, $message, 'high'); // Use high priority
+
+        return [
+            'status' => 'success',
+            'message' => 'Pesan WA berhasil dikirim',
+            'gateway_response' => $response
         ];
     }
 }

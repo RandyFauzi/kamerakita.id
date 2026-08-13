@@ -1,7 +1,7 @@
 {
   "mcpServers": {
     "kamerakita-mcp": {
-      "serverUrl": "http://127.0.0.1/api/mcp",
+      "serverUrl": "https://kamerakitaid.site/api/mcp",
       "env": {
         "MCP_SECRET_KEY": "kamerakita-mcp-2026"
       }
