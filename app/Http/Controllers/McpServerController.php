@@ -15,79 +15,194 @@ class McpServerController extends Controller
 {
     public function handle(Request $request)
     {
-        // 1. Verify Authentication
-        $secret = env('MCP_SECRET_KEY', 'kamerakita-mcp-2026');
         $token = $request->bearerToken();
-        
-        if ($token !== $secret) {
-            return response()->json(['error' => 'Unauthorized. Invalid MCP Secret Key.'], 401);
+        $expectedKey = env('MCP_SECRET_KEY', 'kamerakita-mcp-2026');
+
+        if (!$token || $token !== $expectedKey) {
+            return response()->json([
+                'error' => [
+                    'code' => 'UNAUTHORIZED',
+                    'message' => 'Invalid or missing MCP_SECRET_KEY in Bearer token.'
+                ]
+            ], 401);
         }
 
-        $tool = $request->input('tool');
-        $args = $request->input('arguments', []);
-        $isSimulation = $request->input('is_simulation', false);
+        $method = $request->input('method');
+
+        if (!$method) {
+            return response()->json([
+                'error' => [
+                    'code' => 'INVALID_REQUEST',
+                    'message' => 'Missing method parameter'
+                ]
+            ], 400);
+        }
 
         try {
-            if ($isSimulation) {
-                DB::beginTransaction();
-            }
-
-            $result = null;
-
-            switch ($tool) {
-                case 'search_partner':
-                    $result = $this->searchPartner($args);
-                    break;
-                case 'qc_stats':
-                    $result = $this->qcStats($args);
-                    break;
-                case 'execute_action':
-                    $result = $this->executeAction($args);
-                    break;
-                case 'auto_reconcile_proportional':
-                    $result = $this->autoReconcileProportional($args);
-                    break;
-                case 'payroll_assistant':
-                    $result = $this->payrollAssistant($args);
-                    break;
-                case 'anomaly_detector':
-                    $result = $this->anomalyDetector($args);
-                    break;
-                case 'top_partners':
-                    $result = $this->topPartners($args);
-                    break;
-                default:
-                    return response()->json(['error' => "Unknown tool: {$tool}"], 400);
-            }
-
-            if ($isSimulation) {
-                DB::rollBack();
+            if ($method === 'tools/list') {
                 return response()->json([
-                    'status' => 'simulation_success',
-                    'message' => 'Dry-run successful. No data was actually modified.',
-                    'preview' => $result
+                    'tools' => $this->getAvailableTools()
                 ]);
             }
 
-            if (isset($result['status']) && $result['status'] === 'error') {
-                return response()->json($result, 400);
+            if ($method === 'tools/call') {
+                $toolName = $request->input('params.name');
+                $args = $request->input('params.arguments', []);
+                $isSimulation = $request->input('params.arguments.is_simulation', false) || $request->input('is_simulation', false);
+
+                if (!$toolName) {
+                    throw new \Exception("Missing tool name in params.name");
+                }
+
+                if ($isSimulation) {
+                    DB::beginTransaction();
+                }
+
+                $result = null;
+
+                switch ($toolName) {
+                    case 'search_partner':
+                        $result = $this->searchPartner($args);
+                        break;
+                    case 'qc_stats':
+                        $result = $this->qcStats($args);
+                        break;
+                    case 'execute_action':
+                        $result = $this->executeAction($args);
+                        break;
+                    case 'auto_reconcile_proportional':
+                        $result = $this->autoReconcileProportional($args);
+                        break;
+                    case 'payroll_assistant':
+                        $result = $this->payrollAssistant($args);
+                        break;
+                    case 'anomaly_detector':
+                        $result = $this->anomalyDetector($args);
+                        break;
+                    case 'top_partners':
+                        $result = $this->topPartners($args);
+                        break;
+                    default:
+                        throw new \Exception("Unknown tool: {$toolName}");
+                }
+
+                if ($isSimulation) {
+                    DB::rollBack();
+                    $result = [
+                        'simulation_status' => 'success',
+                        'message' => 'Dry-run successful. No data was actually modified.',
+                        'preview' => $result
+                    ];
+                }
+
+                $jsonString = is_array($result) || is_object($result) ? json_encode($result) : (string)$result;
+                
+                return response()->json([
+                    'content' => [
+                        [
+                            'type' => 'text',
+                            'text' => $jsonString
+                        ]
+                    ]
+                ]);
             }
 
-            return response()->json([
-                'status' => 'success',
-                'data' => $result
-            ]);
+            throw new \Exception("Unsupported method: {$method}");
 
         } catch (\Exception $e) {
-            if ($isSimulation) {
+            if (isset($isSimulation) && $isSimulation) {
                 DB::rollBack();
             }
             return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'error' => [
+                    'code' => 'INTERNAL_ERROR',
+                    'message' => $e->getMessage()
+                ]
             ], 500);
         }
+    }
+
+    private function getAvailableTools()
+    {
+        return [
+            [
+                'name' => 'search_partner',
+                'description' => 'Cari partner/worker berdasarkan nama atau email.',
+                'parameters' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'keyword' => ['type' => 'string', 'description' => 'Nama atau email yang dicari']
+                    ],
+                    'required' => ['keyword']
+                ]
+            ],
+            [
+                'name' => 'qc_stats',
+                'description' => 'Dapatkan statistik ringkasan dan daftar laporan video terbaru berdasarkan status atau tanggal.',
+                'parameters' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'status' => ['type' => 'string', 'description' => 'Status QC (pending, approved, rejected)'],
+                        'date' => ['type' => 'string', 'description' => 'Tanggal laporan YYYY-MM-DD']
+                    ]
+                ]
+            ],
+            [
+                'name' => 'execute_action',
+                'description' => 'Lakukan tindakan eksekusi seperti batch approve laporan.',
+                'parameters' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'action' => ['type' => 'string', 'description' => 'Aksi yang akan dilakukan, contoh: batch_approve_reports'],
+                        'payload' => ['type' => 'object', 'description' => 'Payload data untuk aksi']
+                    ],
+                    'required' => ['action', 'payload']
+                ]
+            ],
+            [
+                'name' => 'auto_reconcile_proportional',
+                'description' => 'Otomatis bagikan kuota menit yang disetujui secara proporsional ke semua video pending partner.',
+                'parameters' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'partner_id' => ['type' => 'string'],
+                        'total_quota_minutes' => ['type' => 'integer']
+                    ],
+                    'required' => ['partner_id', 'total_quota_minutes']
+                ]
+            ],
+            [
+                'name' => 'payroll_assistant',
+                'description' => 'Bantu operasi payroll: baca tagihan berjalan, atau tandai tagihan lunas.',
+                'parameters' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'action' => ['type' => 'string', 'description' => 'read_stats atau mark_paid']
+                    ],
+                    'required' => ['action']
+                ]
+            ],
+            [
+                'name' => 'anomaly_detector',
+                'description' => 'Temukan anomali data seperti video tertahan atau durasi tidak wajar.',
+                'parameters' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'anomaly_type' => ['type' => 'string', 'description' => 'all, high_duration, stuck_pending']
+                    ]
+                ]
+            ],
+            [
+                'name' => 'top_partners',
+                'description' => 'Dapatkan klasemen 20 partner teratas berdasarkan total unggahan video.',
+                'parameters' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'limit' => ['type' => 'integer', 'description' => 'Jumlah maksimal partner (default 20)']
+                    ]
+                ]
+            ]
+        ];
     }
 
     private function searchPartner(array $args)
