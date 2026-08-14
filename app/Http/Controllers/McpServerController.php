@@ -20,28 +20,58 @@ class McpServerController extends Controller
 
         if (!$token || $token !== $expectedKey) {
             return response()->json([
+                'jsonrpc' => '2.0',
+                'id' => $request->input('id'),
                 'error' => [
-                    'code' => 'UNAUTHORIZED',
+                    'code' => -32000,
                     'message' => 'Invalid or missing MCP_SECRET_KEY in Bearer token.'
                 ]
             ], 401);
         }
 
         $method = $request->input('method');
+        $id = $request->input('id');
 
         if (!$method) {
             return response()->json([
+                'jsonrpc' => '2.0',
+                'id' => $id,
                 'error' => [
-                    'code' => 'INVALID_REQUEST',
+                    'code' => -32600,
                     'message' => 'Missing method parameter'
                 ]
             ], 400);
         }
 
         try {
+            if ($method === 'initialize') {
+                return response()->json([
+                    'jsonrpc' => '2.0',
+                    'id' => $id,
+                    'result' => [
+                        'protocolVersion' => '2024-11-05',
+                        'capabilities' => [
+                            'tools' => (object)[]
+                        ],
+                        'serverInfo' => [
+                            'name' => 'kamerakita-mcp',
+                            'version' => '1.0.0'
+                        ]
+                    ]
+                ]);
+            }
+
+            if ($method === 'notifications/initialized') {
+                return response()->json(); // No response needed for notification
+            }
+
             if ($method === 'tools/list') {
                 return response()->json([
-                    'tools' => $this->getAvailableTools()
+                    'jsonrpc' => '2.0',
+                    'id' => $id,
+                    'result' => [
+                        'tools' => $this->getAvailableTools()
+                    ]
                 ]);
             }
 
@@ -85,6 +115,12 @@ class McpServerController extends Controller
                     case 'send_wa':
                         $result = $this->sendWa($args);
                         break;
+                    case 'fetch_records':
+                        $result = $this->fetchRecords($args);
+                        break;
+                    case 'aggregate_records':
+                        $result = $this->aggregateRecords($args);
+                        break;
                     default:
                         throw new \Exception("Unknown tool: {$toolName}");
                 }
@@ -101,11 +137,16 @@ class McpServerController extends Controller
                 $jsonString = is_array($result) || is_object($result) ? json_encode($result) : (string)$result;
                 
                 return response()->json([
-                    'content' => [
-                        [
-                            'type' => 'text',
-                            'text' => $jsonString
-                        ]
+                    'jsonrpc' => '2.0',
+                    'id' => $id,
+                    'result' => [
+                        'content' => [
+                            [
+                                'type' => 'text',
+                                'text' => $jsonString
+                            ]
+                        ],
+                        'isError' => false
                     ]
                 ]);
             }
@@ -117,8 +158,10 @@ class McpServerController extends Controller
                 DB::rollBack();
             }
             return response()->json([
+                'jsonrpc' => '2.0',
+                'id' => $request->input('id'),
                 'error' => [
-                    'code' => 'INTERNAL_ERROR',
+                    'code' => -32603,
                     'message' => $e->getMessage()
                 ]
             ], 500);
@@ -215,6 +258,36 @@ class McpServerController extends Controller
                         'message' => ['type' => 'string', 'description' => 'Isi pesan teks yang ingin dikirimkan']
                     ],
                     'required' => ['phone', 'message']
+                ]
+            ],
+            [
+                'name' => 'fetch_records',
+                'description' => 'Membaca/mengambil data dari tabel dengan filter dinamis.',
+                'parameters' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'resource' => ['type' => 'string', 'description' => 'Tabel target (contoh: partners, users, video_work_reports, captured_emails)'],
+                        'select' => ['type' => 'array', 'items' => ['type' => 'string'], 'description' => 'Kolom yang diambil'],
+                        'filters' => ['type' => 'object', 'description' => 'Filter dalam bentuk key-value (mendukung string/angka atau object {in:[]}, {between:[]})'],
+                        'relations' => ['type' => 'array', 'items' => ['type' => 'string'], 'description' => 'Relasi yang disertakan'],
+                        'limit' => ['type' => 'integer'],
+                        'offset' => ['type' => 'integer']
+                    ],
+                    'required' => ['resource']
+                ]
+            ],
+            [
+                'name' => 'aggregate_records',
+                'description' => 'Menghitung aggregasi data dari tabel secara dinamis.',
+                'parameters' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'resource' => ['type' => 'string', 'description' => 'Tabel target (contoh: video_work_reports)'],
+                        'aggregations' => ['type' => 'object', 'description' => 'Aggregasi, contoh: {"total_submitted": {"sum": "submitted_duration_minutes"}}'],
+                        'filters' => ['type' => 'object', 'description' => 'Filter dinamis, sama seperti fetch_records'],
+                        'group_by' => ['type' => 'array', 'items' => ['type' => 'string'], 'description' => 'Kolom pengelompokan']
+                    ],
+                    'required' => ['resource', 'aggregations']
                 ]
             ]
         ];
@@ -454,6 +527,119 @@ class McpServerController extends Controller
             'status' => 'success',
             'message' => 'Pesan WA berhasil dikirim',
             'gateway_response' => $response
+        ];
+    }
+
+    private function getQueryForResource($resource)
+    {
+        switch ($resource) {
+            case 'users': return User::query();
+            case 'partners': return Partner::query();
+            case 'video_work_reports': return VideoWorkReport::query();
+            case 'captured_emails': return CapturedEmail::query();
+            default: throw new \Exception("Resource not allowed: {$resource}");
+        }
+    }
+
+    private function applyFilters($query, $filters)
+    {
+        if (!is_array($filters)) return;
+        foreach ($filters as $column => $condition) {
+            if (is_array($condition)) {
+                if (isset($condition['in'])) {
+                    $query->whereIn($column, $condition['in']);
+                }
+                if (isset($condition['between']) && is_array($condition['between']) && count($condition['between']) === 2) {
+                    $query->whereBetween($column, $condition['between']);
+                }
+                if (isset($condition['>'])) $query->where($column, '>', $condition['>']);
+                if (isset($condition['<'])) $query->where($column, '<', $condition['<']);
+                if (isset($condition['>='])) $query->where($column, '>=', $condition['>=']);
+                if (isset($condition['<='])) $query->where($column, '<=', $condition['<=']);
+                if (isset($condition['!='])) $query->where($column, '!=', $condition['!=']);
+                if (isset($condition['like'])) $query->where($column, 'LIKE', $condition['like']);
+            } else {
+                $query->where($column, $condition);
+            }
+        }
+    }
+
+    private function fetchRecords(array $args)
+    {
+        $resource = $args['resource'] ?? null;
+        if (!$resource) throw new \Exception("Resource is required");
+
+        $query = $this->getQueryForResource($resource);
+
+        if (isset($args['select']) && is_array($args['select'])) {
+            $query->select($args['select']);
+        }
+
+        if (isset($args['relations']) && is_array($args['relations'])) {
+            $query->with($args['relations']);
+        }
+
+        if (isset($args['filters'])) {
+            $this->applyFilters($query, $args['filters']);
+        }
+
+        $limit = $args['limit'] ?? 100; // Default limit
+        $offset = $args['offset'] ?? 0;
+
+        $totalCount = $query->count();
+        
+        $data = $query->limit(min(1000, $limit))->offset($offset)->get();
+
+        return [
+            'total' => $totalCount,
+            'count' => $data->count(),
+            'data' => $data
+        ];
+    }
+
+    private function aggregateRecords(array $args)
+    {
+        $resource = $args['resource'] ?? null;
+        if (!$resource) throw new \Exception("Resource is required");
+
+        $aggregations = $args['aggregations'] ?? [];
+        if (empty($aggregations) || !is_array($aggregations)) {
+            throw new \Exception("Aggregations object is required");
+        }
+
+        $query = $this->getQueryForResource($resource);
+
+        if (isset($args['filters'])) {
+            $this->applyFilters($query, $args['filters']);
+        }
+
+        $groupBy = $args['group_by'] ?? [];
+        if (!empty($groupBy)) {
+            $query->groupBy($groupBy);
+            // Since strict mode might be enabled, we might need to select the grouped columns
+            $selects = $groupBy;
+        } else {
+            $selects = [];
+        }
+
+        foreach ($aggregations as $alias => $operation) {
+            foreach ($operation as $type => $column) {
+                $type = strtoupper($type);
+                if (in_array($type, ['SUM', 'COUNT', 'AVG', 'MIN', 'MAX'])) {
+                    // Prevent SQL injection by basic sanitization of column name
+                    $cleanCol = preg_replace('/[^a-zA-Z0-9_]/', '', $column);
+                    $cleanAlias = preg_replace('/[^a-zA-Z0-9_]/', '', $alias);
+                    $selects[] = DB::raw("{$type}({$cleanCol}) as {$cleanAlias}");
+                }
+            }
+        }
+
+        if (!empty($selects)) {
+            $query->select($selects);
+        }
+
+        return [
+            'data' => $query->get()
         ];
     }
 }
