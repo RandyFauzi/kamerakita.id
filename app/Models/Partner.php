@@ -48,6 +48,7 @@ class Partner extends Model
         'is_client_registered',
         'base_hourly_rate',
         'user_id',
+        'is_vip',
     ];
 
     /**

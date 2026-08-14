@@ -160,6 +160,7 @@ class ManagePartnerDemographicsController extends Controller
             'group_name' => 'nullable|string|max:50',
             'is_client_registered' => 'required|boolean',
             'base_hourly_rate' => 'required|numeric|min:0',
+            'is_vip' => 'nullable|boolean',
         ]);
 
         // Keep fallback support for older migration fields
@@ -179,6 +180,7 @@ class ManagePartnerDemographicsController extends Controller
 
             Partner::create([
                 ...$validated,
+                'is_vip' => $validated['is_vip'] ?? false,
                 'user_id' => $user->id,
             ]);
         });
@@ -226,6 +228,7 @@ class ManagePartnerDemographicsController extends Controller
             'group_name' => 'nullable|string|max:50',
             'is_client_registered' => 'required|boolean',
             'base_hourly_rate' => 'required|numeric|min:0',
+            'is_vip' => 'nullable|boolean',
         ]);
 
         // Keep fallback support for older migration fields
@@ -250,6 +253,7 @@ class ManagePartnerDemographicsController extends Controller
 
             $partner->update([
                 ...$validated,
+                'is_vip' => $validated['is_vip'] ?? false,
                 'user_id' => $user->id,
             ]);
         });

@@ -18,10 +18,15 @@
                 <div class="lg:w-1/3 space-y-6">
                     <div class="bg-white rounded-[32px] shadow-sm border border-gray-150 p-6 flex flex-col items-center relative overflow-hidden">
                         <!-- Avatar Foto -->
-                        <div class="w-24 h-24 rounded-full overflow-hidden mb-4 border-[3px] border-white shadow-lg bg-gray-50 flex items-center justify-center relative z-10">
-                            <svg class="w-12 h-12 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
-                            </svg>
+                        <div class="relative w-24 h-24 mb-4 flex items-center justify-center">
+                            @if($partner->is_vip)
+                                <img src="{{ asset('images/Assest/Border.webp') }}" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-20" style="width: 110%; height: 110%; max-width: none;" alt="VIP Border">
+                            @endif
+                            <div class="w-full h-full rounded-full overflow-hidden border-[3px] border-white shadow-lg bg-gray-50 flex items-center justify-center relative z-10">
+                                <svg class="w-12 h-12 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                                </svg>
+                            </div>
                         </div>
                         
                         <!-- Nama & Kontak -->
@@ -284,13 +289,23 @@
                                             </div>
 
                                             <!-- Registrasi Klien Resmi -->
-                                            <div class="md:col-span-2">
+                                            <div>
                                                 <label for="is_client_registered" class="block text-sm font-semibold text-gray-700 mb-1">Registrasi Aplikasi Klien <span class="text-red-500">*</span></label>
                                                 <select name="is_client_registered" id="is_client_registered" required class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
                                                     <option value="0" {{ old('is_client_registered', $partner->is_client_registered ? '1' : '0') === '0' ? 'selected' : '' }}>Belum Terdaftar (Unregistered)</option>
                                                     <option value="1" {{ old('is_client_registered', $partner->is_client_registered ? '1' : '0') === '1' ? 'selected' : '' }}>Sudah Terdaftar Resmi (Registered)</option>
                                                 </select>
                                                 @error('is_client_registered') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                                            </div>
+                                            
+                                            <!-- Member VIP -->
+                                            <div>
+                                                <label for="is_vip" class="block text-sm font-semibold text-gray-700 mb-1">Status Member VIP</label>
+                                                <select name="is_vip" id="is_vip" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
+                                                    <option value="0" {{ old('is_vip', $partner->is_vip ? '1' : '0') === '0' ? 'selected' : '' }}>Bukan VIP</option>
+                                                    <option value="1" {{ old('is_vip', $partner->is_vip ? '1' : '0') === '1' ? 'selected' : '' }}>Member VIP</option>
+                                                </select>
+                                                @error('is_vip') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                                             </div>
                                         </div>
                                     </div>
