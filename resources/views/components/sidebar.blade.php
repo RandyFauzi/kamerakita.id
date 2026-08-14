@@ -189,7 +189,7 @@
                         @endif
                     </span>
                     @if($partner && $partner->is_vip)
-                    <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[8px] font-bold tracking-wide text-white bg-gradient-to-r from-blue-600 to-cyan-400 border-0 uppercase shadow-[0_0_8px_rgba(56,189,248,0.5)]">
+                    <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[8px] font-bold tracking-wide text-white bg-gradient-to-r from-[#4CA5FF] to-[#60E0FF] border-0 uppercase shadow-[0_4px_12px_rgba(76,165,255,0.4)]">
                         <svg class="w-2.5 h-2.5 text-white drop-shadow-sm" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.381z" clip-rule="evenodd"/></svg>
                         VIP
                     </span>

@@ -55,7 +55,7 @@
                             </div>
                             
                             @if($partner && $partner->is_vip)
-                            <div class="flex items-center gap-1.5 text-white bg-gradient-to-r from-blue-600 to-cyan-400 px-3 py-1.5 rounded-full border-0 shadow-[0_0_12px_rgba(56,189,248,0.5)]">
+                            <div class="flex items-center gap-1.5 text-white bg-gradient-to-r from-[#4CA5FF] to-[#60E0FF] px-3 py-1.5 rounded-full border-0 shadow-[0_6px_16px_rgba(76,165,255,0.4)]">
                                 <svg class="w-3.5 h-3.5 text-white drop-shadow-sm" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.381z" clip-rule="evenodd"/></svg>
                                 <span class="text-[10px] font-bold tracking-wide uppercase">VIP Member</span>
                             </div>
