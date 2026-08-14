@@ -72,8 +72,10 @@ class Partner extends Model
     }
 
     protected $casts = [
+        'registration_date' => 'date',
         'has_headstrap' => 'boolean',
         'is_client_registered' => 'boolean',
+        'is_vip' => 'boolean',
     ];
 
     public function statusLabel(): string
