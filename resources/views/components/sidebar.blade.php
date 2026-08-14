@@ -164,7 +164,7 @@
                 @endif
                 <div class="w-full h-full rounded-full overflow-hidden flex items-center justify-center relative z-10 {{ $partner && $partner->is_vip ? 'bg-gray-900' : 'bg-indigo-600' }}">
                     @if(Auth::user()->avatar)
-                        <img src="{{ Storage::url(Auth::user()->avatar) }}" class="w-full h-full object-cover">
+                        <img src="{{ route('avatar.show', ['path' => Auth::user()->avatar]) }}" class="w-full h-full object-cover">
                     @elseif($partner && $partner->is_vip)
                         <svg class="w-6 h-6 text-gray-500 mt-2" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -176,17 +176,25 @@
             </div>
             <a href="{{ route('profile.edit') }}" class="overflow-hidden">
                 <span class="block text-sm font-bold text-gray-900 truncate">{{ Auth::user()->name }}</span>
-                <span class="block text-[10px] text-gray-400 font-semibold uppercase tracking-wider">
-                    @if($partner && $partner->partner_role === 'worker')
-                        Kontributor
-                    @elseif($partner && $partner->partner_role === 'mitra')
-                        Mitra (Koordinator)
-                    @elseif($partner && $partner->partner_role === 'rekruter')
-                        Rekruter
-                    @else
-                        {{ Auth::user()->role }}
+                <div class="flex items-center gap-1.5 mt-0.5">
+                    <span class="block text-[10px] text-gray-400 font-semibold uppercase tracking-wider">
+                        @if($partner && $partner->partner_role === 'worker')
+                            Kontributor
+                        @elseif($partner && $partner->partner_role === 'mitra')
+                            Mitra (Koordinator)
+                        @elseif($partner && $partner->partner_role === 'rekruter')
+                            Rekruter
+                        @else
+                            {{ Auth::user()->role }}
+                        @endif
+                    </span>
+                    @if($partner && $partner->is_vip)
+                    <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[8px] font-bold tracking-wide text-yellow-300 bg-blue-900 border border-blue-800 uppercase shadow-sm">
+                        <svg class="w-2.5 h-2.5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.381z" clip-rule="evenodd"/></svg>
+                        VIP
+                    </span>
                     @endif
-                </span>
+                </div>
             </a>
         </div>
         

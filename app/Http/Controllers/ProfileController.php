@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use App\Services\StoreEvidenceImageService;
+use App\Services\EvidenceFileBackupService;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
@@ -37,10 +40,19 @@ class ProfileController extends Controller
         ]);
 
         if ($request->hasFile('avatar')) {
-            if ($user->avatar && \Illuminate\Support\Facades\Storage::disk('public')->exists($user->avatar)) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($user->avatar);
+            if ($user->avatar) {
+                app(EvidenceFileBackupService::class)->delete($user->avatar);
+                if (Storage::disk('evidence')->exists($user->avatar)) {
+                    Storage::disk('evidence')->delete($user->avatar);
+                } elseif (Storage::disk('public')->exists($user->avatar)) {
+                    Storage::disk('public')->delete($user->avatar);
+                }
             }
-            $path = $request->file('avatar')->store('avatars', 'public');
+            
+            $imageStorage = app(StoreEvidenceImageService::class);
+            $path = $imageStorage->store($request->file('avatar'), 'avatars');
+            app(EvidenceFileBackupService::class)->backup($path);
+
             $user->avatar = $path;
         }
 

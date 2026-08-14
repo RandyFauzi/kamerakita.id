@@ -20,7 +20,7 @@
                             @endif
                             <div class="w-full h-full rounded-full overflow-hidden border-[3px] border-white shadow-lg flex items-center justify-center relative z-10 {{ $partner && $partner->is_vip ? 'bg-gray-900' : 'bg-gray-50' }}">
                                 @if($user->avatar)
-                                    <img src="{{ Storage::url($user->avatar) }}" class="w-full h-full object-cover">
+                                    <img src="{{ route('avatar.show', ['path' => $user->avatar]) }}" class="w-full h-full object-cover">
                                 @elseif($partner && $partner->is_vip)
                                     <svg class="w-16 h-16 text-gray-500 mt-4" fill="currentColor" viewBox="0 0 24 24">
                                         <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -38,19 +38,28 @@
                         <p class="text-[11px] text-gray-500 mb-4 font-medium text-center relative z-10">{{ $user->email }} @if($partner) | {{ $partner->whatsapp_number }} @endif</p>
                         
                         <!-- Badge Status -->
-                        <div class="flex items-center gap-1.5 text-blue-600 bg-blue-50 px-3 py-1.5 rounded-full border border-blue-100 relative z-10">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                            </svg>
-                            <span class="text-[10px] font-bold tracking-wide uppercase">
-                                @if($partner && $partner->partner_role === 'worker')
-                                    Kontributor
-                                @elseif($partner && $partner->partner_role === 'mitra')
-                                    Mitra
-                                @else
-                                    {{ $user->role }}
-                                @endif
-                            </span>
+                        <div class="flex items-center justify-center gap-2 relative z-10">
+                            <div class="flex items-center gap-1.5 text-blue-600 bg-blue-50 px-3 py-1.5 rounded-full border border-blue-100">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                </svg>
+                                <span class="text-[10px] font-bold tracking-wide uppercase">
+                                    @if($partner && $partner->partner_role === 'worker')
+                                        Kontributor
+                                    @elseif($partner && $partner->partner_role === 'mitra')
+                                        Mitra
+                                    @else
+                                        {{ $user->role }}
+                                    @endif
+                                </span>
+                            </div>
+                            
+                            @if($partner && $partner->is_vip)
+                            <div class="flex items-center gap-1.5 text-yellow-300 bg-blue-900 px-3 py-1.5 rounded-full border border-blue-800 shadow-sm">
+                                <svg class="w-3.5 h-3.5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.381z" clip-rule="evenodd"/></svg>
+                                <span class="text-[10px] font-bold tracking-wide uppercase">VIP Member</span>
+                            </div>
+                            @endif
                         </div>
                     </div>
 
