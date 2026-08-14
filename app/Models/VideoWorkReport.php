@@ -60,8 +60,11 @@ class VideoWorkReport extends Model
     /**
      * Get duration formatted in "Hh Mm"
      */
-    public function formatMinutes(int $minutes): string
+    public function formatMinutes(?int $minutes): string
     {
+        if ($minutes === null) {
+            return '0m';
+        }
         $hours = floor($minutes / 60);
         $remainingMinutes = $minutes % 60;
         
@@ -74,12 +77,12 @@ class VideoWorkReport extends Model
 
     public function getSubmittedDurationFormattedAttribute(): string
     {
-        return $this->formatMinutes($this->submitted_duration_minutes);
+        return $this->formatMinutes($this->submitted_duration_minutes ?? 0);
     }
 
     public function getApprovedDurationFormattedAttribute(): string
     {
-        return $this->formatMinutes($this->approved_duration_minutes);
+        return $this->formatMinutes($this->approved_duration_minutes ?? 0);
     }
 
     public function getEvidenceEmailImageUrlAttribute(): ?string
