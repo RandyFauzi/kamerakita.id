@@ -151,10 +151,10 @@
 
     <!-- User Profile Footer -->
     <div class="p-4 border-t border-gray-100 bg-gray-50/50 flex items-center justify-between">
-        <div class="flex items-center gap-3 overflow-hidden">
+        <div class="flex items-center gap-3 min-w-0 flex-1 pr-2">
             <div class="relative w-9 h-9 shrink-0 flex items-center justify-center">
                 @if($partner && $partner->is_vip)
-                    <img src="{{ asset('images/Assest/Border.webp') }}" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-20" style="width: 44px; height: 44px; max-width: none;" alt="VIP Border">
+                    <img src="{{ asset('images/Assest/Border.webp') }}" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-20" style="width: 54px; height: 54px; max-width: none;" alt="VIP Border">
                 @endif
                 <div class="w-full h-full rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center relative z-10">
                     {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}

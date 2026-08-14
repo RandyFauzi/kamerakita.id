@@ -20,7 +20,7 @@
                         <!-- Avatar Foto -->
                         <div class="relative w-24 h-24 mb-4 flex items-center justify-center">
                             @if($partner->is_vip)
-                                <img src="{{ asset('images/Assest/Border.webp') }}" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-20" style="width: 110%; height: 110%; max-width: none;" alt="VIP Border">
+                                <img src="{{ asset('images/Assest/Border.webp') }}" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-20" style="width: 140px; height: 140px; max-width: none;" alt="VIP Border">
                             @endif
                             <div class="w-full h-full rounded-full overflow-hidden border-[3px] border-white shadow-lg bg-gray-50 flex items-center justify-center relative z-10">
                                 <svg class="w-12 h-12 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
