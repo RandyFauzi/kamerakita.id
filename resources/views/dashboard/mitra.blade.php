@@ -193,25 +193,22 @@
         </div>
 
         <!-- CTA Mailbox -->
-        <div class="mt-8 bg-gradient-to-r from-indigo-500 to-blue-600 rounded-3xl p-6 md:p-8 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
-            <!-- Decorative circle -->
-            <div class="absolute -right-16 -top-16 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl pointer-events-none"></div>
-            
-            <div class="flex items-center gap-5 relative z-10 w-full md:w-auto">
-                <div class="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center shrink-0 backdrop-blur-sm border border-white/30">
-                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+        <div class="mt-8 bg-white border border-indigo-100 rounded-3xl p-5 md:p-6 shadow-sm flex flex-col md:flex-row items-center justify-between gap-5 transition-all hover:shadow-md hover:border-indigo-200">
+            <div class="flex items-center gap-4 w-full md:w-auto">
+                <div class="w-14 h-14 rounded-2xl bg-indigo-50 flex items-center justify-center shrink-0 border border-indigo-100">
+                    <svg class="w-7 h-7 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                     </svg>
                 </div>
                 <div>
-                    <h3 class="text-xl md:text-2xl font-bold mb-1">Kotak Masuk (Mailbox)</h3>
-                    <p class="text-indigo-100 text-sm md:text-base leading-snug">Cek pesan, pengumuman, dan pembaruan terbaru langsung dari tim KameraKita.</p>
+                    <h3 class="text-[16px] md:text-lg font-bold text-gray-900 mb-0.5">Kotak Masuk (Mailbox)</h3>
+                    <p class="text-gray-500 text-[13px] md:text-sm leading-snug">Cek pesan, pengumuman, dan pembaruan terbaru dari tim KameraKita.</p>
                 </div>
             </div>
             
-            <a href="{{ route('mailbox.index') }}" class="relative z-10 w-full md:w-auto shrink-0 bg-white text-indigo-600 hover:bg-gray-50 px-6 py-3.5 rounded-xl font-bold text-[15px] shadow-sm transition-all duration-200 text-center flex items-center justify-center gap-2 group">
+            <a href="{{ route('mailbox.index') }}" class="w-full md:w-auto shrink-0 bg-indigo-600 text-white hover:bg-indigo-700 px-6 py-3 rounded-xl font-bold text-[14px] shadow-sm transition-colors text-center flex items-center justify-center gap-2 group">
                 Buka Mailbox
-                <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
                 </svg>
             </a>
