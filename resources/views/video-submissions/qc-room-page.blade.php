@@ -82,13 +82,9 @@
                                 <option value="Group B" {{ $selectedGroup === 'Group B' ? 'selected' : '' }}>Group B</option>
                             </select>
                         </div>
-                    </div>
 
-                    <!-- Bottom Row: Day Strip & Search + Buttons -->
-                    <div class="flex flex-col xl:flex-row gap-6 xl:items-end justify-between border-t border-gray-100 pt-5">
-                        
                         <!-- Left: Day Strip -->
-                        <div class="flex-1 w-full overflow-hidden">
+                        <div class="flex-1 w-full overflow-hidden mt-4 md:mt-0">
                             @if(!empty($periodDays))
                                 <div class="flex items-center justify-between mb-2">
                                     <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest font-mono">Filter Hari (Opsional)</span>
@@ -100,7 +96,6 @@
                                             $isActive = $selectedDate === $dayKey;
                                             $isToday  = $day->isToday();
                                             
-                                            // Jika hari sudah aktif, klik lagi akan menghapus filter tanggal (toggle off)
                                             $routeParams = array_merge(request()->except('date'), [
                                                 'period' => $selectedPeriodKey, 
                                                 'search' => $search, 
@@ -142,6 +137,10 @@
                                 </div>
                             @endif
                         </div>
+                    </div>
+
+                    <!-- Bottom Row: Day Strip & Search + Buttons -->
+                    <div class="flex flex-col xl:flex-row gap-6 xl:items-end justify-between border-t border-gray-100 pt-5">
 
                         <!-- Right: Search Input & Buttons -->
                         <div class="flex flex-col md:flex-row gap-3 items-end w-full xl:w-auto shrink-0">
