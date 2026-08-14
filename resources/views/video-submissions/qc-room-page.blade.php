@@ -139,11 +139,11 @@
                         </div>
                     </div>
 
-                    <!-- Bottom Row: Day Strip & Search + Buttons -->
-                    <div class="flex flex-col xl:flex-row gap-6 xl:items-end justify-between border-t border-gray-100 pt-5">
+                    <!-- Bottom Row: Search + Action Buttons -->
+                    <div class="flex flex-col md:flex-row gap-6 md:items-end justify-between border-t border-gray-100 pt-5 w-full">
 
-                        <!-- Right: Search Input & Buttons -->
-                        <div class="flex flex-col md:flex-row gap-3 items-end w-full xl:w-auto shrink-0">
+                        <!-- Left: Search Input & Cari -->
+                        <div class="flex flex-col md:flex-row gap-3 items-end w-full md:w-auto shrink-0">
                             <!-- Search Input -->
                             <div class="w-full md:w-64">
                                 <label for="search" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 font-mono">Cari Nama/ID Mitra</label>
@@ -166,19 +166,23 @@
                                         Reset
                                     </a>
                                 @endif
-                                <button type="button" @click.prevent="showCreateModal = true" class="flex-1 md:flex-none justify-center inline-flex items-center px-5 py-2.5 bg-indigo-600 border border-transparent rounded-xl font-semibold text-sm text-white hover:bg-indigo-700 transition-all shadow-sm gap-1.5 whitespace-nowrap">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                                    Laporan Baru
-                                </button>
-                                <a href="{{ route('video-submissions.export-pdf', ['period' => $selectedPeriodKey, 'search' => $search, 'group' => $selectedGroup]) }}" 
-                                   target="_blank" 
-                                   class="flex-1 md:flex-none justify-center inline-flex items-center px-5 py-2.5 bg-indigo-50 border border-indigo-200 rounded-xl font-semibold text-sm text-indigo-700 hover:bg-indigo-100 transition-all gap-1.5 shadow-sm">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
-                                    </svg>
-                                    PDF
-                                </a>
                             </div>
+                        </div>
+
+                        <!-- Right: Action Buttons -->
+                        <div class="flex gap-2 w-full md:w-auto shrink-0">
+                            <button type="button" @click.prevent="showCreateModal = true" class="flex-1 md:flex-none justify-center inline-flex items-center px-5 py-2.5 bg-indigo-600 border border-transparent rounded-xl font-semibold text-sm text-white hover:bg-indigo-700 transition-all shadow-sm gap-1.5 whitespace-nowrap">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                Laporan Baru
+                            </button>
+                            <a href="{{ route('video-submissions.export-pdf', ['period' => $selectedPeriodKey, 'search' => $search, 'group' => $selectedGroup]) }}" 
+                               target="_blank" 
+                               class="flex-1 md:flex-none justify-center inline-flex items-center px-5 py-2.5 bg-indigo-50 border border-indigo-200 rounded-xl font-semibold text-sm text-indigo-700 hover:bg-indigo-100 transition-all gap-1.5 shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                                </svg>
+                                PDF
+                            </a>
                         </div>
                     </div>
                 </form>
