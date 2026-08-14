@@ -1,7 +1,10 @@
 {
   "mcpServers": {
     "kamerakita-mcp": {
-      "serverUrl": "https://kamerakitaid.site/api/mcp",
+      "command": "node",
+      "args": [
+        "c:/laragon/www/kamerakita.id/.agents/mcp-bridge/index.js"
+      ],
       "env": {
         "MCP_SECRET_KEY": "kamerakita-mcp-2026"
       }
