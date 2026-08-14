@@ -156,8 +156,16 @@
                 @if($partner && $partner->is_vip)
                     <img src="{{ asset('images/Assest/Border.webp') }}" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-20" style="width: 54px; height: 54px; max-width: none;" alt="VIP Border">
                 @endif
-                <div class="w-full h-full rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center relative z-10">
-                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                <div class="w-full h-full rounded-full overflow-hidden flex items-center justify-center relative z-10 {{ $partner && $partner->is_vip ? 'bg-gray-900' : 'bg-indigo-600' }}">
+                    @if(Auth::user()->avatar)
+                        <img src="{{ Storage::url(Auth::user()->avatar) }}" class="w-full h-full object-cover">
+                    @elseif($partner && $partner->is_vip)
+                        <svg class="w-6 h-6 text-gray-500 mt-2" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                    @else
+                        <span class="text-white font-bold">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
+                    @endif
                 </div>
             </div>
             <a href="{{ route('profile.edit') }}" class="overflow-hidden">

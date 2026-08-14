@@ -36,6 +36,14 @@ class ProfileController extends Controller
             'name' => $validated['name'],
         ]);
 
+        if ($request->hasFile('avatar')) {
+            if ($user->avatar && \Illuminate\Support\Facades\Storage::disk('public')->exists($user->avatar)) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($user->avatar);
+            }
+            $path = $request->file('avatar')->store('avatars', 'public');
+            $user->avatar = $path;
+        }
+
         $user->save();
 
         if ($user->partner) {

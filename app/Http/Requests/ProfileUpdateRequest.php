@@ -17,6 +17,7 @@ class ProfileUpdateRequest extends FormRequest
     {
         $rules = [
             'name' => ['required', 'string', 'max:255'],
+            'avatar' => ['nullable', 'image', 'max:200'],
         ];
 
         if ($partner = $this->user()?->partner) {

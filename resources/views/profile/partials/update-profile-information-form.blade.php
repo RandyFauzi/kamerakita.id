@@ -1,6 +1,6 @@
 <section>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-8">
+    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-8" enctype="multipart/form-data">
         @csrf
         @method('patch')
 
@@ -9,6 +9,12 @@
                 <label for="name" class="block text-sm font-semibold text-gray-700 mb-1">Nama Tampilan <span class="text-red-500">*</span></label>
                 <input id="name" name="name" type="text" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" value="{{ old('name', $user->name) }}" required autocomplete="name">
                 <x-input-error class="mt-2" :messages="$errors->get('name')" />
+            </div>
+
+            <div class="md:col-span-2">
+                <label for="avatar" class="block text-sm font-semibold text-gray-700 mb-1">Foto Profil (Max 200KB)</label>
+                <input id="avatar" name="avatar" type="file" accept="image/*" class="block w-full px-3.5 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
             </div>
 
             <div>
