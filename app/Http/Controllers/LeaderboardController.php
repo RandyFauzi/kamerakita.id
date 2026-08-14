@@ -19,9 +19,9 @@ class LeaderboardController extends Controller
             ->with('partner')
             ->get();
 
-        // 2. Weekly Leaderboard
+        // 2. Weekly Leaderboard (Rabu - Selasa)
         $weeklyScores = VideoWorkReport::selectRaw('partner_id, sum(submitted_duration_minutes) as total_score')
-            ->whereBetween('submission_date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
+            ->whereBetween('submission_date', [Carbon::now()->startOfWeek(Carbon::WEDNESDAY), Carbon::now()->endOfWeek(Carbon::TUESDAY)])
             ->groupBy('partner_id')
             ->having('total_score', '>', 0)
             ->orderByDesc('total_score')
