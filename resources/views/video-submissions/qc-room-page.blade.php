@@ -53,131 +53,137 @@
                 </div>
             @endif
 
-            <!-- Period Filter & Search Header Card -->
-            <div class="bg-white/80 backdrop-blur-md overflow-hidden shadow-sm sm:rounded-2xl border border-gray-100 p-6 space-y-5">
-                <form action="{{ route('video-submissions.qc-room') }}" method="GET" class="flex flex-col md:flex-row gap-4 items-end">
+            <!-- Filters -->
+            <div class="bg-white/50 border-2 border-white/60 p-4 md:p-6 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] mb-8 backdrop-blur-xl">
+                <form action="{{ route('video-submissions.qc-room') }}" method="GET" class="flex flex-col gap-5">
                     
-                    <!-- Dropdown Periode -->
-                    <div class="w-full md:w-80">
-                        <label for="period" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 font-mono">Pilih Periode (Rabu–Selasa)</label>
-                        <select name="period" id="period" onchange="this.form.submit()" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition bg-white text-gray-700 font-medium">
-                            <option value="all" {{ $selectedPeriodKey === 'all' ? 'selected' : '' }}>Semua Periode (All-Time)</option>
-                            @foreach($periods as $p)
-                                <option value="{{ $p['start']->format('Y-m-d') . '|' . $p['end']->format('Y-m-d') }}" 
-                                    {{ $selectedPeriodKey === ($p['start']->format('Y-m-d') . '|' . $p['end']->format('Y-m-d')) ? 'selected' : '' }}>
-                                    {{ $p['label'] }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    
-                    <!-- Group Filter -->
-                    <div class="w-full md:w-44">
-                        <label for="group" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 font-mono">Pilih Grup</label>
-                        <select name="group" id="group" onchange="this.form.submit()" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition bg-white text-gray-700 font-medium">
-                            <option value="">Semua Grup</option>
-                            <option value="Group A" {{ $selectedGroup === 'Group A' ? 'selected' : '' }}>Group A</option>
-                            <option value="Group B" {{ $selectedGroup === 'Group B' ? 'selected' : '' }}>Group B</option>
-                        </select>
-                    </div>
-
-                    <!-- Search Input -->
-                    <div class="flex-1 w-full">
-                        <label for="search" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 font-mono">Cari Nama/ID Mitra</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                                </svg>
-                            </div>
-                            <input type="text" name="search" id="search" value="{{ $search }}" placeholder="Cari berdasarkan Nama Mitra, ID Mitra, atau Email..." class="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-white">
+                    <!-- Top Row: Periode & Grup -->
+                    <div class="flex flex-col md:flex-row gap-4 items-end">
+                        <!-- Dropdown Periode -->
+                        <div class="w-full md:w-80">
+                            <label for="period" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 font-mono">Pilih Periode (Rabu–Selasa)</label>
+                            <select name="period" id="period" onchange="this.form.submit()" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition bg-white text-gray-700 font-medium">
+                                <option value="all" {{ $selectedPeriodKey === 'all' ? 'selected' : '' }}>Semua Periode (All-Time)</option>
+                                @foreach($periods as $p)
+                                    <option value="{{ $p['start']->format('Y-m-d') . '|' . $p['end']->format('Y-m-d') }}" 
+                                        {{ $selectedPeriodKey === ($p['start']->format('Y-m-d') . '|' . $p['end']->format('Y-m-d')) ? 'selected' : '' }}>
+                                        {{ $p['label'] }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        
+                        <!-- Group Filter -->
+                        <div class="w-full md:w-44">
+                            <label for="group" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 font-mono">Pilih Grup</label>
+                            <select name="group" id="group" onchange="this.form.submit()" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition bg-white text-gray-700 font-medium">
+                                <option value="">Semua Grup</option>
+                                <option value="Group A" {{ $selectedGroup === 'Group A' ? 'selected' : '' }}>Group A</option>
+                                <option value="Group B" {{ $selectedGroup === 'Group B' ? 'selected' : '' }}>Group B</option>
+                            </select>
                         </div>
                     </div>
-                    
-                    <div class="flex gap-2 w-full md:w-auto">
-                        <button type="submit" class="flex-1 md:flex-none justify-center inline-flex items-center px-6 py-2.5 bg-gray-900 border border-transparent rounded-xl font-semibold text-sm text-white hover:bg-gray-800 transition-colors duration-200">
-                            Cari
-                        </button>
-                        @if($search || $selectedGroup)
-                            <a href="{{ route('video-submissions.qc-room', ['period' => $selectedPeriodKey]) }}" class="flex-1 md:flex-none justify-center inline-flex items-center px-5 py-2.5 bg-gray-100 border border-gray-200 rounded-xl font-semibold text-sm text-gray-700 hover:bg-gray-200 transition-all">
-                                Reset
-                            </a>
-                        @endif
-                        <button type="button" @click.prevent="showCreateModal = true" class="flex-1 md:flex-none justify-center inline-flex items-center px-5 py-2.5 bg-indigo-600 border border-transparent rounded-xl font-semibold text-sm text-white hover:bg-indigo-700 transition-all shadow-sm gap-1.5">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                            Buat Laporan untuk Mitra
-                        </button>
-                        <a href="{{ route('video-submissions.export-pdf', ['period' => $selectedPeriodKey, 'search' => $search, 'group' => $selectedGroup]) }}" 
-                           target="_blank" 
-                           class="flex-1 md:flex-none justify-center inline-flex items-center px-5 py-2.5 bg-indigo-50 border border-indigo-200 rounded-xl font-semibold text-sm text-indigo-700 hover:bg-indigo-100 transition-all gap-1.5 shadow-sm">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
-                            </svg>
-                            Cetak PDF
-                        </a>
+
+                    <!-- Bottom Row: Day Strip & Search + Buttons -->
+                    <div class="flex flex-col xl:flex-row gap-6 xl:items-end justify-between border-t border-gray-100 pt-5">
+                        
+                        <!-- Left: Day Strip -->
+                        <div class="flex-1 w-full overflow-hidden">
+                            @if(!empty($periodDays))
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest font-mono">Filter Hari (Opsional)</span>
+                                </div>
+                                <div class="flex gap-2 overflow-x-auto pb-1" style="scrollbar-width: none;">
+                                    @foreach($periodDays as $day)
+                                        @php
+                                            $dayKey   = $day->format('Y-m-d');
+                                            $isActive = $selectedDate === $dayKey;
+                                            $isToday  = $day->isToday();
+                                            
+                                            // Jika hari sudah aktif, klik lagi akan menghapus filter tanggal (toggle off)
+                                            $routeParams = array_merge(request()->except('date'), [
+                                                'period' => $selectedPeriodKey, 
+                                                'search' => $search, 
+                                                'group' => $selectedGroup
+                                            ]);
+                                            
+                                            if (!$isActive) {
+                                                $routeParams['date'] = $dayKey;
+                                            }
+                                        @endphp
+                                        <a href="{{ route('video-submissions.qc-room', $routeParams) }}"
+                                           class="flex-shrink-0 flex flex-col items-center px-3 py-2 rounded-2xl border transition-all duration-150 select-none cursor-pointer
+                                           @if($isActive) bg-slate-900 border-slate-900 shadow-sm
+                                           @elseif($isToday) bg-indigo-50 border-indigo-300
+                                           @else bg-white border-gray-200 hover:border-indigo-200 hover:bg-indigo-50
+                                           @endif"
+                                           style="min-width: 52px;">
+                                            <span class="text-[9px] font-bold uppercase tracking-wider font-mono
+                                            @if($isActive) text-slate-400
+                                            @elseif($isToday) text-indigo-500
+                                            @else text-gray-400
+                                            @endif">
+                                                {{ $day->translatedFormat('D') }}
+                                            </span>
+                                            <span class="text-[15px] font-black leading-tight mt-0.5
+                                            @if($isActive) text-white
+                                            @elseif($isToday) text-indigo-700
+                                            @else text-gray-800
+                                            @endif">
+                                                {{ $day->format('j') }}
+                                            </span>
+                                            @if($isToday)
+                                                <span class="w-1.5 h-1.5 rounded-full mt-1 {{ $isActive ? 'bg-slate-400' : 'bg-indigo-500' }}"></span>
+                                            @else
+                                                <span class="w-1.5 h-1.5 mt-1"></span>
+                                            @endif
+                                        </a>
+                                    @endforeach
+                                </div>
+                            @endif
+                        </div>
+
+                        <!-- Right: Search Input & Buttons -->
+                        <div class="flex flex-col md:flex-row gap-3 items-end w-full xl:w-auto shrink-0">
+                            <!-- Search Input -->
+                            <div class="w-full md:w-64">
+                                <label for="search" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 font-mono">Cari Nama/ID Mitra</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                        </svg>
+                                    </div>
+                                    <input type="text" name="search" id="search" value="{{ $search }}" placeholder="Cari..." class="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-white">
+                                </div>
+                            </div>
+                            
+                            <div class="flex gap-2 w-full md:w-auto">
+                                <button type="submit" class="flex-1 md:flex-none justify-center inline-flex items-center px-6 py-2.5 bg-gray-900 border border-transparent rounded-xl font-semibold text-sm text-white hover:bg-gray-800 transition-colors duration-200">
+                                    Cari
+                                </button>
+                                @if($search || $selectedGroup)
+                                    <a href="{{ route('video-submissions.qc-room', ['period' => $selectedPeriodKey]) }}" class="flex-1 md:flex-none justify-center inline-flex items-center px-5 py-2.5 bg-gray-100 border border-gray-200 rounded-xl font-semibold text-sm text-gray-700 hover:bg-gray-200 transition-all">
+                                        Reset
+                                    </a>
+                                @endif
+                                <button type="button" @click.prevent="showCreateModal = true" class="flex-1 md:flex-none justify-center inline-flex items-center px-5 py-2.5 bg-indigo-600 border border-transparent rounded-xl font-semibold text-sm text-white hover:bg-indigo-700 transition-all shadow-sm gap-1.5 whitespace-nowrap">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                    Laporan Baru
+                                </button>
+                                <a href="{{ route('video-submissions.export-pdf', ['period' => $selectedPeriodKey, 'search' => $search, 'group' => $selectedGroup]) }}" 
+                                   target="_blank" 
+                                   class="flex-1 md:flex-none justify-center inline-flex items-center px-5 py-2.5 bg-indigo-50 border border-indigo-200 rounded-xl font-semibold text-sm text-indigo-700 hover:bg-indigo-100 transition-all gap-1.5 shadow-sm">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                                    </svg>
+                                    PDF
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </form>
-
-                <!-- Day Strip (hanya tampil kalau ada periode spesifik yang dipilih) -->
-                @if(!empty($periodDays))
-                    <div class="border-t border-gray-100 pt-4">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest font-mono">Filter Hari (Opsional)</span>
-                        </div>
-
-                        <div class="flex gap-2 overflow-x-auto pb-1" style="scrollbar-width: none;">
-                            @foreach($periodDays as $day)
-                                @php
-                                    $dayKey   = $day->format('Y-m-d');
-                                    $isActive = $selectedDate === $dayKey;
-                                    $isToday  = $day->isToday();
-                                    
-                                    // Jika hari sudah aktif, klik lagi akan menghapus filter tanggal (toggle off)
-                                    $routeParams = array_merge(request()->except('date'), [
-                                        'period' => $selectedPeriodKey, 
-                                        'search' => $search, 
-                                        'group' => $selectedGroup
-                                    ]);
-                                    
-                                    if (!$isActive) {
-                                        $routeParams['date'] = $dayKey;
-                                    }
-                                @endphp
-                                <a href="{{ route('video-submissions.qc-room', $routeParams) }}"
-                                   class="flex-shrink-0 flex flex-col items-center px-3 py-2 rounded-2xl border transition-all duration-150 select-none cursor-pointer
-                                   @if($isActive) bg-slate-900 border-slate-900 shadow-sm
-                                   @elseif($isToday) bg-indigo-50 border-indigo-300
-                                   @else bg-white border-gray-200 hover:border-indigo-200 hover:bg-indigo-50
-                                   @endif"
-                                   style="min-width: 52px;">
-                                    <span class="text-[9px] font-bold uppercase tracking-wider font-mono
-                                    @if($isActive) text-slate-400
-                                    @elseif($isToday) text-indigo-500
-                                    @else text-gray-400
-                                    @endif">
-                                        {{ $day->translatedFormat('D') }}
-                                    </span>
-                                    <span class="text-[15px] font-black leading-tight mt-0.5
-                                    @if($isActive) text-white
-                                    @elseif($isToday) text-indigo-700
-                                    @else text-gray-800
-                                    @endif">
-                                        {{ $day->format('j') }}
-                                    </span>
-                                    @if($isToday)
-                                        <span class="w-1.5 h-1.5 rounded-full mt-1 {{ $isActive ? 'bg-slate-400' : 'bg-indigo-500' }}"></span>
-                                    @else
-                                        <span class="w-1.5 h-1.5 mt-1"></span>
-                                    @endif
-                                </a>
-                            @endforeach
-                        </div>
-                    </div>
-                @endif
             </div>
-
-
-
 
             <!-- Dynamic Stats Summary -->
             <div class="flex flex-wrap items-center gap-3 mb-6">
