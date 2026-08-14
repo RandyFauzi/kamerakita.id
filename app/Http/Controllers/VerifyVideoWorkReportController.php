@@ -44,11 +44,20 @@ class VerifyVideoWorkReportController extends Controller
         $selectedDate = $request->input('date'); // format: Y-m-d
         $filterDate   = ($selectedDate && $selectedDate !== 'all') ? Carbon::parse($selectedDate) : null;
 
-        // Build period day list for the strip (only when a specific period is selected)
+        // Build period day list for the strip
         $periodDays = [];
-        if ($startDate && $endDate) {
-            $day = $startDate->copy();
-            while ($day->lte($endDate)) {
+        $stripStart = $startDate;
+        $stripEnd = $endDate;
+
+        if (!$stripStart || !$stripEnd) {
+            $range = PeriodService::getPeriodRange(now());
+            $stripStart = $range['start'];
+            $stripEnd = $range['end'];
+        }
+
+        if ($stripStart && $stripEnd) {
+            $day = $stripStart->copy();
+            while ($day->lte($stripEnd)) {
                 $periodDays[] = $day->copy();
                 $day->addDay();
             }
