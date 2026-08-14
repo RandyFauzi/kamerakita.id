@@ -164,6 +164,8 @@ class VerifyVideoWorkReportController extends Controller
         $totalPendingCount = VideoWorkReport::where('qc_status', 'pending')->count();
         $totalOnReviewCount = VideoWorkReport::where('qc_status', 'on_review')->count();
 
+        $allWorkers = Partner::where('partner_role', 'worker')->with('user')->get(['id', 'user_id', 'full_name', 'email']);
+
         return view('video-submissions.qc-room', compact(
             'partners',
             'periods',
@@ -177,8 +179,103 @@ class VerifyVideoWorkReportController extends Controller
             'totalPendingCount',
             'totalOnReviewCount',
             'filteredSubmittedDuration',
-            'filteredApprovedDuration'
+            'filteredApprovedDuration',
+            'allWorkers'
         ));
+    }
+
+    /**
+     * Create a report on behalf of a partner (Admin feature)
+     */
+    public function storeReportByAdmin(Request $request)
+    {
+        if (Auth::user()->role !== 'superadmin' && Auth::user()->role !== 'admin') {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'partner_id' => 'required|exists:partners,id',
+            'project_name' => 'required|in:atlas,minutes_data',
+            'submission_date' => 'required|date|before_or_equal:today',
+            'submitted_duration_minutes' => 'required|integer|min:1|max:1440',
+            'evidence_email_image_path' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'evidence_app_quality_image_path' => 'required_if:project_name,minutes_data|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'evidence_submitted_image_paths' => 'required_if:project_name,atlas|array|min:1',
+            'evidence_submitted_image_paths.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+        ]);
+
+        $partner = Partner::findOrFail($validated['partner_id']);
+
+        $emailPath = null;
+        $qualityPath = null;
+        $submittedPaths = [];
+
+        try {
+            $imageStorage = app(\App\Services\StoreEvidenceImageService::class);
+            $emailPath = $imageStorage->store($request->file('evidence_email_image_path'), 'evidences/email');
+
+            if ($request->hasFile('evidence_app_quality_image_path')) {
+                $qualityPath = $imageStorage->store($request->file('evidence_app_quality_image_path'), 'evidences/quality');
+            }
+
+            if ($request->hasFile('evidence_submitted_image_paths')) {
+                foreach ($request->file('evidence_submitted_image_paths') as $file) {
+                    $submittedPaths[] = $imageStorage->store($file, 'evidences/submitted');
+                }
+            }
+
+            DB::transaction(function () use ($partner, $validated, $emailPath, $qualityPath, $submittedPaths): void {
+                VideoWorkReport::create([
+                    'partner_id' => $partner->id,
+                    'project_name' => $validated['project_name'],
+                    'submission_date' => $validated['submission_date'],
+                    'evidence_email_image_path' => $emailPath,
+                    'evidence_app_quality_image_path' => $qualityPath,
+                    'evidence_submitted_image_paths' => $submittedPaths,
+                    'submitted_duration_minutes' => $validated['submitted_duration_minutes'],
+                    'approved_duration_minutes' => 0,
+                    'qc_status' => 'pending',
+                    'payment_status' => 'unpaid',
+                ]);
+
+                $backup = app(\App\Services\EvidenceFileBackupService::class);
+                $backup->backup($emailPath);
+                if ($qualityPath) {
+                    $backup->backup($qualityPath);
+                }
+                if (!empty($submittedPaths)) {
+                    foreach ($submittedPaths as $path) {
+                        $backup->backup($path);
+                    }
+                }
+
+                app(\App\Services\PartnerActivityStatusService::class)->markActiveAfterReport($partner);
+            });
+
+            \App\Services\ActivityLogger::log('report.admin_create', "Admin membuatkan laporan harian untuk mitra {$partner->full_name} tanggal {$validated['submission_date']} dengan durasi {$validated['submitted_duration_minutes']} menit.");
+        } catch (\Throwable $exception) {
+            $pathsToDelete = array_filter(array_merge([$emailPath, $qualityPath], $submittedPaths));
+            foreach ($pathsToDelete as $path) {
+                try {
+                    if ($path && \Illuminate\Support\Facades\Storage::disk('evidence')->exists($path)) {
+                        \Illuminate\Support\Facades\Storage::disk('evidence')->delete($path);
+                    }
+                } catch (\Throwable) {
+                    // ignore
+                }
+            }
+
+            \Illuminate\Support\Facades\Log::error('Admin failed to store video work report evidence.', [
+                'partner_id' => $partner->id,
+                'message' => $exception->getMessage(),
+            ]);
+
+            return back()
+                ->withInput()
+                ->with('error', 'Laporan gagal dibuat oleh Admin karena file bukti tidak berhasil disimpan.');
+        }
+
+        return redirect()->back()->with('success', 'Laporan berhasil dibuatkan untuk Mitra dan masuk ke antrean QC.');
     }
 
     /**
