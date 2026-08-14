@@ -43,8 +43,8 @@
                             <div class="flex items-center">
                                 {{ Auth::user()->name }}
                                 @if(isset(Auth::user()->partner) && Auth::user()->partner->is_vip)
-                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wide text-yellow-300 bg-blue-900 border border-blue-800 ml-2 uppercase shadow-sm">
-                                    <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.381z" clip-rule="evenodd"/></svg>
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wide text-white bg-gradient-to-r from-blue-600 to-cyan-400 border-0 ml-2 uppercase shadow-[0_0_10px_rgba(56,189,248,0.5)]">
+                                    <svg class="w-3 h-3 text-white drop-shadow-sm" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.381z" clip-rule="evenodd"/></svg>
                                     VIP MEMBER
                                 </span>
                                 @endif
@@ -117,8 +117,8 @@
                 <div class="font-medium text-base text-gray-800 flex items-center">
                     {{ Auth::user()->name }}
                     @if(isset(Auth::user()->partner) && Auth::user()->partner->is_vip)
-                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wide text-yellow-300 bg-blue-900 border border-blue-800 ml-2 uppercase shadow-sm">
-                        <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.381z" clip-rule="evenodd"/></svg>
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wide text-white bg-gradient-to-r from-blue-600 to-cyan-400 border-0 ml-2 uppercase shadow-[0_0_10px_rgba(56,189,248,0.5)]">
+                        <svg class="w-3 h-3 text-white drop-shadow-sm" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.381z" clip-rule="evenodd"/></svg>
                         VIP MEMBER
                     </span>
                     @endif
