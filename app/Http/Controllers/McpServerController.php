@@ -607,7 +607,19 @@ class McpServerController extends Controller
             throw new \Exception("Aggregations object is required");
         }
 
-        $query = $this->getQueryForResource($resource);
+        // Use direct DB table query to avoid Eloquent appends accessors error on aggregated/partial columns
+        $tableMap = [
+            'users' => 'users',
+            'partners' => 'partners',
+            'video_work_reports' => 'video_work_reports',
+            'captured_emails' => 'captured_emails',
+        ];
+
+        if (!isset($tableMap[$resource])) {
+            throw new \Exception("Resource not allowed: {$resource}");
+        }
+
+        $query = DB::table($tableMap[$resource]);
 
         if (isset($args['filters'])) {
             $this->applyFilters($query, $args['filters']);
@@ -616,7 +628,6 @@ class McpServerController extends Controller
         $groupBy = $args['group_by'] ?? [];
         if (!empty($groupBy)) {
             $query->groupBy($groupBy);
-            // Since strict mode might be enabled, we might need to select the grouped columns
             $selects = $groupBy;
         } else {
             $selects = [];
@@ -626,7 +637,6 @@ class McpServerController extends Controller
             foreach ($operation as $type => $column) {
                 $type = strtoupper($type);
                 if (in_array($type, ['SUM', 'COUNT', 'AVG', 'MIN', 'MAX'])) {
-                    // Prevent SQL injection by basic sanitization of column name
                     $cleanCol = preg_replace('/[^a-zA-Z0-9_]/', '', $column);
                     $cleanAlias = preg_replace('/[^a-zA-Z0-9_]/', '', $alias);
                     $selects[] = DB::raw("{$type}({$cleanCol}) as {$cleanAlias}");
