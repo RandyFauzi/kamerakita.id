@@ -1,9 +1,9 @@
 {
   "mcpServers": {
     "kamerakita-mcp": {
-      "serverUrl": "http://kamerakita.id.test/api/mcp",
-      "headers": {
-        "Authorization": "Bearer kamerakita-mcp-2026"
+      "serverUrl": "https://kamerakitaid.site/api/mcp",
+      "env": {
+        "MCP_SECRET_KEY": "kamerakita-mcp-2026"
       }
     }
   }
