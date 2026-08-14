@@ -153,7 +153,7 @@
     <div class="p-4 border-t border-gray-100 bg-gray-50/50 flex items-center justify-between">
         <div class="flex items-center gap-3 overflow-hidden">
             <!-- Mock Avatar matching Airtm logo/circle style -->
-            <div class="w-9 h-9 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center">
+            <div class="w-9 h-9 shrink-0 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center">
                 {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
             </div>
             <a href="{{ route('profile.edit') }}" class="overflow-hidden">
