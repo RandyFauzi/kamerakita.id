@@ -3,7 +3,7 @@
     "kamerakita-mcp": {
       "serverUrl": "https://kamerakitaid.site/api/mcp",
       "headers": {
-        "MCP_SECRET_KEY": "kamerakita-mcp-2026"
+        "Authorization": "Bearer kamerakita-mcp-2026"
       }
     }
   }
