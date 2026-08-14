@@ -857,14 +857,79 @@
                     <form x-data="{ project_name: 'atlas' }" action="{{ route('video-submissions.create-by-admin') }}" method="POST" enctype="multipart/form-data" class="space-y-6 text-left">
                         @csrf
 
-                        <div>
-                            <label for="partner_id" class="block text-sm font-semibold text-gray-700 mb-1">Pilih Akun Mitra <span class="text-red-500">*</span></label>
-                            <select name="partner_id" id="partner_id" required class="block w-full min-h-11 px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-                                <option value="">-- Pilih Mitra --</option>
+                        <div x-data="{
+                            open: false,
+                            search: '',
+                            selectedId: '',
+                            selectedName: '',
+                            workers: [
                                 @foreach($allWorkers as $worker)
-                                    <option value="{{ $worker->id }}">{{ $worker->full_name }} ({{ $worker->email ?: ($worker->user?->email ?: '-') }})</option>
+                                    { id: '{{ $worker->id }}', name: '{{ addslashes($worker->full_name) }} ({{ addslashes($worker->email ?: ($worker->user?->email ?: '-')) }})' },
                                 @endforeach
-                            </select>
+                            ],
+                            get filteredWorkers() {
+                                if (this.search === '') return this.workers;
+                                return this.workers.filter(w => w.name.toLowerCase().includes(this.search.toLowerCase()));
+                            },
+                            selectWorker(worker) {
+                                this.selectedId = worker.id;
+                                this.selectedName = worker.name;
+                                this.open = false;
+                                this.search = '';
+                            }
+                        }" class="relative">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Pilih Akun Mitra <span class="text-red-500">*</span></label>
+                            
+                            <input type="hidden" name="partner_id" :value="selectedId" required>
+                            
+                            <button type="button" @click="open = !open" @click.away="open = false" class="relative w-full bg-white border border-gray-200 rounded-xl pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm min-h-11 shadow-sm transition-shadow">
+                                <span class="block truncate" x-text="selectedName || '-- Pilih Mitra --'" :class="{ 'text-gray-400': !selectedName, 'text-gray-900': selectedName }"></span>
+                                <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                                    <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+                                        <path d="M7 7l3-3 3 3m0 6l-3 3-3-3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </span>
+                            </button>
+
+                            <div x-show="open" 
+                                 x-transition:leave="transition ease-in duration-100" 
+                                 x-transition:leave-start="opacity-100" 
+                                 x-transition:leave-end="opacity-0" 
+                                 class="absolute z-50 mt-1 w-full bg-white shadow-xl max-h-60 rounded-xl py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm border border-gray-100" 
+                                 style="display: none;">
+                                 
+                                <div class="px-2 py-2 sticky top-0 bg-white z-10 border-b border-gray-100">
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+                                            <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                            </svg>
+                                        </div>
+                                        <input type="text" x-model="search" placeholder="Cari mitra..." class="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-gray-50 focus:bg-white transition-colors" @click.stop @keydown.enter.prevent>
+                                    </div>
+                                </div>
+
+                                <ul class="pt-1">
+                                    <template x-for="worker in filteredWorkers" :key="worker.id">
+                                        <li @click="selectWorker(worker)" class="text-gray-900 cursor-pointer select-none relative py-2.5 pl-3 pr-9 hover:bg-indigo-50 hover:text-indigo-700 transition-colors">
+                                            <span class="block truncate" x-text="worker.name" :class="{ 'font-semibold': selectedId === worker.id, 'font-normal': selectedId !== worker.id }"></span>
+                                            
+                                            <span x-show="selectedId === worker.id" class="text-indigo-600 absolute inset-y-0 right-0 flex items-center pr-4">
+                                                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                                </svg>
+                                            </span>
+                                        </li>
+                                    </template>
+                                    
+                                    <div x-show="filteredWorkers.length === 0" class="text-gray-500 px-3 py-4 text-sm text-center flex flex-col items-center gap-1">
+                                        <svg class="h-6 w-6 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        Mitra tidak ditemukan.
+                                    </div>
+                                </ul>
+                            </div>
                         </div>
 
                         <div>
