@@ -34,7 +34,9 @@ class AdminAssistantController extends Controller
             return response()->json(['reply' => 'Konfigurasi GEMINI_API_KEY belum diatur di server.'], 500);
         }
 
-        $endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={$apiKey}";
+        // Resolve model dynamically and cache it
+        $modelName = $this->getBestGeminiModel($apiKey);
+        $endpoint = "https://generativelanguage.googleapis.com/v1beta/models/{$modelName}:generateContent?key={$apiKey}";
 
         // Define Tools / Functions that Gemini can call
         $tools = [
@@ -185,5 +187,36 @@ Aturan Komunikasi:
             Log::error('AI Assistant Exception', ['error' => $e->getMessage()]);
             return response()->json(['reply' => 'Koneksi ke sistem AI terputus. Silakan coba lagi.'], 500);
         }
+    }
+
+    private function getBestGeminiModel($apiKey)
+    {
+        return cache()->remember('best_gemini_model', 86400, function() use ($apiKey) {
+            $response = Http::timeout(10)->get("https://generativelanguage.googleapis.com/v1beta/models?key={$apiKey}");
+            if ($response->successful()) {
+                $models = $response->json('models') ?? [];
+                
+                // Prioritaskan model flash terbaru yang stabil (mendukung generateContent)
+                foreach ($models as $model) {
+                    $methods = $model['supportedGenerationMethods'] ?? [];
+                    if (in_array('generateContent', $methods)) {
+                        $name = str_replace('models/', '', $model['name']);
+                        if (str_contains($name, 'gemini') && str_contains($name, 'flash') && !str_contains($name, 'preview')) {
+                            return $name;
+                        }
+                    }
+                }
+                
+                // Fallback: ambil model gemini apa saja yang mendukung generateContent
+                foreach ($models as $model) {
+                    $methods = $model['supportedGenerationMethods'] ?? [];
+                    if (in_array('generateContent', $methods) && str_contains($model['name'], 'gemini')) {
+                        return str_replace('models/', '', $model['name']);
+                    }
+                }
+            }
+            // Fallback default jika API /models gagal
+            return 'gemini-1.5-flash';
+        });
     }
 }
