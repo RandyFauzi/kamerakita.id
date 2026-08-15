@@ -34,7 +34,7 @@ class AdminAssistantController extends Controller
             return response()->json(['reply' => 'Konfigurasi GEMINI_API_KEY belum diatur di server.'], 500);
         }
 
-        $endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={$apiKey}";
+        $endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={$apiKey}";
 
         // Define Tools / Functions that Gemini can call
         $tools = [
