@@ -196,18 +196,34 @@ Aturan Komunikasi:
             if ($response->successful()) {
                 $models = $response->json('models') ?? [];
                 
-                // Prioritaskan model flash terbaru yang stabil (mendukung generateContent)
+                $validModels = [];
+                // Kumpulkan model flash yang stabil (mendukung generateContent)
                 foreach ($models as $model) {
                     $methods = $model['supportedGenerationMethods'] ?? [];
                     if (in_array('generateContent', $methods)) {
                         $name = str_replace('models/', '', $model['name']);
                         if (str_contains($name, 'gemini') && str_contains($name, 'flash') && !str_contains($name, 'preview')) {
-                            return $name;
+                            $validModels[] = $name;
                         }
                     }
                 }
                 
-                // Fallback: ambil model gemini apa saja yang mendukung generateContent
+                // Sortir menurun secara natural agar gemini-3.5/3.7 berada di atas gemini-2.5
+                if (!empty($validModels)) {
+                    usort($validModels, function($a, $b) {
+                        return strnatcmp($b, $a); 
+                    });
+                    
+                    // Hindari model 2.5 yang sudah ditarik Google untuk user baru
+                    foreach ($validModels as $vm) {
+                        if (!str_starts_with($vm, 'gemini-2.')) {
+                            return $vm;
+                        }
+                    }
+                    return $validModels[0];
+                }
+                
+                // Fallback: ambil model gemini apa saja
                 foreach ($models as $model) {
                     $methods = $model['supportedGenerationMethods'] ?? [];
                     if (in_array('generateContent', $methods) && str_contains($model['name'], 'gemini')) {
@@ -215,8 +231,8 @@ Aturan Komunikasi:
                     }
                 }
             }
-            // Fallback default jika API /models gagal
-            return 'gemini-1.5-flash';
+            // Fallback default
+            return 'gemini-3.5-flash-lite';
         });
     }
 }
