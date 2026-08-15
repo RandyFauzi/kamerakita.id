@@ -183,7 +183,18 @@ Aturan Komunikasi:
 
                 // Kirim kembali hasil eksekusi (JSON) ke Gemini agar ia merangkai kalimat natural
                 $secondPayload = $payload;
-                $secondPayload['contents'][] = $candidates['content']; // Riwayat panggilan fungsi dari model
+                
+                // Cegah bug json_encode mengubah empty object {} menjadi empty array [] pada args
+                $modelContent = $candidates['content'];
+                if (isset($modelContent['parts'])) {
+                    foreach ($modelContent['parts'] as &$p) {
+                        if (isset($p['functionCall']['args']) && is_array($p['functionCall']['args']) && empty($p['functionCall']['args'])) {
+                            $p['functionCall']['args'] = new \stdClass();
+                        }
+                    }
+                }
+                
+                $secondPayload['contents'][] = $modelContent; // Riwayat panggilan fungsi dari model
                 $secondPayload['contents'][] = [
                     'role' => 'user',
                     'parts' => [
@@ -207,8 +218,21 @@ Aturan Komunikasi:
 
                 if ($secondResponse->successful()) {
                     $secondData = $secondResponse->json();
-                    $finalText = $secondData['candidates'][0]['content']['parts'][0]['text'] ?? 'Eksekusi selesai.';
-                    return response()->json(['reply' => $finalText]);
+                    $parts2 = $secondData['candidates'][0]['content']['parts'] ?? [];
+                    $finalText = '';
+                    
+                    foreach ($parts2 as $p) {
+                        if (isset($p['text'])) {
+                            $finalText .= $p['text'];
+                        }
+                    }
+                    
+                    if (empty(trim($finalText))) {
+                        // Jika model masih mencoba memanggil fungsi lagi atau bingung
+                        $finalText = "Sistem saat ini belum dilengkapi dengan fungsi untuk mengeksekusi instruksi tersebut secara spesifik.";
+                    }
+                    
+                    return response()->json(['reply' => trim($finalText)]);
                 }
             }
 
