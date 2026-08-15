@@ -370,7 +370,7 @@
                         </svg>
                     </div>
                     <span class="block text-xs font-extrabold text-gray-800">Kelola Akun Admin</span>
-                    <span class="block text-[10px] text-gray-400 font-medium">Atur hak akses & verifikator</span>
+                    <span class="block text-[10px] text-gray-400 font-medium">Atur hak akses</span>
                 </a>
 
                 <!-- Action 3: Kelola Mitra Demographics -->

@@ -17,11 +17,13 @@ return new class extends Migration
         });
 
         // Backfill data: set rate_applied to the partner's base_hourly_rate for existing records
-        DB::statement('
-            UPDATE video_work_reports vwr
-            JOIN partners p ON vwr.partner_id = p.id
-            SET vwr.rate_applied = COALESCE(p.base_hourly_rate, 50000)
-        ');
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement('
+                UPDATE video_work_reports vwr
+                JOIN partners p ON vwr.partner_id = p.id
+                SET vwr.rate_applied = COALESCE(p.base_hourly_rate, 50000)
+            ');
+        }
     }
 
     /**

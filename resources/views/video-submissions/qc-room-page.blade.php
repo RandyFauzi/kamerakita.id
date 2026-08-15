@@ -332,7 +332,7 @@
                                                         </p>
                                                     </div>
                                                     
-                                                    <!-- Input Catatan Verifikator -->
+                                                    <!-- Input Catatan Admin/QC -->
                                                     <div>
                                                         <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 font-mono">Catatan Masukan / Alasan</label>
                                                         <textarea name="verifier_notes" rows="3" placeholder="Catatan opsional atau penyesuaian SOP..."

@@ -16,7 +16,7 @@ class VideoSubmissionTest extends TestCase
 
     public function test_worker_can_access_report_submission_form(): void
     {
-        $user = User::factory()->create(['role' => 'verifikator']);
+        $user = User::factory()->create(['role' => 'worker']);
         $partner = Partner::factory()->create([
             'user_id' => $user->id,
             'partner_role' => 'worker',
@@ -32,7 +32,7 @@ class VideoSubmissionTest extends TestCase
         Storage::fake('evidence');
         Storage::fake('backup');
 
-        $user = User::factory()->create(['role' => 'verifikator']);
+        $user = User::factory()->create(['role' => 'worker']);
         $partner = Partner::factory()->create([
             'user_id' => $user->id,
             'partner_role' => 'worker',

@@ -45,7 +45,7 @@ class ActivityLogTest extends TestCase
 
     public function test_non_admin_cannot_view_activity_logs_page(): void
     {
-        $user = User::factory()->create(['role' => 'verifikator', 'email_verified_at' => now()]);
+        $user = User::factory()->create(['role' => 'worker', 'email_verified_at' => now()]);
 
         $response = $this->actingAs($user)
             ->get(route('activity-logs.index'));

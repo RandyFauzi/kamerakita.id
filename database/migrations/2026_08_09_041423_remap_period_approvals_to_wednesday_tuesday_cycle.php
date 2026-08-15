@@ -39,10 +39,10 @@ return new class extends Migration
     {
         // Step 1: Add a plain index on partner_id alone so FK constraint is still supported
         //         while we temporarily drop the composite unique index.
-        DB::statement('ALTER TABLE period_approvals ADD INDEX pa_partner_id_temp (partner_id)');
-
-        // Step 2: Now MySQL allows dropping the composite unique index
-        DB::statement('ALTER TABLE period_approvals DROP INDEX partner_period_unique');
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement('ALTER TABLE period_approvals ADD INDEX pa_partner_id_temp (partner_id)');
+            DB::statement('ALTER TABLE period_approvals DROP INDEX partner_period_unique');
+        }
 
         // Step 3: Re-map each record to the new Wednesday-Tuesday period
         $records = DB::table('period_approvals')->get();
@@ -100,11 +100,13 @@ return new class extends Migration
             }
         }
 
-        // Step 5: Restore the composite unique constraint
-        DB::statement('ALTER TABLE period_approvals ADD UNIQUE partner_period_unique (partner_id, period_start_date, period_end_date)');
+        if (DB::getDriverName() !== 'sqlite') {
+            // Restore the composite unique constraint
+            DB::statement('ALTER TABLE period_approvals ADD UNIQUE partner_period_unique (partner_id, period_start_date, period_end_date)');
 
-        // Step 6: Remove the temporary plain index (FK is now supported by the unique index again)
-        DB::statement('ALTER TABLE period_approvals DROP INDEX pa_partner_id_temp');
+            // Remove the temporary plain index (FK is now supported by the unique index again)
+            DB::statement('ALTER TABLE period_approvals DROP INDEX pa_partner_id_temp');
+        }
     }
 
     public function down(): void

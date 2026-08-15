@@ -44,7 +44,7 @@ class FastworkOnboardingTest extends TestCase
         $response->assertRedirect('/login');
 
         // Normal user
-        $user = User::factory()->create(['role' => 'verifikator']);
+        $user = User::factory()->create(['role' => 'worker']);
         $response = $this->actingAs($user)->get('/admin/onboardings');
         $response->assertStatus(403);
     }

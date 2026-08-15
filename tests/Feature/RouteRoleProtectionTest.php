@@ -13,7 +13,7 @@ class RouteRoleProtectionTest extends TestCase
     public function test_verified_non_admin_user_cannot_access_partner_management_routes(): void
     {
         $user = User::factory()->create([
-            'role' => 'verifikator',
+            'role' => 'worker',
             'email_verified_at' => now(),
         ]);
 
@@ -29,7 +29,7 @@ class RouteRoleProtectionTest extends TestCase
     public function test_verified_non_admin_user_cannot_access_admin_user_management_routes(): void
     {
         $user = User::factory()->create([
-            'role' => 'verifikator',
+            'role' => 'worker',
             'email_verified_at' => now(),
         ]);
 
@@ -45,7 +45,7 @@ class RouteRoleProtectionTest extends TestCase
     public function test_verified_non_admin_user_cannot_access_qc_routes_directly(): void
     {
         $user = User::factory()->create([
-            'role' => 'verifikator',
+            'role' => 'worker',
             'email_verified_at' => now(),
         ]);
 
@@ -70,7 +70,7 @@ class RouteRoleProtectionTest extends TestCase
     public function test_verified_non_admin_user_cannot_access_payroll_routes_directly(): void
     {
         $user = User::factory()->create([
-            'role' => 'verifikator',
+            'role' => 'worker',
             'email_verified_at' => now(),
         ]);
 

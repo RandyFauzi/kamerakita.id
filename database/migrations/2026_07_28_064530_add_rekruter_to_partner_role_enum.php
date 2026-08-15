@@ -12,7 +12,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::statement("ALTER TABLE `partners` MODIFY `partner_role` ENUM('worker', 'mitra', 'rekruter') NOT NULL");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE `partners` MODIFY `partner_role` ENUM('worker', 'mitra', 'rekruter') NOT NULL");
+        }
     }
 
     /**
@@ -21,6 +23,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::statement("ALTER TABLE `partners` MODIFY `partner_role` ENUM('worker', 'mitra') NOT NULL");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE `partners` MODIFY `partner_role` ENUM('worker', 'mitra') NOT NULL");
+        }
     }
 };

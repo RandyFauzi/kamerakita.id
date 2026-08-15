@@ -71,7 +71,7 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $internalEmail,
             'password' => Hash::make($request->password),
-            'role' => 'verifikator', // Default role
+            'role' => 'worker', // Default role
         ]);
 
         // Auto-generate next KMK-XXX code

@@ -172,7 +172,7 @@ class ManagePartnerDemographicsController extends Controller
                 'name' => $validated['full_name'],
                 'email' => $validated['email'],
                 'password' => Hash::make($validated['password']),
-                'role' => 'verifikator',
+                'role' => 'worker',
                 'email_verified_at' => now(),
             ]);
 
@@ -242,7 +242,7 @@ class ManagePartnerDemographicsController extends Controller
             $user = $partner->user ?: new User;
             $user->name = $validated['full_name'];
             $user->email = $validated['email'];
-            $user->role = $user->role ?: 'verifikator';
+            $user->role = $user->role ?: 'worker';
             $user->email_verified_at = $user->email_verified_at ?: now();
 
             if ($password) {

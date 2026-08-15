@@ -30,10 +30,10 @@ class DatabaseSeeder extends Seeder
         ]);
 
         User::factory()->create([
-            'name' => 'Tim Verifikator',
-            'email' => 'verifikator@kamerakita.id',
+            'name' => 'Tim Admin / QC',
+            'email' => 'admin@kamerakita.id',
             'password' => bcrypt('password'),
-            'role' => 'verifikator',
+            'role' => 'admin',
         ]);
 
         User::factory()->create([
@@ -47,10 +47,10 @@ class DatabaseSeeder extends Seeder
         $mitraList = [];
         for ($i = 1; $i <= 5; $i++) {
             $user = User::factory()->create([
-                'name' => "Mitra Coordinator {$i}",
-                'email' => "contributor{$i}@kamerakita.id",
+                'name' => 'Mitra ' . $i,
+                'email' => 'mitra' . $i . '@kamerakita.id',
                 'password' => bcrypt('password'),
-                'role' => 'verifikator', // Can log in and view things
+                'role' => 'worker', // Can log in and view things
             ]);
 
             $mitraList[] = Partner::factory()->create([
@@ -64,10 +64,10 @@ class DatabaseSeeder extends Seeder
         // 3. Seed 95 Workers assigned to Mitra
         for ($i = 1; $i <= 95; $i++) {
             $user = User::factory()->create([
-                'name' => "Worker Mitra {$i}",
+                'name' => 'Worker Mitra ' . $i,
                 'email' => "worker{$i}@kamerakita.id",
                 'password' => bcrypt('password'),
-                'role' => 'verifikator', // Set default role
+                'role' => 'worker', // Set default role
             ]);
 
             $randomMitra = $mitraList[array_rand($mitraList)];

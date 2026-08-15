@@ -22,8 +22,8 @@ class VideoWorkReportFactory extends Factory
             if ($durasiSetuju < 0) $durasiSetuju = 0;
         }
 
-        $verifikator = User::where('role', 'verifikator')->first();
-        $verifierId = ($status !== 'pending') ? ($verifikator ? $verifikator->id : 1) : null;
+        $verifier = User::where('role', 'admin')->first();
+        $verifierId = ($status !== 'pending') ? ($verifier ? $verifier->id : 1) : null;
         $verifiedAt = ($status !== 'pending') ? $this->faker->dateTimeBetween('-1 month', 'now') : null;
         $paymentStatus = ($status === 'approved') ? $this->faker->randomElement(['unpaid', 'unpaid', 'paid']) : 'unpaid';
 
