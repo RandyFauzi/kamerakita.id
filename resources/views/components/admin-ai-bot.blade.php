@@ -50,7 +50,7 @@
                 if (response.status === 429) {
                     this.messages.push({ role: 'model', text: data.reply || 'Sistem sedang memproses terlalu banyak data dalam satu menit. Mohon tunggu sekitar 30 detik sebelum memberikan perintah baru.' });
                 } else if (!response.ok) {
-                    this.messages.push({ role: 'model', text: data.message || 'Maaf, terjadi kesalahan saat menghubungi server.' });
+                    this.messages.push({ role: 'model', text: data.reply || data.message || 'Maaf, terjadi kesalahan saat menghubungi server.' });
                 } else {
                     this.messages.push({ role: 'model', text: data.reply });
                 }
