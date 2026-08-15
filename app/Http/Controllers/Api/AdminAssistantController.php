@@ -40,67 +40,62 @@ class AdminAssistantController extends Controller
         $modelName = $this->getBestGeminiModel($apiKey);
         $endpoint = "https://generativelanguage.googleapis.com/v1beta/models/{$modelName}:generateContent?key={$apiKey}";
 
-        // Define Tools / Functions that Gemini can call
+        // 1. AMBIL TOOLS DARI MCP SERVER (DINAMIS)
+        $mcpController = app(\App\Http\Controllers\McpServerController::class);
+        $mcpToken = env('MCP_SECRET_KEY', 'kamerakita-mcp-2026');
+
+        $reqList = \Illuminate\Http\Request::create('/api/mcp', 'POST', [
+            'method' => 'tools/list',
+            'id' => uniqid()
+        ]);
+        $reqList->headers->set('Authorization', 'Bearer ' . $mcpToken);
+        $resList = $mcpController->handle($reqList);
+        $mcpData = json_decode($resList->getContent(), true);
+        $mcpTools = $mcpData['result']['tools'] ?? [];
+
+        // Map format MCP ke format Gemini Function Declarations
+        $geminiTools = [];
+        foreach ($mcpTools as $t) {
+            $gt = [
+                'name' => $t['name'],
+                'description' => $t['description'] ?? '',
+            ];
+            if (isset($t['parameters'])) {
+                $p = $t['parameters'];
+                if (isset($p['type'])) $p['type'] = strtoupper($p['type']);
+                if (isset($p['properties'])) {
+                    if (empty($p['properties'])) {
+                        $p['properties'] = new \stdClass();
+                    } else {
+                        foreach ($p['properties'] as $key => &$prop) {
+                            if (isset($prop['type'])) $prop['type'] = strtoupper($prop['type']);
+                            if (isset($prop['items']['type'])) $prop['items']['type'] = strtoupper($prop['items']['type']);
+                        }
+                    }
+                } else {
+                    $p['properties'] = new \stdClass();
+                }
+                $gt['parameters'] = $p;
+            } else {
+                $gt['parameters'] = ['type' => 'OBJECT', 'properties' => new \stdClass()];
+            }
+            $geminiTools[] = $gt;
+        }
+
         $tools = [
-            [
-                'function_declarations' => [
-                    [
-                        'name' => 'get_pending_qc_count',
-                        'description' => 'Menghitung jumlah laporan video dari worker yang masih pending atau on_review (belum di-QC).',
-                        'parameters' => [
-                            'type' => 'OBJECT',
-                            'properties' => (object)[]
-                        ]
-                    ],
-                    [
-                        'name' => 'search_user',
-                        'description' => 'Mencari data pengguna atau partner (nama, email, role, id) berdasarkan kata kunci nama.',
-                        'parameters' => [
-                            'type' => 'OBJECT',
-                            'properties' => [
-                                'keyword' => [
-                                    'type' => 'STRING',
-                                    'description' => 'Nama atau potongan nama user yang ingin dicari (contoh: randy)'
-                                ]
-                            ],
-                            'required' => ['keyword']
-                        ]
-                    ],
-                    [
-                        'name' => 'get_user_stats',
-                        'description' => 'Mendapatkan statistik laporan video dari seorang partner berdasarkan ID-nya (total disetujui, belum dibayar, pending).',
-                        'parameters' => [
-                            'type' => 'OBJECT',
-                            'properties' => [
-                                'partner_id' => [
-                                    'type' => 'INTEGER',
-                                    'description' => 'ID user partner (didapat dari hasil pencarian user)'
-                                ]
-                            ],
-                            'required' => ['partner_id']
-                        ]
-                    ]
-                ]
-            ]
+            ['function_declarations' => $geminiTools]
         ];
 
-        // Format history sesuai dengan syarat API Gemini (harus dimulai dari user, dan harus bergantian user-model)
+        // Format history sesuai dengan syarat API Gemini
         $contents = [];
         $lastRole = null;
         
         foreach ($history as $msg) {
-            // Abaikan sapaan awal sistem atau pesan error jaringan yang tidak penting
-            if (empty($contents) && $msg['role'] === 'model') {
-                continue;
-            }
-            if ($msg['role'] === 'model' && str_contains($msg['text'], 'Maaf, terjadi kesalahan')) {
-                continue;
-            }
+            if (empty($contents) && $msg['role'] === 'model') continue;
+            if ($msg['role'] === 'model' && str_contains($msg['text'], 'Maaf, terjadi kesalahan')) continue;
             
             $currentRole = $msg['role'] === 'model' ? 'model' : 'user';
             
-            // Jika ada dua pesan beruntun dari role yang sama, gabungkan jadi satu 
-            // karena Gemini wajib bergantian user -> model -> user -> model
             if ($lastRole === $currentRole) {
                 $contents[count($contents) - 1]['parts'][0]['text'] .= "\n\n" . $msg['text'];
             } else {
@@ -112,7 +107,6 @@ class AdminAssistantController extends Controller
             }
         }
 
-        // Sisipkan pesan user yang baru
         if ($lastRole === 'user') {
             $contents[count($contents) - 1]['parts'][0]['text'] .= "\n\n" . $userMessage;
         } else {
@@ -126,23 +120,17 @@ class AdminAssistantController extends Controller
             'system_instruction' => [
                 'parts' => [
                     ['text' => "Kamu adalah \"KameraBot\", Asisten Virtual cerdas untuk tim internal KameraKita. 
-Tugas utamamu adalah membantu admin dan manajemen untuk memantau laporan kerja harian, statistik video, serta eksekusi payroll.
-
-Daftar Tools & Skills MCP Kamerakita (Internal):
-1. get_pending_qc_count: Menghitung total laporan pending QC.
-2. search_user: Mencari data partner/user berdasarkan nama.
-3. get_user_stats: Mengambil statistik laporan spesifik partner.
+Tugas utamamu adalah membantu admin dan manajemen memantau laporan kerja, statistik video, payroll, dan mengeksekusi operasi sistem.
 
 Aturan Eksekusi Alat (Wajib Dipatuhi):
-1. OTONOMI PENUH: Gunakan alat pembacaan data secara mandiri tanpa perlu meminta izin. Kombinasikan alat jika perlu (misal: cari user dulu, lalu panggil get_user_stats pakai ID-nya).
-2. DOUBLE CHECK POINT: Sebelum mengeksekusi aksi pengubahan data database, kamu WAJIB meminta konfirmasi dengan bertanya singkat: \"Apakah Kakak yakin ingin menyetujui data ini?\". Jika dijawab \"Ya\", langsung eksekusi.
+1. OTONOMI PENUH: Gunakan alat pembacaan data secara mandiri tanpa perlu meminta izin. Kombinasikan alat jika perlu (misal: cari user dulu, lalu panggil qc_stats pakai ID-nya).
+2. DOUBLE CHECK POINT: Sebelum mengeksekusi alat yang bersifat mengubah data (seperti execute_action, batch_reconcile), kamu WAJIB meminta konfirmasi terlebih dahulu dengan bertanya singkat: \"Apakah Kakak yakin ingin mengeksekusi ini?\". Jika dijawab \"Ya\", langsung jalankan alatnya.
 
 Aturan Komunikasi:
 1. TO THE POINT: DILARANG KERAS basa-basi! Langsung berikan jawaban akhir.
 2. NADA BICARA: Gunakan bahasa Indonesia santai tapi rapi, gunakan sapaan \"Kak\" atau \"Min\".
 3. FORMAT: Gunakan *teks tebal* untuk angka/status, `monospace` untuk ID/email, dan bullet points (-).
-4. RINGKASAN CERDAS: Jika hasil data sangat panjang, berikan total ringkasannya saja dan tawarkan rinciannya.
-5. KEAMANAN: Jangan bocorkan ID sistem atau token rahasia kecuali diminta spesifik."]
+4. RINGKASAN CERDAS: Jika hasil data sangat panjang, berikan total ringkasannya saja dan tawarkan rinciannya."]
                 ]
             ],
             'contents' => $contents,
@@ -151,9 +139,8 @@ Aturan Komunikasi:
 
         try {
             // 3. EXECUTE REQUEST TO GEMINI
-            $response = Http::timeout(30)->post($endpoint, $payload);
+            $response = Http::timeout(45)->post($endpoint, $payload);
 
-            // 4. RATE LIMITING HANDLER (SANGAT KRUSIAL)
             if ($response->status() === 429) {
                 return response()->json([
                     'reply' => 'Sistem sedang memproses terlalu banyak data dalam satu menit. Mohon tunggu sekitar 30 detik sebelum memberikan perintah baru.'
@@ -185,49 +172,32 @@ Aturan Komunikasi:
                 }
             }
 
-            // Jika AI memutuskan untuk memanggil fungsi internal sistem
+            // Jika AI memutuskan untuk memanggil fungsi internal sistem (VIA MCP SERVER)
             if ($toolCall) {
                 $functionName = $toolCall['name'];
                 $toolArgs = $toolCall['args'] ?? [];
+                
+                // Teruskan eksekusi fungsi ke McpServerController secara langsung
+                $reqCall = \Illuminate\Http\Request::create('/api/mcp', 'POST', [
+                    'method' => 'tools/call',
+                    'id' => uniqid(),
+                    'params' => [
+                        'name' => $functionName,
+                        'arguments' => $toolArgs
+                    ]
+                ]);
+                $reqCall->headers->set('Authorization', 'Bearer ' . $mcpToken);
+                
+                $resCall = $mcpController->handle($reqCall);
+                $callData = json_decode($resCall->getContent(), true);
+                
                 $toolResult = [];
-
-                // Router eksekusi fungsi
-                switch ($functionName) {
-                    case 'get_pending_qc_count':
-                        $count = \App\Models\VideoWorkReport::whereIn('qc_status', ['pending', 'on_review'])->count();
-                        $toolResult = ['pending_qc_count' => $count];
-                        break;
-                    case 'search_user':
-                        $keyword = $toolArgs['keyword'] ?? '';
-                        if (!$keyword) {
-                            $toolResult = ['error' => 'Keyword pencarian kosong.'];
-                        } else {
-                            $users = \App\Models\User::where('name', 'like', "%{$keyword}%")
-                                ->orWhere('email', 'like', "%{$keyword}%")
-                                ->select('id', 'name', 'email', 'role')
-                                ->limit(5)
-                                ->get();
-                            $toolResult = ['users_found' => $users->toArray(), 'total' => $users->count()];
-                        }
-                        break;
-                    case 'get_user_stats':
-                        $partnerId = $toolArgs['partner_id'] ?? null;
-                        if (!$partnerId) {
-                            $toolResult = ['error' => 'Partner ID harus diisi.'];
-                        } else {
-                            $stats = \App\Models\VideoWorkReport::where('partner_id', $partnerId)
-                                ->selectRaw('
-                                    count(*) as total_reports,
-                                    sum(case when qc_status = "approved" then 1 else 0 end) as total_approved,
-                                    sum(case when payment_status = "paid" then 1 else 0 end) as total_paid,
-                                    sum(approved_duration_minutes) as total_approved_minutes
-                                ')->first();
-                            $toolResult = ['partner_id' => $partnerId, 'stats' => $stats ? $stats->toArray() : null];
-                        }
-                        break;
-                    default:
-                        $toolResult = ['error' => "Fungsi {$functionName} tidak dikenali di sistem."];
-                        break;
+                if (isset($callData['error'])) {
+                    $toolResult = ['error' => $callData['error']['message'] ?? 'Unknown MCP Error'];
+                } else {
+                    // Ekstrak hasil teks dari response standar MCP
+                    $contentStr = $callData['result']['content'][0]['text'] ?? '{}';
+                    $toolResult = json_decode($contentStr, true) ?? ['result' => $contentStr];
                 }
 
                 // Kirim kembali hasil eksekusi (JSON) ke Gemini agar ia merangkai kalimat natural
