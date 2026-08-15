@@ -5,6 +5,22 @@
         messages: [
             { role: 'model', text: 'Halo Admin! Saya KameraBot. Ada data operasional yang perlu saya cek atau eksekusi hari ini?' }
         ],
+        init() {
+            const saved = localStorage.getItem('kameraBotMessages');
+            if (saved) {
+                this.messages = JSON.parse(saved);
+            }
+            this.$watch('messages', value => {
+                localStorage.setItem('kameraBotMessages', JSON.stringify(value));
+            });
+        },
+        clearHistory() {
+            if (confirm('Bersihkan riwayat percakapan?')) {
+                this.messages = [
+                    { role: 'model', text: 'Halo Admin! Saya KameraBot. Ada data operasional yang perlu saya cek atau eksekusi hari ini?' }
+                ];
+            }
+        },
         toggle() {
             this.isOpen = !this.isOpen;
             if (this.isOpen) {
@@ -26,6 +42,9 @@
             const text = this.inputText.trim();
             if (!text) return;
             
+            // Ambil histori (sebelum pesan baru ditambahkan)
+            const chatHistory = JSON.parse(JSON.stringify(this.messages));
+
             this.messages.push({ role: 'user', text: text });
             this.inputText = '';
             this.isLoading = true;
@@ -42,7 +61,10 @@
                 const response = await fetch('/admin-assistant', {
                     method: 'POST',
                     headers: headers,
-                    body: JSON.stringify({ message: text })
+                    body: JSON.stringify({ 
+                        message: text,
+                        history: chatHistory 
+                    })
                 });
 
                 const data = await response.json();
@@ -61,7 +83,7 @@
                 setTimeout(() => this.scrollToBottom(), 100);
             }
         }
-    }" 
+    }"  
     class="fixed bottom-6 right-6 z-[9999] flex flex-col items-end gap-3 font-sans"
 >
 
@@ -87,9 +109,14 @@
                     <p class="text-[10px] text-indigo-100 font-medium">AI Admin Command Center</p>
                 </div>
             </div>
-            <button @click="isOpen = false" class="text-white/80 hover:text-white bg-white/10 hover:bg-white/20 rounded-lg p-1.5 transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
+            <div class="flex gap-1">
+                <button @click="clearHistory" title="Bersihkan Obrolan" class="text-white/80 hover:text-white bg-white/10 hover:bg-white/20 rounded-lg p-1.5 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>
+                <button @click="isOpen = false" class="text-white/80 hover:text-white bg-white/10 hover:bg-white/20 rounded-lg p-1.5 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
         </div>
 
         <!-- Messages Area -->

@@ -24,6 +24,8 @@ class AdminAssistantController extends Controller
         }
 
         $userMessage = $request->input('message');
+        $history = $request->input('history', []); // Menerima histori dari frontend
+        
         if (!$userMessage) {
             return response()->json(['reply' => 'Pesan tidak boleh kosong.'], 400);
         }
@@ -50,10 +52,47 @@ class AdminAssistantController extends Controller
                             'properties' => (object)[]
                         ]
                     ]
-                    // Tambahkan fungsi operasional lain di sini nantinya
                 ]
             ]
         ];
+
+        // Format history sesuai dengan syarat API Gemini (harus dimulai dari user, dan harus bergantian user-model)
+        $contents = [];
+        $lastRole = null;
+        
+        foreach ($history as $msg) {
+            // Abaikan sapaan awal sistem atau pesan error jaringan yang tidak penting
+            if (empty($contents) && $msg['role'] === 'model') {
+                continue;
+            }
+            if ($msg['role'] === 'model' && str_contains($msg['text'], 'Maaf, terjadi kesalahan')) {
+                continue;
+            }
+            
+            $currentRole = $msg['role'] === 'model' ? 'model' : 'user';
+            
+            // Jika ada dua pesan beruntun dari role yang sama, gabungkan jadi satu 
+            // karena Gemini wajib bergantian user -> model -> user -> model
+            if ($lastRole === $currentRole) {
+                $contents[count($contents) - 1]['parts'][0]['text'] .= "\n\n" . $msg['text'];
+            } else {
+                $contents[] = [
+                    'role' => $currentRole,
+                    'parts' => [['text' => $msg['text']]]
+                ];
+                $lastRole = $currentRole;
+            }
+        }
+
+        // Sisipkan pesan user yang baru
+        if ($lastRole === 'user') {
+            $contents[count($contents) - 1]['parts'][0]['text'] .= "\n\n" . $userMessage;
+        } else {
+            $contents[] = [
+                'role' => 'user',
+                'parts' => [['text' => $userMessage]]
+            ];
+        }
 
         $payload = [
             'system_instruction' => [
@@ -85,14 +124,7 @@ Aturan Komunikasi:
 5. KEAMANAN: Jangan bocorkan ID sistem atau token rahasia kecuali diminta spesifik."]
                 ]
             ],
-            'contents' => [
-                [
-                    'role' => 'user',
-                    'parts' => [
-                        ['text' => $userMessage]
-                    ]
-                ]
-            ],
+            'contents' => $contents,
             'tools' => $tools
         ];
 
