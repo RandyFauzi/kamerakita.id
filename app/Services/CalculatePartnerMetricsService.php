@@ -195,52 +195,40 @@ class CalculatePartnerMetricsService
         $onReviewMinutesSum = VideoWorkReport::where('qc_status', 'on_review')->sum('submitted_duration_minutes');
         $rejectedMinutesSum = VideoWorkReport::where('qc_status', 'rejected')->sum('submitted_duration_minutes');
 
-        // Fetch live USD to IDR rate (cached daily until midnight 00:00 for optimal server performance)
-        $usdToIdrRate = cache()->remember('usd_to_idr_rate', now()->endOfDay(), function() {
-            try {
-                $response = Http::withoutVerifying()->timeout(5)->get('https://open.er-api.com/v6/latest/USD');
-                if ($response->successful()) {
-                    return $response->json()['rates']['IDR'] ?? 17900;
-                }
-            } catch (\Exception $e) {
-                // Fallback
-            }
-            return 17900;
-        });
+        // 1. Target Mingguan (100 Jam Video Approved)
+        $currentPeriod = PeriodService::getPeriodRange(now());
+        $weeklyPeriodStart = $currentPeriod['start']->copy()->startOfDay();
+        $weeklyPeriodEnd = $currentPeriod['end']->copy()->endOfDay();
 
-        // Billing to Client is fixed at $3.50 USD/hour, converted dynamically to IDR
-        $clientBillingRateIdr = $usdToIdrRate * 3.5;
+        $weeklyApprovedMinutes = VideoWorkReport::where('qc_status', 'approved')
+            ->whereBetween('submission_date', [
+                $weeklyPeriodStart->toDateString(),
+                $weeklyPeriodEnd->toDateString(),
+            ])
+            ->sum('approved_duration_minutes');
 
-        $clientPaidAmount = ($paid / 60) * $clientBillingRateIdr;
-        $clientPendingAmount = ($pending / 60) * $clientBillingRateIdr;
+        $weeklyTargetHours = 100;
+        $weeklyTargetMinutes = $weeklyTargetHours * 60;
+        $weeklyApprovedHours = round($weeklyApprovedMinutes / 60, 1);
+        $weeklyProgressPercent = $weeklyTargetMinutes > 0 ? round(($weeklyApprovedMinutes / $weeklyTargetMinutes) * 100, 1) : 0;
+        $weeklyPeriodLabel = $weeklyPeriodStart->format('d M') . ' - ' . $weeklyPeriodEnd->format('d M Y');
 
-        // Calculate Payouts
-        $workerPayout = 0;
-        $mitraPayout = 0;
-        $commissionPayout = 0;
+        // 2. Target Bulanan (400 Jam Video Approved)
+        $monthlyStart = now()->copy()->startOfMonth();
+        $monthlyEnd = now()->copy()->endOfMonth();
 
-        foreach ($approvedReports as $report) {
-            $partner = $report->partner;
-            $durationHours = $report->approved_duration_minutes / 60;
-            if ($partner) {
-                if ($partner->partner_role === 'worker') {
-                    $workerPayout += $durationHours * ($partner->base_hourly_rate ?: self::DEFAULT_WORKER_HOURLY_RATE_IDR);
-                    $commissionPayout += $durationHours * self::MITRA_COMMISSION_HOURLY_RATE_IDR;
-                } else {
-                    $mitraPayout += $durationHours * ($partner->base_hourly_rate ?: self::DEFAULT_MITRA_OWN_HOURLY_RATE_IDR);
-                }
-            }
-        }
+        $monthlyApprovedMinutes = VideoWorkReport::where('qc_status', 'approved')
+            ->whereBetween('submission_date', [
+                $monthlyStart->toDateString(),
+                $monthlyEnd->toDateString(),
+            ])
+            ->sum('approved_duration_minutes');
 
-        // Net Margin = Total Billed - Payouts
-        $totalBilledIdr = $clientPaidAmount + $clientPendingAmount;
-        $totalPayoutIdr = $workerPayout + $mitraPayout + $commissionPayout;
-        $agencyNetMargin = $totalBilledIdr - $totalPayoutIdr;
-
-        // Convert amounts to USD
-        $clientPaidUsd = $clientPaidAmount / $usdToIdrRate;
-        $clientPendingUsd = $clientPendingAmount / $usdToIdrRate;
-        $agencyNetMarginUsd = $agencyNetMargin / $usdToIdrRate;
+        $monthlyTargetHours = 400;
+        $monthlyTargetMinutes = $monthlyTargetHours * 60;
+        $monthlyApprovedHours = round($monthlyApprovedMinutes / 60, 1);
+        $monthlyProgressPercent = $monthlyTargetMinutes > 0 ? round(($monthlyApprovedMinutes / $monthlyTargetMinutes) * 100, 1) : 0;
+        $monthlyPeriodLabel = now()->translatedFormat('F Y');
 
         return [
             'total_workers' => $totalWorkersCount,
@@ -255,16 +243,20 @@ class CalculatePartnerMetricsService
             'global_on_review_submitted_hours_formatted' => $this->formatMinutes($onReviewMinutesSum),
             'global_rejected_submitted_hours_formatted' => $this->formatMinutes($rejectedMinutesSum),
 
-            // Financial Projections (IDR)
-            'client_paid_amount' => $clientPaidAmount,
-            'client_pending_amount' => $clientPendingAmount,
-            'agency_net_margin' => $agencyNetMargin,
+            // Target Mingguan & Bulanan
+            'weekly_target_hours' => $weeklyTargetHours,
+            'weekly_approved_minutes' => $weeklyApprovedMinutes,
+            'weekly_approved_hours' => $weeklyApprovedHours,
+            'weekly_approved_hours_formatted' => $this->formatMinutes($weeklyApprovedMinutes),
+            'weekly_progress_percent' => $weeklyProgressPercent,
+            'weekly_period_label' => $weeklyPeriodLabel,
 
-            // Live USD rates
-            'usd_to_idr_rate' => $usdToIdrRate,
-            'client_paid_amount_usd' => $clientPaidUsd,
-            'client_pending_amount_usd' => $clientPendingUsd,
-            'agency_net_margin_usd' => $agencyNetMarginUsd,
+            'monthly_target_hours' => $monthlyTargetHours,
+            'monthly_approved_minutes' => $monthlyApprovedMinutes,
+            'monthly_approved_hours' => $monthlyApprovedHours,
+            'monthly_approved_hours_formatted' => $this->formatMinutes($monthlyApprovedMinutes),
+            'monthly_progress_percent' => $monthlyProgressPercent,
+            'monthly_period_label' => $monthlyPeriodLabel,
         ];
     }
 

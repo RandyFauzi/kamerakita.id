@@ -113,32 +113,57 @@
                 </div>
             </div>
 
-            <!-- Right: Investment balance card (1 col) - MARGIN AGENSI -->
-            <div class="bg-white rounded-2xl sm:rounded-[32px] p-5 sm:p-8 border border-gray-150 shadow-sm flex flex-col justify-between min-h-[200px] sm:min-h-[220px]">
+            <!-- Right: Target Produksi Video Card (1 col) - TARGET MINGGUAN & BULANAN -->
+            <div class="bg-white rounded-2xl sm:rounded-[32px] p-5 sm:p-7 border border-gray-150 shadow-sm flex flex-col justify-between min-h-[220px]">
                 <div>
-                    <div class="flex flex-wrap justify-between items-center gap-2 mb-3">
-                        <span class="block text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">MARGIN BERSIH AGENSI</span>
-                        <span class="bg-blue-50 border border-blue-100 text-blue-700 text-[10px] font-bold px-2.5 py-1 rounded-full font-mono">
-                            Live $1 = Rp{{ number_format($metrics['usd_to_idr_rate'], 0, ',', '.') }}
+                    <div class="flex flex-wrap justify-between items-center gap-2 mb-4">
+                        <span class="block text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">TARGET PRODUKSI VIDEO</span>
+                        <span class="bg-emerald-50 border border-emerald-100 text-emerald-700 text-[10px] font-bold px-2.5 py-1 rounded-full font-mono flex items-center gap-1.5">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            Approved Video
                         </span>
                     </div>
-                    <h3 class="text-3xl font-black text-slate-900 tracking-tight">
-                        ${{ number_format($metrics['agency_net_margin_usd'], 2) }}
-                        <span class="text-xs text-gray-500 font-semibold block mt-1.5">
-                            Setara: <strong class="text-slate-800">Rp{{ number_format($metrics['agency_net_margin'], 0, ',', '.') }} IDR</strong> (Laba Bersih Agensi)
-                        </span>
-                    </h3>
+
+                    <!-- Target Mingguan (100 Jam) -->
+                    <div class="space-y-1.5 mb-4">
+                        <div class="flex justify-between items-baseline">
+                            <div>
+                                <span class="text-xs font-bold text-slate-800">Target Mingguan</span>
+                                <span class="text-[10px] text-slate-400 font-medium block">Periode: {{ $metrics['weekly_period_label'] }}</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-sm font-black text-slate-900">{{ $metrics['weekly_approved_hours'] }} <span class="text-xs text-slate-400 font-normal">/ {{ $metrics['weekly_target_hours'] }} Jam</span></span>
+                                <span class="text-[10px] font-bold block {{ $metrics['weekly_progress_percent'] >= 100 ? 'text-emerald-600' : 'text-indigo-600' }} font-mono">{{ $metrics['weekly_progress_percent'] }}%</span>
+                            </div>
+                        </div>
+                        <!-- Progress Bar Mingguan -->
+                        <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                            <div class="h-full rounded-full transition-all duration-500 {{ $metrics['weekly_progress_percent'] >= 100 ? 'bg-gradient-to-r from-emerald-500 to-teal-400' : 'bg-gradient-to-r from-indigo-500 to-blue-500' }}" style="width: {{ min(100, $metrics['weekly_progress_percent']) }}%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Target Bulanan (400 Jam) -->
+                    <div class="space-y-1.5 pt-3 border-t border-slate-100">
+                        <div class="flex justify-between items-baseline">
+                            <div>
+                                <span class="text-xs font-bold text-slate-800">Target Bulanan</span>
+                                <span class="text-[10px] text-slate-400 font-medium block">Bulan: {{ $metrics['monthly_period_label'] }}</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-sm font-black text-slate-900">{{ $metrics['monthly_approved_hours'] }} <span class="text-xs text-slate-400 font-normal">/ {{ $metrics['monthly_target_hours'] }} Jam</span></span>
+                                <span class="text-[10px] font-bold block {{ $metrics['monthly_progress_percent'] >= 100 ? 'text-emerald-600' : 'text-purple-600' }} font-mono">{{ $metrics['monthly_progress_percent'] }}%</span>
+                            </div>
+                        </div>
+                        <!-- Progress Bar Bulanan -->
+                        <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                            <div class="h-full rounded-full transition-all duration-500 {{ $metrics['monthly_progress_percent'] >= 100 ? 'bg-gradient-to-r from-emerald-500 to-teal-400' : 'bg-gradient-to-r from-purple-500 to-indigo-500' }}" style="width: {{ min(100, $metrics['monthly_progress_percent']) }}%"></div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="pt-4 border-t border-gray-100 mt-4 space-y-2">
-                    <div class="flex justify-between text-xs">
-                        <span class="text-gray-450 font-semibold">Total Billing Klien:</span>
-                        <span class="font-bold text-indigo-700">${{ number_format($metrics['client_paid_amount_usd'] + $metrics['client_pending_amount_usd'], 2) }}</span>
-                    </div>
-                    <div class="flex justify-between text-xs">
-                        <span class="text-gray-450 font-semibold">Rate Billing Klien:</span>
-                        <span class="font-bold text-gray-800">$3.50 / jam</span>
-                    </div>
+                <div class="pt-3 border-t border-gray-100 mt-3 flex justify-between items-center text-[11px] text-slate-400">
+                    <span>Total Akumulasi Terverifikasi</span>
+                    <span class="font-bold text-slate-700 font-mono">{{ $metrics['global_all_time_hours_formatted'] }}</span>
                 </div>
             </div>
         </div>
