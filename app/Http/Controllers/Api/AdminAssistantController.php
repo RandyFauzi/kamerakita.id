@@ -19,7 +19,7 @@ class AdminAssistantController extends Controller
             $user = auth()->user();
         }
 
-        if (!$user || !in_array($user->role, ['admin', 'super_admin'])) {
+        if (!$user || !$user->hasFullAdminAccess()) {
             return response()->json(['message' => 'Unauthorized Access. Fitur hanya untuk Admin.'], 403);
         }
 
