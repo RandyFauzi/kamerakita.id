@@ -44,6 +44,14 @@
             </div>
         </div>
         <x-floating-calculator />
+        
+        @php
+            $currentUser = Auth::user();
+        @endphp
+        @if($currentUser && $currentUser->hasFullAdminAccess())
+            <x-admin-ai-bot />
+        @endif
+
         <x-push-prompt />
         <x-mobile-bottom-nav />
     </body>
