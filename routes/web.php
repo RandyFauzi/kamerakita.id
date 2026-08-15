@@ -163,6 +163,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('push-subscriptions.update');
     Route::delete('/push-subscriptions', [\App\Http\Controllers\PushSubscriptionController::class, 'destroy'])
         ->name('push-subscriptions.destroy');
+
+    // AI Admin Command Center Endpoint
+    Route::post('/admin-assistant', [\App\Http\Controllers\Api\AdminAssistantController::class, 'handle'])
+        ->middleware('role:superadmin,admin')
+        ->name('admin-assistant');
 });
 
 Route::middleware('auth')->group(function () {

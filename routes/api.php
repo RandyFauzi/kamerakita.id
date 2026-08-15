@@ -13,7 +13,4 @@ Route::get('/user', function (Request $request) {
 Route::post('/mcp', [McpServerController::class, 'handle'])
     ->name('api.mcp.handle');
 
-// AI Admin Command Center Endpoint
-Route::post('/admin-assistant', [AdminAssistantController::class, 'handle'])
-    ->middleware('auth:sanctum')
-    ->name('api.admin-assistant');
+// AI Admin Command Center Endpoint dipindah ke web.php agar menggunakan session auth.

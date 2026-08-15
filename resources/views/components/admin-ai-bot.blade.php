@@ -39,7 +39,7 @@
                 };
                 if (csrfToken) headers['X-CSRF-TOKEN'] = csrfToken;
 
-                const response = await fetch('/api/admin-assistant', {
+                const response = await fetch('/admin-assistant', {
                     method: 'POST',
                     headers: headers,
                     body: JSON.stringify({ message: text })
