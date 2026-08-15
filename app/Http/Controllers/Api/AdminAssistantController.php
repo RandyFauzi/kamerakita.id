@@ -51,6 +51,34 @@ class AdminAssistantController extends Controller
                             'type' => 'OBJECT',
                             'properties' => (object)[]
                         ]
+                    ],
+                    [
+                        'name' => 'search_user',
+                        'description' => 'Mencari data pengguna atau partner (nama, email, role, id) berdasarkan kata kunci nama.',
+                        'parameters' => [
+                            'type' => 'OBJECT',
+                            'properties' => [
+                                'keyword' => [
+                                    'type' => 'STRING',
+                                    'description' => 'Nama atau potongan nama user yang ingin dicari (contoh: randy)'
+                                ]
+                            ],
+                            'required' => ['keyword']
+                        ]
+                    ],
+                    [
+                        'name' => 'get_user_stats',
+                        'description' => 'Mendapatkan statistik laporan video dari seorang partner berdasarkan ID-nya (total disetujui, belum dibayar, pending).',
+                        'parameters' => [
+                            'type' => 'OBJECT',
+                            'properties' => [
+                                'partner_id' => [
+                                    'type' => 'INTEGER',
+                                    'description' => 'ID user partner (didapat dari hasil pencarian user)'
+                                ]
+                            ],
+                            'required' => ['partner_id']
+                        ]
                     ]
                 ]
             ]
@@ -100,20 +128,13 @@ class AdminAssistantController extends Controller
                     ['text' => "Kamu adalah \"KameraBot\", Asisten Virtual cerdas untuk tim internal KameraKita. 
 Tugas utamamu adalah membantu admin dan manajemen untuk memantau laporan kerja harian, statistik video, serta eksekusi payroll.
 
-Daftar Tools & Skills MCP Kamerakita:
-1. Pencarian & Inspeksi Data (search_partner & fetch_records)
-2. Agregasi & Analisis Laporan (aggregate_records & qc_stats)
-3. Rekonsiliasi Otomatis (auto_reconcile_proportional)
-4. Asisten Penggajian & Payroll (payroll_assistant)
-5. Detektor Anomali (anomaly_detector)
-6. Klasemen Mitra Teratas (top_partners)
-7. Eksekusi Massal Aman (execute_action)
-8. Integrasi WhatsApp Instan (send_wa)
-9. Persetujuan Batch (batch_reconcile_by_email)
-10. Pembatalan Persetujuan (revert_reconcile_by_email)
+Daftar Tools & Skills MCP Kamerakita (Internal):
+1. get_pending_qc_count: Menghitung total laporan pending QC.
+2. search_user: Mencari data partner/user berdasarkan nama.
+3. get_user_stats: Mengambil statistik laporan spesifik partner.
 
 Aturan Eksekusi Alat (Wajib Dipatuhi):
-1. OTONOMI PENUH: Gunakan alat pembacaan data secara mandiri tanpa perlu meminta izin.
+1. OTONOMI PENUH: Gunakan alat pembacaan data secara mandiri tanpa perlu meminta izin. Kombinasikan alat jika perlu (misal: cari user dulu, lalu panggil get_user_stats pakai ID-nya).
 2. DOUBLE CHECK POINT: Sebelum mengeksekusi aksi pengubahan data database, kamu WAJIB meminta konfirmasi dengan bertanya singkat: \"Apakah Kakak yakin ingin menyetujui data ini?\". Jika dijawab \"Ya\", langsung eksekusi.
 
 Aturan Komunikasi:
@@ -167,14 +188,42 @@ Aturan Komunikasi:
             // Jika AI memutuskan untuk memanggil fungsi internal sistem
             if ($toolCall) {
                 $functionName = $toolCall['name'];
+                $toolArgs = $toolCall['args'] ?? [];
                 $toolResult = [];
 
                 // Router eksekusi fungsi
                 switch ($functionName) {
                     case 'get_pending_qc_count':
-                        // Menjalankan query ke database dengan aman
                         $count = \App\Models\VideoWorkReport::whereIn('qc_status', ['pending', 'on_review'])->count();
                         $toolResult = ['pending_qc_count' => $count];
+                        break;
+                    case 'search_user':
+                        $keyword = $toolArgs['keyword'] ?? '';
+                        if (!$keyword) {
+                            $toolResult = ['error' => 'Keyword pencarian kosong.'];
+                        } else {
+                            $users = \App\Models\User::where('name', 'like', "%{$keyword}%")
+                                ->orWhere('email', 'like', "%{$keyword}%")
+                                ->select('id', 'name', 'email', 'role')
+                                ->limit(5)
+                                ->get();
+                            $toolResult = ['users_found' => $users->toArray(), 'total' => $users->count()];
+                        }
+                        break;
+                    case 'get_user_stats':
+                        $partnerId = $toolArgs['partner_id'] ?? null;
+                        if (!$partnerId) {
+                            $toolResult = ['error' => 'Partner ID harus diisi.'];
+                        } else {
+                            $stats = \App\Models\VideoWorkReport::where('partner_id', $partnerId)
+                                ->selectRaw('
+                                    count(*) as total_reports,
+                                    sum(case when qc_status = "approved" then 1 else 0 end) as total_approved,
+                                    sum(case when payment_status = "paid" then 1 else 0 end) as total_paid,
+                                    sum(approved_duration_minutes) as total_approved_minutes
+                                ')->first();
+                            $toolResult = ['partner_id' => $partnerId, 'stats' => $stats ? $stats->toArray() : null];
+                        }
                         break;
                     default:
                         $toolResult = ['error' => "Fungsi {$functionName} tidak dikenali di sistem."];
