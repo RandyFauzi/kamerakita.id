@@ -278,9 +278,10 @@
                                     <!-- Grup Filter -->
                                     <th class="px-3 py-2 min-w-[120px]">
                                         <select name="group" id="group" onchange="this.form.submit()" class="block w-full py-1.5 px-2.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700 transition shadow-sm">
-                                            <option value="">Semua Grup</option>
-                                            <option value="Group A" {{ (isset($group) && $group == 'Group A') ? 'selected' : '' }}>Group A</option>
-                                            <option value="Group B" {{ (isset($group) && $group == 'Group B') ? 'selected' : '' }}>Group B</option>
+                                            <option value="" {{ empty($group) ? 'selected' : '' }}>Semua Grup</option>
+                                            @foreach($activationGroups as $ag)
+                                                <option value="{{ $ag }}" {{ (isset($group) && $group == $ag) ? 'selected' : '' }}>{{ $ag }}</option>
+                                            @endforeach
                                         </select>
                                     </th>
                                     <!-- Nominal/Jam Filter -->
@@ -357,16 +358,12 @@
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        @if($partner->group_name == 'Group A')
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
-                                                A
-                                            </span>
-                                        @elseif($partner->group_name == 'Group B')
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                                B
+                                        @if($partner->group_name)
+                                            <span class="inline-flex items-center justify-center px-2 py-1 bg-indigo-50 text-indigo-700 text-[10px] font-bold rounded-md whitespace-nowrap shadow-sm border border-indigo-100">
+                                                {{ $partner->group_name }}
                                             </span>
                                         @else
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-50 text-gray-500 border border-gray-200">
+                                            <span class="inline-flex items-center justify-center px-2 py-1 bg-gray-50 text-gray-500 text-[10px] font-bold rounded-md whitespace-nowrap shadow-sm border border-gray-100">
                                                 -
                                             </span>
                                         @endif
@@ -567,7 +564,7 @@
                             <div class="sm:flex sm:items-start">
                                 <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100 sm:mx-0 sm:h-10 sm:w-10">
                                     <svg class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 002-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
                                     </svg>
                                 </div>
                                 <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
@@ -688,8 +685,9 @@
                                                 <select name="group_name" id="bulk_group" class="block w-full py-1.5 px-2.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white">
                                                     <option value="no_change">Tidak Ada Perubahan</option>
                                                     <option value="clear">Hapus Grup (Kosongkan)</option>
-                                                    <option value="Group A">Group A</option>
-                                                    <option value="Group B">Group B</option>
+                                                    @foreach($activationGroups as $ag)
+                                                        <option value="{{ $ag }}">{{ $ag }}</option>
+                                                    @endforeach
                                                 </select>
                                             </div>
 

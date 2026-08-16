@@ -59,6 +59,12 @@ class ManagePartnerDemographicsController extends Controller
             'total_suspended' => $totalSuspended,
         ];
 
+        $activationGroups = \App\Models\ActivationCode::select('group_name')
+            ->distinct()
+            ->whereNotNull('group_name')
+            ->orderBy('group_name')
+            ->pluck('group_name');
+
         $partners = Partner::query()
             ->with(['mitraParent', 'user'])
             ->withMax('videoWorkReports', 'submission_date')
@@ -117,7 +123,7 @@ class ManagePartnerDemographicsController extends Controller
 
         return view('partners.index', compact(
             'partners', 'search', 'role', 'status', 'group', 'summary',
-            'mitraId', 'fullName', 'hourlyRate', 'headstrap', 'whatsapp', 'mitraParent', 'clientRegistered', 'mitraList'
+            'mitraId', 'fullName', 'hourlyRate', 'headstrap', 'whatsapp', 'mitraParent', 'clientRegistered', 'mitraList', 'activationGroups'
         ));
     }
 
