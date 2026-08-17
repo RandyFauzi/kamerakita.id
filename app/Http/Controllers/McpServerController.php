@@ -339,10 +339,12 @@ class McpServerController extends Controller
     private function searchPartner(array $args)
     {
         $keyword = $args['keyword'] ?? '';
-        return User::where('name', 'LIKE', "%{$keyword}%")
+        $users = User::where('name', 'LIKE', "%{$keyword}%")
             ->orWhere('email', 'LIKE', "%{$keyword}%")
             ->with(['partner'])
             ->get();
+            
+        return $this->maskSensitiveData($users);
     }
 
     private function qcStats(array $args)
@@ -856,8 +858,23 @@ class McpServerController extends Controller
         return [
             'total' => $totalCount,
             'count' => $data->count(),
-            'data' => $data
+            'data' => $this->maskSensitiveData($data)
         ];
+    }
+
+    private function maskSensitiveData($collection)
+    {
+        if ($collection instanceof \Illuminate\Support\Collection) {
+            $collection->each(function ($item) {
+                if ($item instanceof \App\Models\Partner) {
+                    $item->makeHidden(['nik', 'full_address', 'whatsapp_number', 'bank_account_number']);
+                }
+                if ($item instanceof \App\Models\User && $item->partner) {
+                    $item->partner->makeHidden(['nik', 'full_address', 'whatsapp_number', 'bank_account_number']);
+                }
+            });
+        }
+        return $collection;
     }
 
     private function aggregateRecords(array $args)

@@ -5,7 +5,7 @@ Kamerakita.ai adalah sistem manajemen data data collector AI video (sejenis Atla
 ---
 
 ## Persyaratan Sistem Produksi
-- PHP >= 8.2 (dengan ekstensi GD enabled untuk kompresi foto bukti)
+- PHP >= 8.3 (dengan ekstensi GD enabled untuk kompresi foto bukti)
 - Composer
 - Node.js & NPM
 - Database (SQLite, MySQL, atau PostgreSQL)
@@ -62,7 +62,10 @@ php artisan view:cache
 ---
 
 ## Akun Demonstrasi Default (Testing)
-- **Super Admin (Utama)**: `randyfauzi24@gmail.com` | Password: `password`
-- **Super Admin (Backup)**: `superadmin@kamerakita.id` | Password: `password`
-- **Contributor**: `contributor1@kamerakita.id` (hingga `contributor5`) | Password: `password`
-- **Worker**: `worker1@kamerakita.id` (hingga `worker95`) | Password: `password`
+- Super Admin: `randyfauzi24@gmail.com`
+- Admin / QC: `admin@kamerakita.id`
+- Finance: `finance@kamerakita.id`
+
+> **PENTING**: Semua akun di atas secara bawaan menggunakan kata sandi `password`. **Ubah kata sandi ini segera** jika di-*deploy* ke *server production*!
+- **Contributor**: `contributor1@kamerakita.id` (hingga `contributor5`)
+- **Worker**: `worker1@kamerakita.id` (hingga `worker95`)
