@@ -403,6 +403,69 @@ class McpServerController extends Controller
                 }
                 return ['message' => 'Email tidak ditemukan.'];
                 
+            case 'create_worker':
+                $name = $payload['name'] ?? null;
+                $username = $payload['username'] ?? null;
+                $whatsapp = $payload['whatsapp_number'] ?? null;
+                $groupName = $payload['group_name'] ?? 'Group A';
+
+                if (!$name || !$username) {
+                    throw new \Exception("Parameter 'name' dan 'username' wajib diisi.");
+                }
+
+                $username = strtolower(preg_replace('/[^a-zA-Z0-9_-]/', '', $username));
+                $email = $username . '@kamerakitaid.site';
+
+                if (\App\Models\User::where('email', $email)->exists()) {
+                    throw new \Exception("Username '{$username}' sudah digunakan.");
+                }
+
+                $user = \App\Models\User::create([
+                    'name' => $name,
+                    'email' => $email,
+                    'password' => \Illuminate\Support\Facades\Hash::make('KameraKita123!'),
+                    'role' => 'verifikator', // Default role
+                ]);
+
+                // Auto-generate next KMK-XXX code
+                $latestPartner = \App\Models\Partner::orderBy('mitra_id', 'desc')->first();
+                if ($latestPartner && preg_match('/KMK-(\d+)/', $latestPartner->mitra_id, $matches)) {
+                    $nextNumber = intval($matches[1]) + 1;
+                } else {
+                    $nextNumber = 1;
+                }
+                $nextMitraId = 'KMK-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+
+                if (!$whatsapp) {
+                    $whatsapp = '08' . rand(100000000, 999999999);
+                }
+
+                $partner = \App\Models\Partner::create([
+                    'partner_role' => 'worker',
+                    'mitra_id' => $nextMitraId,
+                    'full_name' => $user->name,
+                    'whatsapp_number' => $whatsapp,
+                    'email' => $email,
+                    'has_headstrap' => false,
+                    'status' => 'active',
+                    'group_name' => $groupName,
+                    'base_hourly_rate' => 50000,
+                    'user_id' => $user->id,
+                ]);
+
+                return [
+                    'message' => "Berhasil mendaftarkan akun Worker baru.",
+                    'data' => [
+                        'user_id' => $user->id,
+                        'mitra_id' => $nextMitraId,
+                        'name' => $name,
+                        'username' => $username,
+                        'email' => $email,
+                        'password' => 'KameraKita123!',
+                        'whatsapp' => $whatsapp
+                    ]
+                ];
+
             default:
                 throw new \Exception("Aksi tidak didukung: {$action}");
         }
