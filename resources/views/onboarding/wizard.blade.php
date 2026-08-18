@@ -27,13 +27,13 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="antialiased bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen text-slate-800 flex items-center justify-center sm:py-12 sm:px-6">
+<body class="antialiased bg-white min-h-screen text-slate-800 flex flex-col items-center">
 
-    <!-- App Container: Mobile (Full Screen) | Desktop (Centered Phone-like Frame) -->
-    <div class="bg-white w-full h-[100dvh] sm:h-auto sm:min-h-[800px] sm:max-w-md sm:rounded-[40px] sm:shadow-2xl sm:border-[8px] sm:border-white relative flex flex-col overflow-hidden">
+    <!-- App Container: Full Screen Mobile & Wide Desktop -->
+    <div class="w-full h-[100dvh] sm:h-auto sm:min-h-screen sm:max-w-2xl relative flex flex-col overflow-hidden">
         
         <!-- Top Navigation Bar (Fixed at top inside container) -->
-        <div class="px-6 py-5 flex items-center justify-between bg-white z-10 shrink-0">
+        <div class="px-6 py-6 sm:py-8 flex items-center justify-between bg-white z-10 shrink-0">
             <button type="button" id="btn-back" class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors invisible" onclick="navigate(-1)">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
@@ -42,30 +42,30 @@
             
             <div class="flex-1 flex justify-center px-4">
                 <!-- Progress Bars -->
-                <div class="flex gap-1.5 w-full max-w-[150px]">
-                    <div class="h-1.5 rounded-full flex-1 bg-blue-600 transition-colors" id="prog-1"></div>
-                    <div class="h-1.5 rounded-full flex-1 bg-slate-200 transition-colors" id="prog-2"></div>
-                    <div class="h-1.5 rounded-full flex-1 bg-slate-200 transition-colors" id="prog-3"></div>
-                    <div class="h-1.5 rounded-full flex-1 bg-slate-200 transition-colors" id="prog-4"></div>
-                    <div class="h-1.5 rounded-full flex-1 bg-slate-200 transition-colors" id="prog-5"></div>
-                    <div class="h-1.5 rounded-full flex-1 bg-slate-200 transition-colors" id="prog-6"></div>
+                <div class="flex gap-2 w-full max-w-[200px]">
+                    <div class="h-2 rounded-full flex-1 bg-blue-600 transition-colors" id="prog-1"></div>
+                    <div class="h-2 rounded-full flex-1 bg-slate-200 transition-colors" id="prog-2"></div>
+                    <div class="h-2 rounded-full flex-1 bg-slate-200 transition-colors" id="prog-3"></div>
+                    <div class="h-2 rounded-full flex-1 bg-slate-200 transition-colors" id="prog-4"></div>
+                    <div class="h-2 rounded-full flex-1 bg-slate-200 transition-colors" id="prog-5"></div>
+                    <div class="h-2 rounded-full flex-1 bg-slate-200 transition-colors" id="prog-6"></div>
                 </div>
             </div>
             
             <div class="w-10 text-right">
-                <span class="text-xs font-bold text-slate-400" id="step-counter">1/6</span>
+                <span class="text-sm font-bold text-slate-400" id="step-counter">1/6</span>
             </div>
         </div>
 
         <!-- Scrollable Content Area -->
-        <div class="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar px-6 relative" id="content-area">
+        <div class="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar px-6 sm:px-10 relative" id="content-area">
             <form action="{{ route('onboarding.save') }}" method="POST" id="onboarding-form" class="h-full relative pb-10">
                 @csrf
 
                 <!-- SCREEN 1: SOP Headmount -->
                 <div class="step-screen w-full pb-10" id="screen-1">
                     <div class="flex justify-center mb-8 mt-4">
-                        <img src="{{ asset('images/onboarding/get-started.webp') }}" alt="Onboarding" class="w-48 h-auto object-contain drop-shadow-md">
+                        <img src="{{ asset('images/onboarding/get-started.webp') }}" alt="Onboarding" class="w-64 sm:w-80 h-auto object-contain drop-shadow-md">
                     </div>
                     
                     <div class="text-center mb-8">
@@ -92,7 +92,7 @@
                 <!-- SCREEN 2: SOP Tangkapan Tangan -->
                 <div class="step-screen w-full pb-10 hidden" id="screen-2">
                     <div class="flex justify-center mb-8 mt-4">
-                        <img src="{{ asset('images/onboarding/get-started.webp') }}" alt="Onboarding" class="w-48 h-auto object-contain drop-shadow-md">
+                        <img src="{{ asset('images/onboarding/get-started.webp') }}" alt="Onboarding" class="w-64 sm:w-80 h-auto object-contain drop-shadow-md">
                     </div>
                     
                     <div class="text-center mb-8">
@@ -119,7 +119,7 @@
                 <!-- SCREEN 3: SOP Cahaya -->
                 <div class="step-screen w-full pb-10 hidden" id="screen-3">
                     <div class="flex justify-center mb-8 mt-4">
-                        <img src="{{ asset('images/onboarding/get-started.webp') }}" alt="Onboarding" class="w-48 h-auto object-contain drop-shadow-md">
+                        <img src="{{ asset('images/onboarding/get-started.webp') }}" alt="Onboarding" class="w-64 sm:w-80 h-auto object-contain drop-shadow-md">
                     </div>
                     
                     <div class="text-center mb-8">
@@ -149,7 +149,7 @@
                 <!-- SCREEN 4: SOP Penolakan -->
                 <div class="step-screen w-full pb-10 hidden" id="screen-4">
                     <div class="flex justify-center mb-6 mt-4">
-                        <img src="{{ asset('images/onboarding/get-started.webp') }}" alt="Onboarding" class="w-48 h-auto object-contain drop-shadow-md">
+                        <img src="{{ asset('images/onboarding/get-started.webp') }}" alt="Onboarding" class="w-64 sm:w-80 h-auto object-contain drop-shadow-md">
                     </div>
                     
                     <div class="text-center mb-6">
