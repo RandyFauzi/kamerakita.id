@@ -91,19 +91,14 @@ class VendorController extends Controller
 
         $request->validate([
             'name' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s]*$/'],
-            'username' => ['required', 'string', 'lowercase', 'max:50', 'alpha_dash', function ($attribute, $value, $fail) {
-                if (\App\Models\User::where('email', $value . '@kamerakitaid.site')->exists()) {
-                    $fail('Username ini sudah digunakan.');
-                }
-            }],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'whatsapp_number' => ['required', 'string', 'max:20'],
             'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::min(8)],
         ]);
 
-        $internalEmail = $request->username . '@kamerakitaid.site';
-
         $newUser = \App\Models\User::create([
             'name' => $request->name,
-            'email' => $internalEmail,
+            'email' => $request->email,
             'password' => \Illuminate\Support\Facades\Hash::make($request->password),
             'role' => 'worker',
             'email_verified_at' => now(),
@@ -121,8 +116,8 @@ class VendorController extends Controller
             'partner_role' => 'worker',
             'mitra_id' => $nextMitraId,
             'full_name' => $newUser->name,
-            'whatsapp_number' => '08' . rand(100000000, 999999999),
-            'email' => $internalEmail,
+            'whatsapp_number' => $request->whatsapp_number,
+            'email' => $request->email,
             'has_headstrap' => false,
             'status' => 'active',
             'group_name' => $partner->group_name ?? 'Group A',
@@ -132,6 +127,6 @@ class VendorController extends Controller
             'recruiter_partner_id' => $partner->id,
         ]);
 
-        return redirect()->back()->with('success', 'Worker baru berhasil didaftarkan dan masuk ke tim Anda!');
+        return redirect()->back()->with('success', 'Worker baru berhasil didaftarkan dengan Email: ' . $request->email . ' dan masuk ke tim Anda!');
     }
 }

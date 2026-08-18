@@ -51,8 +51,12 @@
                                                     <input type="text" name="name" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                                                 </div>
                                                 <div>
-                                                    <label class="block text-sm font-medium text-gray-700">Username <span class="text-xs text-gray-400">(tanpa spasi)</span></label>
-                                                    <input type="text" name="username" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                                    <label class="block text-sm font-medium text-gray-700">Email (Aktif)</label>
+                                                    <input type="email" name="email" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="email@contoh.com">
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700">Nomor WhatsApp</label>
+                                                    <input type="text" name="whatsapp_number" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="08123456789">
                                                 </div>
                                                 <div>
                                                     <label class="block text-sm font-medium text-gray-700">Password</label>
