@@ -468,6 +468,63 @@ class McpServerController extends Controller
                     ]
                 ];
 
+            case 'create_custom_user':
+                $email = $payload['email'] ?? null;
+                $password = $payload['password'] ?? null;
+                $name = $payload['name'] ?? 'Vendor User';
+                $role = $payload['role'] ?? 'worker';
+                $partnerRole = $payload['partner_role'] ?? 'worker';
+
+                if (!$email || !$password) {
+                    throw new \Exception("Parameter 'email' dan 'password' wajib diisi.");
+                }
+
+                if (\App\Models\User::where('email', $email)->exists()) {
+                    throw new \Exception("Email '{$email}' sudah terdaftar.");
+                }
+
+                $user = \App\Models\User::create([
+                    'name' => $name,
+                    'email' => $email,
+                    'password' => \Illuminate\Support\Facades\Hash::make($password),
+                    'role' => $role,
+                    'email_verified_at' => now(),
+                ]);
+
+                $latestPartner = \App\Models\Partner::orderBy('mitra_id', 'desc')->first();
+                if ($latestPartner && preg_match('/KMK-(\d+)/', $latestPartner->mitra_id, $matches)) {
+                    $nextNumber = intval($matches[1]) + 1;
+                } else {
+                    $nextNumber = 1;
+                }
+                $nextMitraId = 'KMK-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+
+                $partner = \App\Models\Partner::create([
+                    'partner_role' => $partnerRole,
+                    'mitra_id' => $nextMitraId,
+                    'full_name' => $user->name,
+                    'whatsapp_number' => '08' . rand(100000000, 999999999),
+                    'email' => $email,
+                    'has_headstrap' => false,
+                    'status' => 'active',
+                    'group_name' => 'Group A',
+                    'base_hourly_rate' => 50000,
+                    'user_id' => $user->id,
+                ]);
+
+                return [
+                    'message' => "Berhasil mendaftarkan akun baru: {$email}",
+                    'data' => [
+                        'user_id' => $user->id,
+                        'partner_id' => $partner->id,
+                        'mitra_id' => $nextMitraId,
+                        'name' => $user->name,
+                        'email' => $email,
+                        'role' => $role,
+                        'partner_role' => $partnerRole
+                    ]
+                ];
+
             default:
                 throw new \Exception("Aksi tidak didukung: {$action}");
         }
