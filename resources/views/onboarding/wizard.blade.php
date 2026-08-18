@@ -411,13 +411,24 @@
                 25% { transform: translateX(-5px); }
                 75% { transform: translateX(5px); }
             }
+            @keyframes float {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-4px); }
+            }
+            .animate-float {
+                animation: float 3s ease-in-out infinite;
+            }
         `;
         document.head.appendChild(style);
     </script>
     
     <!-- Watermark -->
-    <div class="fixed bottom-3 right-5 z-50 pointer-events-none opacity-50">
-        <p class="text-[10px] sm:text-xs font-semibold text-slate-400 tracking-wide uppercase">KameraKita AI <span class="font-normal normal-case">powered by</span> UNEVA AI</p>
+    <div class="fixed bottom-4 right-5 z-50 opacity-60 hover:opacity-100 transition-all duration-300 animate-float group cursor-default">
+        <p class="text-[10px] sm:text-xs font-bold text-slate-400 tracking-wide uppercase group-hover:text-blue-700 transition-colors duration-300">
+            KameraKita AI 
+            <span class="font-normal normal-case group-hover:text-slate-900 transition-colors duration-300">powered by</span> 
+            <span class="group-hover:text-slate-900 transition-colors duration-300">UNEVA AI</span>
+        </p>
     </div>
 </body>
 </html>
