@@ -63,11 +63,11 @@
                 @csrf
 
                 <!-- SCREEN 0: Welcome Screen -->
-                <div class="step-screen w-full h-[100dvh] sm:h-full flex flex-col justify-between pt-6 relative overflow-hidden" id="screen-0">
+                <div class="step-screen w-full h-full flex-1 flex flex-col pt-6 relative overflow-hidden" id="screen-0">
                     <!-- Top Content -->
                     <div class="flex flex-col items-center flex-shrink-0 z-10 px-6 sm:px-10">
                         <!-- Logo -->
-                        <div class="mb-8 mt-2">
+                        <div class="mb-6 mt-2">
                             <img src="{{ asset('images/onboarding/kamerakita.png') }}" alt="Logo" class="h-10 w-auto mx-auto drop-shadow-sm object-contain" onerror="this.outerHTML='<div class=\'w-14 h-14 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-2xl shadow-lg shadow-blue-500/30 flex items-center justify-center mx-auto\'><svg class=\'w-8 h-8 text-white\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'currentColor\' stroke-width=\'2\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' d=\'M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z\'></path></svg></div>'">
                         </div>
                         
@@ -81,16 +81,16 @@
                     </div>
 
                     <!-- Bottom Illustration & Button -->
-                    <div class="relative flex-1 flex flex-col justify-end items-center w-full mt-4">
+                    <div class="relative flex-1 w-full mt-4 flex justify-center min-h-0">
                         <!-- Illustration filling the bottom -->
-                        <img src="{{ asset('images/onboarding/welcome-fix.webp') }}" alt="Welcome to KameraKita AI" class="w-full max-w-sm object-cover object-bottom" style="max-height: 100%;">
+                        <img src="{{ asset('images/onboarding/welcome-fix.webp') }}" alt="Welcome to KameraKita AI" class="w-full max-w-md h-full object-contain object-bottom drop-shadow-md">
                         
                         <!-- White Gradient Overlay -->
-                        <div class="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-white via-white/80 to-transparent z-10"></div>
+                        <div class="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-white via-white/90 to-transparent z-10"></div>
                         
                         <!-- Get Started Button -->
-                        <div class="absolute bottom-10 left-0 right-0 px-6 sm:px-10 z-20 flex justify-center">
-                            <button type="button" class="w-full max-w-xs bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg py-4 rounded-2xl shadow-lg transition-all active:scale-[0.98]" onclick="navigate(1)">
+                        <div class="absolute bottom-8 left-0 right-0 px-6 sm:px-10 z-20 flex justify-center">
+                            <button type="button" class="w-full max-w-xs bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg py-4 rounded-2xl shadow-[0_8px_16px_rgba(37,99,235,0.2)] transition-all active:scale-[0.98]" onclick="navigate(1)">
                                 Mulai
                             </button>
                         </div>
