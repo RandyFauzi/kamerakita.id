@@ -65,7 +65,7 @@
                 <!-- SCREEN 1: SOP Headmount -->
                 <div class="step-screen w-full pb-10" id="screen-1">
                     <div class="flex justify-center mb-8 mt-4">
-                        <img src="{{ asset('images/onboarding/Get Started.webp') }}" alt="Onboarding" class="w-48 h-auto object-contain drop-shadow-md">
+                        <img src="{{ asset('images/onboarding/get-started.webp') }}" alt="Onboarding" class="w-48 h-auto object-contain drop-shadow-md">
                     </div>
                     
                     <div class="text-center mb-8">
@@ -92,7 +92,7 @@
                 <!-- SCREEN 2: SOP Tangkapan Tangan -->
                 <div class="step-screen w-full pb-10 hidden" id="screen-2">
                     <div class="flex justify-center mb-8 mt-4">
-                        <img src="{{ asset('images/onboarding/Get Started.webp') }}" alt="Onboarding" class="w-48 h-auto object-contain drop-shadow-md">
+                        <img src="{{ asset('images/onboarding/get-started.webp') }}" alt="Onboarding" class="w-48 h-auto object-contain drop-shadow-md">
                     </div>
                     
                     <div class="text-center mb-8">
@@ -119,7 +119,7 @@
                 <!-- SCREEN 3: SOP Cahaya -->
                 <div class="step-screen w-full pb-10 hidden" id="screen-3">
                     <div class="flex justify-center mb-8 mt-4">
-                        <img src="{{ asset('images/onboarding/Get Started.webp') }}" alt="Onboarding" class="w-48 h-auto object-contain drop-shadow-md">
+                        <img src="{{ asset('images/onboarding/get-started.webp') }}" alt="Onboarding" class="w-48 h-auto object-contain drop-shadow-md">
                     </div>
                     
                     <div class="text-center mb-8">
@@ -149,7 +149,7 @@
                 <!-- SCREEN 4: SOP Penolakan -->
                 <div class="step-screen w-full pb-10 hidden" id="screen-4">
                     <div class="flex justify-center mb-6 mt-4">
-                        <img src="{{ asset('images/onboarding/Get Started.webp') }}" alt="Onboarding" class="w-48 h-auto object-contain drop-shadow-md">
+                        <img src="{{ asset('images/onboarding/get-started.webp') }}" alt="Onboarding" class="w-48 h-auto object-contain drop-shadow-md">
                     </div>
                     
                     <div class="text-center mb-6">
