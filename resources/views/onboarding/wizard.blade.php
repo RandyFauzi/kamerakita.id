@@ -22,26 +22,18 @@
         /* Hide scrollbar for clean mobile look */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        /* Desktop wrapper styling to look like a mobile frame */
-        @media (min-width: 640px) {
-            .mobile-frame {
-                min-height: 800px;
-                max-height: 90vh;
-            }
-        }
     </style>
     
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="antialiased bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen text-slate-800 flex items-center justify-center sm:py-10">
+<body class="antialiased bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen text-slate-800 flex items-center justify-center sm:py-12 sm:px-6">
 
-    <!-- App Container -->
-    <div class="bg-white w-full h-[100dvh] sm:h-auto sm:max-w-[480px] sm:rounded-[40px] sm:shadow-2xl sm:border-[8px] sm:border-white sm:overflow-hidden relative flex flex-col mobile-frame">
+    <!-- App Container: Mobile (Full Screen) | Desktop (Centered Phone-like Frame) -->
+    <div class="bg-white w-full h-[100dvh] sm:h-auto sm:min-h-[800px] sm:max-w-md sm:rounded-[40px] sm:shadow-2xl sm:border-[8px] sm:border-white relative flex flex-col overflow-hidden">
         
-        <!-- Top Navigation Bar -->
-        <div class="px-6 py-5 flex items-center justify-between bg-white z-10 sticky top-0">
+        <!-- Top Navigation Bar (Fixed at top inside container) -->
+        <div class="px-6 py-5 flex items-center justify-between bg-white z-10 shrink-0">
             <button type="button" id="btn-back" class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors invisible" onclick="navigate(-1)">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
@@ -66,20 +58,14 @@
         </div>
 
         <!-- Scrollable Content Area -->
-        <div class="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar px-6 pb-24 relative" id="content-area">
-            <form action="{{ route('onboarding.save') }}" method="POST" id="onboarding-form" class="h-full relative">
+        <div class="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar px-6 relative" id="content-area">
+            <form action="{{ route('onboarding.save') }}" method="POST" id="onboarding-form" class="h-full relative pb-10">
                 @csrf
 
                 <!-- SCREEN 1: SOP Headmount -->
                 <div class="step-screen absolute w-full inset-0 pb-10" id="screen-1">
-                    <div class="flex justify-center mb-8 mt-2">
-                        <!-- Illustration Placeholder -->
-                        <div class="w-48 h-48 bg-gradient-to-tr from-blue-100 to-indigo-50 rounded-full flex items-center justify-center p-6 shadow-inner relative">
-                            <div class="absolute -top-2 -right-2 w-12 h-12 bg-yellow-400 rounded-full opacity-20 blur-xl"></div>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                            </svg>
-                        </div>
+                    <div class="flex justify-center mb-8 mt-4">
+                        <img src="{{ asset('images/onboarding/Get Started.webp') }}" alt="Onboarding" class="w-48 h-auto object-contain drop-shadow-md">
                     </div>
                     
                     <div class="text-center mb-8">
@@ -105,12 +91,8 @@
 
                 <!-- SCREEN 2: SOP Tangkapan Tangan -->
                 <div class="step-screen absolute w-full inset-0 pb-10 hidden" id="screen-2">
-                    <div class="flex justify-center mb-8 mt-2">
-                        <div class="w-48 h-48 bg-gradient-to-tr from-amber-50 to-yellow-100 rounded-full flex items-center justify-center p-6 shadow-inner relative">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11" />
-                            </svg>
-                        </div>
+                    <div class="flex justify-center mb-8 mt-4">
+                        <img src="{{ asset('images/onboarding/Get Started.webp') }}" alt="Onboarding" class="w-48 h-auto object-contain drop-shadow-md">
                     </div>
                     
                     <div class="text-center mb-8">
@@ -136,12 +118,8 @@
 
                 <!-- SCREEN 3: SOP Cahaya -->
                 <div class="step-screen absolute w-full inset-0 pb-10 hidden" id="screen-3">
-                    <div class="flex justify-center mb-8 mt-2">
-                        <div class="w-48 h-48 bg-gradient-to-tr from-indigo-50 to-purple-100 rounded-full flex items-center justify-center p-6 shadow-inner relative">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                            </svg>
-                        </div>
+                    <div class="flex justify-center mb-8 mt-4">
+                        <img src="{{ asset('images/onboarding/Get Started.webp') }}" alt="Onboarding" class="w-48 h-auto object-contain drop-shadow-md">
                     </div>
                     
                     <div class="text-center mb-8">
@@ -170,12 +148,8 @@
 
                 <!-- SCREEN 4: SOP Penolakan -->
                 <div class="step-screen absolute w-full inset-0 pb-10 hidden" id="screen-4">
-                    <div class="flex justify-center mb-6 mt-2">
-                        <div class="w-32 h-32 bg-red-50 rounded-full flex items-center justify-center p-6 shadow-inner relative">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-14 w-14 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                            </svg>
-                        </div>
+                    <div class="flex justify-center mb-6 mt-4">
+                        <img src="{{ asset('images/onboarding/Get Started.webp') }}" alt="Onboarding" class="w-48 h-auto object-contain drop-shadow-md">
                     </div>
                     
                     <div class="text-center mb-6">
@@ -213,9 +187,9 @@
 
                 <!-- SCREEN 5: Data Pembayaran -->
                 <div class="step-screen absolute w-full inset-0 pb-10 hidden" id="screen-5">
-                    <div class="mb-8 mt-2">
+                    <div class="mb-8 mt-4 text-center">
                         <h2 class="text-3xl font-extrabold text-slate-900 mb-2">Profil Data</h2>
-                        <p class="text-base text-slate-500">Lengkapi data untuk keperluan komunikasi dan pencairan honor (Payroll).</p>
+                        <p class="text-sm text-slate-500">Lengkapi data untuk keperluan komunikasi dan pencairan honor (Payroll).</p>
                     </div>
 
                     <div class="space-y-6">
@@ -265,14 +239,14 @@
 
                 <!-- SCREEN 6: Persetujuan (Consent) -->
                 <div class="step-screen absolute w-full inset-0 pb-10 hidden" id="screen-6">
-                    <div class="mb-8 mt-2">
-                        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 text-blue-600 mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <div class="mb-8 mt-4 text-center">
+                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 text-blue-600 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                             </svg>
                         </div>
                         <h2 class="text-3xl font-extrabold text-slate-900 mb-2">Satu Langkah Lagi</h2>
-                        <p class="text-base text-slate-500">Konfirmasi persetujuan keamanan data (NDA) sebelum bekerja.</p>
+                        <p class="text-sm text-slate-500">Konfirmasi persetujuan keamanan data (NDA) sebelum bekerja.</p>
                     </div>
 
                     <div class="space-y-4">
@@ -317,13 +291,13 @@
             </form>
         </div>
 
-        <!-- Sticky Bottom Action Bar -->
-        <div class="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-white via-white to-transparent pt-10 z-20">
-            <button type="button" id="btn-next" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-lg py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5" onclick="navigate(1)">
+        <!-- Sticky Bottom Action Bar (Fixed at bottom inside container) -->
+        <div class="px-6 py-6 bg-white z-20 shrink-0 border-t border-slate-50">
+            <button type="button" id="btn-next" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg py-4 rounded-2xl shadow-[0_8px_16px_rgba(37,99,235,0.2)] transition-all active:scale-[0.98]" onclick="navigate(1)">
                 Lanjut
             </button>
-            <button type="submit" form="onboarding-form" id="btn-submit" class="hidden w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-lg py-4 rounded-2xl shadow-lg transition-all disabled:opacity-50 disabled:from-slate-400 disabled:to-slate-500 disabled:shadow-none" disabled>
-                Selesai
+            <button type="submit" form="onboarding-form" id="btn-submit" class="hidden w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg py-4 rounded-2xl shadow-[0_8px_16px_rgba(37,99,235,0.2)] transition-all disabled:opacity-50 disabled:bg-slate-400 disabled:shadow-none" disabled>
+                Selesai & Akses Dashboard
             </button>
         </div>
 
@@ -345,7 +319,6 @@
                 const owner = document.getElementById('input-owner').value;
                 
                 if(!wa || !bank || !acc || !owner) {
-                    // Shake animation for invalid
                     const container = document.getElementById('screen-5');
                     container.classList.add('animate-[shake_0.5s_ease-in-out]');
                     setTimeout(() => container.classList.remove('animate-[shake_0.5s_ease-in-out]'), 500);
@@ -358,46 +331,38 @@
 
             isAnimating = true;
             
-            // Get elements
             const oldScreen = document.getElementById(`screen-${currentStep}`);
             const newScreen = document.getElementById(`screen-${newStep}`);
             
-            // Setup animation classes based on direction
-            const outClass = direction > 0 ? 'slide-leave-to' : 'slide-leave-reverse-to';
-            const inClass = direction > 0 ? 'slide-enter-from' : 'slide-enter-reverse-from';
-            
-            // Animate old screen out
-            oldScreen.style.transition = 'all 0.3s ease';
-            oldScreen.classList.add(direction > 0 ? '-translate-x-10' : 'translate-x-10', 'opacity-0');
+            // Fast slide animation logic tailored for absolute positioned screens
+            oldScreen.style.transition = 'all 0.25s ease';
+            oldScreen.classList.add(direction > 0 ? '-translate-x-full' : 'translate-x-full', 'opacity-0');
             
             setTimeout(() => {
                 oldScreen.classList.add('hidden');
-                oldScreen.classList.remove('-translate-x-10', 'translate-x-10', 'opacity-0');
+                oldScreen.classList.remove('-translate-x-full', 'translate-x-full', 'opacity-0');
                 
-                // Prepare new screen
                 newScreen.classList.remove('hidden');
-                newScreen.classList.add(direction > 0 ? 'translate-x-10' : '-translate-x-10', 'opacity-0');
+                newScreen.classList.add(direction > 0 ? 'translate-x-full' : '-translate-x-full', 'opacity-0');
                 
-                // Trigger reflow
-                void newScreen.offsetWidth;
+                void newScreen.offsetWidth; // trigger reflow
                 
-                // Animate new screen in
-                newScreen.style.transition = 'all 0.3s ease';
-                newScreen.classList.remove('translate-x-10', '-translate-x-10', 'opacity-0');
+                newScreen.style.transition = 'all 0.25s ease';
+                newScreen.classList.remove('translate-x-full', '-translate-x-full', 'opacity-0');
                 
-                // Update UI state
                 updateUI(newStep);
                 currentStep = newStep;
                 
-                setTimeout(() => { isAnimating = false; }, 300);
-            }, 300);
+                setTimeout(() => { 
+                    isAnimating = false; 
+                    document.getElementById('content-area').scrollTo({top: 0, behavior: 'smooth'});
+                }, 250);
+            }, 250);
         }
 
         function updateUI(step) {
-            // Update counter
             document.getElementById('step-counter').innerText = `${step}/${totalSteps}`;
             
-            // Update Progress Bar
             for(let i=1; i<=totalSteps; i++) {
                 const prog = document.getElementById(`prog-${i}`);
                 if(i <= step) {
@@ -407,7 +372,6 @@
                 }
             }
 
-            // Back button visibility
             const btnBack = document.getElementById('btn-back');
             if(step === 1) {
                 btnBack.classList.add('invisible');
@@ -415,7 +379,6 @@
                 btnBack.classList.remove('invisible');
             }
 
-            // Bottom Buttons
             const btnNext = document.getElementById('btn-next');
             const btnSubmit = document.getElementById('btn-submit');
             
@@ -425,16 +388,9 @@
             } else {
                 btnNext.classList.remove('hidden');
                 btnSubmit.classList.add('hidden');
-                
-                if(step === 4) {
-                    btnNext.innerHTML = 'Isi Data Profil';
-                } else {
-                    btnNext.innerHTML = 'Lanjut';
-                }
             }
         }
 
-        // Checkbox interaction styling
         const checkbox = document.getElementById('tos_accepted');
         const submitBtn = document.getElementById('btn-submit');
         const agreeContainer = document.getElementById('agreement-container');
@@ -450,7 +406,6 @@
             }
         });
 
-        // Form submit
         document.getElementById('onboarding-form').addEventListener('submit', function() {
             if(checkbox.checked) {
                 submitBtn.innerHTML = 'Memproses...';
@@ -458,7 +413,6 @@
             }
         });
 
-        // Add shake animation to tailwind config on the fly via style injection
         const style = document.createElement('style');
         style.innerHTML = `
             @keyframes shake {
