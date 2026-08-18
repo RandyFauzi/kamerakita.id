@@ -58,38 +58,47 @@
         </div>
 
         <!-- Scrollable Content Area -->
-        <div class="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar px-6 sm:px-10 relative" id="content-area">
-            <form action="{{ route('onboarding.save') }}" method="POST" id="onboarding-form" class="h-full relative pb-10 flex flex-col justify-center">
+        <div class="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar relative" id="content-area">
+            <form action="{{ route('onboarding.save') }}" method="POST" id="onboarding-form" class="h-full relative flex flex-col justify-center">
                 @csrf
 
                 <!-- SCREEN 0: Welcome Screen -->
-                <div class="step-screen w-full pb-10 flex flex-col items-center justify-center min-h-[80vh] text-center" id="screen-0">
-                    <!-- Logo -->
-                    <div class="mb-10 mt-6">
-                        <img src="{{ asset('images/onboarding/kamerakita.png') }}" alt="Logo" class="h-10 w-auto mx-auto drop-shadow-sm object-contain" onerror="this.outerHTML='<div class=\'w-14 h-14 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-2xl shadow-lg shadow-blue-500/30 flex items-center justify-center mx-auto\'><svg class=\'w-8 h-8 text-white\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'currentColor\' stroke-width=\'2\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' d=\'M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z\'></path></svg></div>'">
+                <div class="step-screen w-full h-[100dvh] sm:h-full flex flex-col justify-between pt-6 relative overflow-hidden" id="screen-0">
+                    <!-- Top Content -->
+                    <div class="flex flex-col items-center flex-shrink-0 z-10 px-6 sm:px-10">
+                        <!-- Logo -->
+                        <div class="mb-8 mt-2">
+                            <img src="{{ asset('images/onboarding/kamerakita.png') }}" alt="Logo" class="h-10 w-auto mx-auto drop-shadow-sm object-contain" onerror="this.outerHTML='<div class=\'w-14 h-14 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-2xl shadow-lg shadow-blue-500/30 flex items-center justify-center mx-auto\'><svg class=\'w-8 h-8 text-white\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'currentColor\' stroke-width=\'2\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' d=\'M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z\'></path></svg></div>'">
+                        </div>
+                        
+                        <h1 class="text-3xl font-extrabold text-slate-900 mb-3 leading-tight text-center">
+                            Welcome to <br>
+                            <span class="text-blue-600">KameraKita AI</span>
+                        </h1>
+                        <p class="text-base text-slate-500 max-w-xs mx-auto text-center leading-relaxed">
+                            Langkah awal Anda untuk berkontribusi merekam aktivitas dan mendapatkan penghasilan!
+                        </p>
                     </div>
-                    
-                    <h1 class="text-3xl font-extrabold text-slate-900 mb-4 leading-tight">
-                        Welcome to <br>
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">KameraKita AI</span>
-                    </h1>
-                    <p class="text-base text-slate-500 mb-12 max-w-xs mx-auto">
-                        Langkah awal Anda untuk berkontribusi merekam aktivitas dan mendapatkan penghasilan!
-                    </p>
 
-                    <!-- Illustration -->
-                    <div class="flex justify-center mb-10 w-full px-4">
-                        <img src="{{ asset('images/onboarding/welcome-fix.webp') }}" alt="Welcome to KameraKita AI" class="w-full max-w-sm h-auto object-contain drop-shadow-md mx-auto">
+                    <!-- Bottom Illustration & Button -->
+                    <div class="relative flex-1 flex flex-col justify-end items-center w-full mt-4">
+                        <!-- Illustration filling the bottom -->
+                        <img src="{{ asset('images/onboarding/welcome-fix.webp') }}" alt="Welcome to KameraKita AI" class="w-full max-w-sm object-cover object-bottom" style="max-height: 100%;">
+                        
+                        <!-- White Gradient Overlay -->
+                        <div class="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-white via-white/80 to-transparent z-10"></div>
+                        
+                        <!-- Get Started Button -->
+                        <div class="absolute bottom-10 left-0 right-0 px-6 sm:px-10 z-20 flex justify-center">
+                            <button type="button" class="w-full max-w-xs bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg py-4 rounded-2xl shadow-lg transition-all active:scale-[0.98]" onclick="navigate(1)">
+                                Mulai
+                            </button>
+                        </div>
                     </div>
-                    
-                    <!-- Get Started Button -->
-                    <button type="button" class="w-full max-w-xs mx-auto bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg py-4 rounded-2xl shadow-[0_8px_16px_rgba(37,99,235,0.2)] transition-all active:scale-[0.98]" onclick="navigate(1)">
-                        Get Started
-                    </button>
                 </div>
 
                 <!-- SCREEN 1: SOP Headmount -->
-                <div class="step-screen w-full pb-10 hidden" id="screen-1">
+                <div class="step-screen w-full px-6 sm:px-10 pb-10 hidden" id="screen-1">
                     <div class="flex justify-center mb-8 mt-2">
                         <img src="{{ asset('images/onboarding/get-started.webp') }}" alt="Onboarding" class="w-full max-w-sm sm:max-w-md h-auto object-contain drop-shadow-md">
                     </div>
@@ -116,7 +125,7 @@
                 </div>
 
                 <!-- SCREEN 2: SOP Tangkapan Tangan -->
-                <div class="step-screen w-full pb-10 hidden" id="screen-2">
+                <div class="step-screen w-full px-6 sm:px-10 pb-10 hidden" id="screen-2">
                     <div class="text-center mb-8 mt-10">
                         <h2 class="text-2xl font-extrabold text-slate-900 mb-2">Tangkapan Tangan</h2>
                         <p class="text-sm text-slate-500">Pastikan aktivitas tangan terlihat jelas oleh kamera selama perekaman.</p>
@@ -139,7 +148,7 @@
                 </div>
 
                 <!-- SCREEN 3: SOP Cahaya -->
-                <div class="step-screen w-full pb-10 hidden" id="screen-3">
+                <div class="step-screen w-full px-6 sm:px-10 pb-10 hidden" id="screen-3">
                     <div class="text-center mb-8 mt-10">
                         <h2 class="text-2xl font-extrabold text-slate-900 mb-2">Kondisi Cahaya</h2>
                         <p class="text-sm text-slate-500">Pencahayaan sangat penting untuk kualitas data video AI.</p>
@@ -165,7 +174,7 @@
                 </div>
 
                 <!-- SCREEN 4: SOP Penolakan -->
-                <div class="step-screen w-full pb-10 hidden" id="screen-4">
+                <div class="step-screen w-full px-6 sm:px-10 pb-10 hidden" id="screen-4">
                     <div class="text-center mb-6 mt-10">
                         <h2 class="text-2xl font-extrabold text-slate-900 mb-2">Kriteria Penolakan</h2>
                         <p class="text-sm text-slate-500">Video langsung DITOLAK jika memenuhi kriteria ini.</p>
@@ -200,7 +209,7 @@
                 </div>
 
                 <!-- SCREEN 5: Data Pembayaran -->
-                <div class="step-screen w-full pb-10 hidden" id="screen-5">
+                <div class="step-screen w-full px-6 sm:px-10 pb-10 hidden" id="screen-5">
                     <div class="mb-8 mt-4 text-center">
                         <h2 class="text-3xl font-extrabold text-slate-900 mb-2">Profil Data</h2>
                         <p class="text-sm text-slate-500">Lengkapi data untuk keperluan komunikasi dan pencairan honor (Payroll).</p>
@@ -252,7 +261,7 @@
                 </div>
 
                 <!-- SCREEN 6: Persetujuan (Consent) -->
-                <div class="step-screen w-full pb-10 hidden" id="screen-6">
+                <div class="step-screen w-full px-6 sm:px-10 pb-10 hidden" id="screen-6">
                     <div class="mb-8 mt-4 text-center">
                         <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 text-blue-600 mb-4">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
