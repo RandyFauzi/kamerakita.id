@@ -789,7 +789,7 @@
                 <span class="block text-white font-bold uppercase tracking-wider text-[11px]">Akses Akun</span>
                 <ul class="space-y-2">
                     <li><a href="{{ route('login') }}" class="hover:text-sky-400 transition">Masuk / Daftar</a></li>
-                    <li><a href="{{ route('get-started') }}" class="hover:text-sky-400 transition">Daftar Kontributor Baru</a></li>
+                    <li><a href="{{ route('onboarding.start') }}" class="hover:text-sky-400 transition">Daftar Kontributor Baru</a></li>
                     <li><a href="{{ route('dashboard') }}" class="hover:text-sky-400 transition">Dashboard Admin QC</a></li>
                 </ul>
             </div>
