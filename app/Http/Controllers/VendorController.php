@@ -65,4 +65,59 @@ class VendorController extends Controller
             'totalUnpaid'
         ));
     }
+
+    public function storeWorker(Request $request)
+    {
+        $user = Auth::user();
+        $partner = $user->partner;
+
+        if (!$partner || $partner->partner_role !== 'mitra') {
+            abort(403, 'Unauthorized access.');
+        }
+
+        $request->validate([
+            'name' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s]*$/'],
+            'username' => ['required', 'string', 'lowercase', 'max:50', 'alpha_dash', function ($attribute, $value, $fail) {
+                if (\App\Models\User::where('email', $value . '@kamerakitaid.site')->exists()) {
+                    $fail('Username ini sudah digunakan.');
+                }
+            }],
+            'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::min(8)],
+        ]);
+
+        $internalEmail = $request->username . '@kamerakitaid.site';
+
+        $newUser = \App\Models\User::create([
+            'name' => $request->name,
+            'email' => $internalEmail,
+            'password' => \Illuminate\Support\Facades\Hash::make($request->password),
+            'role' => 'worker',
+            'email_verified_at' => now(),
+        ]);
+
+        $latestPartner = \App\Models\Partner::orderBy('mitra_id', 'desc')->first();
+        if ($latestPartner && preg_match('/KMK-(\d+)/', $latestPartner->mitra_id, $matches)) {
+            $nextNumber = intval($matches[1]) + 1;
+        } else {
+            $nextNumber = 1;
+        }
+        $nextMitraId = 'KMK-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+
+        \App\Models\Partner::create([
+            'partner_role' => 'worker',
+            'mitra_id' => $nextMitraId,
+            'full_name' => $newUser->name,
+            'whatsapp_number' => '08' . rand(100000000, 999999999),
+            'email' => $internalEmail,
+            'has_headstrap' => false,
+            'status' => 'active',
+            'group_name' => $partner->group_name ?? 'Group A',
+            'base_hourly_rate' => 50000,
+            'user_id' => $newUser->id,
+            'mitra_parent_id' => $partner->id,
+            'recruiter_partner_id' => $partner->id,
+        ]);
+
+        return redirect()->back()->with('success', 'Worker baru berhasil didaftarkan dan masuk ke tim Anda!');
+    }
 }
