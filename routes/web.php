@@ -21,16 +21,19 @@ Route::get('/onboarding/success', function () {
     return view('onboarding.success');
 })->name('onboarding.success');
 
-Route::get('/get-started', function () {
-    return view('get-started');
-})->name('get-started');
+Route::get('/get-started', [\App\Http\Controllers\OnboardingController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('onboarding.start');
+Route::post('/get-started', [\App\Http\Controllers\OnboardingController::class, 'save'])
+    ->middleware(['auth', 'verified'])
+    ->name('onboarding.save');
 
 Route::get('/dashboard', RenderDashboardOverviewController::class)
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth', 'verified', 'onboarding'])
     ->name('dashboard');
 
 Route::get('/leaderboard', [\App\Http\Controllers\LeaderboardController::class, 'index'])
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth', 'verified', 'onboarding'])
     ->name('leaderboard.index');
 
 Route::get('/video-work-reports/{report}/evidence/{type}', ShowVideoWorkReportEvidenceController::class)
