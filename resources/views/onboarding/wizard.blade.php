@@ -77,12 +77,9 @@
                         Langkah awal Anda untuk berkontribusi merekam aktivitas dan mendapatkan penghasilan!
                     </p>
 
-                    <!-- Illustration Placeholder (Woman) -->
-                    <div class="w-full max-w-xs h-64 bg-indigo-50/50 rounded-[40px] flex items-center justify-center mx-auto mb-12 relative border border-indigo-50 border-dashed">
-                        <span class="text-indigo-300 font-medium text-sm px-4">Gambar ilustrasi wanita akan diletakkan di sini</span>
-                        <!-- Decorative floating coins/blobs background concept -->
-                        <div class="absolute -z-10 w-48 h-48 bg-blue-100 rounded-full blur-3xl opacity-50 -bottom-10 -right-10"></div>
-                        <div class="absolute -z-10 w-32 h-32 bg-purple-100 rounded-full blur-2xl opacity-50 top-10 -left-10"></div>
+                    <!-- Illustration -->
+                    <div class="flex justify-center mb-10 w-full px-4">
+                        <img src="{{ asset('images/onboarding/welcome.webp') }}" alt="Welcome to KameraKita AI" class="w-full max-w-sm h-auto object-contain drop-shadow-md mx-auto">
                     </div>
                     
                     <!-- Get Started Button -->
