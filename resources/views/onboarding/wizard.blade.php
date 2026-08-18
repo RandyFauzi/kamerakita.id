@@ -63,7 +63,7 @@
                 @csrf
 
                 <!-- SCREEN 1: SOP Headmount -->
-                <div class="step-screen absolute w-full inset-0 pb-10" id="screen-1">
+                <div class="step-screen w-full pb-10" id="screen-1">
                     <div class="flex justify-center mb-8 mt-4">
                         <img src="{{ asset('images/onboarding/Get Started.webp') }}" alt="Onboarding" class="w-48 h-auto object-contain drop-shadow-md">
                     </div>
@@ -90,7 +90,7 @@
                 </div>
 
                 <!-- SCREEN 2: SOP Tangkapan Tangan -->
-                <div class="step-screen absolute w-full inset-0 pb-10 hidden" id="screen-2">
+                <div class="step-screen w-full pb-10 hidden" id="screen-2">
                     <div class="flex justify-center mb-8 mt-4">
                         <img src="{{ asset('images/onboarding/Get Started.webp') }}" alt="Onboarding" class="w-48 h-auto object-contain drop-shadow-md">
                     </div>
@@ -117,7 +117,7 @@
                 </div>
 
                 <!-- SCREEN 3: SOP Cahaya -->
-                <div class="step-screen absolute w-full inset-0 pb-10 hidden" id="screen-3">
+                <div class="step-screen w-full pb-10 hidden" id="screen-3">
                     <div class="flex justify-center mb-8 mt-4">
                         <img src="{{ asset('images/onboarding/Get Started.webp') }}" alt="Onboarding" class="w-48 h-auto object-contain drop-shadow-md">
                     </div>
@@ -147,7 +147,7 @@
                 </div>
 
                 <!-- SCREEN 4: SOP Penolakan -->
-                <div class="step-screen absolute w-full inset-0 pb-10 hidden" id="screen-4">
+                <div class="step-screen w-full pb-10 hidden" id="screen-4">
                     <div class="flex justify-center mb-6 mt-4">
                         <img src="{{ asset('images/onboarding/Get Started.webp') }}" alt="Onboarding" class="w-48 h-auto object-contain drop-shadow-md">
                     </div>
@@ -186,7 +186,7 @@
                 </div>
 
                 <!-- SCREEN 5: Data Pembayaran -->
-                <div class="step-screen absolute w-full inset-0 pb-10 hidden" id="screen-5">
+                <div class="step-screen w-full pb-10 hidden" id="screen-5">
                     <div class="mb-8 mt-4 text-center">
                         <h2 class="text-3xl font-extrabold text-slate-900 mb-2">Profil Data</h2>
                         <p class="text-sm text-slate-500">Lengkapi data untuk keperluan komunikasi dan pencairan honor (Payroll).</p>
@@ -238,7 +238,7 @@
                 </div>
 
                 <!-- SCREEN 6: Persetujuan (Consent) -->
-                <div class="step-screen absolute w-full inset-0 pb-10 hidden" id="screen-6">
+                <div class="step-screen w-full pb-10 hidden" id="screen-6">
                     <div class="mb-8 mt-4 text-center">
                         <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 text-blue-600 mb-4">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -334,21 +334,24 @@
             const oldScreen = document.getElementById(`screen-${currentStep}`);
             const newScreen = document.getElementById(`screen-${newStep}`);
             
-            // Fast slide animation logic tailored for absolute positioned screens
-            oldScreen.style.transition = 'all 0.25s ease';
-            oldScreen.classList.add(direction > 0 ? '-translate-x-full' : 'translate-x-full', 'opacity-0');
+            // Fade out old screen
+            oldScreen.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+            oldScreen.classList.add('opacity-0', direction > 0 ? '-translate-x-10' : 'translate-x-10');
             
             setTimeout(() => {
+                // Hide old screen completely
                 oldScreen.classList.add('hidden');
-                oldScreen.classList.remove('-translate-x-full', 'translate-x-full', 'opacity-0');
+                oldScreen.classList.remove('opacity-0', '-translate-x-10', 'translate-x-10');
                 
+                // Show new screen (transparent and offset initially)
                 newScreen.classList.remove('hidden');
-                newScreen.classList.add(direction > 0 ? 'translate-x-full' : '-translate-x-full', 'opacity-0');
+                newScreen.classList.add('opacity-0', direction > 0 ? 'translate-x-10' : '-translate-x-10');
                 
                 void newScreen.offsetWidth; // trigger reflow
                 
-                newScreen.style.transition = 'all 0.25s ease';
-                newScreen.classList.remove('translate-x-full', '-translate-x-full', 'opacity-0');
+                // Fade in new screen
+                newScreen.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+                newScreen.classList.remove('opacity-0', 'translate-x-10', '-translate-x-10');
                 
                 updateUI(newStep);
                 currentStep = newStep;
@@ -356,8 +359,8 @@
                 setTimeout(() => { 
                     isAnimating = false; 
                     document.getElementById('content-area').scrollTo({top: 0, behavior: 'smooth'});
-                }, 250);
-            }, 250);
+                }, 200);
+            }, 200);
         }
 
         function updateUI(step) {
