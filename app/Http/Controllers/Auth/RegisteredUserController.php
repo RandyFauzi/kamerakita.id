@@ -97,6 +97,8 @@ class RegisteredUserController extends Controller
             'user_id' => $user->id,
             // Link to recruiter if a valid referral code was provided
             'recruiter_partner_id' => $recruiterPartner ? $recruiterPartner->id : null,
+            // Jika yang mengundang adalah Vendor, otomatis jadikan Vendor tersebut sebagai atasannya
+            'mitra_parent_id' => ($recruiterPartner && $recruiterPartner->partner_role === 'mitra') ? $recruiterPartner->id : null,
         ]);
 
         event(new Registered($user));

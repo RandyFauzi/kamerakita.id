@@ -52,7 +52,7 @@
         <div>
             <label for="referral_code" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
                 Kode Referral
-                <span class="normal-case font-normal text-gray-300 ml-1">(Opsional — dari Mitra/Rekruter Anda)</span>
+                <span class="normal-case font-normal text-gray-300 ml-1">(Opsional — dari Vendor/Rekruter Anda)</span>
             </label>
             <input id="referral_code" type="text" name="referral_code" value="{{ old('referral_code') }}" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition placeholder-gray-300 font-mono" placeholder="Contoh: REF-ABCDEF">
             <x-input-error :messages="$errors->get('referral_code')" class="mt-1" />
