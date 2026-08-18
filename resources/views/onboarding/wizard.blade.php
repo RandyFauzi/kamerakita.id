@@ -33,7 +33,7 @@
     <div class="w-full h-[100dvh] sm:h-auto sm:min-h-screen sm:max-w-2xl relative flex flex-col overflow-hidden">
         
         <!-- Top Navigation Bar (Fixed at top inside container) -->
-        <div class="px-6 py-6 sm:py-8 flex items-center justify-between bg-white z-10 shrink-0">
+        <div class="px-6 py-6 sm:py-8 flex items-center justify-between bg-white z-10 shrink-0 hidden opacity-0 transition-opacity duration-300" id="top-nav">
             <button type="button" id="btn-back" class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors invisible" onclick="navigate(-1)">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
@@ -43,7 +43,7 @@
             <div class="flex-1 flex justify-center px-4">
                 <!-- Progress Bars -->
                 <div class="flex gap-2 w-full max-w-[200px]">
-                    <div class="h-2 rounded-full flex-1 bg-blue-600 transition-colors" id="prog-1"></div>
+                    <div class="h-2 rounded-full flex-1 bg-slate-200 transition-colors" id="prog-1"></div>
                     <div class="h-2 rounded-full flex-1 bg-slate-200 transition-colors" id="prog-2"></div>
                     <div class="h-2 rounded-full flex-1 bg-slate-200 transition-colors" id="prog-3"></div>
                     <div class="h-2 rounded-full flex-1 bg-slate-200 transition-colors" id="prog-4"></div>
@@ -59,11 +59,44 @@
 
         <!-- Scrollable Content Area -->
         <div class="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar px-6 sm:px-10 relative" id="content-area">
-            <form action="{{ route('onboarding.save') }}" method="POST" id="onboarding-form" class="h-full relative pb-10">
+            <form action="{{ route('onboarding.save') }}" method="POST" id="onboarding-form" class="h-full relative pb-10 flex flex-col justify-center">
                 @csrf
 
+                <!-- SCREEN 0: Welcome Screen -->
+                <div class="step-screen w-full pb-10 flex flex-col items-center justify-center min-h-[80vh] text-center" id="screen-0">
+                    <!-- Logo -->
+                    <div class="mb-10 mt-6">
+                        <img src="{{ asset('images/onboarding/kamerakita.png') }}" alt="Logo" class="h-10 w-auto mx-auto drop-shadow-sm object-contain" onerror="this.outerHTML='<div class=\'w-14 h-14 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-2xl shadow-lg shadow-blue-500/30 flex items-center justify-center mx-auto\'><svg class=\'w-8 h-8 text-white\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'currentColor\' stroke-width=\'2\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' d=\'M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z\'></path></svg></div>'">
+                    </div>
+                    
+                    <h1 class="text-3xl font-extrabold text-slate-900 mb-4 leading-tight">
+                        Welcome to <br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">KameraKita AI</span>
+                    </h1>
+                    <p class="text-base text-slate-500 mb-12 max-w-xs mx-auto">
+                        Langkah awal Anda untuk berkontribusi merekam aktivitas dan mendapatkan penghasilan!
+                    </p>
+
+                    <!-- Illustration Placeholder (Woman) -->
+                    <div class="w-full max-w-xs h-64 bg-indigo-50/50 rounded-[40px] flex items-center justify-center mx-auto mb-12 relative border border-indigo-50 border-dashed">
+                        <span class="text-indigo-300 font-medium text-sm px-4">Gambar ilustrasi wanita akan diletakkan di sini</span>
+                        <!-- Decorative floating coins/blobs background concept -->
+                        <div class="absolute -z-10 w-48 h-48 bg-blue-100 rounded-full blur-3xl opacity-50 -bottom-10 -right-10"></div>
+                        <div class="absolute -z-10 w-32 h-32 bg-purple-100 rounded-full blur-2xl opacity-50 top-10 -left-10"></div>
+                    </div>
+                    
+                    <!-- Get Started Button -->
+                    <button type="button" class="w-full max-w-xs mx-auto bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg py-4 rounded-2xl shadow-[0_8px_16px_rgba(37,99,235,0.2)] transition-all active:scale-[0.98]" onclick="navigate(1)">
+                        Get Started
+                    </button>
+                    
+                    <p class="mt-6 text-sm text-slate-500 font-medium">
+                        Mari selesaikan onboarding Anda.
+                    </p>
+                </div>
+
                 <!-- SCREEN 1: SOP Headmount -->
-                <div class="step-screen w-full pb-10" id="screen-1">
+                <div class="step-screen w-full pb-10 hidden" id="screen-1">
                     <div class="flex justify-center mb-8 mt-2">
                         <img src="{{ asset('images/onboarding/get-started.webp') }}" alt="Onboarding" class="w-full max-w-sm sm:max-w-md h-auto object-contain drop-shadow-md">
                     </div>
@@ -280,7 +313,7 @@
         </div>
 
         <!-- Sticky Bottom Action Bar (Fixed at bottom inside container) -->
-        <div class="px-6 py-6 bg-white z-20 shrink-0 border-t border-slate-50">
+        <div class="px-6 py-6 bg-white z-20 shrink-0 border-t border-slate-50 hidden opacity-0 transition-opacity duration-300" id="bottom-action-bar">
             <button type="button" id="btn-next" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg py-4 rounded-2xl shadow-[0_8px_16px_rgba(37,99,235,0.2)] transition-all active:scale-[0.98]" onclick="navigate(1)">
                 Lanjut
             </button>
@@ -292,7 +325,7 @@
     </div>
 
     <script>
-        let currentStep = 1;
+        let currentStep = 0;
         const totalSteps = 6;
         let isAnimating = false;
 
@@ -315,7 +348,7 @@
             }
 
             const newStep = currentStep + direction;
-            if (newStep < 1 || newStep > totalSteps) return;
+            if (newStep < 0 || newStep > totalSteps) return;
 
             isAnimating = true;
             
@@ -352,33 +385,55 @@
         }
 
         function updateUI(step) {
-            document.getElementById('step-counter').innerText = `${step}/${totalSteps}`;
-            
-            for(let i=1; i<=totalSteps; i++) {
-                const prog = document.getElementById(`prog-${i}`);
-                if(i <= step) {
-                    prog.classList.replace('bg-slate-200', 'bg-blue-600');
-                } else {
-                    prog.classList.replace('bg-blue-600', 'bg-slate-200');
+            const topNav = document.getElementById('top-nav');
+            const bottomBar = document.getElementById('bottom-action-bar');
+
+            if (step === 0) {
+                topNav.classList.add('hidden', 'opacity-0');
+                topNav.classList.remove('opacity-100');
+                bottomBar.classList.add('hidden', 'opacity-0');
+                bottomBar.classList.remove('opacity-100');
+            } else {
+                topNav.classList.remove('hidden');
+                bottomBar.classList.remove('hidden');
+                // Trigger reflow to apply transition
+                void topNav.offsetWidth; 
+                void bottomBar.offsetWidth;
+                topNav.classList.remove('opacity-0');
+                topNav.classList.add('opacity-100');
+                bottomBar.classList.remove('opacity-0');
+                bottomBar.classList.add('opacity-100');
+            }
+
+            if (step > 0) {
+                document.getElementById('step-counter').innerText = `${step}/${totalSteps}`;
+                
+                for(let i=1; i<=totalSteps; i++) {
+                    const prog = document.getElementById(`prog-${i}`);
+                    if(i <= step) {
+                        prog.classList.replace('bg-slate-200', 'bg-blue-600');
+                    } else {
+                        prog.classList.replace('bg-blue-600', 'bg-slate-200');
+                    }
                 }
-            }
 
-            const btnBack = document.getElementById('btn-back');
-            if(step === 1) {
-                btnBack.classList.add('invisible');
-            } else {
-                btnBack.classList.remove('invisible');
-            }
+                const btnBack = document.getElementById('btn-back');
+                if(step === 1) {
+                    btnBack.classList.add('invisible');
+                } else {
+                    btnBack.classList.remove('invisible');
+                }
 
-            const btnNext = document.getElementById('btn-next');
-            const btnSubmit = document.getElementById('btn-submit');
-            
-            if(step === totalSteps) {
-                btnNext.classList.add('hidden');
-                btnSubmit.classList.remove('hidden');
-            } else {
-                btnNext.classList.remove('hidden');
-                btnSubmit.classList.add('hidden');
+                const btnNext = document.getElementById('btn-next');
+                const btnSubmit = document.getElementById('btn-submit');
+                
+                if(step === totalSteps) {
+                    btnNext.classList.add('hidden');
+                    btnSubmit.classList.remove('hidden');
+                } else {
+                    btnNext.classList.remove('hidden');
+                    btnSubmit.classList.add('hidden');
+                }
             }
         }
 
