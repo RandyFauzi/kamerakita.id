@@ -171,6 +171,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::middleware(['auth'])->prefix('vendor')->name('vendor.')->group(function () {
     Route::get('/reports', [\App\Http\Controllers\VendorController::class, 'qcTracker'])->name('reports.index');
     Route::get('/payments', [\App\Http\Controllers\VendorController::class, 'payments'])->name('payments.index');
+    Route::get('/workers', [\App\Http\Controllers\VendorController::class, 'workers'])->name('workers.index');
     Route::post('/workers', [\App\Http\Controllers\VendorController::class, 'storeWorker'])->name('workers.store');
 });
 

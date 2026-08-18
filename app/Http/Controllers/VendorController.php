@@ -66,6 +66,20 @@ class VendorController extends Controller
         ));
     }
 
+    public function workers(Request $request, \App\Services\CalculatePartnerMetricsService $metricsService)
+    {
+        $user = Auth::user();
+        $partner = $user->partner;
+
+        if (!$partner || $partner->partner_role !== 'mitra') {
+            abort(403, 'Unauthorized access.');
+        }
+
+        $metrics = $metricsService->getMitraMetrics($partner);
+
+        return view('vendor.workers', compact('metrics', 'partner'));
+    }
+
     public function storeWorker(Request $request)
     {
         $user = Auth::user();
