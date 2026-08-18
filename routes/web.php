@@ -168,6 +168,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('admin-assistant');
 });
 
+Route::middleware(['auth'])->prefix('vendor')->name('vendor.')->group(function () {
+    Route::get('/reports', [\App\Http\Controllers\VendorController::class, 'qcTracker'])->name('reports.index');
+    Route::get('/payments', [\App\Http\Controllers\VendorController::class, 'payments'])->name('payments.index');
+});
+
 Route::middleware('auth')->group(function () {
     // Mailbox Internal
     Route::get('/mailbox', [App\Http\Controllers\MailboxController::class, 'index'])->name('mailbox.index');

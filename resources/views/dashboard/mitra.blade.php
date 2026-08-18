@@ -12,7 +12,7 @@
                     </div>
                     <div class="space-y-1">
                         <span class="block text-xs font-black tracking-widest text-indigo-650 uppercase">RUANG MANAJEMEN TIM</span>
-                        <p class="text-sm text-gray-500 max-w-xl">Anda terdaftar sebagai Mitra (Koordinator). Anda mengawasi statistik rekam kerja, status QC, serta penumpukan pending transfer dari tim Worker Anda.</p>
+                        <p class="text-sm text-gray-500 max-w-xl">Anda terdaftar sebagai Vendor. Anda mengawasi statistik rekam kerja, status QC, serta penumpukan pending transfer dari tim Worker Anda.</p>
                         <!-- Progress bar -->
                         <div class="w-full bg-indigo-100 h-2 rounded-full mt-3 overflow-hidden">
                             <div class="bg-indigo-650 h-full rounded-full" style="width: 100%"></div>
@@ -123,7 +123,7 @@
                 </div>
 
                 <!-- Feature 3: WhatsApp Support -->
-                <a href="https://wa.me/6287886272647?text=Halo%20Admin%20Kamerakita.id,%20saya%20Mitra%20Koordinator%20ingin%20berkonsultasi%20terkait%20operasional%20tim%20saya." target="_blank" class="bg-white rounded-2xl p-5 border border-gray-150 shadow-sm flex flex-col items-center justify-center text-center space-y-2 hover:shadow-md transition">
+                <a href="https://wa.me/6287886272647?text=Halo%20Admin%20Kamerakita.id,%20saya%20Vendor%20Koordinator%20ingin%20berkonsultasi%20terkait%20operasional%20tim%20saya." target="_blank" class="bg-white rounded-2xl p-5 border border-gray-150 shadow-sm flex flex-col items-center justify-center text-center space-y-2 hover:shadow-md transition">
                     <div class="p-2.5 bg-indigo-50 text-indigo-650 rounded-xl">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
@@ -158,7 +158,7 @@
                 <table class="min-w-full divide-y divide-gray-100 text-sm">
                     <thead>
                         <tr class="text-gray-500">
-                            <th class="py-3 text-left font-semibold">ID Mitra</th>
+                            <th class="py-3 text-left font-semibold">ID Vendor</th>
                             <th class="py-3 text-left font-semibold">Nama Worker</th>
                             <th class="py-3 text-left font-semibold">All Time</th>
                             <th class="py-3 text-left font-semibold">Paid</th>

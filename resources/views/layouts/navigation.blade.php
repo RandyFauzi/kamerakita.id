@@ -27,6 +27,14 @@
                     <x-nav-link :href="route('partners.index')" :active="request()->routeIs('partners.*')">
                         {{ __('Data Mitra') }}
                     </x-nav-link>
+                    @if(Auth::user()->role === 'mitra')
+                    <x-nav-link :href="route('vendor.reports.index')" :active="request()->routeIs('vendor.reports.*')">
+                        {{ __('QC Tracker') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('vendor.payments.index')" :active="request()->routeIs('vendor.payments.*')">
+                        {{ __('Pembayaran') }}
+                    </x-nav-link>
+                    @endif
                     @if(in_array(Auth::user()->role ?? '', ['superadmin', 'admin']))
                     <x-nav-link :href="route('rekruter.index')" :active="request()->routeIs('rekruter.*')">
                         {{ __('Rekruter') }}
@@ -104,6 +112,14 @@
             <x-responsive-nav-link :href="route('partners.index')" :active="request()->routeIs('partners.*')">
                 {{ __('Data Mitra') }}
             </x-responsive-nav-link>
+            @if(Auth::user()->role === 'mitra')
+            <x-responsive-nav-link :href="route('vendor.reports.index')" :active="request()->routeIs('vendor.reports.*')">
+                {{ __('QC Tracker') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('vendor.payments.index')" :active="request()->routeIs('vendor.payments.*')">
+                {{ __('Pembayaran') }}
+            </x-responsive-nav-link>
+            @endif
             @if(in_array(Auth::user()->role ?? '', ['superadmin', 'admin']))
             <x-responsive-nav-link :href="route('rekruter.index')" :active="request()->routeIs('rekruter.*')">
                 {{ __('Rekruter') }}
