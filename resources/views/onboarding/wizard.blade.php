@@ -79,17 +79,13 @@
 
                     <!-- Illustration -->
                     <div class="flex justify-center mb-10 w-full px-4">
-                        <img src="{{ asset('images/onboarding/welcome.webp') }}" alt="Welcome to KameraKita AI" class="w-full max-w-sm h-auto object-contain drop-shadow-md mx-auto">
+                        <img src="{{ asset('images/onboarding/welcome-fix.webp') }}" alt="Welcome to KameraKita AI" class="w-full max-w-sm h-auto object-contain drop-shadow-md mx-auto">
                     </div>
                     
                     <!-- Get Started Button -->
                     <button type="button" class="w-full max-w-xs mx-auto bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg py-4 rounded-2xl shadow-[0_8px_16px_rgba(37,99,235,0.2)] transition-all active:scale-[0.98]" onclick="navigate(1)">
                         Get Started
                     </button>
-                    
-                    <p class="mt-6 text-sm text-slate-500 font-medium">
-                        Mari selesaikan onboarding Anda.
-                    </p>
                 </div>
 
                 <!-- SCREEN 1: SOP Headmount -->
