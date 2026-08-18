@@ -64,8 +64,8 @@
 
                 <!-- SCREEN 1: SOP Headmount -->
                 <div class="step-screen w-full pb-10" id="screen-1">
-                    <div class="flex justify-center mb-8 mt-4">
-                        <img src="{{ asset('images/onboarding/get-started.webp') }}" alt="Onboarding" class="w-64 sm:w-80 h-auto object-contain drop-shadow-md">
+                    <div class="flex justify-center mb-8 mt-2">
+                        <img src="{{ asset('images/onboarding/get-started.webp') }}" alt="Onboarding" class="w-full max-w-sm sm:max-w-md h-auto object-contain drop-shadow-md">
                     </div>
                     
                     <div class="text-center mb-8">
@@ -91,11 +91,7 @@
 
                 <!-- SCREEN 2: SOP Tangkapan Tangan -->
                 <div class="step-screen w-full pb-10 hidden" id="screen-2">
-                    <div class="flex justify-center mb-8 mt-4">
-                        <img src="{{ asset('images/onboarding/get-started.webp') }}" alt="Onboarding" class="w-64 sm:w-80 h-auto object-contain drop-shadow-md">
-                    </div>
-                    
-                    <div class="text-center mb-8">
+                    <div class="text-center mb-8 mt-10">
                         <h2 class="text-2xl font-extrabold text-slate-900 mb-2">Tangkapan Tangan</h2>
                         <p class="text-sm text-slate-500">Pastikan aktivitas tangan terlihat jelas oleh kamera selama perekaman.</p>
                     </div>
@@ -118,11 +114,7 @@
 
                 <!-- SCREEN 3: SOP Cahaya -->
                 <div class="step-screen w-full pb-10 hidden" id="screen-3">
-                    <div class="flex justify-center mb-8 mt-4">
-                        <img src="{{ asset('images/onboarding/get-started.webp') }}" alt="Onboarding" class="w-64 sm:w-80 h-auto object-contain drop-shadow-md">
-                    </div>
-                    
-                    <div class="text-center mb-8">
+                    <div class="text-center mb-8 mt-10">
                         <h2 class="text-2xl font-extrabold text-slate-900 mb-2">Kondisi Cahaya</h2>
                         <p class="text-sm text-slate-500">Pencahayaan sangat penting untuk kualitas data video AI.</p>
                     </div>
@@ -148,11 +140,7 @@
 
                 <!-- SCREEN 4: SOP Penolakan -->
                 <div class="step-screen w-full pb-10 hidden" id="screen-4">
-                    <div class="flex justify-center mb-6 mt-4">
-                        <img src="{{ asset('images/onboarding/get-started.webp') }}" alt="Onboarding" class="w-64 sm:w-80 h-auto object-contain drop-shadow-md">
-                    </div>
-                    
-                    <div class="text-center mb-6">
+                    <div class="text-center mb-6 mt-10">
                         <h2 class="text-2xl font-extrabold text-slate-900 mb-2">Kriteria Penolakan</h2>
                         <p class="text-sm text-slate-500">Video langsung DITOLAK jika memenuhi kriteria ini.</p>
                     </div>
@@ -426,5 +414,10 @@
         `;
         document.head.appendChild(style);
     </script>
+    
+    <!-- Watermark -->
+    <div class="fixed bottom-3 right-5 z-50 pointer-events-none opacity-50">
+        <p class="text-[10px] sm:text-xs font-semibold text-slate-400 tracking-wide uppercase">KameraKita AI <span class="font-normal normal-case">powered by</span> UNEVA AI</p>
+    </div>
 </body>
 </html>
