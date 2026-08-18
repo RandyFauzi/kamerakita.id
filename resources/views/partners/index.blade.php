@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <h2 class="font-bold text-2xl text-gray-800 leading-tight">
-                {{ __('Manajemen Data Kemitraan (Mitra & Worker)') }}
+                {{ __('Manajemen Data Kemitraan (Vendor & Worker)') }}
             </h2>
             <a href="{{ route('partners.create') }}" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-650 border border-transparent rounded-xl font-semibold text-xs text-white uppercase tracking-widest hover:from-blue-700 hover:to-indigo-700 transition shadow-md shadow-indigo-100">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -135,7 +135,7 @@
                         <div>
                             <span class="block text-[10px] font-black uppercase tracking-widest text-gray-400">Total Mitra</span>
                             <strong class="mt-2 block text-2xl font-black text-emerald-700 sm:text-3xl">{{ number_format($summary['total_mitra'], 0, ',', '.') }}</strong>
-                            <span class="mt-1 block text-xs text-gray-400">Akun mitra koordinator</span>
+                            <span class="mt-1 block text-xs text-gray-400">Akun Vendor Koordinator</span>
                         </div>
                         <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -244,14 +244,14 @@
                                         <input type="checkbox" @change="toggleSelectAll($event)" :checked="selectedIds.length === @js($partners->count()) && @js($partners->count()) > 0" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
                                     </th>
                                     <th scope="col" class="w-16 px-4 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">No.</th>
-                                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">ID Mitra</th>
+                                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">ID Vendor</th>
                                     <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Nama Lengkap</th>
                                     <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Peran (Role)</th>
                                     <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Grup</th>
                                     <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Nominal/Jam</th>
                                     <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Headstrap</th>
                                     <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">WhatsApp</th>
-                                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Mitra Atasan</th>
+                                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Vendor Atasan</th>
                                     <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Registrasi Klien</th>
                                     <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
                                     <th scope="col" class="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Aksi</th>
@@ -259,7 +259,7 @@
                                 <tr class="bg-slate-100/50 border-t border-slate-205">
                                     <th class="px-4 py-2"></th>
                                     <th class="px-4 py-2"></th>
-                                    <!-- ID Mitra Filter -->
+                                    <!-- ID Vendor Filter -->
                                     <th class="px-3 py-2 min-w-[120px]">
                                         <input type="text" name="mitra_id" id="mitra_id" value="{{ $mitraId }}" onchange="this.form.submit()" placeholder="Cari ID..." class="block w-full py-1.5 px-2.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700 transition shadow-sm">
                                     </th>
@@ -300,7 +300,7 @@
                                     <th class="px-3 py-2 min-w-[140px]">
                                         <input type="text" name="whatsapp" id="whatsapp" value="{{ $whatsapp }}" onchange="this.form.submit()" placeholder="Cari WA..." class="block w-full py-1.5 px-2.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700 transition shadow-sm">
                                     </th>
-                                    <!-- Mitra Atasan Filter -->
+                                    <!-- Vendor Atasan Filter -->
                                     <th class="px-3 py-2 min-w-[150px]">
                                         <select name="mitra_parent" id="mitra_parent" onchange="this.form.submit()" class="block w-full py-1.5 px-2.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700 transition shadow-sm">
                                             <option value="">Semua</option>
@@ -421,7 +421,7 @@
                             @empty
                                 <tr>
                                     <td colspan="13" class="px-6 py-12 text-center text-gray-500">
-                                        <span class="text-sm">Tidak ada data mitra atau worker ditemukan.</span>
+                                        <span class="text-sm">Tidak ada Data Vendor atau worker ditemukan.</span>
                                     </td>
                                 </tr>
                             @endforelse
@@ -720,11 +720,11 @@
 
                                             <!-- Parent Mitra selection -->
                                             <div x-data="{ parentOption: 'no_change' }">
-                                                <label for="bulk_parent_option" class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 font-mono">Mitra Atasan</label>
+                                                <label for="bulk_parent_option" class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 font-mono">Vendor Atasan</label>
                                                 <select name="mitra_parent_id" id="bulk_parent_option" x-model="parentOption" class="block w-full py-1.5 px-2.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white">
                                                     <option value="no_change">Tidak Ada Perubahan</option>
-                                                    <option value="clear">Hapus Mitra Atasan (Kosongkan)</option>
-                                                    <option value="other">Pilih Mitra Atasan Baru</option>
+                                                    <option value="clear">Hapus Vendor Atasan (Kosongkan)</option>
+                                                    <option value="other">Pilih Vendor Atasan Baru</option>
                                                 </select>
                                                 
                                                 <div x-show="parentOption === 'other'" class="mt-2" x-transition style="display: none;">

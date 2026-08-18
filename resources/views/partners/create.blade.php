@@ -29,15 +29,15 @@
                             <label for="partner_role" class="block text-sm font-semibold text-gray-700 mb-1">Peran Kemitraan <span class="text-red-500">*</span></label>
                             <select name="partner_role" id="partner_role" x-model="role" required class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                                 <option value="worker">Worker (Perekam Video)</option>
-                                <option value="mitra">Mitra (Koordinator/Fasilitator)</option>
+                                <option value="mitra">Vendor</option>
                                 <option value="rekruter">Rekruter (Perekrut Worker)</option>
                             </select>
                             @error('partner_role') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
 
-                        <!-- ID Mitra -->
+                        <!-- ID Vendor -->
                         <div>
-                            <label for="mitra_id" class="block text-sm font-semibold text-gray-700 mb-1">ID Mitra (Otomatis)</label>
+                            <label for="mitra_id" class="block text-sm font-semibold text-gray-700 mb-1">ID Vendor (Otomatis)</label>
                             <input type="text" name="mitra_id" id="mitra_id" value="{{ old('mitra_id', $nextMitraId) }}" readonly class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50 text-gray-500 font-semibold focus:outline-none">
                             @error('mitra_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
@@ -143,7 +143,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Pilih Mitra Atasan (Shown only if role is worker) -->
                         <div x-show="role === 'worker'" class="animate-in fade-in duration-200">
-                            <label for="mitra_parent_id" class="block text-sm font-semibold text-gray-700 mb-1">Pilih Mitra Atasan (Koordinator)</label>
+                            <label for="mitra_parent_id" class="block text-sm font-semibold text-gray-700 mb-1">Pilih Vendor Atasan</label>
                             <select name="mitra_parent_id" id="mitra_parent_id" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                                 <option value="">Pilih Mitra...</option>
                                 @foreach($mitraList as $mitra)

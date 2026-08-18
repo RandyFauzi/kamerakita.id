@@ -88,15 +88,15 @@
                                                 <label for="partner_role" class="block text-sm font-semibold text-gray-700 mb-1">Peran Kemitraan <span class="text-red-500">*</span></label>
                                                 <select name="partner_role" id="partner_role" x-model="role" required class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                                                     <option value="worker" {{ $partner->partner_role === 'worker' ? 'selected' : '' }}>Worker (Perekam Video)</option>
-                                                    <option value="mitra" {{ $partner->partner_role === 'mitra' ? 'selected' : '' }}>Mitra (Koordinator/Fasilitator)</option>
+                                                    <option value="mitra" {{ $partner->partner_role === 'mitra' ? 'selected' : '' }}>Vendor</option>
                                                     <option value="rekruter" {{ $partner->partner_role === 'rekruter' ? 'selected' : '' }}>Rekruter (Perekrut Worker)</option>
                                                 </select>
                                                 @error('partner_role') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                                             </div>
 
-                                            <!-- ID Mitra -->
+                                            <!-- ID Vendor -->
                                             <div>
-                                                <label class="block text-sm font-semibold text-gray-700 mb-1">ID Mitra (Tidak dapat diubah)</label>
+                                                <label class="block text-sm font-semibold text-gray-700 mb-1">ID Vendor (Tidak dapat diubah)</label>
                                                 <input type="text" value="{{ $partner->mitra_id }}" readonly class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50 text-gray-400 font-semibold focus:outline-none">
                                             </div>
 
@@ -236,7 +236,7 @@
                                         <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <!-- Pilih Mitra Atasan (Shown only if role is worker) -->
                                             <div x-show="role === 'worker'" class="animate-in fade-in duration-200">
-                                                <label for="mitra_parent_id" class="block text-sm font-semibold text-gray-700 mb-1">Pilih Mitra Atasan (Koordinator)</label>
+                                                <label for="mitra_parent_id" class="block text-sm font-semibold text-gray-700 mb-1">Pilih Vendor Atasan</label>
                                                 <select name="mitra_parent_id" id="mitra_parent_id" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                                                     <option value="">Pilih Mitra...</option>
                                                     @foreach($mitraList as $mitra)
