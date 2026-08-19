@@ -367,8 +367,8 @@
 
         const observerOptions = {
             root: null,
-            rootMargin: "50px 0px 50px 0px", 
-            threshold: 0.01 
+            rootMargin: "0px 0px -80px 0px", 
+            threshold: 0.1 
         };
 
         const observerCallback = (entries, observer) => {
@@ -395,12 +395,11 @@
                 el.style.transitionDelay = `${delay}ms`;
             }
 
-            // Instantly reveal elements already visible inside initial viewport on load
-            const rect = el.getBoundingClientRect();
-            if (rect.top < window.innerHeight && rect.bottom > 0) {
+            // Hero section elements animate on load; all other sections strictly wait for user scroll
+            if (el.closest('.hero')) {
                 setTimeout(() => {
                     el.classList.add('is-visible');
-                }, delay + 60);
+                }, delay + 80);
             } else {
                 observer.observe(el);
             }
