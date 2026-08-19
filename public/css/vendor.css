@@ -110,11 +110,11 @@ h1, h2, h3, p { margin: 0; }
 .tier-large > .tier-button { position: absolute; z-index: 2; }
 
 .how-section { width: 100%; height: 532px; flex: 0 0 532px; padding: 72px 0; background: #fff; }
-.how-heading { width: calc(100% - 160px); height: 88px; margin: 0 auto; display: flex; align-items: center; }
+.how-heading { width: min(calc(100% - 160px), var(--content)); height: 88px; margin: 0 auto; display: flex; align-items: center; }
 .how-heading > div { flex: 1 1 auto; height: 88px; display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
 .how-heading h2 { font-weight: 600; }
 .how-button { min-width: 287px; min-height: 65px; padding: 18px 24px; font-size: 24px; }
-.steps-grid { width: calc(100% - 160px); height: 244px; margin: 48px auto 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; }
+.steps-grid { width: min(calc(100% - 160px), var(--content)); height: 244px; margin: 48px auto 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; }
 .step { min-width: 0; height: 244px; padding: 23px 24px; }
 .step-number { display: block; height: 97px; color: transparent; background: linear-gradient(175.55deg, var(--blue) 21.69%, #fff 61.72%); background-clip: text; -webkit-background-clip: text; font-size: 80px; font-weight: 700; line-height: normal; filter: drop-shadow(0 4px 11px rgba(0, 0, 0, .1)); }
 .step h3 { margin-top: 12px; color: var(--blue); font-size: 24px; font-weight: 600; line-height: 1.2; }
