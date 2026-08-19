@@ -97,40 +97,44 @@
         $whatsappVendorUrl = 'https://wa.me/6287886272647?text='.rawurlencode('Halo Admin KameraKita AI, saya tertarik mendaftar program Vendor/Agensi Partner. Boleh minta info lebih lanjut?');
     @endphp
 
-    <!-- 1. Top Navbar (Clean White background with Glassmorphism on scroll) -->
-    <header id="site-header" class="bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50 transition-all duration-300">
+    <!-- 1. Top Navbar (Clean White background, exact Evermos layout) -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             
             <!-- Logo -->
-            <a href="/" class="flex items-center gap-3 group">
-                <div class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-700 p-1 flex items-center justify-center overflow-hidden transition-transform duration-300 group-hover:scale-105 group-hover:border-sky-500">
+            <a href="/" class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-700 p-1 flex items-center justify-center overflow-hidden">
                     <img src="{{ asset('images/Logo.webp') }}" alt="KAMERAKITA AI Logo" class="w-full h-full object-contain rounded-lg">
                 </div>
-                <span class="text-xl font-black tracking-[-0.03em] text-slate-900 group-hover:text-sky-600 transition-colors">
+                <span class="text-xl font-black tracking-[-0.03em] text-slate-900">
                     KameraKita<span class="ml-0.5 bg-gradient-to-r from-sky-500 to-indigo-600 bg-clip-text text-transparent">AI</span>
                 </span>
             </a>
 
             <!-- Navigation Links -->
-            <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-700 main-nav">
-                <a href="#keunggulan">Keunggulan</a>
-                <a href="#kalkulator">Kalkulator</a>
-                <a href="#cara-kerja">Cara Kerja</a>
-                <a href="#mitra">Testimony</a>
-                <a href="#faq">FAQ</a>
+            <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-700">
+                <a href="/#keunggulan" class="hover:text-sky-600 transition flex items-center gap-1">
+                    Keunggulan <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </a>
+                <a href="/#kalkulator" class="hover:text-sky-600 transition flex items-center gap-1">
+                    Kalkulator <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </a>
+                <a href="/#cara-kerja" class="hover:text-sky-600 transition">Cara Kerja</a>
+                <a href="/#mitra" class="hover:text-sky-600 transition">Testimony</a>
+                <a href="/#faq" class="hover:text-sky-600 transition">FAQ</a>
             </nav>
 
             <!-- Action Button -->
             <div class="flex items-center gap-3">
-                <a href="{{ route('jadi-vendor') }}" class="hidden sm:inline-flex px-5 py-2 border-2 border-sky-500 text-sky-600 hover:bg-sky-50 hover:text-sky-700 font-bold rounded-xl text-sm transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5">
+                <a href="{{ route('jadi-vendor') }}" class="hidden sm:inline-flex px-5 py-2 border-2 border-sky-500 text-sky-600 hover:bg-sky-50 hover:text-sky-700 font-bold rounded-xl text-sm transition shadow-sm">
                     Jadi Vendor
                 </a>
                 @auth
-                    <a href="{{ route('dashboard') }}" class="btn-brand-navy px-6 py-2.5 text-sm shadow-md hover:shadow-lg transition-all">
+                    <a href="{{ route('dashboard') }}" class="btn-brand-navy px-6 py-2.5 text-sm">
                         Dashboard →
                     </a>
                 @else
-                    <a href="{{ route('login') }}" class="btn-brand-navy px-6 py-2.5 text-sm shadow-md hover:shadow-lg transition-all">
+                    <a href="{{ route('login') }}" class="btn-brand-navy px-6 py-2.5 text-sm">
                         Masuk / Daftar
                     </a>
                 @endauth
