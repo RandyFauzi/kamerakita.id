@@ -185,21 +185,21 @@
 
 <main id="main" class="main-stack">
     <section class="hero" id="top" aria-labelledby="hero-title">
-      <div class="hero-copy animate-fade-right">
-        <p class="chip"><span class="chip-dot"></span> KameraKita AI Partner Program</p>
-        <h1 id="hero-title">Bangun Agensi AI Anda<br><span class="gradient-text">Profit Tanpa Batas</span></h1>
-        <p class="hero-description">Jadilah Official Vendor KameraKita. Kami siapkan kontrak AI global,<br class="desktop-break"> Anda cukup kelola tim dan nikmati marginnya</p>
-        <div class="hero-actions">
+      <div class="hero-copy">
+        <p class="chip animate-fade-down"><span class="chip-dot"></span> KameraKita AI Partner Program</p>
+        <h1 id="hero-title" class="animate-fade-up" data-delay="100">Bangun Agensi AI Anda<br><span class="gradient-text">Profit Tanpa Batas</span></h1>
+        <p class="hero-description animate-fade-up" data-delay="200">Jadilah Official Vendor KameraKita. Kami siapkan kontrak AI global,<br class="desktop-break"> Anda cukup kelola tim dan nikmati marginnya</p>
+        <div class="hero-actions animate-fade-up" data-delay="300">
           <a class="button button-primary" href="{{ $whatsappVendorUrl }}" target="_blank">Gabung Jadi Partner</a>
           <a class="button button-outline" href="#features">Lihat Cara Kerjanya</a>
         </div>
       </div>
 
-      <div class="hero-visual animate-fade-left" aria-label="Visual pendapatan partner dan proyek perekaman aktivitas">
-        <img class="hero-glow" src="{{ asset('vendor-assets/') }}/kamerakita/hero-glow.svg" alt="">
-        <img class="hero-chart" src="{{ asset('vendor-assets/') }}/kamerakita/hero-chart.png" alt="Grafik tren profit bulanan">
+      <div class="hero-visual" aria-label="Visual pendapatan partner dan proyek perekaman aktivitas">
+        <img class="hero-glow animate-fade-down" src="{{ asset('vendor-assets/') }}/kamerakita/hero-glow.svg" alt="">
+        <img class="hero-chart animate-zoom-in" data-delay="150" src="{{ asset('vendor-assets/') }}/kamerakita/hero-chart.png" alt="Grafik tren profit bulanan">
         
-        <div class="pov-card">
+        <div class="pov-card animate-fade-left" data-delay="250">
           <div class="pov-image">
             <img src="{{ asset('vendor-assets/') }}/kamerakita/hero-pov.png" alt="Perekaman aktivitas melipat pakaian dari sudut pandang orang pertama">
             <div class="pov-scanner"></div>
@@ -209,36 +209,36 @@
           </div>
         </div>
         
-        <img class="hero-wallet" src="{{ asset('vendor-assets/') }}/kamerakita/hero-wallet.png" alt="Dompet berisi uang rupiah">
-        <img class="hero-headstrap" src="{{ asset('vendor-assets/') }}/kamerakita/hero-headstrap.png" alt="Kamera headstrap untuk merekam aktivitas">
+        <img class="hero-wallet animate-fade-down" data-delay="350" src="{{ asset('vendor-assets/') }}/kamerakita/hero-wallet.png" alt="Dompet berisi uang rupiah">
+        <img class="hero-headstrap animate-fade-up" data-delay="450" src="{{ asset('vendor-assets/') }}/kamerakita/hero-headstrap.png" alt="Kamera headstrap untuk merekam aktivitas">
       </div>
     </section>
 
     <section class="project-section surface-section" id="features" aria-labelledby="project-title">
-      <div class="project-heading animate-fade-up">
-        <div>
+      <div class="project-heading">
+        <div class="animate-fade-right">
           <p class="chip"><span class="chip-dot"></span> PROYEK DATA AI</p>
           <h2 id="project-title">Membantu AI Memahami Dunia Nyata</h2>
         </div>
-        <p>Tim Anda membantu mengumpulkan video aktivitas<br class="desktop-break"> sehari-hari dari sudut pandang orang pertama untuk<br class="desktop-break"> kebutuhan pengembangan AI.</p>
+        <p class="animate-fade-left" data-delay="150">Tim Anda membantu mengumpulkan video aktivitas<br class="desktop-break"> sehari-hari dari sudut pandang orang pertama untuk<br class="desktop-break"> kebutuhan pengembangan AI.</p>
       </div>
 
       <div class="project-grid">
-        <article class="project-card animate-fade-up">
+        <article class="project-card animate-fade-up" data-delay="100">
           <img src="{{ asset('vendor-assets/') }}/kamerakita/project-recording.png" alt="Ilustrasi perekaman aktivitas harian">
           <div class="project-copy">
             <h3>Rekam Aktivitas Harian</h3>
             <p>Worker memakai smartphone dan headstrap untuk merekam kegiatan seperti beres-beres, memasak, atau aktivitas rumah lainnya.</p>
           </div>
         </article>
-        <article class="project-card animate-fade-up">
+        <article class="project-card animate-fade-up" data-delay="250">
           <img src="{{ asset('vendor-assets/') }}/kamerakita/project-guideline.png" alt="Ilustrasi alur panduan proyek">
           <div class="project-copy">
             <h3>Ikuti Panduan Proyek</h3>
             <p>Setiap project punya arahan aktivitas, durasi, dan standar rekaman yang harus diikuti.</p>
           </div>
         </article>
-        <article class="project-card project-card-last animate-fade-up">
+        <article class="project-card project-card-last animate-fade-up" data-delay="400">
           <img src="{{ asset('vendor-assets/') }}/kamerakita/project-verification.png" alt="Ilustrasi pengiriman data untuk verifikasi">
           <div class="project-copy">
             <h3>Kirim untuk Diverifikasi</h3>
@@ -249,13 +249,13 @@
     </section>
 
     <section class="profit-section" id="pricing" aria-labelledby="profit-title">
-      <div class="profit-heading animate-fade-up">
+      <div class="profit-heading animate-fade-down">
         <p class="chip"><span class="chip-dot"></span> SIMULASI PERTUMBUHAN</p>
         <h2 id="profit-title">Simulasikan Potensi Profit dari Skala Operasional Anda</h2>
       </div>
 
       <div class="profit-grid">
-        <article class="tier-card animate-zoom-in">
+        <article class="tier-card animate-fade-right" data-delay="100">
           <div class="tier-name"><img src="{{ asset('vendor-assets/') }}/kamerakita/icon-tier-1.svg" alt=""><span>Tier 1: Minimal</span></div>
           <p class="worker-count"><strong>9</strong><span>orang worker</span></p>
           <div class="tier-profit">
@@ -265,7 +265,7 @@
           </div>
         </article>
 
-        <article class="tier-card animate-zoom-in">
+        <article class="tier-card animate-fade-left" data-delay="250">
           <div class="tier-name"><img src="{{ asset('vendor-assets/') }}/kamerakita/icon-tier-2.svg" alt=""><span>Tier 2: Menengah</span></div>
           <p class="worker-count"><strong>20</strong><span>orang worker</span></p>
           <div class="tier-profit">
@@ -275,7 +275,7 @@
           </div>
         </article>
 
-        <article class="tier-card tier-large animate-zoom-in">
+        <article class="tier-card tier-large animate-zoom-in" data-delay="400">
           <img class="profit-art" src="{{ asset('vendor-assets/') }}/kamerakita/profit-wallet.png" alt="Dompet besar berisi uang rupiah">
           <div class="tier-name"><img src="{{ asset('vendor-assets/') }}/kamerakita/icon-tier-3.svg" alt=""><span>Tier 3: Agensi Skala Besar</span></div>
           <p class="worker-count"><strong>50+</strong><span>orang worker</span></p>
@@ -290,26 +290,26 @@
     </section>
 
     <section class="how-section" id="faq" aria-labelledby="how-title">
-      <div class="how-heading animate-fade-right">
-        <div>
+      <div class="how-heading">
+        <div class="animate-fade-right">
           <p class="chip"><span class="chip-dot"></span> CARA KERJA</p>
           <h2 id="how-title">Mulai Jadi Partner dalam 3 Langkah</h2>
         </div>
-        <a class="button how-button" href="{{ $whatsappVendorUrl }}" target="_blank">Gabung Jadi Partner</a>
+        <a class="button how-button animate-fade-left" data-delay="150" href="{{ $whatsappVendorUrl }}" target="_blank">Gabung Jadi Partner</a>
       </div>
 
       <div class="steps-grid">
-        <article class="step animate-fade-up">
+        <article class="step animate-fade-up" data-delay="100">
           <span class="step-number">1</span>
           <h3>JOIN</h3>
           <p>Daftarkan agency Anda. Siapkan worker, smartphone, dan headstrap.</p>
         </article>
-        <article class="step animate-fade-up">
+        <article class="step animate-fade-up" data-delay="250">
           <span class="step-number">2</span>
           <h3>OPERATE</h3>
           <p>Jalankan project sesuai guideline KameraKita</p>
         </article>
-        <article class="step animate-fade-up">
+        <article class="step animate-fade-up" data-delay="400">
           <span class="step-number">3</span>
           <h3>EARN</h3>
           <p>Terima pembayaran dari jam data yang berhasil divalidasi.</p>
@@ -319,7 +319,7 @@
 
     <section class="final-cta" id="contact" aria-labelledby="cta-title">
       <img class="cta-art animate-fade-right" src="{{ asset('vendor-assets/') }}/kamerakita/final-cta-art.png" alt="Ilustrasi AI dan aliran koin">
-      <div class="cta-copy animate-fade-left">
+      <div class="cta-copy animate-fade-left" data-delay="150">
         <h2 id="cta-title">Siap buka peluang bisnis baru dari proyek<br class="desktop-break"> AI global?</h2>
         <p>Masuk lebih awal, bangun operasional, dan nikmati<br class="desktop-break"> potensi margin dari setiap jam yang tervalidasi.</p>
         <a class="button button-yellow" href="{{ $whatsappVendorUrl }}" target="_blank">Gabung Jadi Partner</a>
@@ -351,7 +351,7 @@
     const initAnimations = () => {
         const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         if (reducedMotion) {
-            document.querySelectorAll('.animate-fade-up, .animate-fade-down, .animate-fade-left, .animate-fade-right, .animate-zoom-in, .animate-zoom-out, .animate-flip-up').forEach(el => {
+            document.querySelectorAll('.animate-fade-up, .animate-fade-down, .animate-fade-left, .animate-fade-right, .animate-zoom-in, .animate-zoom-out, .animate-flip-up, .animate-scale-up').forEach(el => {
                 el.classList.add('is-visible');
             });
             return;
@@ -387,12 +387,14 @@
 
         const animationClasses = [
             '.animate-fade-up', '.animate-fade-down', '.animate-fade-left', 
-            '.animate-fade-right', '.animate-zoom-in', '.animate-zoom-out', '.animate-flip-up'
+            '.animate-fade-right', '.animate-zoom-in', '.animate-zoom-out', '.animate-flip-up', '.animate-scale-up'
         ];
 
         const animatedElements = document.querySelectorAll(animationClasses.join(', '));
         animatedElements.forEach((el) => {
-            if (el.parentElement && !el.style.transitionDelay) {
+            if (el.hasAttribute('data-delay')) {
+                el.style.transitionDelay = `${el.getAttribute('data-delay')}ms`;
+            } else if (el.parentElement && !el.style.transitionDelay) {
                 const siblings = Array.from(el.parentElement.children).filter(child => 
                     animationClasses.some(cls => child.classList.contains(cls.replace('.', '')))
                 );
