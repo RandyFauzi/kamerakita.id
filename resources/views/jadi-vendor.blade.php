@@ -141,44 +141,40 @@
         $whatsappVendorUrl = 'https://wa.me/6287886272647?text='.rawurlencode('Halo Admin KameraKita AI, saya tertarik mendaftar program Vendor/Agensi Partner. Boleh minta info lebih lanjut?');
     @endphp
 
-    <!-- 1. Top Navbar (Clean White background, exact Evermos layout) -->
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
+    <!-- 1. Top Navbar (Clean White background with Glassmorphism on scroll) -->
+    <header id="site-header" class="bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50 transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             
             <!-- Logo -->
-            <a href="/" class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-700 p-1 flex items-center justify-center overflow-hidden">
+            <a href="/" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-700 p-1 flex items-center justify-center overflow-hidden transition-transform duration-300 group-hover:scale-105 group-hover:border-sky-500">
                     <img src="{{ asset('images/Logo.webp') }}" alt="KAMERAKITA AI Logo" class="w-full h-full object-contain rounded-lg">
                 </div>
-                <span class="text-xl font-black tracking-[-0.03em] text-slate-900">
+                <span class="text-xl font-black tracking-[-0.03em] text-slate-900 group-hover:text-sky-600 transition-colors">
                     KameraKita<span class="ml-0.5 bg-gradient-to-r from-sky-500 to-indigo-600 bg-clip-text text-transparent">AI</span>
                 </span>
             </a>
 
             <!-- Navigation Links -->
-            <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-700">
-                <a href="#keunggulan" class="hover:text-sky-600 transition flex items-center gap-1">
-                    Keunggulan <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                </a>
-                <a href="#kalkulator" class="hover:text-sky-600 transition flex items-center gap-1">
-                    Kalkulator <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                </a>
-                <a href="#cara-kerja" class="hover:text-sky-600 transition">Cara Kerja</a>
-                <a href="#mitra" class="hover:text-sky-600 transition">Testimony</a>
-                <a href="#faq" class="hover:text-sky-600 transition">FAQ</a>
+            <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-700 main-nav">
+                <a href="#keunggulan">Keunggulan</a>
+                <a href="#kalkulator">Kalkulator</a>
+                <a href="#cara-kerja">Cara Kerja</a>
+                <a href="#mitra">Testimony</a>
+                <a href="#faq">FAQ</a>
             </nav>
 
             <!-- Action Button -->
             <div class="flex items-center gap-3">
-                <a href="{{ route('jadi-vendor') }}" class="hidden sm:inline-flex px-5 py-2 border-2 border-sky-500 text-sky-600 hover:bg-sky-50 hover:text-sky-700 font-bold rounded-xl text-sm transition shadow-sm">
+                <a href="{{ route('jadi-vendor') }}" class="hidden sm:inline-flex px-5 py-2 border-2 border-sky-500 text-sky-600 hover:bg-sky-50 hover:text-sky-700 font-bold rounded-xl text-sm transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5">
                     Jadi Vendor
                 </a>
                 @auth
-                    <a href="{{ route('dashboard') }}" class="btn-brand-navy px-6 py-2.5 text-sm">
+                    <a href="{{ route('dashboard') }}" class="btn-brand-navy px-6 py-2.5 text-sm shadow-md hover:shadow-lg transition-all">
                         Dashboard →
                     </a>
                 @else
-                    <a href="{{ route('login') }}" class="btn-brand-navy px-6 py-2.5 text-sm">
+                    <a href="{{ route('login') }}" class="btn-brand-navy px-6 py-2.5 text-sm shadow-md hover:shadow-lg transition-all">
                         Masuk / Daftar
                     </a>
                 @endauth
@@ -186,11 +182,12 @@
 
         </div>
     </header>
+
 <main id="main" class="main-stack">
     <section class="hero" id="top" aria-labelledby="hero-title">
       <div class="hero-copy animate-fade-right">
-        <p class="chip">KameraKita AI Partner Program</p>
-        <h1 id="hero-title">Bangun Agensi AI Anda<br><span>Profit Tanpa Batas</span></h1>
+        <p class="chip"><span class="chip-dot"></span> KameraKita AI Partner Program</p>
+        <h1 id="hero-title">Bangun Agensi AI Anda<br><span class="gradient-text">Profit Tanpa Batas</span></h1>
         <p class="hero-description">Jadilah Official Vendor KameraKita. Kami siapkan kontrak AI global,<br class="desktop-break"> Anda cukup kelola tim dan nikmati marginnya</p>
         <div class="hero-actions">
           <a class="button button-primary" href="{{ $whatsappVendorUrl }}" target="_blank">Gabung Jadi Partner</a>
@@ -201,13 +198,17 @@
       <div class="hero-visual animate-fade-left" aria-label="Visual pendapatan partner dan proyek perekaman aktivitas">
         <img class="hero-glow" src="{{ asset('vendor-assets/') }}/kamerakita/hero-glow.svg" alt="">
         <img class="hero-chart" src="{{ asset('vendor-assets/') }}/kamerakita/hero-chart.png" alt="Grafik tren profit bulanan">
+        
         <div class="pov-card">
+          <div class="pov-scanner"></div>
+          <div class="rec-badge"><span class="rec-dot"></span>REC • LIVE</div>
           <div class="pov-image">
             <img src="{{ asset('vendor-assets/') }}/kamerakita/hero-pov.png" alt="Perekaman aktivitas melipat pakaian dari sudut pandang orang pertama">
           </div>
           <span class="feed-label">CAMERA_FEED_03 // SPATIAL</span>
           <span class="depth-label"><small>DEPTH MAP</small><b>LIDAR_POINTCLOUD_ALIGN</b></span>
         </div>
+        
         <img class="hero-wallet" src="{{ asset('vendor-assets/') }}/kamerakita/hero-wallet.png" alt="Dompet berisi uang rupiah">
         <img class="hero-headstrap" src="{{ asset('vendor-assets/') }}/kamerakita/hero-headstrap.png" alt="Kamera headstrap untuk merekam aktivitas">
       </div>
@@ -216,7 +217,7 @@
     <section class="project-section surface-section" id="features" aria-labelledby="project-title">
       <div class="project-heading animate-fade-up">
         <div>
-          <p class="chip">PROYEK DATA AI</p>
+          <p class="chip"><span class="chip-dot"></span> PROYEK DATA AI</p>
           <h2 id="project-title">Membantu AI Memahami Dunia Nyata</h2>
         </div>
         <p>Tim Anda membantu mengumpulkan video aktivitas<br class="desktop-break"> sehari-hari dari sudut pandang orang pertama untuk<br class="desktop-break"> kebutuhan pengembangan AI.</p>
@@ -249,7 +250,7 @@
 
     <section class="profit-section" id="pricing" aria-labelledby="profit-title">
       <div class="profit-heading animate-fade-up">
-        <p class="chip">SIMULASI PERTUMBUHAN</p>
+        <p class="chip"><span class="chip-dot"></span> SIMULASI PERTUMBUHAN</p>
         <h2 id="profit-title">Simulasikan Potensi Profit dari Skala Operasional Anda</h2>
       </div>
 
@@ -259,7 +260,7 @@
           <p class="worker-count"><strong>9</strong><span>orang worker</span></p>
           <div class="tier-profit">
             <span>Estimasi profit/bulan</span>
-            <strong>Rp 7.500.000</strong>
+            <strong data-counter="7500000" data-prefix="Rp ">Rp 7.500.000</strong>
             <small>Volume: 500 Jam</small>
           </div>
         </article>
@@ -269,7 +270,7 @@
           <p class="worker-count"><strong>20</strong><span>orang worker</span></p>
           <div class="tier-profit">
             <span>Estimasi profit/bulan</span>
-            <strong>Rp 18.000.000</strong>
+            <strong data-counter="18000000" data-prefix="Rp ">Rp 18.000.000</strong>
             <small>Volume: 1.200 Jam</small>
           </div>
         </article>
@@ -280,7 +281,7 @@
           <p class="worker-count"><strong>50+</strong><span>orang worker</span></p>
           <div class="tier-profit">
             <span>Estimasi profit/bulan</span>
-            <strong class="blue-profit">Rp 45.000.000+</strong>
+            <strong class="blue-profit" data-counter="45000000" data-prefix="Rp " data-suffix="+">Rp 45.000.000+</strong>
             <small>Volume: 3.000+ jam</small>
           </div>
           <a class="button tier-button" href="{{ $whatsappVendorUrl }}" target="_blank">Gabung Jadi Partner</a>
@@ -291,7 +292,7 @@
     <section class="how-section" id="faq" aria-labelledby="how-title">
       <div class="how-heading animate-fade-right">
         <div>
-          <p class="chip">CARA KERJA</p>
+          <p class="chip"><span class="chip-dot"></span> CARA KERJA</p>
           <h2 id="how-title">Mulai Jadi Partner dalam 3 Langkah</h2>
         </div>
         <a class="button how-button" href="{{ $whatsappVendorUrl }}" target="_blank">Gabung Jadi Partner</a>
@@ -329,12 +330,25 @@
 
 <script>
 /**
- * Premium Scroll Animation Library
- * Reusable animation functions for any project
+ * Premium Scroll Animation & Micro-Interactions Library
  */
 (function() {
+    // 1. Header glassmorphic shadow on scroll
+    const header = document.getElementById('site-header');
+    if (header) {
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 20) {
+                header.classList.add('shadow-md', 'bg-white/98');
+                header.classList.remove('bg-white/95');
+            } else {
+                header.classList.remove('shadow-md', 'bg-white/98');
+                header.classList.add('bg-white/95');
+            }
+        });
+    }
+
+    // 2. IntersectionObserver for Reveal Animations & Counter
     const initAnimations = () => {
-        // Check if user prefers reduced motion
         const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         if (reducedMotion) {
             document.querySelectorAll('.animate-fade-up, .animate-fade-down, .animate-fade-left, .animate-fade-right, .animate-zoom-in, .animate-zoom-out, .animate-flip-up').forEach(el => {
@@ -353,6 +367,11 @@
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('is-visible');
+                    
+                    // Trigger number counters if present inside entry
+                    const counters = entry.target.querySelectorAll('[data-counter]');
+                    counters.forEach(counterEl => animateCounter(counterEl));
+
                     if (!entry.target.hasAttribute('data-animate-repeat')) {
                         observer.unobserve(entry.target);
                     }
@@ -387,13 +406,62 @@
         });
     };
 
+    // 3. Number Counter Animation Function
+    function animateCounter(el) {
+        if (el.dataset.animated) return;
+        el.dataset.animated = "true";
+
+        const target = parseInt(el.getAttribute('data-counter'), 10);
+        const prefix = el.getAttribute('data-prefix') || '';
+        const suffix = el.getAttribute('data-suffix') || '';
+        const duration = 1800; // ms
+        const startTime = performance.now();
+
+        function updateCount(currentTime) {
+            const elapsedTime = currentTime - startTime;
+            const progress = Math.min(elapsedTime / duration, 1);
+            // Ease out expo formula
+            const easeProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+            const currentVal = Math.floor(easeProgress * target);
+
+            el.textContent = prefix + currentVal.toLocaleString('id-ID') + suffix;
+
+            if (progress < 1) {
+                requestAnimationFrame(updateCount);
+            } else {
+                el.textContent = prefix + target.toLocaleString('id-ID') + suffix;
+            }
+        }
+
+        requestAnimationFrame(updateCount);
+    }
+
+    // 4. Subtle 3D Tilt Effect on Hover for Cards
+    const tiltCards = document.querySelectorAll('.project-card, .tier-card, .pov-card');
+    tiltCards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const rotateX = ((y - centerY) / centerY) * -6; // max 6deg
+            const rotateY = ((x - centerX) / centerX) * 6;  // max 6deg
+
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px)`;
+        });
+
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = '';
+        });
+    });
+
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initAnimations);
     } else {
         initAnimations();
     }
 })();
-
 </script>
 </body>
 </html>
