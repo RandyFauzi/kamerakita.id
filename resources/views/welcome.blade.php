@@ -123,6 +123,9 @@
 
             <!-- Action Button -->
             <div class="flex items-center gap-3">
+                <a href="{{ route('jadi-vendor') }}" class="hidden sm:inline-flex text-sm font-semibold text-slate-700 hover:text-sky-600 transition">
+                    Jadi Vendor
+                </a>
                 @auth
                     <a href="{{ route('dashboard') }}" class="btn-brand-navy px-6 py-2.5 text-sm">
                         Dashboard →

@@ -17,6 +17,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/jadi-vendor', function () {
+    return view('jadi-vendor');
+})->name('jadi-vendor');
+
 Route::get('/onboarding/success', function () {
     return view('onboarding.success');
 })->name('onboarding.success');
