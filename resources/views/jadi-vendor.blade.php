@@ -87,9 +87,49 @@
         .animate-float {
             animation: floatSlow 6s ease-in-out infinite;
         }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/vendor.css') }}?v={{ time() }}">
 
-    <link rel="stylesheet" href="{{ asset('css/vendor.css') }}">
+    <style>
+    /* Strict Scroll-Reveal Animation Engine (Guaranteed Execution & Anti-Cache) */
+    .animate-fade-up, .animate-fade-down, .animate-fade-left, .animate-fade-right, 
+    .animate-zoom-in, .animate-zoom-out, .animate-flip-up, .animate-scale-up {
+        opacity: 0 !important;
+        pointer-events: none !important;
+        transition: opacity 850ms cubic-bezier(0.16, 1, 0.3, 1), 
+                    transform 850ms cubic-bezier(0.16, 1, 0.3, 1), 
+                    filter 850ms ease !important;
+        will-change: opacity, transform;
+    }
+
+    .animate-fade-up { transform: translate3d(0, 65px, 0) !important; }
+    .animate-fade-down { transform: translate3d(0, -65px, 0) !important; }
+    .animate-fade-left { transform: translate3d(65px, 0, 0) !important; }
+    .animate-fade-right { transform: translate3d(-65px, 0, 0) !important; }
+    .animate-zoom-in { transform: scale(0.82) translate3d(0, 30px, 0) !important; filter: blur(8px) !important; }
+    .animate-zoom-out { transform: scale(1.15) translate3d(0, -30px, 0) !important; filter: blur(8px) !important; }
+    .animate-scale-up { transform: scale(0.88) !important; filter: blur(6px) !important; }
+    .animate-flip-up { transform: perspective(1000px) rotateX(-50deg) translate3d(0, 40px, 0) !important; transform-origin: bottom center; }
+
+    .is-visible {
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        filter: blur(0) !important;
+    }
+    .is-visible:not(.hero-chart):not(.pov-card):not(.hero-wallet):not(.hero-headstrap) {
+        transform: translate3d(0, 0, 0) scale(1) rotateX(0) !important;
+    }
+
+    /* Floating keyframes control */
+    .hero-chart, .pov-card, .hero-wallet, .hero-headstrap {
+        animation-play-state: paused !important;
+    }
+    .is-visible.hero-chart,
+    .is-visible.pov-card,
+    .is-visible.hero-wallet,
+    .is-visible.hero-headstrap {
+        animation-play-state: running !important;
+    }
+    </style>
 </head>
 <body class="antialiased selection:bg-sky-500 selection:text-white">
     @php
