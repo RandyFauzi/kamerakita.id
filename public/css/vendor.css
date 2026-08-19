@@ -264,29 +264,42 @@ h1, h2, h3, p { margin: 0; }
   to { transform: translateX(-50%) translate3d(var(--float-x-end), var(--float-y), 0) rotate(var(--float-rotate-end)); }
 }
 
+/* Floating animations state control */
+.hero-chart, .pov-card, .hero-wallet, .hero-headstrap {
+  animation-play-state: paused;
+}
+.is-visible.hero-chart,
+.is-visible.pov-card,
+.is-visible.hero-wallet,
+.is-visible.hero-headstrap {
+  animation-play-state: running;
+}
+
 /* Scroll Animation System (60fps GPU Accelerated) */
 .animate-fade-up, .animate-fade-down, .animate-fade-left, .animate-fade-right, 
 .animate-zoom-in, .animate-zoom-out, .animate-flip-up, .animate-scale-up {
     opacity: 0;
-    transition-property: opacity, transform, filter;
-    transition-duration: 850ms;
-    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+    transition: opacity 800ms cubic-bezier(0.16, 1, 0.3, 1), 
+                transform 800ms cubic-bezier(0.16, 1, 0.3, 1), 
+                filter 800ms ease;
     will-change: opacity, transform;
 }
 
-.animate-fade-up { transform: translate3d(0, 50px, 0); }
-.animate-fade-down { transform: translate3d(0, -50px, 0); }
-.animate-fade-left { transform: translate3d(50px, 0, 0); }
-.animate-fade-right { transform: translate3d(-50px, 0, 0); }
-.animate-zoom-in { transform: scale(0.88) translate3d(0, 20px, 0); filter: blur(6px); }
-.animate-zoom-out { transform: scale(1.12) translate3d(0, -20px, 0); filter: blur(6px); }
+.animate-fade-up { transform: translate3d(0, 48px, 0); }
+.animate-fade-down { transform: translate3d(0, -48px, 0); }
+.animate-fade-left { transform: translate3d(48px, 0, 0); }
+.animate-fade-right { transform: translate3d(-48px, 0, 0); }
+.animate-zoom-in { transform: scale(0.88); filter: blur(6px); }
+.animate-zoom-out { transform: scale(1.12); filter: blur(6px); }
 .animate-scale-up { transform: scale(0.92); filter: blur(4px); }
-.animate-flip-up { transform: perspective(1000px) rotateX(-45deg) translate3d(0, 40px, 0); transform-origin: bottom center; }
+.animate-flip-up { transform: perspective(1000px) rotateX(-45deg) translate3d(0, 30px, 0); transform-origin: bottom center; }
 
 .is-visible {
     opacity: 1 !important;
-    transform: translate3d(0, 0, 0) scale(1) rotateX(0) !important;
     filter: blur(0) !important;
+}
+.is-visible:not(.hero-chart):not(.pov-card):not(.hero-wallet):not(.hero-headstrap) {
+    transform: translate3d(0, 0, 0) scale(1) rotateX(0) !important;
 }
 
 /* Responsive Overrides */

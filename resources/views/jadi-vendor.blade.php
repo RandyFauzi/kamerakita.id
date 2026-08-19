@@ -90,50 +90,6 @@
     </style>
 
     <link rel="stylesheet" href="{{ asset('css/vendor.css') }}">
-
-    <style>
-/* 
- * Premium Scroll Animation Styles
- * Pairs with premium-animate.js
- */
- 
- /* Base styles for all animated elements */
- .animate-fade-up, .animate-fade-down, .animate-fade-left, .animate-fade-right, 
- .animate-zoom-in, .animate-zoom-out, .animate-flip-up {
-     opacity: 0;
-     transition-property: opacity, transform, filter;
-     transition-duration: 800ms;
-     transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-     will-change: opacity, transform;
- }
- 
- /* Initial States */
- .animate-fade-up { transform: translateY(60px); }
- .animate-fade-down { transform: translateY(-60px); }
- .animate-fade-left { transform: translateX(60px); }
- .animate-fade-right { transform: translateX(-60px); }
- .animate-zoom-in { transform: scale(0.85); filter: blur(5px); }
- .animate-zoom-out { transform: scale(1.15); filter: blur(5px); }
- .animate-flip-up { transform: perspective(1000px) rotateX(-90deg); transform-origin: bottom; }
- 
- /* Visible States (Triggered by IntersectionObserver) */
- .is-visible {
-     opacity: 1 !important;
-     transform: translate(0, 0) scale(1) rotateX(0) !important;
-     filter: blur(0) !important;
- }
-
-    </style>
-    <noscript>
-        <style>
-            .animate-fade-up, .animate-fade-down, .animate-fade-left, .animate-fade-right, 
-            .animate-zoom-in, .animate-zoom-out, .animate-flip-up {
-                opacity: 1 !important;
-                transform: none !important;
-                filter: none !important;
-            }
-        </style>
-    </noscript>
 </head>
 <body class="antialiased selection:bg-sky-500 selection:text-white">
     @php
@@ -359,8 +315,8 @@
 
         const observerOptions = {
             root: null,
-            rootMargin: "0px 0px -10% 0px", 
-            threshold: 0.15 
+            rootMargin: "0px 0px -20px 0px", 
+            threshold: 0.05 
         };
 
         const observerCallback = (entries, observer) => {
@@ -394,15 +350,6 @@
         animatedElements.forEach((el) => {
             if (el.hasAttribute('data-delay')) {
                 el.style.transitionDelay = `${el.getAttribute('data-delay')}ms`;
-            } else if (el.parentElement && !el.style.transitionDelay) {
-                const siblings = Array.from(el.parentElement.children).filter(child => 
-                    animationClasses.some(cls => child.classList.contains(cls.replace('.', '')))
-                );
-                
-                if (siblings.length > 1) {
-                    const siblingIndex = siblings.indexOf(el);
-                    el.style.transitionDelay = `${siblingIndex * 150}ms`;
-                }
             }
             observer.observe(el);
         });
