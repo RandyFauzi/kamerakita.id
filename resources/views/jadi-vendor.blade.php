@@ -87,6 +87,8 @@
         .animate-float {
             animation: floatSlow 6s ease-in-out infinite;
         }
+    </style>
+
     <link rel="stylesheet" href="{{ asset('css/vendor.css') }}?v={{ time() }}">
 
     <style>
