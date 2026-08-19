@@ -90,6 +90,7 @@
     </style>
 
     <link rel="stylesheet" href="{{ asset('css/vendor.css') }}">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 </head>
 <body class="antialiased selection:bg-sky-500 selection:text-white">
     @php
@@ -143,7 +144,7 @@
     </header>
 <main id="main" class="main-stack">
     <section class="hero" id="top" aria-labelledby="hero-title">
-      <div class="hero-copy">
+      <div class="hero-copy" data-aos="fade-right">
         <p class="chip">KameraKita AI Partner Program</p>
         <h1 id="hero-title">Bangun Agensi AI Anda<br><span>Profit Tanpa Batas</span></h1>
         <p class="hero-description">Jadilah Official Vendor KameraKita. Kami siapkan kontrak AI global,<br class="desktop-break"> Anda cukup kelola tim dan nikmati marginnya</p>
@@ -153,7 +154,7 @@
         </div>
       </div>
 
-      <div class="hero-visual" aria-label="Visual pendapatan partner dan proyek perekaman aktivitas">
+      <div class="hero-visual" data-aos="fade-left" data-aos-delay="200" aria-label="Visual pendapatan partner dan proyek perekaman aktivitas">
         <img class="hero-glow" src="{{ asset('vendor-assets/') }}/kamerakita/hero-glow.svg" alt="">
         <img class="hero-chart" src="{{ asset('vendor-assets/') }}/kamerakita/hero-chart.png" alt="Grafik tren profit bulanan">
         <div class="pov-card">
@@ -169,7 +170,7 @@
     </section>
 
     <section class="project-section surface-section" id="features" aria-labelledby="project-title">
-      <div class="project-heading">
+      <div class="project-heading" data-aos="fade-up">
         <div>
           <p class="chip">PROYEK DATA AI</p>
           <h2 id="project-title">Membantu AI Memahami Dunia Nyata</h2>
@@ -178,21 +179,21 @@
       </div>
 
       <div class="project-grid">
-        <article class="project-card">
+        <article class="project-card" data-aos="fade-up" data-aos-delay="100">
           <img src="{{ asset('vendor-assets/') }}/kamerakita/project-recording.png" alt="Ilustrasi perekaman aktivitas harian">
           <div class="project-copy">
             <h3>Rekam Aktivitas Harian</h3>
             <p>Worker memakai smartphone dan headstrap untuk merekam kegiatan seperti beres-beres, memasak, atau aktivitas rumah lainnya.</p>
           </div>
         </article>
-        <article class="project-card">
+        <article class="project-card" data-aos="fade-up" data-aos-delay="200">
           <img src="{{ asset('vendor-assets/') }}/kamerakita/project-guideline.png" alt="Ilustrasi alur panduan proyek">
           <div class="project-copy">
             <h3>Ikuti Panduan Proyek</h3>
             <p>Setiap project punya arahan aktivitas, durasi, dan standar rekaman yang harus diikuti.</p>
           </div>
         </article>
-        <article class="project-card project-card-last">
+        <article class="project-card project-card-last" data-aos="fade-up" data-aos-delay="300">
           <img src="{{ asset('vendor-assets/') }}/kamerakita/project-verification.png" alt="Ilustrasi pengiriman data untuk verifikasi">
           <div class="project-copy">
             <h3>Kirim untuk Diverifikasi</h3>
@@ -203,13 +204,13 @@
     </section>
 
     <section class="profit-section" id="pricing" aria-labelledby="profit-title">
-      <div class="profit-heading">
+      <div class="profit-heading" data-aos="fade-up">
         <p class="chip">SIMULASI PERTUMBUHAN</p>
         <h2 id="profit-title">Simulasikan Potensi Profit dari Skala Operasional Anda</h2>
       </div>
 
       <div class="profit-grid">
-        <article class="tier-card">
+        <article class="tier-card" data-aos="zoom-in-up" data-aos-delay="100">
           <div class="tier-name"><img src="{{ asset('vendor-assets/') }}/kamerakita/icon-tier-1.svg" alt=""><span>Tier 1: Minimal</span></div>
           <p class="worker-count"><strong>9</strong><span>orang worker</span></p>
           <div class="tier-profit">
@@ -219,7 +220,7 @@
           </div>
         </article>
 
-        <article class="tier-card">
+        <article class="tier-card" data-aos="zoom-in-up" data-aos-delay="200">
           <div class="tier-name"><img src="{{ asset('vendor-assets/') }}/kamerakita/icon-tier-2.svg" alt=""><span>Tier 2: Menengah</span></div>
           <p class="worker-count"><strong>20</strong><span>orang worker</span></p>
           <div class="tier-profit">
@@ -229,7 +230,7 @@
           </div>
         </article>
 
-        <article class="tier-card tier-large">
+        <article class="tier-card tier-large" data-aos="zoom-in-up" data-aos-delay="300">
           <img class="profit-art" src="{{ asset('vendor-assets/') }}/kamerakita/profit-wallet.png" alt="Dompet besar berisi uang rupiah">
           <div class="tier-name"><img src="{{ asset('vendor-assets/') }}/kamerakita/icon-tier-3.svg" alt=""><span>Tier 3: Agensi Skala Besar</span></div>
           <p class="worker-count"><strong>50+</strong><span>orang worker</span></p>
@@ -244,7 +245,7 @@
     </section>
 
     <section class="how-section" id="faq" aria-labelledby="how-title">
-      <div class="how-heading">
+      <div class="how-heading" data-aos="fade-right">
         <div>
           <p class="chip">CARA KERJA</p>
           <h2 id="how-title">Mulai Jadi Partner dalam 3 Langkah</h2>
@@ -253,17 +254,17 @@
       </div>
 
       <div class="steps-grid">
-        <article class="step">
+        <article class="step" data-aos="fade-up" data-aos-delay="100">
           <span class="step-number">1</span>
           <h3>JOIN</h3>
           <p>Daftarkan agency Anda. Siapkan worker, smartphone, dan headstrap.</p>
         </article>
-        <article class="step">
+        <article class="step" data-aos="fade-up" data-aos-delay="200">
           <span class="step-number">2</span>
           <h3>OPERATE</h3>
           <p>Jalankan project sesuai guideline KameraKita</p>
         </article>
-        <article class="step">
+        <article class="step" data-aos="fade-up" data-aos-delay="300">
           <span class="step-number">3</span>
           <h3>EARN</h3>
           <p>Terima pembayaran dari jam data yang berhasil divalidasi.</p>
@@ -272,8 +273,8 @@
     </section>
 
     <section class="final-cta" id="contact" aria-labelledby="cta-title">
-      <img class="cta-art" src="{{ asset('vendor-assets/') }}/kamerakita/final-cta-art.png" alt="Ilustrasi AI dan aliran koin">
-      <div class="cta-copy">
+      <img class="cta-art" data-aos="fade-right" src="{{ asset('vendor-assets/') }}/kamerakita/final-cta-art.png" alt="Ilustrasi AI dan aliran koin">
+      <div class="cta-copy" data-aos="fade-left" data-aos-delay="200">
         <h2 id="cta-title">Siap buka peluang bisnis baru dari proyek<br class="desktop-break"> AI global?</h2>
         <p>Masuk lebih awal, bangun operasional, dan nikmati<br class="desktop-break"> potensi margin dari setiap jam yang tervalidasi.</p>
         <a class="button button-yellow" href="mailto:partnership@kamerakita.com">Gabung Jadi Partner</a>
@@ -281,5 +282,15 @@
     </section>
   </main>
 <script src="{{ asset('js/vendor.js') }}"></script>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+  AOS.init({
+    duration: 1000,
+    easing: 'ease-out-cubic',
+    once: true,
+    offset: 50
+  });
+</script>
 </body>
 </html>
