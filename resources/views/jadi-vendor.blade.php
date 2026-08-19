@@ -347,20 +347,26 @@
         });
     }
 
-    // 2. IntersectionObserver for Reveal Animations & Counter
+    // 2. IntersectionObserver for Reveal Animations & Counter (Bulletproof 1-by-1 Reveal)
     const initAnimations = () => {
+        const animationClasses = [
+            '.animate-fade-up', '.animate-fade-down', '.animate-fade-left', 
+            '.animate-fade-right', '.animate-zoom-in', '.animate-zoom-out', '.animate-flip-up', '.animate-scale-up'
+        ];
+
+        const animatedElements = document.querySelectorAll(animationClasses.join(', '));
+
+        // Fallback for reduced motion or missing IntersectionObserver
         const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        if (reducedMotion) {
-            document.querySelectorAll('.animate-fade-up, .animate-fade-down, .animate-fade-left, .animate-fade-right, .animate-zoom-in, .animate-zoom-out, .animate-flip-up, .animate-scale-up').forEach(el => {
-                el.classList.add('is-visible');
-            });
+        if (reducedMotion || !('IntersectionObserver' in window)) {
+            animatedElements.forEach(el => el.classList.add('is-visible'));
             return;
         }
 
         const observerOptions = {
             root: null,
-            rootMargin: "0px 0px -20px 0px", 
-            threshold: 0.05 
+            rootMargin: "50px 0px 50px 0px", 
+            threshold: 0.01 
         };
 
         const observerCallback = (entries, observer) => {
@@ -375,27 +381,27 @@
                     if (!entry.target.hasAttribute('data-animate-repeat')) {
                         observer.unobserve(entry.target);
                     }
-                } else {
-                    if (entry.target.hasAttribute('data-animate-repeat')) {
-                        entry.target.classList.remove('is-visible');
-                    }
                 }
             });
         };
 
         const observer = new IntersectionObserver(observerCallback, observerOptions);
 
-        const animationClasses = [
-            '.animate-fade-up', '.animate-fade-down', '.animate-fade-left', 
-            '.animate-fade-right', '.animate-zoom-in', '.animate-zoom-out', '.animate-flip-up', '.animate-scale-up'
-        ];
-
-        const animatedElements = document.querySelectorAll(animationClasses.join(', '));
         animatedElements.forEach((el) => {
-            if (el.hasAttribute('data-delay')) {
-                el.style.transitionDelay = `${el.getAttribute('data-delay')}ms`;
+            const delay = parseInt(el.getAttribute('data-delay') || '0', 10);
+            if (delay > 0) {
+                el.style.transitionDelay = `${delay}ms`;
             }
-            observer.observe(el);
+
+            // Instantly reveal elements already visible inside initial viewport on load
+            const rect = el.getBoundingClientRect();
+            if (rect.top < window.innerHeight && rect.bottom > 0) {
+                setTimeout(() => {
+                    el.classList.add('is-visible');
+                }, delay + 60);
+            } else {
+                observer.observe(el);
+            }
         });
     };
 
