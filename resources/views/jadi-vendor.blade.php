@@ -200,13 +200,13 @@
         <img class="hero-chart" src="{{ asset('vendor-assets/') }}/kamerakita/hero-chart.png" alt="Grafik tren profit bulanan">
         
         <div class="pov-card">
-          <div class="pov-scanner"></div>
-          <div class="rec-badge"><span class="rec-dot"></span>REC • LIVE</div>
           <div class="pov-image">
             <img src="{{ asset('vendor-assets/') }}/kamerakita/hero-pov.png" alt="Perekaman aktivitas melipat pakaian dari sudut pandang orang pertama">
+            <div class="pov-scanner"></div>
+            <div class="rec-badge"><span class="rec-dot"></span>REC • LIVE</div>
+            <span class="feed-label">CAMERA_FEED_03 // SPATIAL</span>
+            <span class="depth-label"><small>DEPTH MAP</small><b>LIDAR_POINTCLOUD_ALIGN</b></span>
           </div>
-          <span class="feed-label">CAMERA_FEED_03 // SPATIAL</span>
-          <span class="depth-label"><small>DEPTH MAP</small><b>LIDAR_POINTCLOUD_ALIGN</b></span>
         </div>
         
         <img class="hero-wallet" src="{{ asset('vendor-assets/') }}/kamerakita/hero-wallet.png" alt="Dompet berisi uang rupiah">
