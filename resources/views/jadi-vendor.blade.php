@@ -95,6 +95,7 @@
 <body class="antialiased selection:bg-sky-500 selection:text-white">
     @php
         $whatsappJoinUrl = 'https://wa.me/6287886272647?text='.rawurlencode('Halo Admin KameraKita AI, saya ingin gabung grup WA pendaftaran kontributor.');
+        $whatsappVendorUrl = 'https://wa.me/6287886272647?text='.rawurlencode('Halo Admin KameraKita AI, saya tertarik mendaftar program Vendor/Agensi Partner. Boleh minta info lebih lanjut?');
     @endphp
 
     <!-- 1. Top Navbar (Clean White background, exact Evermos layout) -->
@@ -149,7 +150,7 @@
         <h1 id="hero-title">Bangun Agensi AI Anda<br><span>Profit Tanpa Batas</span></h1>
         <p class="hero-description">Jadilah Official Vendor KameraKita. Kami siapkan kontrak AI global,<br class="desktop-break"> Anda cukup kelola tim dan nikmati marginnya</p>
         <div class="hero-actions">
-          <a class="button button-primary" href="#contact">Gabung Jadi Partner</a>
+          <a class="button button-primary" href="{{ $whatsappVendorUrl }}" target="_blank">Gabung Jadi Partner</a>
           <a class="button button-outline" href="#features">Lihat Cara Kerjanya</a>
         </div>
       </div>
@@ -239,7 +240,7 @@
             <strong class="blue-profit">Rp 45.000.000+</strong>
             <small>Volume: 3.000+ jam</small>
           </div>
-          <a class="button tier-button" href="#contact">Gabung Jadi Partner</a>
+          <a class="button tier-button" href="{{ $whatsappVendorUrl }}" target="_blank">Gabung Jadi Partner</a>
         </article>
       </div>
     </section>
@@ -250,7 +251,7 @@
           <p class="chip">CARA KERJA</p>
           <h2 id="how-title">Mulai Jadi Partner dalam 3 Langkah</h2>
         </div>
-        <a class="button how-button" href="#contact">Gabung Jadi Partner</a>
+        <a class="button how-button" href="{{ $whatsappVendorUrl }}" target="_blank">Gabung Jadi Partner</a>
       </div>
 
       <div class="steps-grid">
@@ -277,7 +278,7 @@
       <div class="cta-copy" data-aos="fade-left" data-aos-delay="200">
         <h2 id="cta-title">Siap buka peluang bisnis baru dari proyek<br class="desktop-break"> AI global?</h2>
         <p>Masuk lebih awal, bangun operasional, dan nikmati<br class="desktop-break"> potensi margin dari setiap jam yang tervalidasi.</p>
-        <a class="button button-yellow" href="mailto:partnership@kamerakita.com">Gabung Jadi Partner</a>
+        <a class="button button-yellow" href="{{ $whatsappVendorUrl }}" target="_blank">Gabung Jadi Partner</a>
       </div>
     </section>
   </main>
