@@ -182,4 +182,12 @@ class Partner extends Model
     {
         return $this->hasMany(RecruiterCommission::class, 'recruiter_partner_id');
     }
+
+    /**
+     * Relationship: Partner has many recordings (Mobile App)
+     */
+    public function recordings(): HasMany
+    {
+        return $this->hasMany(Recording::class, 'partner_id');
+    }
 }
