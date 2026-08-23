@@ -61,7 +61,7 @@
                             <tr>
                                 <th scope="col" class="w-16 px-4 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">No.</th>
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Nama Lengkap</th>
-                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Username Fastwork</th>
+                                
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">No. WhatsApp</th>
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Tipe Perangkat Apple</th>
                                 <th scope="col" class="px-6 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Headstrap</th>
@@ -78,9 +78,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
                                         {{ $item->full_name }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-555 font-mono text-xs">
-                                        {{ $item->fastwork_username ?: '-' }}
-                                    </td>
+                                    
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-800">
                                         <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $item->whatsapp_number) }}" target="_blank" class="text-blue-650 hover:underline flex items-center gap-1">
                                             <span>{{ $item->whatsapp_number }}</span>
@@ -213,3 +211,5 @@
         </div>
     </div>
 </x-app-layout>
+
+
