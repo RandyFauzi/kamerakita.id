@@ -7,7 +7,7 @@
     
     <!-- Meta Description -->
     <meta name="description" content="Gabung jadi mitra kontributor di KAMERAKITA AI! Dapatkan penghasilan tambahan rutin lewat rekam video. Tanpa modal, rekap transparan, transfer mingguan!">
-    <link rel="icon" href="{{ asset('images/Logo.webp') }}" type="image/webp">
+    <link rel="icon" href="{{ asset('vendor-assets/kamerakita/logo-mark.svg') }}" type="image/webp">
 
     <!-- Google Fonts: Plus Jakarta Sans & Playfair Display / Instrument Serif -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -145,11 +145,11 @@
             
             <!-- Logo -->
             <a href="/" class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-700 p-1 flex items-center justify-center overflow-hidden">
-                    <img src="{{ asset('images/Logo.webp') }}" alt="KAMERAKITA AI Logo" class="w-full h-full object-contain rounded-lg">
+                <div class="w-10 h-10 rounded-xl  flex items-center justify-center overflow-hidden">
+                    <img src="{{ asset('vendor-assets/kamerakita/logo-mark.svg') }}" alt="KAMERAKITA AI Logo" class="w-full h-full object-contain rounded-lg">
                 </div>
                 <span class="text-xl font-black tracking-[-0.03em] text-slate-900">
-                    KameraKita<span class="ml-0.5 bg-gradient-to-r from-sky-500 to-indigo-600 bg-clip-text text-transparent">AI</span>
+                    KameraKita<span class="ml-0.5 text-[#0284c7]">AI</span>
                 </span>
             </a>
 
