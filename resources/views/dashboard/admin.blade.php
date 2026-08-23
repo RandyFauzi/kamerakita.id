@@ -132,7 +132,7 @@
                                 <span class="text-[10px] text-slate-400 font-medium block">Periode: {{ $metrics['weekly_period_label'] }}</span>
                             </div>
                             <div class="text-right">
-                                <span class="text-sm font-black text-slate-900">{{ $metrics['weekly_approved_hours'] }} <span class="text-xs text-slate-400 font-normal">/ {{ $metrics['weekly_target_hours'] }} Jam</span></span>
+                                <span class="text-sm font-black text-slate-900">{{ $metrics['weekly_approved_hours'] }} <span class="text-xs text-slate-400 font-normal">/ {{ number_format($metrics['weekly_target_hours'], 0, ',', '.') }} Jam</span></span>
                                 <span class="text-[10px] font-bold block {{ $metrics['weekly_progress_percent'] >= 100 ? 'text-emerald-600' : 'text-indigo-600' }} font-mono">{{ $metrics['weekly_progress_percent'] }}%</span>
                             </div>
                         </div>
@@ -150,7 +150,7 @@
                                 <span class="text-[10px] text-slate-400 font-medium block">Bulan: {{ $metrics['monthly_period_label'] }}</span>
                             </div>
                             <div class="text-right">
-                                <span class="text-sm font-black text-slate-900">{{ $metrics['monthly_approved_hours'] }} <span class="text-xs text-slate-400 font-normal">/ {{ $metrics['monthly_target_hours'] }} Jam</span></span>
+                                <span class="text-sm font-black text-slate-900">{{ $metrics['monthly_approved_hours'] }} <span class="text-xs text-slate-400 font-normal">/ {{ number_format($metrics['monthly_target_hours'], 0, ',', '.') }} Jam</span></span>
                                 <span class="text-[10px] font-bold block {{ $metrics['monthly_progress_percent'] >= 100 ? 'text-emerald-600' : 'text-purple-600' }} font-mono">{{ $metrics['monthly_progress_percent'] }}%</span>
                             </div>
                         </div>

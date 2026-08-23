@@ -207,7 +207,7 @@ class CalculatePartnerMetricsService
             ])
             ->sum('approved_duration_minutes');
 
-        $weeklyTargetHours = 100;
+        $weeklyTargetHours = 5125;
         $weeklyTargetMinutes = $weeklyTargetHours * 60;
         $weeklyApprovedHours = round($weeklyApprovedMinutes / 60, 1);
         $weeklyProgressPercent = $weeklyTargetMinutes > 0 ? round(($weeklyApprovedMinutes / $weeklyTargetMinutes) * 100, 1) : 0;
@@ -224,7 +224,7 @@ class CalculatePartnerMetricsService
             ])
             ->sum('approved_duration_minutes');
 
-        $monthlyTargetHours = 400;
+        $monthlyTargetHours = 20500;
         $monthlyTargetMinutes = $monthlyTargetHours * 60;
         $monthlyApprovedHours = round($monthlyApprovedMinutes / 60, 1);
         $monthlyProgressPercent = $monthlyTargetMinutes > 0 ? round(($monthlyApprovedMinutes / $monthlyTargetMinutes) * 100, 1) : 0;
