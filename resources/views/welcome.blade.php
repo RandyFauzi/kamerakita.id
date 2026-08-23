@@ -1,818 +1,396 @@
 <!DOCTYPE html>
-<html lang="id" class="scroll-smooth">
+<html lang="id">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>KAMERAKITA AI — Platform Rekam Video & Datasets Terpercaya</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KameraKita AI - Kerja Rumah Jadi Cuan</title>
     
-    <!-- Meta Description -->
-    <meta name="description" content="Gabung jadi mitra kontributor di KAMERAKITA AI! Dapatkan penghasilan tambahan rutin lewat rekam video. Tanpa modal, rekap transparan, transfer mingguan!">
-    <link rel="icon" href="{{ asset('images/Logo.webp') }}" type="image/webp">
-
-    <!-- Google Fonts: Plus Jakarta Sans & Playfair Display / Instrument Serif -->
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@1,600;1,700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Plus Jakarta Sans', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-                        serif: ['Playfair Display', 'serif'],
-                        mono: ['JetBrains Mono', 'monospace'],
-                    },
-                    colors: {
-                        brand: {
-                            deep: '#082545',
-                            dark: '#05182e',
-                            navy: '#0b3560',
-                            accent: '#38bdf8',
-                            light: '#e0f2fe',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-
-    <!-- Alpine.js -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
-    <style>
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #ffffff;
-            color: #0f172a;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        .bg-hero-solid {
-            background-color: #0284c7;
-        }
-
-        .btn-evermos-white {
-            background-color: #ffffff;
-            color: #0284c7;
-            font-weight: 800;
-            border-radius: 12px;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
-        }
-        .btn-evermos-white:hover {
-            background-color: #f8fafc;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-        }
-
-        .btn-brand-navy {
-            background-color: #0284c7;
-            color: #ffffff;
-            font-weight: 700;
-            border-radius: 12px;
-            transition: all 0.2s ease;
-        }
-        .btn-brand-navy:hover {
-            background-color: #0369a1;
-        }
-
-        /* Floating blob animation for right hero image */
-        @keyframes floatSlow {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-10px) rotate(1deg); }
-        }
-        .animate-float {
-            animation: floatSlow 6s ease-in-out infinite;
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@400;700&family=Playfair+Display:ital,wght@1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ asset('css/landing.css') }}">
 </head>
-<body class="antialiased selection:bg-sky-500 selection:text-white">
-    @php
-        $whatsappJoinUrl = 'https://wa.me/6287886272647?text='.rawurlencode('Halo Admin KameraKita AI, saya ingin gabung grup WA pendaftaran kontributor.');
-    @endphp
-
-    <!-- 1. Top Navbar (Clean White background, exact Evermos layout) -->
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            
-            <!-- Logo -->
-            <a href="/" class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-700 p-1 flex items-center justify-center overflow-hidden">
-                    <img src="{{ asset('images/Logo.webp') }}" alt="KAMERAKITA AI Logo" class="w-full h-full object-contain rounded-lg">
-                </div>
-                <span class="text-xl font-black tracking-[-0.03em] text-slate-900">
-                    KameraKita<span class="ml-0.5 bg-gradient-to-r from-sky-500 to-indigo-600 bg-clip-text text-transparent">AI</span>
-                </span>
-            </a>
-
-            <!-- Navigation Links -->
-            <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-700">
-                <a href="#keunggulan" class="hover:text-sky-600 transition flex items-center gap-1">
-                    Keunggulan <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                </a>
-                <a href="#kalkulator" class="hover:text-sky-600 transition flex items-center gap-1">
-                    Kalkulator <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                </a>
-                <a href="#cara-kerja" class="hover:text-sky-600 transition">Cara Kerja</a>
-                <a href="#mitra" class="hover:text-sky-600 transition">Testimony</a>
-                <a href="#faq" class="hover:text-sky-600 transition">FAQ</a>
-            </nav>
-
-            <!-- Action Button -->
-            <div class="flex items-center gap-3">
-                <a href="{{ route('jadi-vendor') }}" class="hidden sm:inline-flex px-5 py-2 border-2 border-sky-500 text-sky-600 hover:bg-sky-50 hover:text-sky-700 font-bold rounded-xl text-sm transition shadow-sm">
-                    Jadi Vendor
-                </a>
-                @auth
-                    <a href="{{ route('dashboard') }}" class="btn-brand-navy px-6 py-2.5 text-sm">
-                        Dashboard →
-                    </a>
-                @else
-                    <a href="{{ route('login') }}" class="btn-brand-navy px-6 py-2.5 text-sm">
-                        Masuk / Daftar
-                    </a>
-                @endauth
-            </div>
-
+<body>
+    <a class="skip-link" href="#main-content">Lewati ke konten utama</a>
+    
+    <!-- Navbar -->
+    <header class="navbar" id="top">
+      <div class="nav-shell">
+        <a class="brand" href="#top" aria-label="KameraKita AI — kembali ke atas">
+          <span class="brand__mark"><img src="{{ asset('assets/figma/header-01.jpg') }}" alt=""></span>
+          <span>KameraKita<span class="brand__ai">AI</span></span>
+        </a>
+        <button class="menu-toggle" type="button" aria-label="Buka menu navigasi" id="menu-toggle-btn">
+          <span></span><span></span><span></span>
+        </button>
+        <div class="nav-panel" id="nav-panel">
+          <nav aria-label="Navigasi utama">
+            <a href="#keunggulan" class="nav-link">Keunggulan<span class="nav-chevron" aria-hidden="true">⌄</span></a>
+            <a href="#kalkulator" class="nav-link">Kalkulator<span class="nav-chevron" aria-hidden="true">⌄</span></a>
+            <a href="#cara-kerja" class="nav-link">Cara Kerja</a>
+            <a href="#mitra" class="nav-link">Testimony</a>
+            <a href="#faq" class="nav-link">FAQ</a>
+          </nav>
+          <div class="nav-actions">
+            <a class="button button--outline button--small" href="{{ route('jadi-vendor') }}">Jadi Vendor</a>
+            <a class="button button--blue button--small" href="{{ route('login') }}">Masuk / Daftar</a>
+          </div>
         </div>
+      </div>
     </header>
 
-    <!-- 2. Hero Section (Clean, Neat & Perfectly Proportioned Evermos Layout) -->
-    <section class="bg-hero-solid text-white py-12 lg:py-16 overflow-hidden relative">
-        <div class="max-w-7xl mx-auto pl-4 sm:pl-6 lg:pl-8 pr-0 overflow-visible">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-                
-                <!-- Left Hero Content Column -->
-                <div class="lg:col-span-7 space-y-6 text-left z-10 py-4">
-                    
-                    <!-- Headline H1 (Larger & Clean Line Breaks) -->
-                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.14]">
-                        Kerja rumah <br/>
-                        jadi <span class="text-[#FDE047] italic font-serif font-normal">cuan!</span>
-                    </h1>
-
-                    <p class="max-w-2xl text-base sm:text-xl leading-8 text-sky-50/90">
-                        Sambil ngepel, nyuci piring, atau beres-beres rumah, kamu bisa dapat penghasilan tambahan sampai jutaan rupiah sebulan. Tanpa modal, cukup rekam pakai HP-mu.
-                    </p>
-
-                    <!-- Hero Call to Action Button -->
-                    <div class="pt-2">
-                        @auth
-                            <a href="{{ route('dashboard') }}" class="btn-evermos-white inline-block px-8 py-3.5 text-sm sm:text-base font-extrabold shadow-lg">
-                                Gabung sekarang →
-                            </a>
-                        @else
-                            <a href="{{ $whatsappJoinUrl }}" target="_blank" class="btn-evermos-white inline-block px-8 py-3.5 text-sm sm:text-base font-extrabold shadow-lg">
-                                Gabung Grup WA
-                            </a>
-                        @endauth
-                    </div>
-
+    <main id="main-content">
+        <!-- Hero -->
+        <section class="hero">
+          <div class="hero-inner">
+            <div class="hero-copy" data-reveal>
+              <h1>Kerja rumah<br>jadi <em>cuan!</em></h1>
+              <p>Sambil ngepel, nyuci piring, atau beres-beres rumah, kamu bisa dapat penghasilan tambahan sampai jutaan rupiah sebulan. Tanpa modal, cukup rekam pakai HP-mu.</p>
+              <div class="hero-actions">
+                <a class="button button--yellow" href="{{ route('register') }}">Mulai Daftar Sekarang</a>
+                <a class="button button--ghost" href="#cara-kerja">Lihat Cara Kerja</a>
+              </div>
+              <div class="contributors">
+                <div class="avatar-stack" aria-hidden="true">
+                    <img src="{{ asset('assets/figma/hero-01.png') }}" alt="">
+                    <img src="{{ asset('assets/figma/hero-02.png') }}" alt="">
+                    <img src="{{ asset('assets/figma/hero-03.png') }}" alt="">
+                    <img src="{{ asset('assets/figma/hero-04.png') }}" alt="">
+                    <img src="{{ asset('assets/figma/hero-08.png') }}" alt="">
+                    <img src="{{ asset('assets/figma/hero-15.png') }}" alt="">
                 </div>
-
-                <!-- Right Hero Image Column (Flush to Absolute Right Screen Edge) -->
-                <div class="lg:col-span-5 relative flex justify-end items-end self-end h-full pt-4 pr-0 overflow-visible">
-                    
-                    <!-- SVG Organic Blob Backdrop (Evermos Style Cloud Shape) -->
-                    <div class="absolute inset-0 flex items-center justify-end pointer-events-none translate-y-6 translate-x-12">
-                        <svg class="w-[135%] h-[135%] text-[#02649b] opacity-85 animate-float" viewBox="0 0 500 500" fill="currentColor">
-                            <path d="M410,310Q370,370,305,405Q240,440,175,410Q110,380,85,315Q60,250,90,185Q120,120,185,85Q250,50,315,85Q380,120,415,185Q450,250,410,310Z" />
-                        </svg>
-                    </div>
-
-                    <!-- Hero Main Image Container (Mentok Rapat Ke Kanan & Bawah) -->
-                    <div class="relative z-10 w-full max-w-lg ml-auto mr-0 pr-0 flex justify-end items-end">
-                        
-                        <!-- Real Hero PNG WebP Image (Flush to Right & Bottom Edge) -->
-                        <img src="{{ asset('images/Assest/Hero png.webp') }}?v={{ filemtime(public_path('images/Assest/Hero png.webp')) }}" 
-                             alt="Mitra KAMERAKITA AI" 
-                             class="w-full h-auto max-h-[440px] sm:max-h-[480px] lg:max-h-[540px] object-contain object-bottom object-right block -mb-12 lg:-mb-16 translate-x-6 sm:translate-x-10 lg:translate-x-16 xl:translate-x-20 drop-shadow-xl">
-
-                    </div>
-
-                </div>
-
+                <span>1000+ contributor bersama kami</span>
+              </div>
             </div>
-        </div>
-    </section>
-
-    <!-- Highlight Value Banner Section (Exact Evermos Style directly below Hero) -->
-    <section class="bg-[#dcfce7] sm:bg-[#e0f2fe] py-10 sm:py-14 px-4 sm:px-6 relative overflow-hidden border-b border-sky-200/60">
-        <!-- Background Organic Swirl Illustrations -->
-        <div class="absolute -left-12 -bottom-12 w-48 h-48 rounded-full border-[24px] border-sky-300/30 pointer-events-none"></div>
-        <div class="absolute -right-12 -top-12 w-56 h-56 rounded-full border-[28px] border-sky-300/30 pointer-events-none"></div>
-
-        <div class="max-w-5xl mx-auto text-center relative z-10">
-            <p class="text-slate-800 text-lg sm:text-2xl lg:text-3xl font-medium leading-relaxed sm:leading-snug tracking-tight">
-                Dengan jadi <span class="text-pink-600 font-extrabold">kontributor</span> KAMERAKITA AI, aktivitas rumah yang biasa kamu lakukan bisa jadi <span class="font-extrabold text-slate-900">peluang penghasilan tambahan</span>. Cukup rekam pakai HP, ikuti panduan, lalu durasi yang lolos QC masuk ke <span class="font-extrabold text-slate-900">rekap cuan mingguan</span>.
-            </p>
-        </div>
-    </section>
-
-    <!-- Visual Benefit Mosaic Section -->
-    <section id="keunggulan" class="bg-white py-16 sm:py-20 px-4 sm:px-6 border-b border-slate-200">
-        <div class="max-w-6xl mx-auto">
-            <div class="text-center max-w-3xl mx-auto mb-10 sm:mb-12">
-                <span class="text-xs font-bold uppercase tracking-widest text-sky-700 bg-sky-100 px-3.5 py-1 rounded-full inline-block">
-                    KENAPA HARUS GABUNG?
-                </span>
-                <h2 class="mt-4 text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
-                    Kerja simpel, hasil maksimal!
-                </h2>
-                <p class="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed">
-                    Kamu cukup rekam aktivitas harian dari rumah. Laporan yang lolos approved akan masuk rekap pendapatan secara transparan.
-                </p>
+            <div class="hero-visual" data-reveal style="--delay: 140ms;" aria-label="Kontributor KameraKita menggunakan ponsel">
+              <img class="hero-woman" src="{{ asset('assets/figma/hero-07.png') }}" alt="Perempuan tersenyum melihat ponsel">
+              <img class="coin coin--back float-two" src="{{ asset('assets/figma/hero-13.png') }}" alt="">
+              <img class="coin coin--one float-one" src="{{ asset('assets/figma/hero-13.png') }}" alt="">
+              <img class="coin coin--two float-two" src="{{ asset('assets/figma/hero-16.png') }}" alt="">
+              <img class="coin coin--three float-three" src="{{ asset('assets/figma/hero-13.png') }}" alt="">
+              <img class="coin coin--four float-two" src="{{ asset('assets/figma/hero-16.png') }}" alt="">
+              <div class="money-labels" aria-hidden="true"><span>+IDR 10.000</span><span>+IDR 50.000</span><strong>+IDR 100.000</strong></div>
             </div>
+          </div>
+        </section>
 
-            <div class="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-5">
-                <article class="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-sky-50 to-cyan-100 p-7 min-h-[260px] md:col-span-3 lg:col-span-4 shadow-sm border border-sky-100">
-                    <div class="relative z-10 max-w-[230px]">
-                        <h3 class="text-2xl font-extrabold leading-tight text-slate-900">
-                            Gak perlu stok dan packing
-                        </h3>
-                        <p class="mt-3 text-sm leading-6 text-slate-600">
-                            Cukup rekam aktivitas harianmu dari HP, gak perlu pusing jualan barang.
-                        </p>
-                    </div>
-                    <div class="absolute bottom-0 right-3 h-36 w-32 rounded-t-[48px] bg-white/55 border border-white/70"></div>
-                    <div class="absolute bottom-6 right-12 h-20 w-20 rounded-full bg-sky-500/85"></div>
-                    <div class="absolute bottom-0 right-16 h-24 w-28 rounded-t-full bg-slate-900/90"></div>
-                </article>
+        <!-- Benefits -->
+        <section class="benefits section" id="keunggulan">
+          <div class="section-heading" data-reveal>
+            <span class="eyebrow">KENAPA HARUS GABUNG?</span>
+            <h2>Kerja simpel, hasil maksimal!</h2>
+            <p>Kamu cukup rekam aktivitas harian dari rumah. Laporan yang lolos approved akan masuk rekap pendapatan secara transparan.</p>
+          </div>
+          <div class="benefit-grid">
+              <article class="benefit-card" data-reveal style="--delay: 90ms;">
+                <div class="benefit-art"><img class="float-1" src="{{ asset('assets/figma/benefits-ai-figma.png') }}" alt="Ilustrasi Bantu AI Biar Pintar"></div>
+                <h3>Bantu AI Biar Pintar</h3><p>KameraKita AI ngajarin teknologi pintar (AI) biar bisa paham cara manusia beraktivitas di dalam rumah.</p>
+              </article>
+              <article class="benefit-card" data-reveal style="--delay: 180ms;">
+                <div class="benefit-art"><img class="float-2" src="{{ asset('assets/figma/benefits-record-figma.png') }}" alt="Ilustrasi Rekam Kegiatan Rumah"></div>
+                <h3>Rekam Kegiatan Rumah</h3><p>Tugas kamu cuma pakai alat di kepala, lalu rekam aktivitas harian kayak ngepel, nyuci piring, atau beres-beres.</p>
+              </article>
+              <article class="benefit-card" data-reveal style="--delay: 270ms;">
+                <div class="benefit-art"><img class="float-3" src="{{ asset('assets/figma/benefits-wallet-figma.png') }}" alt="Ilustrasi Kirim Video & Terima Cuan"></div>
+                <h3>Kirim Video & Terima Cuan</h3><p>Kerjaan rumah beres, dompet tetep tebel. Gak perlu keahlian khusus, semua orang semua kalangan pasti bisa!</p>
+              </article>
+          </div>
+        </section>
 
-                <article class="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-emerald-50 to-lime-100 p-7 min-h-[260px] md:col-span-3 lg:col-span-4 shadow-sm border border-emerald-100">
-                    <div class="relative z-10 max-w-[220px]">
-                        <h3 class="text-2xl font-extrabold leading-tight text-slate-900">
-                            Dibayar dari durasi video
-                        </h3>
-                        <p class="mt-3 text-sm leading-6 text-slate-600">
-                            Setiap durasi rekaman yang lolos approved langsung dihitung ke estimasi cuan.
-                        </p>
-                    </div>
-                    <div class="absolute right-7 top-8 flex h-24 w-24 items-center justify-center rounded-full bg-white/70 text-3xl font-black text-emerald-600">
-                        Rp
-                    </div>
-                    <div class="absolute -bottom-8 right-8 h-40 w-40 rounded-full bg-emerald-300/35"></div>
-                </article>
-
-                <article class="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-indigo-50 to-violet-100 p-7 min-h-[260px] md:col-span-6 lg:col-span-4 lg:row-span-2 shadow-sm border border-indigo-100">
-                    <div class="relative z-10 max-w-[260px]">
-                        <h3 class="text-2xl font-extrabold leading-tight text-slate-900">
-                            Bantu AI bikin pintar
-                        </h3>
-                        <p class="mt-3 text-sm leading-6 text-slate-600">
-                            Rekamanmu dipakai untuk membantu AI memahami aktivitas rumah tangga dengan lebih baik.
-                        </p>
-                    </div>
-                    <div class="absolute bottom-0 left-8 right-8 h-52 rounded-t-[90px] bg-white/60 border border-white/70"></div>
-                    <div class="absolute bottom-16 left-12 h-24 w-24 rounded-full bg-indigo-300/80"></div>
-                    <div class="absolute bottom-12 left-28 h-28 w-28 rounded-full bg-sky-400/75"></div>
-                    <div class="absolute bottom-14 right-14 h-24 w-24 rounded-full bg-violet-400/75"></div>
-                    <div class="absolute bottom-0 left-10 h-28 w-28 rounded-t-full bg-slate-900/90"></div>
-                    <div class="absolute bottom-0 left-32 h-32 w-32 rounded-t-full bg-indigo-700/85"></div>
-                    <div class="absolute bottom-0 right-12 h-28 w-28 rounded-t-full bg-slate-800/85"></div>
-                </article>
-
-                <article class="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-amber-50 to-orange-100 p-7 min-h-[230px] md:col-span-3 lg:col-span-4 shadow-sm border border-orange-100">
-                    <div class="relative z-10 max-w-[210px]">
-                        <h3 class="text-2xl font-extrabold leading-tight text-slate-900">
-                            Panduan super simpel
-                        </h3>
-                        <p class="mt-3 text-sm leading-6 text-slate-600">
-                            Ada tutorial ringkas dari admin, jadi pemula pun bisa mulai dengan alur yang jelas.
-                        </p>
-                    </div>
-                    <div class="absolute bottom-7 right-8 h-24 w-24 rounded-3xl bg-white/70 rotate-6"></div>
-                    <div class="absolute bottom-12 right-14 h-10 w-14 rounded-full bg-orange-400/80"></div>
-                    <div class="absolute bottom-6 right-20 h-16 w-20 rounded-t-full bg-slate-900/90"></div>
-                </article>
-
-                <article class="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-rose-50 to-pink-100 p-7 min-h-[230px] md:col-span-3 lg:col-span-4 shadow-sm border border-rose-100">
-                    <div class="relative z-10 max-w-[220px]">
-                        <h3 class="text-2xl font-extrabold leading-tight text-slate-900">
-                            Rekap aman dan transparan
-                        </h3>
-                        <p class="mt-3 text-sm leading-6 text-slate-600">
-                            Jam approved tercatat rapi, lalu pembayaran diproses sesuai jadwal operasional.
-                        </p>
-                    </div>
-                    <div class="absolute bottom-6 right-8 rounded-2xl bg-white/75 px-5 py-4 shadow-sm">
-                        <div class="text-xs font-bold uppercase tracking-wider text-slate-400">Rekap</div>
-                        <div class="mt-1 text-2xl font-black text-rose-600">Paid</div>
-                    </div>
-                </article>
+        <!-- Income Calculator -->
+        <section class="calculator-section section" id="kalkulator">
+          <div class="calculator-shell" data-reveal>
+            <span class="ambient ambient--blue" aria-hidden="true"></span>
+            <span class="ambient ambient--yellow" aria-hidden="true"></span>
+            <div class="section-heading" data-reveal style="--delay: 80ms;">
+              <span class="eyebrow">SIMULASI CUAN MINGGUAN</span>
+              <h2>Pilih ritme kerja yang paling cocok</h2>
+              <p>Rate dasar Rp60.000 per jam rekaman bersih. Simulasi ini membantu kamu membayangkan potensi cuan mingguan sebelum mulai.</p>
             </div>
-        </div>
-    </section>
-
-    <!-- 3. Brand / Partner Logo Section -->
-    <section class="py-16 sm:py-20 bg-slate-50 border-b border-slate-200">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center max-w-3xl mx-auto">
-                <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#064e5f] tracking-tight leading-tight">
-                    Dibangun untuk alur kerja yang lebih rapi
-                </h2>
-                <p class="mt-5 text-base sm:text-lg leading-8 text-slate-500">
-                    Dari aplikasi, perangkat, sampai proses validasi, semuanya dibuat agar kontributor bisa bekerja dengan alur yang lebih jelas.
-                </p>
-            </div>
-
-            @php
-                $brandLogos = [
-                    'Minute',
-                    'KameraKita AI',
-                    'Mail.tm',
-                    'Headstrap',
-                    'Dashboard QC',
-                    'Payroll',
-                    'Mobile Device',
-                    'Video Data',
-                    'Quality Check',
-                    'Transfer Bank',
-                ];
-            @endphp
-
-            <div class="mt-12 grid grid-cols-2 gap-x-8 gap-y-8 sm:grid-cols-3 lg:grid-cols-5">
-                @foreach ($brandLogos as $brandLogo)
-                    <div class="group flex h-16 items-center justify-center">
-                        <div class="flex h-14 min-w-[132px] items-center justify-center rounded-2xl border border-slate-200/70 bg-white px-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-sky-200 hover:shadow-md">
-                            <span class="text-center text-sm font-black tracking-tight text-slate-400 transition group-hover:text-sky-700">
-                                {{ $brandLogo }}
-                            </span>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-
-            <p class="mt-8 text-center text-xs font-semibold text-slate-400">
-                Tampilan ini akan dilengkapi bertahap mengikuti kebutuhan operasional KameraKita AI.
-            </p>
-        </div>
-    </section>
-
-    <!-- 3. Keunggulan Section (Legacy, hidden) -->
-    <section class="hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             
-            <div class="text-center max-w-3xl mx-auto space-y-3 mb-16">
-                <span class="text-xs font-bold uppercase tracking-widest text-sky-700 bg-sky-100 px-3.5 py-1 rounded-full inline-block">
-                    KEUNTUNGAN MITRA
-                </span>
-                <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight">
-                    Kenapa Sih Kamu Harus Bergabung Jadi Mitra KAMERAKITA AI?
-                </h2>
-                <p class="text-slate-600 text-sm sm:text-base">
-                    Platform rekam video dengan sistem verifikasi transparan dan pencairan pendapatan rutin setiap minggu.
-                </p>
+            <div class="calculator-grid">
+              <div class="calculator-input" data-reveal style="--delay: 150ms;">
+                <div class="rate-card">
+                  <span>RATE PER JAM</span>
+                  <strong>Rp 60.000</strong>
+                  <small>Dikalikan jam kerja harian yang laporan videonya lolos QC.</small>
+                </div>
+                <fieldset>
+                  <legend>Pilih simulasi kerja</legend>
+                  <div class="mode-list" id="calc-modes">
+                      <!-- Filled by JS -->
+                  </div>
+                </fieldset>
+                <div class="calc-facts">
+                  <div><span>DASAR HITUNG</span><strong>Jam approved</strong></div>
+                  <div><span>VERIFIKASI</span><strong>Lewat QC</strong></div>
+                </div>
+              </div>
+              <div class="earnings-card" data-reveal style="--delay: 230ms;">
+                <div class="earnings-copy" id="calc-monthly-container">
+                    <div id="calc-monthly">
+                      <span>ESTIMASI TOTAL BULANAN</span>
+                      <strong>Rp 3.360.000</strong>
+                      <p>Dengan 2 jam/hari dan rate dasar Rp60.000/jam.</p>
+                    </div>
+                </div>
+                <div class="weekly" id="calc-weekly-container">
+                    <div id="calc-weekly">
+                      <span>POTENSI MINGGUAN</span>
+                      <strong>~ Rp 840.000</strong>
+                    </div>
+                </div>
+                <a class="button button--blue calculator-cta" href="{{ route('register') }}">MULAI DAFTAR SEKARANG</a>
+                <p class="disclaimer">Simulasi bukan jaminan pendapatan. Nominal mengikuti laporan approved dan ketentuan operasional.</p>
+                <img class="wallet-art float-slow" src="{{ asset('assets/figma/calculator-03.png') }}" alt="Ilustrasi dompet dengan uang rupiah">
+              </div>
             </div>
+          </div>
+        </section>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                
-                <!-- Card 1 -->
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-sm hover:shadow-md transition">
-                    <div class="w-12 h-12 rounded-2xl bg-sky-100 text-sky-700 flex items-center justify-center font-bold text-xl">
-                        💰
-                    </div>
-                    <h3 class="text-base font-extrabold text-slate-900">Tanpa Modal & Gratis</h3>
-                    <p class="text-xs text-slate-600 leading-relaxed">
-                        Pendaftaran 100% gratis tanpa biaya sepeser pun. Rekam video sesuai instruksi panduan langsung dari HP Anda.
-                    </p>
-                </div>
+        <!-- How It Works -->
+        <section class="steps section" id="cara-kerja">
+          <span class="steps-glow steps-glow--blue" aria-hidden="true"></span><span class="steps-glow steps-glow--yellow" aria-hidden="true"></span>
+          <div class="section-heading" data-reveal>
+            <span class="eyebrow">CARA KERJA</span>
+            <h2>Cuma 3 langkah buat mulai dapet cuan</h2>
+            <p>Dari daftar sampai pembayaran, semuanya dibuat simpel dan bakal dipandu tim KameraKita.</p>
+          </div>
+          <div class="step-grid">
+              <article class="step-card" data-reveal style="--delay: 100ms;">
+                <img class="step-art step-float" style="--float-delay: 0ms;" src="{{ asset('assets/figma/steps-03.png') }}" alt="Ilustrasi langkah 1">
+                <strong class="step-number">1</strong>
+                <h3>Gabung & Ikuti Briefing</h3><p>Daftar lewat WhatsApp, lalu tim kami bakal jelasin cara kerja, tugas, dan kebutuhan alat.</p>
+              </article>
+              <article class="step-card" data-reveal style="--delay: 200ms;">
+                <img class="step-art step-float" style="--float-delay: 160ms;" src="{{ asset('assets/figma/steps-01.png') }}" alt="Ilustrasi langkah 2">
+                <strong class="step-number">2</strong>
+                <h3>Rekam Aktivitasmu</h3><p>Pilih tugas yang tersedia, pasang HP sesuai panduan, lalu rekam aktivitas sehari-hari seperti biasa.</p>
+              </article>
+              <article class="step-card" data-reveal style="--delay: 300ms;">
+                <img class="step-art step-float" style="--float-delay: 320ms;" src="{{ asset('assets/figma/steps-09.png') }}" alt="Ilustrasi langkah 3">
+                <strong class="step-number">3</strong>
+                <h3>Upload & Terima Bayaran</h3><p>Kirim hasil rekaman untuk dicek. Setelah lolos QC, durasi approved masuk ke pembayaran bulanan.</p>
+              </article>
+          </div>
+        </section>
 
-                <!-- Card 2 -->
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-sm hover:shadow-md transition">
-                    <div class="w-12 h-12 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xl">
-                        📅
-                    </div>
-                    <h3 class="text-base font-extrabold text-slate-900">Transfer Rutin Tiap Rabu</h3>
-                    <p class="text-xs text-slate-600 leading-relaxed">
-                        Rekap durasi hasil QC diselesaikan secara akurat, dan komisi pendapatan langsung ditransfer ke bank Anda setiap minggunya.
-                    </p>
-                </div>
+        <!-- Testimonials -->
+        <section class="testimonials section" id="mitra">
+          <span class="testimonial-glow testimonial-glow--one" aria-hidden="true"></span><span class="testimonial-glow testimonial-glow--two" aria-hidden="true"></span>
+          <div class="section-heading" data-reveal>
+            <span class="eyebrow">TESTIMONY</span>
+            <h2>Cerita kontributor yang mulai punya<br>penghasilan tambahan</h2>
+            <p>Beberapa pengalaman yang menggambarkan bagaimana alur kerja, QC, dan pembayaran dijalankan dengan lebih rapi.</p>
+          </div>
+          <div class="testimonial-grid">
+              <article class="testimonial-card" data-reveal style="--delay: 90ms;">
+                <div class="quote-pair float-1" aria-hidden="true"><img src="{{ asset('assets/figma/testimonials-09.png') }}" alt=""><img src="{{ asset('assets/figma/testimonials-09.png') }}" alt=""></div>
+                <blockquote>Laporan rapi, pembayaran jadi lebih tenang</blockquote>
+                <div class="person"><img src="{{ asset('assets/figma/testimonials-02.png') }}" alt=""><cite>Asha Aulia</cite></div>
+              </article>
+              <article class="testimonial-card" data-reveal style="--delay: 170ms;">
+                <div class="quote-pair float-2" aria-hidden="true"><img src="{{ asset('assets/figma/testimonials-09.png') }}" alt=""><img src="{{ asset('assets/figma/testimonials-09.png') }}" alt=""></div>
+                <blockquote>Awalnya ragu, setelah rutin submit mulai terasa hasilnya</blockquote>
+                <div class="person"><img src="{{ asset('assets/figma/testimonials-01.png') }}" alt=""><cite>Irfan Tamami</cite></div>
+              </article>
+              <article class="testimonial-card" data-reveal style="--delay: 250ms;">
+                <div class="quote-pair float-3" aria-hidden="true"><img src="{{ asset('assets/figma/testimonials-09.png') }}" alt=""><img src="{{ asset('assets/figma/testimonials-09.png') }}" alt=""></div>
+                <blockquote>QC Jelas, jadi tahu laporan mana yang perlu diperbaiki</blockquote>
+                <div class="person"><img src="{{ asset('assets/figma/testimonials-03.png') }}" alt=""><cite>Jessica Halim</cite></div>
+              </article>
+              <article class="testimonial-card" data-reveal style="--delay: 330ms;">
+                <div class="quote-pair float-1" aria-hidden="true"><img src="{{ asset('assets/figma/testimonials-09.png') }}" alt=""><img src="{{ asset('assets/figma/testimonials-09.png') }}" alt=""></div>
+                <blockquote>Modal HP dan waktu luang, bisa mulai dari rumah</blockquote>
+                <div class="person"><img src="{{ asset('assets/figma/testimonials-06.png') }}" alt=""><cite>Nadya Salsabila</cite></div>
+              </article>
+          </div>
+        </section>
 
-                <!-- Card 3 -->
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-sm hover:shadow-md transition">
-                    <div class="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-xl">
-                        🔍
-                    </div>
-                    <h3 class="text-base font-extrabold text-slate-900">QC Room Transparan</h3>
-                    <p class="text-xs text-slate-600 leading-relaxed">
-                        Pengecekan bukti durasi aplikasi dilakukan side-by-side secara presisi. Anda dapat melihat status laporan di dashboard.
-                    </p>
-                </div>
+        <!-- FAQ -->
+        <section class="faq section" id="faq">
+          <div class="section-heading" data-reveal>
+            <span class="eyebrow">FAQ</span>
+            <h2>Pertanyaan yang Sering Diajukan</h2>
+          </div>
+          <div class="faq-list" data-reveal style="--delay: 100ms;" id="faq-list">
+             <article class="faq-item">
+               <h3>
+                 <button type="button" aria-expanded="false" class="faq-btn">
+                   <span>Apakah pendaftaran mitra dipungut biaya?</span><span class="faq-plus" aria-hidden="true">+</span>
+                 </button>
+               </h3>
+               <div class="faq-answer" aria-hidden="true">
+                 <div><p>Sama sekali tidak. Pendaftaran Mitra Kontributor di KAMERAKITA AI 100% GRATIS tanpa modal awal apa pun.</p></div>
+               </div>
+             </article>
+             <article class="faq-item">
+               <h3>
+                 <button type="button" aria-expanded="false" class="faq-btn">
+                   <span>Kapan komisi hasil rekap durasi akan dicairkan?</span><span class="faq-plus" aria-hidden="true">+</span>
+                 </button>
+               </h3>
+               <div class="faq-answer" aria-hidden="true">
+                 <div><p>Pencairan komisi diproses manual oleh admin sesuai jadwal operasional berdasarkan rekap durasi yang sudah approved.</p></div>
+               </div>
+             </article>
+          </div>
+        </section>
 
-                <!-- Card 4 -->
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-sm hover:shadow-md transition">
-                    <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-xl">
-                        🏠
-                    </div>
-                    <h3 class="text-base font-extrabold text-slate-900">Kerja dari Rumah</h3>
-                    <p class="text-xs text-slate-600 leading-relaxed">
-                        Atur jam kerja Anda sendiri dari rumah tanpa terikat kantor. Bebas kapan saja sesuai waktu luang Anda.
-                    </p>
-                </div>
-
+        <!-- Bottom CTA -->
+        <section class="bottom-cta">
+          <img class="cta-banner" src="{{ asset('assets/figma/cta-banner.png') }}" alt="Kontributor KameraKita menggunakan ponsel di rumah">
+          <div class="cta-copy">
+            <div data-reveal>
+              <h2>Siap ubah kerja rumah jadi<br>cuan sampingan?</h2>
+              <p>Kuota mitra terbatas di tiap wilayah. Jangan lewatkan kesempatan jadi perintis KameraKita AI.</p>
+              <a class="button button--blue button--large" href="{{ route('register') }}">Mulai Daftar Sekarang</a>
             </div>
+          </div>
+        </section>
+    </main>
 
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-grid">
+        <div>
+          <a class="brand brand--footer" href="#top" aria-label="KameraKita AI — kembali ke atas">
+            <span class="brand__mark"><img src="{{ asset('assets/figma/header-01.jpg') }}" alt=""></span>
+            <span>KameraKita<span class="brand__ai">AI</span></span>
+          </a>
+          <p>Platform Rekam Video & Datasets Terpercaya No. 1 di Indonesia untuk Mitra & Enterprise Computer Vision.</p>
         </div>
-    </section>
-
-    <!-- 4. Interactive Income Calculator (Evermos Slider Style) -->
-    <section id="kalkulator" class="py-20 bg-white" x-data="{
-        hoursPerDay: 2,
-        hourlyRate: 50000,
-        presets: [
-            { hours: 2, label: 'Santai', tone: 'Mulai pelan, tetap produktif' },
-            { hours: 4, label: 'Fokus', tone: 'Lebih rutin, hasil lebih terasa' },
-            { hours: 6, label: 'Gacor Ketua!!!', tone: 'Mode serius cari cuan' },
-        ],
-        get weeklyEarnings() {
-            return this.hoursPerDay * this.hourlyRate * 7;
-        },
-        get dailyEarnings() {
-            return this.hoursPerDay * this.hourlyRate;
-        },
-        get monthlyEarnings() {
-            return this.weeklyEarnings * 4;
-        },
-        formatRupiah(number) {
-            return 'Rp ' + number.toLocaleString('id-ID');
-        }
-    }">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            
-            <div class="relative overflow-hidden bg-white border border-slate-200 rounded-[2rem] p-6 sm:p-10 lg:p-12 shadow-[0_24px_70px_rgba(15,23,42,0.10)]">
-                <div class="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-sky-100 blur-3xl"></div>
-                <div class="absolute -left-20 bottom-0 h-56 w-56 rounded-full bg-emerald-100 blur-3xl"></div>
-                
-                <div class="relative text-center space-y-3 mb-10">
-                    <span class="text-xs font-bold uppercase tracking-widest text-sky-700 bg-sky-100 px-3.5 py-1 rounded-full inline-block">
-                        SIMULASI CUAN MINGGUAN
-                    </span>
-                    <h2 class="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-                        Pilih ritme kerja yang paling cocok
-                    </h2>
-                    <p class="text-slate-600 text-sm sm:text-base max-w-2xl mx-auto leading-7">
-                        Rate dasar Rp50.000 per jam rekaman bersih. Simulasi ini membantu kamu membayangkan potensi cuan mingguan sebelum mulai.
-                    </p>
-                </div>
-
-                <div class="relative grid grid-cols-1 lg:grid-cols-[1fr_1.05fr] gap-8 items-stretch pt-2">
-                    
-                    <!-- Input Panel -->
-                    <div class="flex flex-col justify-between gap-6 rounded-3xl border border-slate-200 bg-slate-50/80 p-6 sm:p-7">
-                        
-                        <div class="rounded-2xl bg-white p-5 border border-slate-200 shadow-sm">
-                            <span class="text-[11px] font-black uppercase tracking-widest text-slate-400">Rate per jam</span>
-                            <div class="mt-2 flex items-end justify-between gap-4">
-                                <div>
-                                    <div class="text-3xl font-black tracking-tight text-slate-950" x-text="formatRupiah(hourlyRate)"></div>
-                                    <p class="mt-1 text-xs leading-5 text-slate-500">Dikalikan jam kerja harian yang laporan videonya lolos QC.</p>
-                                </div>
-                                <div class="hidden h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 sm:flex">
-                                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 8c-2.2 0-4 .9-4 2s1.8 2 4 2 4 .9 4 2-1.8 2-4 2m0-10v12"/></svg>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="space-y-3">
-                            <span class="text-sm font-extrabold text-slate-900">Pilih simulasi kerja</span>
-                            <template x-for="preset in presets" :key="preset.hours">
-                                <button type="button" @click="hoursPerDay = preset.hours" class="w-full rounded-2xl border p-4 text-left transition hover:-translate-y-0.5 hover:shadow-sm" :class="hoursPerDay === preset.hours ? 'border-sky-300 bg-sky-50' : 'border-slate-200 bg-white'">
-                                    <span class="flex items-center justify-between gap-4">
-                                        <span>
-                                            <span class="block text-base font-black text-slate-950" x-text="preset.label"></span>
-                                            <span class="mt-1 block text-xs font-semibold text-slate-500" x-text="preset.tone"></span>
-                                        </span>
-                                        <span class="rounded-full bg-white px-3 py-1 text-sm font-black text-sky-700 shadow-sm" x-text="preset.hours + ' jam/hari'"></span>
-                                    </span>
-                                </button>
-                            </template>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-3">
-                            <div class="rounded-2xl bg-white p-4 border border-slate-200">
-                                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Dasar hitung</span>
-                                <div class="mt-1 text-lg font-black text-slate-950">Jam approved</div>
-                            </div>
-                            <div class="rounded-2xl bg-white p-4 border border-slate-200">
-                                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Verifikasi</span>
-                                <div class="mt-1 text-lg font-black text-slate-950">Lewat QC</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Earnings Output Box -->
-                    <div class="relative overflow-hidden rounded-3xl bg-hero-solid p-7 sm:p-8 text-white shadow-xl space-y-6 text-center lg:text-left">
-                        <div>
-                            <span class="inline-flex rounded-full bg-white/10 px-3 py-1 text-[11px] font-black uppercase tracking-widest text-sky-200">Estimasi utama</span>
-                            <span class="mt-5 text-sm font-semibold uppercase tracking-widest text-slate-400 block">Potensi mingguan</span>
-                            <span class="text-4xl sm:text-5xl font-black mt-2 block text-white" x-text="'~ ' + formatRupiah(weeklyEarnings)"></span>
-                            <p class="mt-3 text-sm leading-6 text-slate-300">
-                                    Dengan <span class="font-bold text-white" x-text="hoursPerDay + ' jam/hari'"></span> dan rate dasar <span class="font-bold text-white">Rp50.000/jam</span>.
-                            </p>
-                        </div>
-                        <div class="pt-4 border-t border-white/20">
-                            <span class="text-xs uppercase font-semibold text-slate-400 block">ESTIMASI TOTAL BULANAN</span>
-                            <span class="text-2xl font-extrabold mt-1 block text-sky-300" x-text="formatRupiah(monthlyEarnings)"></span>
-                        </div>
-                        <a href="{{ $whatsappJoinUrl }}" target="_blank" class="btn-evermos-white w-full block py-3.5 text-xs uppercase text-center shadow-md">
-                            Gabung Grup WA
-                        </a>
-                        <p class="text-center text-[11px] leading-5 text-slate-400">
-                            Simulasi bukan jaminan pendapatan. Nominal mengikuti laporan approved dan ketentuan operasional.
-                        </p>
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-    </section>
-
-    <!-- 5. Cara Kerja Section -->
-    <section id="cara-kerja" class="py-20 bg-slate-50 border-y border-slate-200 relative overflow-hidden">
-        <div class="absolute left-0 top-20 h-64 w-64 rounded-full bg-sky-100 blur-3xl"></div>
-        <div class="absolute right-0 bottom-10 h-72 w-72 rounded-full bg-emerald-100 blur-3xl"></div>
-
-        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            
-            <div class="text-center max-w-3xl mx-auto space-y-3 mb-14">
-                <span class="text-xs font-bold uppercase tracking-widest text-sky-700 bg-sky-100 px-3.5 py-1 rounded-full inline-block">
-                    CARA KERJA
-                </span>
-                <h2 class="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-                    Alur pendaftaran mudah dan cepat
-                </h2>
-                <p class="text-sm sm:text-base text-slate-600 leading-7">
-                    Mulai dari grup WhatsApp, briefing, sampai setor video. Semua langkah dibuat ringkas agar kamu tahu harus mulai dari mana.
-                </p>
-            </div>
-
-            <div class="relative">
-                <div class="hidden lg:block absolute left-[10%] right-[10%] top-12 h-px bg-gradient-to-r from-transparent via-sky-200 to-transparent"></div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5">
-                    <article class="relative bg-white border border-slate-200 rounded-[1.75rem] p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg">
-                        <div class="flex items-center justify-between gap-4">
-                            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-sky-50 text-sky-700">
-                                <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM4 21a8 8 0 0116 0"/></svg>
-                            </div>
-                            <span class="flex h-9 w-9 items-center justify-center rounded-full bg-sky-600 text-xs font-black text-white">01</span>
-                        </div>
-                        <h4 class="mt-6 text-lg font-extrabold text-slate-900">Masuk Grup WhatsApp</h4>
-                        <p class="mt-2 text-sm leading-6 text-slate-500">Klik gabung, lalu admin akan arahkan kamu ke grup koordinasi pendaftaran KameraKita AI.</p>
-                    </article>
-
-                    <article class="relative bg-white border border-slate-200 rounded-[1.75rem] p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg">
-                        <div class="flex items-center justify-between gap-4">
-                            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-700">
-                                <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15 10l4.55-2.28A1 1 0 0121 8.62v6.76a1 1 0 01-1.45.9L15 14M5 6h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2z"/></svg>
-                            </div>
-                            <span class="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-xs font-black text-white">02</span>
-                        </div>
-                        <h4 class="mt-6 text-lg font-extrabold text-slate-900">Briefing dan alat</h4>
-                        <p class="mt-2 text-sm leading-6 text-slate-500">Ikuti penjelasan singkat. Kebutuhan headstrap akan dijelaskan admin sesuai ketentuan.</p>
-                    </article>
-
-                    <article class="relative bg-white border border-slate-200 rounded-[1.75rem] p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg">
-                        <div class="flex items-center justify-between gap-4">
-                            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700">
-                                <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M7 16a4 4 0 01.88-7.9A5 5 0 0117.9 9H18a3 3 0 010 6h-1m-5-4v8m0 0l-3-3m3 3l3-3"/></svg>
-                            </div>
-                            <span class="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-600 text-xs font-black text-white">03</span>
-                        </div>
-                        <h4 class="mt-6 text-lg font-extrabold text-slate-900">Rekam kegiatan rumah</h4>
-                        <p class="mt-2 text-sm leading-6 text-slate-500">Rekam aktivitas seperti beres-beres, nyapu, atau rutinitas rumah lain memakai HP.</p>
-                    </article>
-
-                    <article class="relative bg-white border border-slate-200 rounded-[1.75rem] p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg">
-                        <div class="flex items-center justify-between gap-4">
-                            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700">
-                                <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a2 2 0 002-2V7a2 2 0 00-2-2H6a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                            </div>
-                            <span class="flex h-9 w-9 items-center justify-center rounded-full bg-cyan-600 text-xs font-black text-white">04</span>
-                        </div>
-                        <h4 class="mt-6 text-lg font-extrabold text-slate-900">Setor dan verifikasi</h4>
-                        <p class="mt-2 text-sm leading-6 text-slate-500">Unggah rekaman atau laporan sesuai arahan. Tim akan mengecek hasilnya lewat proses QC.</p>
-                    </article>
-
-                    <article class="relative bg-white border border-slate-200 rounded-[1.75rem] p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg">
-                        <div class="flex items-center justify-between gap-4">
-                            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-teal-50 text-teal-700">
-                                <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 8c-2.2 0-4 .9-4 2s1.8 2 4 2 4 .9 4 2-1.8 2-4 2m0-10v12M4 6h16M6 18h12"/></svg>
-                            </div>
-                            <span class="flex h-9 w-9 items-center justify-center rounded-full bg-teal-600 text-xs font-black text-white">05</span>
-                        </div>
-                        <h4 class="mt-6 text-lg font-extrabold text-slate-900">Terima cuan mingguan</h4>
-                        <p class="mt-2 text-sm leading-6 text-slate-500">Durasi approved masuk rekap, lalu pembayaran diproses ke rekening atau e-wallet sesuai jadwal.</p>
-                    </article>
-                </div>
-            </div>
-
-        </div>
-    </section>
-
-    <!-- 6. Testimony Section -->
-    <section id="mitra" class="py-20 bg-white">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            
-            <div class="text-center max-w-3xl mx-auto space-y-3 mb-12">
-                <span class="text-xs font-bold uppercase tracking-widest text-sky-700 bg-sky-100 px-3.5 py-1 rounded-full inline-block">
-                    TESTIMONY
-                </span>
-                <h2 class="text-2xl sm:text-4xl font-extrabold text-[#064e5f] tracking-tight leading-tight">
-                    Cerita kontributor yang mulai punya penghasilan tambahan
-                </h2>
-                <p class="text-sm sm:text-base text-slate-500 leading-7">
-                    Beberapa pengalaman yang menggambarkan bagaimana alur kerja, QC, dan pembayaran dijalankan dengan lebih rapi.
-                </p>
-            </div>
-
-            @php
-                $testimonials = [
-                    [
-                        'title' => 'Laporan rapi, pembayaran jadi lebih tenang',
-                        'name' => 'Siti Rahmawati',
-                        'image' => 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=900&q=80',
-                    ],
-                    [
-                        'title' => 'Awalnya ragu, setelah rutin submit mulai terasa hasilnya',
-                        'name' => 'Agus Prasetyo',
-                        'image' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=900&q=80',
-                    ],
-                    [
-                        'title' => 'QC jelas, jadi tahu laporan mana yang perlu diperbaiki',
-                        'name' => 'Dedi Rahmat',
-                        'image' => 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=900&q=80',
-                    ],
-                    [
-                        'title' => 'Modal HP dan waktu luang, bisa mulai dari rumah',
-                        'name' => 'Nadia Putri',
-                        'image' => 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80',
-                    ],
-                    [
-                        'title' => 'Dashboard bantu pantau semua status laporan',
-                        'name' => 'Rizky Maulana',
-                        'image' => 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=900&q=80',
-                    ],
-                    [
-                        'title' => 'Catatan admin bikin submit ulang lebih terarah',
-                        'name' => 'Maya Lestari',
-                        'image' => 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=900&q=80',
-                    ],
-                ];
-            @endphp
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                @foreach ($testimonials as $testimonial)
-                    <article class="group relative min-h-[230px] overflow-hidden rounded-[1.65rem] bg-slate-900 shadow-sm">
-                        <img src="{{ $testimonial['image'] }}" alt="{{ $testimonial['name'] }}" loading="lazy" referrerpolicy="no-referrer" class="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105">
-                        <div class="absolute inset-0 bg-gradient-to-r from-slate-950/10 via-slate-950/45 to-slate-950/85"></div>
-                        <div class="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-slate-950/80 to-transparent"></div>
-                        <div class="relative flex h-full min-h-[230px] flex-col justify-end p-6 text-white">
-                            <h3 class="max-w-[250px] text-2xl font-black leading-tight drop-shadow-sm">{{ $testimonial['title'] }}</h3>
-                            <p class="mt-3 text-sm font-semibold text-white/85">{{ $testimonial['name'] }}</p>
-                        </div>
-                    </article>
-                @endforeach
-
-            </div>
-
-        </div>
-    </section>
-
-    <!-- 7. FAQ Section -->
-    <section id="faq" class="py-20 bg-slate-50 border-t border-slate-200">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            
-            <div class="text-center space-y-3 mb-12">
-                <span class="text-xs font-bold uppercase tracking-widest text-sky-700 bg-sky-100 px-3.5 py-1 rounded-full inline-block">
-                    FAQ
-                </span>
-                <h2 class="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-                    Pertanyaan yang Sering Diajukan
-                </h2>
-            </div>
-
-            <div class="space-y-4" x-data="{ activeFaq: null }">
-                
-                <div class="bg-white border border-slate-200 rounded-2xl p-5 cursor-pointer" @click="activeFaq = (activeFaq === 1 ? null : 1)">
-                    <div class="flex justify-between items-center text-sm font-extrabold text-slate-900">
-                        <span>Apakah pendaftaran mitra dipungut biaya?</span>
-                        <span x-text="activeFaq === 1 ? '−' : '+'" class="text-lg font-bold text-sky-600"></span>
-                    </div>
-                    <div x-show="activeFaq === 1" x-collapse class="pt-3 text-xs text-slate-600 leading-relaxed">
-                        Sama sekali tidak. Pendaftaran Mitra Kontributor di KAMERAKITA AI 100% GRATIS tanpa modal awal apa pun.
-                    </div>
-                </div>
-
-                <div class="bg-white border border-slate-200 rounded-2xl p-5 cursor-pointer" @click="activeFaq = (activeFaq === 2 ? null : 2)">
-                    <div class="flex justify-between items-center text-sm font-extrabold text-slate-900">
-                        <span>Kapan komisi hasil rekap durasi akan dicairkan?</span>
-                        <span x-text="activeFaq === 2 ? '−' : '+'" class="text-lg font-bold text-sky-600"></span>
-                    </div>
-                    <div x-show="activeFaq === 2" x-collapse class="pt-3 text-xs text-slate-600 leading-relaxed">
-                        Pencairan komisi diproses manual oleh admin sesuai jadwal operasional berdasarkan rekap durasi yang sudah approved.
-                    </div>
-                </div>
-
-            </div>
-
-        </div>
-    </section>
-
-    <!-- 8. Final CTA Banner -->
-    <section class="relative overflow-hidden bg-slate-100 md:min-h-[420px]">
-        <div class="md:hidden">
-            <img src="{{ asset('images/Assest/CTA.webp') }}?v={{ filemtime(public_path('images/Assest/CTA.webp')) }}" alt="Gabung menjadi kontributor KameraKita AI" class="h-[270px] w-full object-cover object-right-top">
-            <div class="bg-white px-4 py-8">
-                <div class="mx-auto max-w-sm space-y-5">
-                    <h2 class="text-3xl font-black tracking-tight leading-tight text-[#064e5f]">
-                        Siap ubah kerja rumah jadi cuan sampingan?
-                    </h2>
-                    <p class="text-sm leading-6 text-slate-600">
-                        Kuota mitra terbatas di tiap wilayah. Jangan lewatkan kesempatan jadi perintis KameraKita AI.
-                    </p>
-
-                    <a href="{{ $whatsappJoinUrl }}" target="_blank" class="inline-flex w-full items-center justify-center rounded-xl bg-[#064e5f] px-8 py-4 text-sm font-black text-white shadow-lg transition hover:bg-[#043f4d]">
-                        Gabung Grup WA Pendaftaran ->
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <img src="{{ asset('images/Assest/CTA.webp') }}?v={{ filemtime(public_path('images/Assest/CTA.webp')) }}" alt="Gabung menjadi kontributor KameraKita AI" class="absolute inset-0 hidden h-full w-full object-cover object-center md:block">
-        <div class="absolute inset-y-0 left-0 hidden w-[62%] bg-gradient-to-r from-white via-white/90 to-transparent md:block"></div>
-        <div class="absolute -left-10 -top-10 hidden h-32 w-32 rounded-full bg-lime-300/70 blur-sm md:block"></div>
-
-        <div class="relative mx-auto hidden min-h-[420px] max-w-7xl items-center px-4 sm:px-6 lg:px-8 md:flex">
-            <div class="max-w-xl space-y-7 py-16">
-                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight text-[#064e5f]">
-                    Siap ubah kerja rumah jadi cuan sampingan?
-                </h2>
-                <p class="max-w-lg text-base leading-7 text-slate-600">
-                    Kuota mitra terbatas di tiap wilayah. Jangan lewatkan kesempatan jadi perintis KameraKita AI.
-                </p>
-
-                <a href="{{ $whatsappJoinUrl }}" target="_blank" class="inline-flex min-w-[260px] items-center justify-center rounded-xl bg-[#064e5f] px-8 py-4 text-sm font-black text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-[#043f4d]">
-                    Gabung Grup WA Pendaftaran ->
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- 9. Footer -->
-    <footer class="bg-slate-900 text-slate-400 py-12 text-xs">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
-            
-            <div class="space-y-3">
-                <div class="flex items-center gap-2">
-                    <img src="{{ asset('images/Logo.webp') }}" alt="Logo" class="w-7 h-7 rounded-lg object-contain">
-                    <span class="text-sm font-black text-white font-mono">KAMERAKITA AI</span>
-                </div>
-                <p class="text-slate-500 text-xs leading-relaxed">
-                    Platform Rekam Video & Datasets Terpercaya No. 1 di Indonesia untuk Mitra & Enterprise Computer Vision.
-                </p>
-            </div>
-
-            <div class="space-y-2">
-                <span class="block text-white font-bold uppercase tracking-wider text-[11px]">Layanan Mitra</span>
-                <ul class="space-y-2">
-                    <li><a href="#keunggulan" class="hover:text-sky-400 transition">Keunggulan Mitra</a></li>
-                    <li><a href="#kalkulator" class="hover:text-sky-400 transition">Kalkulator Komisi</a></li>
-                    <li><a href="#cara-kerja" class="hover:text-sky-400 transition">Cara Kerja</a></li>
-                </ul>
-            </div>
-
-            <div class="space-y-2">
-                <span class="block text-white font-bold uppercase tracking-wider text-[11px]">Akses Akun</span>
-                <ul class="space-y-2">
-                    <li><a href="{{ route('login') }}" class="hover:text-sky-400 transition">Masuk / Daftar</a></li>
-                    <li><a href="{{ route('onboarding.start') }}" class="hover:text-sky-400 transition">Daftar Kontributor Baru</a></li>
-                    <li><a href="{{ route('dashboard') }}" class="hover:text-sky-400 transition">Dashboard Admin QC</a></li>
-                </ul>
-            </div>
-
-            <div class="space-y-2">
-                <span class="block text-white font-bold uppercase tracking-wider text-[11px]">Perusahaan</span>
-                <p class="text-slate-500">Domain Resmi: <span class="text-sky-400 font-bold font-mono">kamerakitaid.site</span></p>
-                <p class="text-slate-500">PT KAMERAKITA AI Indonesia</p>
-            </div>
-
-        </div>
-
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-slate-800 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-[11px] text-slate-500">
-            <p>© 2026 KAMERAKITA AI. All rights reserved.</p>
-            <div class="flex items-center gap-6 font-medium">
-                <a href="#" class="hover:text-slate-300">Kebijakan Privasi</a>
-                <a href="#" class="hover:text-slate-300">Syarat & Ketentuan</a>
-            </div>
-        </div>
+        <div><h2>LAYANAN MITRA</h2><a href="#keunggulan">Keunggulan Mitra</a><a href="#kalkulator">Kalkulator Komisi</a><a href="#cara-kerja">Cara Kerja</a></div>
+        <div><h2>AKSES AKUN</h2><a href="{{ route('login') }}">Masuk / Daftar</a><a href="{{ route('register') }}">Daftar Kontributor Baru</a><a href="{{ route('dashboard') }}">Dashboard Admin QC</a></div>
+        <div><h2>PERUSAHAAN</h2><p>Domain Resmi: <a href="{{ url('/') }}">{{ parse_url(url('/'), PHP_URL_HOST) ?? 'kamerakitaid.site' }}</a></p><p>PT KAMERAKITA AI Indonesia</p></div>
+      </div>
+      <div class="footer-bottom"><span>© {{ date('Y') }} KAMERAKITA AI. All rights reserved.</span><div><span>Kebijakan Privasi</span><span>Syarat & Ketentuan</span></div></div>
     </footer>
 
+    <!-- Scripts -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          // 1. Navbar Mobile Toggle
+          const menuBtn = document.getElementById('menu-toggle-btn');
+          const navPanel = document.getElementById('nav-panel');
+          const navLinks = document.querySelectorAll('.nav-link');
+          
+          if(menuBtn && navPanel) {
+              menuBtn.addEventListener('click', () => {
+                  const isOpen = navPanel.classList.toggle('is-open');
+                  menuBtn.setAttribute('aria-expanded', isOpen);
+              });
+              
+              navLinks.forEach(link => {
+                  link.addEventListener('click', () => {
+                      navPanel.classList.remove('is-open');
+                      menuBtn.setAttribute('aria-expanded', 'false');
+                  });
+              });
+              
+              window.addEventListener('hashchange', () => {
+                  navPanel.classList.remove('is-open');
+                  menuBtn.setAttribute('aria-expanded', 'false');
+              });
+          }
+
+          // 2. Scroll Reveal (IntersectionObserver)
+          const revealElements = [...document.querySelectorAll('[data-reveal]')];
+          if (!('IntersectionObserver' in window)) {
+            revealElements.forEach(el => el.classList.add('is-visible'));
+          } else {
+            const observer = new IntersectionObserver((entries) => {
+              entries.forEach((entry) => {
+                if (entry.isIntersecting || entry.boundingClientRect.top < window.innerHeight) {
+                  entry.target.classList.add('is-visible');
+                  observer.unobserve(entry.target);
+                }
+              });
+            }, { rootMargin: '0px 0px -4% 0px', threshold: 0.01 });
+            
+            revealElements.forEach(el => observer.observe(el));
+          }
+
+          // 3. Calculator Logic
+          const RATE = 60000;
+          const DAYS_PER_WEEK = 7;
+          const WEEKS_PER_MONTH = 4;
+          const MODES = [
+            { name: 'Santai', copy: 'Mulai pelan, tetap produktif', hours: 2 },
+            { name: 'Fokus', copy: 'Lebih rutin, hasil lebih terasa', hours: 4 },
+            { name: 'Gacor Ketua!!!', copy: 'Mode serius cari cuan', hours: 6 },
+          ];
+          
+          const formatRp = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num).replace('Rp', 'Rp ');
+          
+          const calcModesContainer = document.getElementById('calc-modes');
+          const calcMonthlyContainer = document.getElementById('calc-monthly-container');
+          const calcWeeklyContainer = document.getElementById('calc-weekly-container');
+          
+          let selectedMode = 0;
+          
+          function renderCalculator() {
+              if(!calcModesContainer) return;
+              calcModesContainer.innerHTML = '';
+              MODES.forEach((mode, index) => {
+                  const btn = document.createElement('button');
+                  btn.type = 'button';
+                  btn.className = `mode-card ${selectedMode === index ? 'is-selected' : ''}`;
+                  btn.setAttribute('aria-pressed', selectedMode === index);
+                  btn.innerHTML = `<span><strong>${mode.name}</strong><small>${mode.copy}</small></span><b>${mode.hours} jam/hari</b>`;
+                  btn.onclick = () => {
+                      selectedMode = index;
+                      renderCalculator();
+                  };
+                  calcModesContainer.appendChild(btn);
+              });
+              
+              const mode = MODES[selectedMode];
+              const weekly = RATE * mode.hours * DAYS_PER_WEEK;
+              const monthly = weekly * WEEKS_PER_MONTH;
+              
+              // Animate number change by cloning and replacing
+              const oldMonthly = calcMonthlyContainer.querySelector('div');
+              const newMonthly = oldMonthly.cloneNode(false);
+              newMonthly.innerHTML = `<span>ESTIMASI TOTAL BULANAN</span><strong>${formatRp(monthly)}</strong><p>Dengan ${mode.hours} jam/hari dan rate dasar Rp60.000/jam.</p>`;
+              calcMonthlyContainer.replaceChild(newMonthly, oldMonthly);
+              
+              const oldWeekly = calcWeeklyContainer.querySelector('div');
+              const newWeekly = oldWeekly.cloneNode(false);
+              newWeekly.innerHTML = `<span>POTENSI MINGGUAN</span><strong>~ ${formatRp(weekly)}</strong>`;
+              calcWeeklyContainer.replaceChild(newWeekly, oldWeekly);
+          }
+          
+          renderCalculator();
+
+          // 4. FAQ Accordion
+          const faqItems = document.querySelectorAll('.faq-item');
+          faqItems.forEach(item => {
+              const btn = item.querySelector('.faq-btn');
+              const answer = item.querySelector('.faq-answer');
+              if(btn && answer) {
+                  btn.addEventListener('click', () => {
+                      const isOpen = item.classList.contains('is-open');
+                      
+                      // Close all other
+                      faqItems.forEach(otherItem => {
+                          otherItem.classList.remove('is-open');
+                          otherItem.querySelector('.faq-btn').setAttribute('aria-expanded', 'false');
+                          otherItem.querySelector('.faq-answer').setAttribute('aria-hidden', 'true');
+                      });
+                      
+                      if (!isOpen) {
+                          item.classList.add('is-open');
+                          btn.setAttribute('aria-expanded', 'true');
+                          answer.setAttribute('aria-hidden', 'false');
+                      }
+                  });
+              }
+          });
+      });
+    </script>
 </body>
 </html>
