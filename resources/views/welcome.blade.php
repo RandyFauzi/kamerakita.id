@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@400;700&family=Playfair+Display:ital,wght@1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- CSS -->
-    <link rel="stylesheet" href="{{ asset('css/landing.css') }}">
+    <link rel="stylesheet" href="/css/landing.css">
 </head>
 <body>
     <a class="skip-link" href="#main-content">Lewati ke konten utama</a>
@@ -20,7 +20,7 @@
     <header class="navbar" id="top">
       <div class="nav-shell">
         <a class="brand" href="#top" aria-label="KameraKita AI — kembali ke atas">
-          <span class="brand__mark"><img src="{{ asset('assets/figma/header-01.jpg') }}" alt=""></span>
+          <span class="brand__mark"><img src="/assets/figma/header-01.jpg" alt=""></span>
           <span>KameraKita<span class="brand__ai">AI</span></span>
         </a>
         <button class="menu-toggle" type="button" aria-label="Buka menu navigasi" id="menu-toggle-btn">
@@ -55,23 +55,23 @@
               </div>
               <div class="contributors">
                 <div class="avatar-stack" aria-hidden="true">
-                    <img src="{{ asset('assets/figma/hero-01.png') }}" alt="">
-                    <img src="{{ asset('assets/figma/hero-02.png') }}" alt="">
-                    <img src="{{ asset('assets/figma/hero-03.png') }}" alt="">
-                    <img src="{{ asset('assets/figma/hero-04.png') }}" alt="">
-                    <img src="{{ asset('assets/figma/hero-08.png') }}" alt="">
-                    <img src="{{ asset('assets/figma/hero-15.png') }}" alt="">
+                    <img src="/assets/figma/hero-01.png" alt="">
+                    <img src="/assets/figma/hero-02.png" alt="">
+                    <img src="/assets/figma/hero-03.png" alt="">
+                    <img src="/assets/figma/hero-04.png" alt="">
+                    <img src="/assets/figma/hero-08.png" alt="">
+                    <img src="/assets/figma/hero-15.png" alt="">
                 </div>
                 <span>1000+ contributor bersama kami</span>
               </div>
             </div>
             <div class="hero-visual" data-reveal style="--delay: 140ms;" aria-label="Kontributor KameraKita menggunakan ponsel">
-              <img class="hero-woman" src="{{ asset('assets/figma/hero-07.png') }}" alt="Perempuan tersenyum melihat ponsel">
-              <img class="coin coin--back float-two" src="{{ asset('assets/figma/hero-13.png') }}" alt="">
-              <img class="coin coin--one float-one" src="{{ asset('assets/figma/hero-13.png') }}" alt="">
-              <img class="coin coin--two float-two" src="{{ asset('assets/figma/hero-16.png') }}" alt="">
-              <img class="coin coin--three float-three" src="{{ asset('assets/figma/hero-13.png') }}" alt="">
-              <img class="coin coin--four float-two" src="{{ asset('assets/figma/hero-16.png') }}" alt="">
+              <img class="hero-woman" src="/assets/figma/hero-07.png" alt="Perempuan tersenyum melihat ponsel">
+              <img class="coin coin--back float-two" src="/assets/figma/hero-13.png" alt="">
+              <img class="coin coin--one float-one" src="/assets/figma/hero-13.png" alt="">
+              <img class="coin coin--two float-two" src="/assets/figma/hero-16.png" alt="">
+              <img class="coin coin--three float-three" src="/assets/figma/hero-13.png" alt="">
+              <img class="coin coin--four float-two" src="/assets/figma/hero-16.png" alt="">
               <div class="money-labels" aria-hidden="true"><span>+IDR 10.000</span><span>+IDR 50.000</span><strong>+IDR 100.000</strong></div>
             </div>
           </div>
@@ -86,15 +86,15 @@
           </div>
           <div class="benefit-grid">
               <article class="benefit-card" data-reveal style="--delay: 90ms;">
-                <div class="benefit-art"><img class="float-1" src="{{ asset('assets/figma/benefits-ai-figma.png') }}" alt="Ilustrasi Bantu AI Biar Pintar"></div>
+                <div class="benefit-art"><img class="float-1" src="/assets/figma/benefits-ai-figma.png" alt="Ilustrasi Bantu AI Biar Pintar"></div>
                 <h3>Bantu AI Biar Pintar</h3><p>KameraKita AI ngajarin teknologi pintar (AI) biar bisa paham cara manusia beraktivitas di dalam rumah.</p>
               </article>
               <article class="benefit-card" data-reveal style="--delay: 180ms;">
-                <div class="benefit-art"><img class="float-2" src="{{ asset('assets/figma/benefits-record-figma.png') }}" alt="Ilustrasi Rekam Kegiatan Rumah"></div>
+                <div class="benefit-art"><img class="float-2" src="/assets/figma/benefits-record-figma.png" alt="Ilustrasi Rekam Kegiatan Rumah"></div>
                 <h3>Rekam Kegiatan Rumah</h3><p>Tugas kamu cuma pakai alat di kepala, lalu rekam aktivitas harian kayak ngepel, nyuci piring, atau beres-beres.</p>
               </article>
               <article class="benefit-card" data-reveal style="--delay: 270ms;">
-                <div class="benefit-art"><img class="float-3" src="{{ asset('assets/figma/benefits-wallet-figma.png') }}" alt="Ilustrasi Kirim Video & Terima Cuan"></div>
+                <div class="benefit-art"><img class="float-3" src="/assets/figma/benefits-wallet-figma.png" alt="Ilustrasi Kirim Video & Terima Cuan"></div>
                 <h3>Kirim Video & Terima Cuan</h3><p>Kerjaan rumah beres, dompet tetep tebel. Gak perlu keahlian khusus, semua orang semua kalangan pasti bisa!</p>
               </article>
           </div>
@@ -145,7 +145,7 @@
                 </div>
                 <a class="button button--blue calculator-cta" href="{{ route('register') }}">MULAI DAFTAR SEKARANG</a>
                 <p class="disclaimer">Simulasi bukan jaminan pendapatan. Nominal mengikuti laporan approved dan ketentuan operasional.</p>
-                <img class="wallet-art float-slow" src="{{ asset('assets/figma/calculator-03.png') }}" alt="Ilustrasi dompet dengan uang rupiah">
+                <img class="wallet-art float-slow" src="/assets/figma/calculator-03.png" alt="Ilustrasi dompet dengan uang rupiah">
               </div>
             </div>
           </div>
@@ -161,17 +161,17 @@
           </div>
           <div class="step-grid">
               <article class="step-card" data-reveal style="--delay: 100ms;">
-                <img class="step-art step-float" style="--float-delay: 0ms;" src="{{ asset('assets/figma/steps-03.png') }}" alt="Ilustrasi langkah 1">
+                <img class="step-art step-float" style="--float-delay: 0ms;" src="/assets/figma/steps-03.png" alt="Ilustrasi langkah 1">
                 <strong class="step-number">1</strong>
                 <h3>Gabung & Ikuti Briefing</h3><p>Daftar lewat WhatsApp, lalu tim kami bakal jelasin cara kerja, tugas, dan kebutuhan alat.</p>
               </article>
               <article class="step-card" data-reveal style="--delay: 200ms;">
-                <img class="step-art step-float" style="--float-delay: 160ms;" src="{{ asset('assets/figma/steps-01.png') }}" alt="Ilustrasi langkah 2">
+                <img class="step-art step-float" style="--float-delay: 160ms;" src="/assets/figma/steps-01.png" alt="Ilustrasi langkah 2">
                 <strong class="step-number">2</strong>
                 <h3>Rekam Aktivitasmu</h3><p>Pilih tugas yang tersedia, pasang HP sesuai panduan, lalu rekam aktivitas sehari-hari seperti biasa.</p>
               </article>
               <article class="step-card" data-reveal style="--delay: 300ms;">
-                <img class="step-art step-float" style="--float-delay: 320ms;" src="{{ asset('assets/figma/steps-09.png') }}" alt="Ilustrasi langkah 3">
+                <img class="step-art step-float" style="--float-delay: 320ms;" src="/assets/figma/steps-09.png" alt="Ilustrasi langkah 3">
                 <strong class="step-number">3</strong>
                 <h3>Upload & Terima Bayaran</h3><p>Kirim hasil rekaman untuk dicek. Setelah lolos QC, durasi approved masuk ke pembayaran bulanan.</p>
               </article>
@@ -188,24 +188,24 @@
           </div>
           <div class="testimonial-grid">
               <article class="testimonial-card" data-reveal style="--delay: 90ms;">
-                <div class="quote-pair float-1" aria-hidden="true"><img src="{{ asset('assets/figma/testimonials-09.png') }}" alt=""><img src="{{ asset('assets/figma/testimonials-09.png') }}" alt=""></div>
+                <div class="quote-pair float-1" aria-hidden="true"><img src="/assets/figma/testimonials-09.png" alt=""><img src="/assets/figma/testimonials-09.png" alt=""></div>
                 <blockquote>Laporan rapi, pembayaran jadi lebih tenang</blockquote>
-                <div class="person"><img src="{{ asset('assets/figma/testimonials-02.png') }}" alt=""><cite>Asha Aulia</cite></div>
+                <div class="person"><img src="/assets/figma/testimonials-02.png" alt=""><cite>Asha Aulia</cite></div>
               </article>
               <article class="testimonial-card" data-reveal style="--delay: 170ms;">
-                <div class="quote-pair float-2" aria-hidden="true"><img src="{{ asset('assets/figma/testimonials-09.png') }}" alt=""><img src="{{ asset('assets/figma/testimonials-09.png') }}" alt=""></div>
+                <div class="quote-pair float-2" aria-hidden="true"><img src="/assets/figma/testimonials-09.png" alt=""><img src="/assets/figma/testimonials-09.png" alt=""></div>
                 <blockquote>Awalnya ragu, setelah rutin submit mulai terasa hasilnya</blockquote>
-                <div class="person"><img src="{{ asset('assets/figma/testimonials-01.png') }}" alt=""><cite>Irfan Tamami</cite></div>
+                <div class="person"><img src="/assets/figma/testimonials-01.png" alt=""><cite>Irfan Tamami</cite></div>
               </article>
               <article class="testimonial-card" data-reveal style="--delay: 250ms;">
-                <div class="quote-pair float-3" aria-hidden="true"><img src="{{ asset('assets/figma/testimonials-09.png') }}" alt=""><img src="{{ asset('assets/figma/testimonials-09.png') }}" alt=""></div>
+                <div class="quote-pair float-3" aria-hidden="true"><img src="/assets/figma/testimonials-09.png" alt=""><img src="/assets/figma/testimonials-09.png" alt=""></div>
                 <blockquote>QC Jelas, jadi tahu laporan mana yang perlu diperbaiki</blockquote>
-                <div class="person"><img src="{{ asset('assets/figma/testimonials-03.png') }}" alt=""><cite>Jessica Halim</cite></div>
+                <div class="person"><img src="/assets/figma/testimonials-03.png" alt=""><cite>Jessica Halim</cite></div>
               </article>
               <article class="testimonial-card" data-reveal style="--delay: 330ms;">
-                <div class="quote-pair float-1" aria-hidden="true"><img src="{{ asset('assets/figma/testimonials-09.png') }}" alt=""><img src="{{ asset('assets/figma/testimonials-09.png') }}" alt=""></div>
+                <div class="quote-pair float-1" aria-hidden="true"><img src="/assets/figma/testimonials-09.png" alt=""><img src="/assets/figma/testimonials-09.png" alt=""></div>
                 <blockquote>Modal HP dan waktu luang, bisa mulai dari rumah</blockquote>
-                <div class="person"><img src="{{ asset('assets/figma/testimonials-06.png') }}" alt=""><cite>Nadya Salsabila</cite></div>
+                <div class="person"><img src="/assets/figma/testimonials-06.png" alt=""><cite>Nadya Salsabila</cite></div>
               </article>
           </div>
         </section>
@@ -242,7 +242,7 @@
 
         <!-- Bottom CTA -->
         <section class="bottom-cta">
-          <img class="cta-banner" src="{{ asset('assets/figma/cta-banner.png') }}" alt="Kontributor KameraKita menggunakan ponsel di rumah">
+          <img class="cta-banner" src="/assets/figma/cta-banner.png" alt="Kontributor KameraKita menggunakan ponsel di rumah">
           <div class="cta-copy">
             <div data-reveal>
               <h2>Siap ubah kerja rumah jadi<br>cuan sampingan?</h2>
@@ -258,7 +258,7 @@
       <div class="footer-grid">
         <div>
           <a class="brand brand--footer" href="#top" aria-label="KameraKita AI — kembali ke atas">
-            <span class="brand__mark"><img src="{{ asset('assets/figma/header-01.jpg') }}" alt=""></span>
+            <span class="brand__mark"><img src="/assets/figma/header-01.jpg" alt=""></span>
             <span>KameraKita<span class="brand__ai">AI</span></span>
           </a>
           <p>Platform Rekam Video & Datasets Terpercaya No. 1 di Indonesia untuk Mitra & Enterprise Computer Vision.</p>
