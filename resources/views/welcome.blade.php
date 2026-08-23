@@ -20,7 +20,7 @@
     <header class="navbar" id="top">
       <div class="nav-shell">
         <a class="brand" href="#top" aria-label="KameraKita AI — kembali ke atas">
-          <span class="brand__mark"><img src="{{ asset('assets/figma/header-01.jpg') }}" alt=""></span>
+          <span class="brand__mark"><img src="{{ asset('vendor-assets/kamerakita/logo-mark.svg') }}" alt=""></span>
           <span>KameraKita<span class="brand__ai">AI</span></span>
         </a>
         <button class="menu-toggle" type="button" aria-label="Buka menu navigasi" id="menu-toggle-btn">
@@ -258,7 +258,7 @@
       <div class="footer-grid">
         <div>
           <a class="brand brand--footer" href="#top" aria-label="KameraKita AI — kembali ke atas">
-            <span class="brand__mark"><img src="{{ asset('assets/figma/header-01.jpg') }}" alt=""></span>
+            <span class="brand__mark"><img src="{{ asset('vendor-assets/kamerakita/logo-mark.svg') }}" alt=""></span>
             <span>KameraKita<span class="brand__ai">AI</span></span>
           </a>
           <p>Platform Rekam Video & Datasets Terpercaya No. 1 di Indonesia untuk Mitra & Enterprise Computer Vision.</p>
