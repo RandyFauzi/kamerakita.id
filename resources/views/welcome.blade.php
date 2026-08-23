@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@400;700&family=Playfair+Display:ital,wght@1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- CSS -->
-    <link rel="stylesheet" href="{{ asset('css/landing.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/landing.css?v=' . time()) }}">
 </head>
 <body>
     <a class="skip-link" href="#main-content">Lewati ke konten utama</a>
