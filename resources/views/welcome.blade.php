@@ -35,7 +35,7 @@
             <a href="#faq" class="nav-link">FAQ</a>
           </nav>
           <div class="nav-actions">
-            <a class="button button--outline button--small" href="{{ route('jadi-vendor') }}">Jadi Vendor</a>
+            <a class="button button--outline button--small" href="{{ route('jadi-vendor') }}">Mitra Vendor</a>
             <a class="button button--blue button--small" href="{{ route('login') }}">Masuk / Daftar</a>
           </div>
         </div>
