@@ -51,7 +51,7 @@
               <h1>Kerja rumah<br>jadi <em>cuan!</em></h1>
               <p>Sambil ngepel, nyuci piring, atau beres-beres rumah, kamu bisa dapat penghasilan tambahan sampai jutaan rupiah sebulan. Tanpa modal, cukup rekam pakai HP-mu.</p>
               <div class="hero-actions">
-                <a class="button button--yellow" href="{{ route('register') }}">Mulai Daftar Sekarang</a>
+                <a class="button button--yellow" href="{{ route('onboarding.form') }}">Mulai Daftar Sekarang</a>
                 <a class="button button--ghost" href="#cara-kerja">Lihat Cara Kerja</a>
               </div>
               <div class="contributors">
@@ -144,7 +144,7 @@
                       <strong>~ Rp 840.000</strong>
                     </div>
                 </div>
-                <a class="button button--blue calculator-cta" href="{{ route('register') }}">MULAI DAFTAR SEKARANG</a>
+                <a class="button button--blue calculator-cta" href="{{ route('onboarding.form') }}">MULAI DAFTAR SEKARANG</a>
                 <p class="disclaimer">Simulasi bukan jaminan pendapatan. Nominal mengikuti laporan approved dan ketentuan operasional.</p>
                 <img class="wallet-art float-slow" src="{{ asset('assets/figma/calculator-03.png') }}" alt="Ilustrasi dompet dengan uang rupiah">
               </div>
@@ -248,7 +248,7 @@
             <div data-reveal>
               <h2>Siap ubah kerja rumah jadi<br>cuan sampingan?</h2>
               <p>Kuota mitra terbatas di tiap wilayah. Jangan lewatkan kesempatan jadi perintis KameraKita AI.</p>
-              <a class="button button--blue button--large" href="{{ route('register') }}">Mulai Daftar Sekarang</a>
+              <a class="button button--blue button--large" href="{{ route('onboarding.form') }}">Mulai Daftar Sekarang</a>
             </div>
           </div>
         </section>
@@ -265,7 +265,7 @@
           <p>Platform Rekam Video & Datasets Terpercaya No. 1 di Indonesia untuk Mitra & Enterprise Computer Vision.</p>
         </div>
         <div><h2>LAYANAN MITRA</h2><a href="#keunggulan">Keunggulan Mitra</a><a href="#kalkulator">Kalkulator Komisi</a><a href="#cara-kerja">Cara Kerja</a></div>
-        <div><h2>AKSES AKUN</h2><a href="{{ route('login') }}">Masuk / Daftar</a><a href="{{ route('register') }}">Daftar Kontributor Baru</a><a href="{{ route('dashboard') }}">Dashboard Admin QC</a></div>
+        <div><h2>AKSES AKUN</h2><a href="{{ route('login') }}">Masuk / Daftar</a><a href="{{ route('onboarding.form') }}">Daftar Kontributor Baru</a><a href="{{ route('dashboard') }}">Dashboard Admin QC</a></div>
         <div><h2>PERUSAHAAN</h2><p>Domain Resmi: <a href="{{ url('/') }}">{{ parse_url(url('/'), PHP_URL_HOST) ?? 'kamerakitaid.site' }}</a></p><p>PT KAMERAKITA AI Indonesia</p></div>
       </div>
       <div class="footer-bottom"><span>© {{ date('Y') }} KAMERAKITA AI. All rights reserved.</span><div><span>Kebijakan Privasi</span><span>Syarat & Ketentuan</span></div></div>
