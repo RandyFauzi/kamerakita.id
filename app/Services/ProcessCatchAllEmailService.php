@@ -26,6 +26,9 @@ class ProcessCatchAllEmailService
 
             // Pre-load seluruh mapping email -> user_id ke memory (Menghindari N+1 Query)
             $userMap = \App\Models\User::pluck('id', 'email')->keyBy(fn ($id, $email) => strtolower(trim($email)));
+            $userPrefixMap = \App\Models\User::pluck('id', 'email')->keyBy(function ($id, $email) {
+                return explode('@', strtolower(trim($email)))[0];
+            });
             Log::info("IMAP Catch-All: Ditemukan " . $messages->count() . " pesan di INBOX.");
 
             $deletedCount = 0;
@@ -57,6 +60,12 @@ class ProcessCatchAllEmailService
                     
                     // Mencari user di database menggunakan $userMap
                     $userId = $userMap->get($emailAddress);
+                    
+                    if (!$userId) {
+                        $parts = explode('@', $emailAddress);
+                        $prefix = $parts[0];
+                        $userId = $userPrefixMap->get($prefix);
+                    }
                     
                     if ($userId) {
                         Log::info("IMAP Catch-All: User DITEMUKAN! (ID: " . $userId . ")");
@@ -128,3 +137,4 @@ class ProcessCatchAllEmailService
         }
     }
 }
+
