@@ -91,14 +91,21 @@ class VendorController extends Controller
 
         $request->validate([
             'name' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s]*$/'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'username' => ['required', 'string', 'max:255', 'regex:/^[a-z0-9]+$/', 'unique:users,email'],
             'whatsapp_number' => ['required', 'string', 'max:20'],
             'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::min(8)],
         ]);
 
+        $generatedEmail = $request->username . '@kamerakitaid.site';
+
+        // Check if the generated email already exists (just to be safe)
+        if (\App\Models\User::where('email', $generatedEmail)->exists()) {
+            return redirect()->back()->withErrors(['username' => 'Username ini sudah digunakan, silakan pilih yang lain.'])->withInput();
+        }
+
         $newUser = \App\Models\User::create([
             'name' => $request->name,
-            'email' => $request->email,
+            'email' => $generatedEmail,
             'password' => \Illuminate\Support\Facades\Hash::make($request->password),
             'role' => 'worker',
             'email_verified_at' => now(),
@@ -117,7 +124,7 @@ class VendorController extends Controller
             'mitra_id' => $nextMitraId,
             'full_name' => $newUser->name,
             'whatsapp_number' => $request->whatsapp_number,
-            'email' => $request->email,
+            'email' => $generatedEmail,
             'has_headstrap' => false,
             'status' => 'active',
             'group_name' => $partner->group_name ?? 'Group A',
@@ -127,6 +134,6 @@ class VendorController extends Controller
             'recruiter_partner_id' => $partner->id,
         ]);
 
-        return redirect()->back()->with('success', 'Worker baru berhasil didaftarkan dengan Email: ' . $request->email . ' dan masuk ke tim Anda!');
+        return redirect()->back()->with('success', 'Worker baru berhasil didaftarkan dengan Email: ' . $generatedEmail . ' dan masuk ke tim Anda!');
     }
 }

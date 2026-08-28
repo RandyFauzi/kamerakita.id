@@ -51,8 +51,13 @@
                                                     <input type="text" name="name" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                                                 </div>
                                                 <div>
-                                                    <label class="block text-sm font-medium text-gray-700">Email (Aktif)</label>
-                                                    <input type="email" name="email" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="email@contoh.com">
+                                                    <label class="block text-sm font-medium text-gray-700">Username Email</label>
+                                                    <div class="mt-1 flex rounded-md shadow-sm">
+                                                        <input type="text" name="username" required class="flex-1 block w-full min-w-0 border-gray-300 rounded-none rounded-l-md sm:text-sm focus:ring-blue-500 focus:border-blue-500" placeholder="namapekerja">
+                                                        <span class="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
+                                                            @kamerakitaid.site
+                                                        </span>
+                                                    </div>
                                                 </div>
                                                 <div>
                                                     <label class="block text-sm font-medium text-gray-700">Nomor WhatsApp</label>
