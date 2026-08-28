@@ -381,7 +381,7 @@ class McpServerController extends Controller
                 $ids = $payload['report_ids'] ?? [];
                 $minutes = $payload['approved_minutes'] ?? 0;
                 
-                $reports = VideoWorkReport::whereIn('id', $ids)->where('qc_status', 'pending')->get();
+                $reports = VideoWorkReport::whereIn('id', $ids)->whereIn('qc_status', ['pending', 'on_review'])->get();
                 $updatedCount = 0;
                 
                 foreach ($reports as $report) {
@@ -622,7 +622,7 @@ class McpServerController extends Controller
             $partnerId = $user->partner->id;
 
             $query = VideoWorkReport::where('partner_id', $partnerId)
-                ->where('qc_status', 'pending');
+                ->whereIn('qc_status', ['pending', 'on_review']);
 
             if ($startDate) {
                 $query->whereDate('submission_date', '>=', $startDate);
