@@ -91,12 +91,14 @@ class VendorController extends Controller
 
         $request->validate([
             'name' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s]*$/'],
-            'username' => ['required', 'string', 'max:255', 'regex:/^[a-z0-9]+$/', 'unique:users,email'],
+            'username' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9._-]+$/'],
             'whatsapp_number' => ['required', 'string', 'max:20'],
             'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::min(8)],
+        ], [
+            'username.regex' => 'Username hanya boleh berisi huruf, angka, titik, strip, atau underscore tanpa spasi.'
         ]);
 
-        $generatedEmail = $request->username . '@kamerakitaid.site';
+        $generatedEmail = strtolower(trim($request->username)) . '@kamerakitaid.site';
 
         // Check if the generated email already exists (just to be safe)
         if (\App\Models\User::where('email', $generatedEmail)->exists()) {
