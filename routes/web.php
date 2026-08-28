@@ -177,6 +177,7 @@ Route::middleware(['auth'])->prefix('vendor')->name('vendor.')->group(function (
     Route::get('/payments', [\App\Http\Controllers\VendorController::class, 'payments'])->name('payments.index');
     Route::get('/workers', [\App\Http\Controllers\VendorController::class, 'workers'])->name('workers.index');
     Route::post('/workers', [\App\Http\Controllers\VendorController::class, 'storeWorker'])->name('workers.store');
+    Route::put('/workers/{id}', [\App\Http\Controllers\VendorController::class, 'updateWorker'])->name('workers.update');
 });
 
 Route::middleware('auth')->group(function () {

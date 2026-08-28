@@ -138,4 +138,47 @@ class VendorController extends Controller
 
         return redirect()->back()->with('success', 'Worker baru berhasil didaftarkan dengan Email: ' . $generatedEmail . ' dan masuk ke tim Anda!');
     }
+
+    public function updateWorker(Request $request, $id)
+    {
+        $user = Auth::user();
+        $partner = $user->partner;
+
+        if (!$partner || $partner->partner_role !== 'mitra') {
+            abort(403, 'Unauthorized access.');
+        }
+
+        // Find the partner to edit (the worker)
+        $workerPartner = \App\Models\Partner::where('id', $id)
+            ->where('mitra_parent_id', $partner->id)
+            ->where('partner_role', 'worker')
+            ->firstOrFail();
+
+        $workerUser = $workerPartner->user;
+
+        $rules = [
+            'name' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s]*$/'],
+            'whatsapp_number' => ['required', 'string', 'max:20'],
+        ];
+
+        if ($request->filled('password')) {
+            $rules['password'] = ['required', 'confirmed', \Illuminate\Validation\Rules\Password::min(8)];
+        }
+
+        $request->validate($rules);
+
+        // Update User
+        $workerUser->name = $request->name;
+        if ($request->filled('password')) {
+            $workerUser->password = \Illuminate\Support\Facades\Hash::make($request->password);
+        }
+        $workerUser->save();
+
+        // Update Partner
+        $workerPartner->full_name = $request->name;
+        $workerPartner->whatsapp_number = $request->whatsapp_number;
+        $workerPartner->save();
+
+        return redirect()->back()->with('success', 'Data worker ' . $workerUser->name . ' berhasil diperbarui!');
+    }
 }
