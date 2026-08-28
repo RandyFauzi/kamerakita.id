@@ -78,8 +78,9 @@
                             <label for="group" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 font-mono">Pilih Grup</label>
                             <select name="group" id="group" onchange="this.form.submit()" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition bg-white text-gray-700 font-medium">
                                 <option value="">Semua Grup</option>
-                                <option value="Group A" {{ $selectedGroup === 'Group A' ? 'selected' : '' }}>Group A</option>
-                                <option value="Group B" {{ $selectedGroup === 'Group B' ? 'selected' : '' }}>Group B</option>
+                                @foreach($groups as $group)
+                                    <option value="{{ $group }}" {{ $selectedGroup === $group ? 'selected' : '' }}>{{ $group }}</option>
+                                @endforeach
                             </select>
                         </div>
 

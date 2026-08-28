@@ -174,6 +174,7 @@ class VerifyVideoWorkReportController extends Controller
         $totalOnReviewCount = VideoWorkReport::where('qc_status', 'on_review')->count();
 
         $allWorkers = Partner::where('partner_role', 'worker')->with('user')->get(['id', 'user_id', 'full_name', 'email']);
+        $groups = Partner::select('group_name')->distinct()->whereNotNull('group_name')->where('group_name', '!=', '')->pluck('group_name');
 
         return view('video-submissions.qc-room', compact(
             'partners',
@@ -189,7 +190,8 @@ class VerifyVideoWorkReportController extends Controller
             'totalOnReviewCount',
             'filteredSubmittedDuration',
             'filteredApprovedDuration',
-            'allWorkers'
+            'allWorkers',
+            'groups'
         ));
     }
 

@@ -25,13 +25,10 @@ Route::prefix('mobile')->group(function () {
 
     // Protected Endpoints
     Route::middleware('auth:sanctum')->group(function () {
-        
         // Metadata & Categories
         Route::get('/categories', [MobileRecordingController::class, 'getCategories']);
         
-        // Recording Flow (Upload & Complete)
-        Route::post('/recordings/upload-url', [MobileRecordingController::class, 'generateUploadUrl']);
-        Route::post('/recordings/complete', [MobileRecordingController::class, 'completeRecording']);
-        
+        // Recording Flow (Direct Local Upload)
+        Route::post('/recordings/upload', [MobileRecordingController::class, 'upload']);
     });
 });
