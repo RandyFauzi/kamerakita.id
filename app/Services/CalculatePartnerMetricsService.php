@@ -181,19 +181,17 @@ class CalculatePartnerMetricsService
      */
     public function getGlobalMetrics(): array
     {
-        $allWorkers = Partner::where('partner_role', 'worker')->get();
-        $totalWorkersCount = $allWorkers->count();
-        $totalMitraCount = Partner::where('partner_role', 'mitra')->count();
+        return \Illuminate\Support\Facades\Cache::remember('global_metrics', 600, function() {
+            $totalWorkersCount = Partner::where('partner_role', 'worker')->count();
+            $totalMitraCount = Partner::where('partner_role', 'mitra')->count();
 
-        $approvedReports = VideoWorkReport::with('partner')->where('qc_status', 'approved')->get();
+            $allTime = (int) VideoWorkReport::where('qc_status', 'approved')->sum('approved_duration_minutes');
+            $paid = (int) VideoWorkReport::where('qc_status', 'approved')->where('payment_status', 'paid')->sum('approved_duration_minutes');
+            $pending = (int) VideoWorkReport::where('qc_status', 'approved')->where('payment_status', 'unpaid')->sum('approved_duration_minutes');
 
-        $allTime = $approvedReports->sum('approved_duration_minutes');
-        $paid = $approvedReports->where('payment_status', 'paid')->sum('approved_duration_minutes');
-        $pending = $approvedReports->where('payment_status', 'unpaid')->sum('approved_duration_minutes');
-
-        $pendingMinutesSum = VideoWorkReport::where('qc_status', 'pending')->sum('submitted_duration_minutes');
-        $onReviewMinutesSum = VideoWorkReport::where('qc_status', 'on_review')->sum('submitted_duration_minutes');
-        $rejectedMinutesSum = VideoWorkReport::where('qc_status', 'rejected')->sum('submitted_duration_minutes');
+            $pendingMinutesSum = (int) VideoWorkReport::where('qc_status', 'pending')->sum('submitted_duration_minutes');
+            $onReviewMinutesSum = (int) VideoWorkReport::where('qc_status', 'on_review')->sum('submitted_duration_minutes');
+            $rejectedMinutesSum = (int) VideoWorkReport::where('qc_status', 'rejected')->sum('submitted_duration_minutes');
 
         // 1. Target Mingguan (100 Jam Video Approved)
         $currentPeriod = PeriodService::getPeriodRange(now());
@@ -258,6 +256,7 @@ class CalculatePartnerMetricsService
             'monthly_progress_percent' => $monthlyProgressPercent,
             'monthly_period_label' => $monthlyPeriodLabel,
         ];
+        });
     }
 
     /**

@@ -4,72 +4,153 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Invoice;
+use App\Models\Client;
+use Illuminate\Support\Facades\DB;
 
 class InvoiceController extends Controller
 {
-    /**
-     * Show the invoice generator and history tabs.
-     */
-    public function index()
+    public function index(Request $request)
     {
-        $invoices = Invoice::orderBy('created_at', 'desc')->get();
-        return view('invoices.index', compact('invoices'));
+        $query = Invoice::with('client')->orderBy('created_at', 'desc');
+
+        if ($request->filled('search')) {
+            $query->where('invoice_no', 'like', '%' . $request->search . '%')
+                  ->orWhere('client_name', 'like', '%' . $request->search . '%');
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $invoices = $query->paginate(25);
+        $clients = Client::all();
+
+        return view('invoices.index', compact('invoices', 'clients'));
     }
 
-    /**
-     * Store a new invoice in the database and redirect to preview.
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'total_workers' => 'required|numeric',
-            'total_approved_hours' => 'required|numeric',
-            'invoice_no' => 'nullable|string',
-            'invoice_date' => 'nullable|date',
+            'client_id' => 'required|exists:clients,id',
+            'client_name' => 'nullable|string|max:255',
+            'client_address' => 'nullable|string',
+            'period_start' => 'required|date',
+            'period_end' => 'required|date|after_or_equal:period_start',
+            'invoice_date' => 'required|date',
+            'source_approved_hours' => 'required|numeric|min:0',
+            'billable_hours' => 'required|numeric|min:0',
+            'adjustment_reason' => 'nullable|string',
         ]);
 
-        $invoiceNo = $validated['invoice_no'] ?? 'INV-' . date('Ymd') . '-' . str_pad(rand(1, 999), 3, '0', STR_PAD_LEFT);
-        $invoiceDate = $validated['invoice_date'] ?? date('Y-m-d');
-        
-        $totalAmount = floatval($validated['total_approved_hours']) * 3.5;
+        if ($validated['billable_hours'] != $validated['source_approved_hours'] && empty($validated['adjustment_reason'])) {
+            return back()->withErrors(['adjustment_reason' => 'Adjustment reason is required if billable hours differ from approved hours.'])->withInput();
+        }
 
-        $invoice = Invoice::create([
-            'invoice_no' => $invoiceNo,
-            'invoice_date' => $invoiceDate,
-            'total_workers' => $validated['total_workers'],
-            'total_approved_hours' => $validated['total_approved_hours'],
-            'total_amount' => $totalAmount,
-        ]);
+        $client = Client::findOrFail($validated['client_id']);
+        $adjustment = $validated['billable_hours'] - $validated['source_approved_hours'];
+        $amount = $validated['billable_hours'] * $client->default_rate;
 
-        return redirect()->route('invoices.show', $invoice->id);
+        // Use custom inputs if provided, otherwise fallback to template
+        $finalClientName = !empty($validated['client_name']) ? $validated['client_name'] : $client->name;
+        $finalClientAddress = !empty($validated['client_address']) ? $validated['client_address'] : $client->address;
+
+        DB::beginTransaction();
+        try {
+            $year = date('Y', strtotime($validated['invoice_date']));
+            $latest = Invoice::where('invoice_no', 'like', "INV-{$year}-%")->orderBy('id', 'desc')->first();
+            $nextSeq = 1;
+            if ($latest) {
+                $parts = explode('-', $latest->invoice_no);
+                $nextSeq = intval(end($parts)) + 1;
+            }
+            $invoiceNo = "INV-{$year}-" . str_pad($nextSeq, 6, '0', STR_PAD_LEFT);
+
+            $invoice = Invoice::create([
+                'invoice_no' => $invoiceNo,
+                'invoice_date' => $validated['invoice_date'],
+                'client_id' => $client->id,
+                'client_name' => $finalClientName,
+                'client_email' => $client->email,
+                'client_address' => $finalClientAddress,
+                'client_tax_id' => $client->tax_id,
+                'unit_rate' => $client->default_rate,
+                'currency' => $client->default_currency,
+                'period_start' => $validated['period_start'],
+                'period_end' => $validated['period_end'],
+                'source_approved_hours' => $validated['source_approved_hours'],
+                'billable_hours' => $validated['billable_hours'],
+                'adjustment_hours' => $adjustment,
+                'adjustment_reason' => $validated['adjustment_reason'],
+                'total_approved_hours' => $validated['source_approved_hours'],
+                'total_workers' => 0,
+                'total_amount' => $amount,
+                'status' => 'DRAFT'
+            ]);
+
+            $invoice->items()->create([
+                'description' => 'Video Data Collection',
+                'quantity' => $validated['billable_hours'],
+                'unit' => 'hours',
+                'unit_rate' => $client->default_rate,
+                'amount' => $amount
+            ]);
+
+            DB::commit();
+            return redirect()->route('invoices.show', $invoice->id)->with('success', 'Draft created.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => 'Failed to generate invoice: ' . $e->getMessage()])->withInput();
+        }
     }
 
-    /**
-     * Show the preview for the printable invoice.
-     */
     public function show($id)
     {
-        $invoice = Invoice::findOrFail($id);
-
-        $data = [
-            'invoice_no' => $invoice->invoice_no,
-            'invoice_date' => date('F j, Y', strtotime($invoice->invoice_date)),
-            'total_workers' => $invoice->total_workers,
-            'total_approved_hours' => number_format((float)$invoice->total_approved_hours, 2, '.', ''),
-            'total_amount' => number_format((float)$invoice->total_amount, 2, '.', ''),
-        ];
-
-        return view('invoices.preview', $data);
+        $invoice = Invoice::with('items')->findOrFail($id);
+        return view('invoices.preview', compact('invoice'));
     }
 
-    /**
-     * Delete an invoice.
-     */
+    public function issue($id)
+    {
+        $invoice = Invoice::findOrFail($id);
+        if ($invoice->status !== 'DRAFT') abort(403, 'Only draft can be issued.');
+        $invoice->issue();
+        return back()->with('success', 'Invoice Issued!');
+    }
+
+    public function send($id)
+    {
+        $invoice = Invoice::findOrFail($id);
+        if ($invoice->status !== 'ISSUED') abort(403, 'Must be issued first.');
+        $invoice->markAsSent();
+        return back()->with('success', 'Invoice marked as sent.');
+    }
+
+    public function pay($id)
+    {
+        $invoice = Invoice::findOrFail($id);
+        if ($invoice->status !== 'SENT' && $invoice->status !== 'ISSUED') abort(403, 'Cannot pay.');
+        $invoice->markAsPaid();
+        return back()->with('success', 'Invoice paid.');
+    }
+
+    public function voidInvoice(Request $request, $id)
+    {
+        $invoice = Invoice::findOrFail($id);
+        if (in_array($invoice->status, ['DRAFT', 'VOID'])) abort(403, 'Cannot void this state.');
+        
+        $request->validate(['reason' => 'required|string']);
+        $invoice->voidInvoice($request->reason, auth()->user()->name ?? 'System');
+        
+        return back()->with('success', 'Invoice voided.');
+    }
+
     public function destroy($id)
     {
         $invoice = Invoice::findOrFail($id);
+        if ($invoice->status !== 'DRAFT') {
+            return back()->with('error', 'Cannot delete an issued invoice. Use Void instead.');
+        }
         $invoice->delete();
-
-        return redirect()->route('invoices.index')->with('success', 'Invoice berhasil dihapus.');
+        return redirect()->route('invoices.index')->with('success', 'Draft deleted.');
     }
 }

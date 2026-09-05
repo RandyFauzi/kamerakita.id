@@ -47,6 +47,19 @@ class VideoWorkReport extends Model
         'evidence_submitted_image_urls',
     ];
 
+    protected static function booted(): void
+    {
+        $clearCache = function () {
+            \Illuminate\Support\Facades\Cache::forget('global_metrics');
+            \Illuminate\Support\Facades\Cache::forget('admin_latest_reports');
+            \Illuminate\Support\Facades\Cache::forget('admin_monthly_data');
+            \Illuminate\Support\Facades\Cache::forget('admin_daily_average_data');
+        };
+
+        static::saved($clearCache);
+        static::deleted($clearCache);
+    }
+
     public function partner(): BelongsTo
     {
         return $this->belongsTo(Partner::class, 'partner_id');

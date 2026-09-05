@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Partner;
 use App\Models\VideoWorkReport;
-use App\Services\EvidenceFileBackupService;
 use App\Services\PartnerActivityStatusService;
 use App\Services\StoreEvidenceImageService;
 use Illuminate\Http\Request;
@@ -77,7 +76,7 @@ class SubmitVideoWorkReportController extends Controller
             }
 
             DB::transaction(function () use ($partner, $validated, $emailPath, $qualityPath, $submittedPaths): void {
-                VideoWorkReport::create([
+                $report = VideoWorkReport::create([
                     'partner_id' => $partner->id,
                     'project_name' => $validated['project_name'],
                     'submission_date' => $validated['submission_date'],
@@ -90,16 +89,8 @@ class SubmitVideoWorkReportController extends Controller
                     'payment_status' => 'unpaid',
                 ]);
 
-                $backup = app(EvidenceFileBackupService::class);
-                $backup->backup($emailPath);
-                if ($qualityPath) {
-                    $backup->backup($qualityPath);
-                }
-                if (!empty($submittedPaths)) {
-                    foreach ($submittedPaths as $path) {
-                        $backup->backup($path);
-                    }
-                }
+                // Background Processing Queue
+                \App\Jobs\ProcessSubmittedReport::dispatch($report);
 
                 app(PartnerActivityStatusService::class)->markActiveAfterReport($partner);
             });

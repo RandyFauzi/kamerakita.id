@@ -37,8 +37,6 @@ class Partner extends Model
         'bank_name',
         'bank_account_number',
         'bank_account_owner',
-        'account_number',         // legacy fallback support
-        'account_owner_name',     // legacy fallback support
         'smartphone_type',
         'has_headstrap',
         'status',

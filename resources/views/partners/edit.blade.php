@@ -198,14 +198,14 @@
                                             <!-- Nomor Rekening -->
                                             <div>
                                                 <label for="bank_account_number" class="block text-sm font-semibold text-gray-700 mb-1">Nomor Rekening</label>
-                                                <input type="text" name="bank_account_number" id="bank_account_number" value="{{ old('bank_account_number', $partner->bank_account_number ?? $partner->account_number) }}" placeholder="Contoh: 7012345678" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                                <input type="text" name="bank_account_number" id="bank_account_number" value="{{ old('bank_account_number', $partner->bank_account_number ) }}" placeholder="Contoh: 7012345678" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                                                 @error('bank_account_number') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                                             </div>
 
                                             <!-- Nama Pemilik Rekening -->
                                             <div class="md:col-span-2">
                                                 <label for="bank_account_owner" class="block text-sm font-semibold text-gray-700 mb-1">Nama Pemilik Rekening</label>
-                                                <input type="text" name="bank_account_owner" id="bank_account_owner" value="{{ old('bank_account_owner', $partner->bank_account_owner ?? $partner->account_owner_name) }}" placeholder="Contoh: Randy Fauzi" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                                <input type="text" name="bank_account_owner" id="bank_account_owner" value="{{ old('bank_account_owner', $partner->bank_account_owner ) }}" placeholder="Contoh: Randy Fauzi" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                                                 @error('bank_account_owner') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                                             </div>
                                         </div>

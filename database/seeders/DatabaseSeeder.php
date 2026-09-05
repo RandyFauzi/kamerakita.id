@@ -14,32 +14,39 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        if (app()->environment('production')) {
+            $this->command->error('WARNING: Seeder cannot be run in production environment.');
+            return;
+        }
+
+        $defaultPassword = env('SEEDER_DEFAULT_PASSWORD') ? bcrypt(env('SEEDER_DEFAULT_PASSWORD')) : bcrypt(\Illuminate\Support\Str::random(16));
+
         // 1. Seed System Users (Roles)
         User::factory()->create([
-            'name' => 'Randy Fauzi (Admin)',
-            'email' => 'randyfauzi24@gmail.com',
-            'password' => bcrypt('password'),
+            'name' => 'Demo Super Admin',
+            'email' => 'superadmin@example.com',
+            'password' => $defaultPassword,
             'role' => 'superadmin',
         ]);
 
         User::factory()->create([
             'name' => 'Super Admin',
-            'email' => 'superadmin@kamerakita.id',
-            'password' => bcrypt('password'),
+            'email' => 'superadmin2@example.com',
+            'password' => $defaultPassword,
             'role' => 'superadmin',
         ]);
 
         User::factory()->create([
             'name' => 'Tim Admin / QC',
-            'email' => 'admin@kamerakita.id',
-            'password' => bcrypt('password'),
+            'email' => 'admin@example.com',
+            'password' => $defaultPassword,
             'role' => 'admin',
         ]);
 
         User::factory()->create([
             'name' => 'Tim Keuangan',
-            'email' => 'finance@kamerakita.id',
-            'password' => bcrypt('password'),
+            'email' => 'finance@example.com',
+            'password' => $defaultPassword,
             'role' => 'finance',
         ]);
 
@@ -48,8 +55,8 @@ class DatabaseSeeder extends Seeder
         for ($i = 1; $i <= 5; $i++) {
             $user = User::factory()->create([
                 'name' => 'Mitra ' . $i,
-                'email' => 'mitra' . $i . '@kamerakita.id',
-                'password' => bcrypt('password'),
+                'email' => 'mitra' . $i . '@example.com',
+                'password' => $defaultPassword,
                 'role' => 'worker', // Can log in and view things
             ]);
 
@@ -65,8 +72,8 @@ class DatabaseSeeder extends Seeder
         for ($i = 1; $i <= 95; $i++) {
             $user = User::factory()->create([
                 'name' => 'Worker Mitra ' . $i,
-                'email' => "worker{$i}@kamerakita.id",
-                'password' => bcrypt('password'),
+                'email' => "worker{$i}@example.com",
+                'password' => $defaultPassword,
                 'role' => 'worker', // Set default role
             ]);
 

@@ -21,8 +21,8 @@ class PayrollExportCurrencyTest extends TestCase
 
         $partner = Partner::factory()->create([
             'base_hourly_rate' => 60000,
-            'account_number' => '1234567890',
-            'account_owner_name' => 'Worker Satu',
+            'bank_account_number' => '1234567890',
+            'bank_account_owner' => 'Worker Satu',
             'bank_name' => 'BCA',
             'mitra_id' => 'KMK-900',
         ]);

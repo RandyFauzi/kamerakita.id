@@ -197,6 +197,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/invoices', [\App\Http\Controllers\InvoiceController::class, 'store'])->name('invoices.store');
     Route::get('/invoices/{invoice}/preview', [\App\Http\Controllers\InvoiceController::class, 'show'])->name('invoices.show');
     Route::delete('/invoices/{invoice}', [\App\Http\Controllers\InvoiceController::class, 'destroy'])->name('invoices.destroy');
+    Route::post('/invoices/{invoice}/issue', [\App\Http\Controllers\InvoiceController::class, 'issue'])->name('invoices.issue');
+    Route::post('/invoices/{invoice}/send', [\App\Http\Controllers\InvoiceController::class, 'send'])->name('invoices.send');
+    Route::post('/invoices/{invoice}/pay', [\App\Http\Controllers\InvoiceController::class, 'pay'])->name('invoices.pay');
+    Route::post('/invoices/{invoice}/void', [\App\Http\Controllers\InvoiceController::class, 'voidInvoice'])->name('invoices.void');
 });
 
 // Public Fastwork Onboarding routes

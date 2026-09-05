@@ -233,7 +233,7 @@
                                     <div class="flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-400 font-medium">
                                         <span>ID: {{ $w['partner']->mitra_id }}</span>
                                         <span aria-hidden="true">&middot;</span>
-                                        <span>Rek: {{ $w['partner']->bank_name ?? 'BCA' }} ({{ $w['partner']->bank_account_number ?? $w['partner']->account_number ?? '-' }})</span>
+                                        <span>Rek: {{ $w['partner']->bank_name ?? 'BCA' }} ({{ $w['partner']->bank_account_number  ?? '-' }})</span>
                                     </div>
                                 </div>
                             </div>
@@ -485,17 +485,17 @@
                                 </div>
                                 <div>
                                     <span class="block text-[9px] text-gray-400 font-normal uppercase">Pemilik Rekening</span>
-                                    <span class="block font-bold text-slate-800" x-text="activeWorker.partner.bank_account_owner || activeWorker.partner.account_owner_name || activeWorker.partner.full_name"></span>
+                                    <span class="block font-bold text-slate-800" x-text="activeWorker.partner.bank_account_owner  || activeWorker.partner.full_name"></span>
                                 </div>
                             </div>
 
                             <div class="bg-white border border-gray-200 rounded-xl p-3 flex justify-between items-center shadow-sm">
                                 <div class="space-y-0.5">
                                     <span class="block text-[9px] text-gray-400 uppercase leading-none">Nomor Rekening</span>
-                                    <span class="font-mono text-sm font-black tracking-wider text-indigo-650" x-text="activeWorker.partner.bank_account_number || activeWorker.partner.account_number || '-'"></span>
+                                    <span class="font-mono text-sm font-black tracking-wider text-indigo-650" x-text="activeWorker.partner.bank_account_number  || '-'"></span>
                                 </div>
                                 <button type="button" 
-                                        @click="copyToClipboard(activeWorker.partner.bank_account_number || activeWorker.partner.account_number)"
+                                        @click="copyToClipboard(activeWorker.partner.bank_account_number )"
                                         class="inline-flex items-center gap-1.5 px-3 py-1.5 border border-indigo-100 bg-indigo-50 text-indigo-700 rounded-lg text-[10px] font-bold hover:bg-indigo-100 transition duration-150">
                                     <span x-text="copySuccess ? 'Tersalin!' : 'Salin'"></span>
                                 </button>

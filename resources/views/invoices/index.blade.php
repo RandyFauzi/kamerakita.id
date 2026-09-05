@@ -1,185 +1,185 @@
 <x-app-layout>
-    <div class="min-h-screen bg-slate-50 py-8 font-sans" x-data="{
-        activeTab: 'generator', // 'generator' or 'history'
-        invoiceNo: '',
-        invoiceDate: '',
-        totalWorkers: '',
-        totalHours: '',
-        get totalAmount() {
-            return this.totalHours ? (parseFloat(this.totalHours) * 3.5).toFixed(2) : '';
-        },
-        defaultInvoiceNo: 'INV-{{ date('Ymd') }}-XXX',
-        get formattedDate() {
-            if (this.invoiceDate) {
-                const parts = this.invoiceDate.split('-');
-                if(parts.length === 3) {
-                    return new Date(parts[0], parts[1]-1, parts[2]).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-                }
-            }
-            return new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-        }
-    }">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            
-            <div class="flex items-center justify-between mb-6">
-                <div>
-                    <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Invoice</h1>
-                    <p class="text-sm text-slate-500 mt-1">Buat ringkasan tagihan dan kelola data invoice.</p>
+    <div class="py-12" x-data="invoiceApp()">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="mb-6 flex justify-between items-center">
+                <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight">Client Invoices</h2>
+                <div class="flex space-x-2">
+                    <button @click="activeTab = 'generator'" :class="{ 'bg-indigo-600 text-white': activeTab === 'generator', 'bg-white text-gray-700 hover:bg-gray-50': activeTab !== 'generator' }" class="px-5 py-2.5 rounded-full text-sm font-medium transition-colors shadow-sm border border-gray-200">
+                        Buat Invoice Baru
+                    </button>
+                    <button @click="activeTab = 'history'" :class="{ 'bg-indigo-600 text-white': activeTab === 'history', 'bg-white text-gray-700 hover:bg-gray-50': activeTab !== 'history' }" class="px-5 py-2.5 rounded-full text-sm font-medium transition-colors shadow-sm border border-gray-200">
+                        Riwayat Invoice
+                    </button>
                 </div>
             </div>
 
-            <!-- Tabs Navigation -->
-            <div class="border-b border-gray-200 mb-8">
-                <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-                    <button @click="activeTab = 'generator'" 
-                            :class="activeTab === 'generator' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
-                            class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
-                        Pembuat Invoice
-                    </button>
-                    <button @click="activeTab = 'history'" 
-                            :class="activeTab === 'history' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
-                            class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
-                        Data Invoice
-                    </button>
-                </nav>
-            </div>
-
-            <!-- Flash Message -->
             @if(session('success'))
-                <div class="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl relative" role="alert">
-                    <span class="block sm:inline">{{ session('success') }}</span>
+                <div class="mb-4 bg-green-50 border-l-4 border-green-400 p-4 rounded-md">
+                    <div class="flex">
+                        <div class="ml-3">
+                            <p class="text-sm text-green-700">{{ session('success') }}</p>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+            @if($errors->any())
+                <div class="mb-4 bg-red-50 border-l-4 border-red-400 p-4 rounded-md">
+                    <div class="flex">
+                        <div class="ml-3">
+                            <p class="text-sm text-red-700">{{ $errors->first() }}</p>
+                        </div>
+                    </div>
                 </div>
             @endif
 
             <!-- Tab 1: Generator -->
-            <div x-show="activeTab === 'generator'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform scale-95" x-transition:enter-end="opacity-100 transform scale-100" style="display: none;">
-                <div class="flex flex-col lg:flex-row gap-8 items-start">
-                    <!-- Left Column: Form -->
-                    <div class="w-full lg:w-1/3 shrink-0">
-                        <form action="{{ route('invoices.store') }}" method="POST" target="_blank" class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200/60 sticky top-8">
-                            @csrf
-                            
-                            <h2 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
-                                <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                                Detail Tagihan
-                            </h2>
+            <div x-show="activeTab === 'generator'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform scale-95" x-transition:enter-end="opacity-100 transform scale-100">
+                <div class="flex flex-col lg:flex-row gap-8">
+                    <!-- Form Section -->
+                    <div class="w-full lg:w-1/3">
+                        <div class="bg-white overflow-hidden shadow-sm sm:rounded-3xl border border-gray-150">
+                            <div class="p-8">
+                                <h3 class="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                                    <svg class="w-5 h-5 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                    Invoice Data
+                                </h3>
+                                <form action="{{ route('invoices.store') }}" method="POST" id="invoiceForm">
+                                    @csrf
+                                    
+                                    <div class="space-y-5">
+                                        <div>
+                                            <label class="block text-sm font-semibold text-gray-700 mb-1">Pilih Klien (Template)</label>
+                                            <select name="client_id" x-model="selectedClient" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
+                                                <option value="">Pilih Client...</option>
+                                                @foreach($clients as $c)
+                                                    <option value="{{ $c->id }}" data-rate="{{ $c->default_rate }}" data-currency="{{ $c->default_currency }}" data-name="{{ $c->name }}" data-address="{{ $c->address }}">{{ $c->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
 
-                            <div class="space-y-5">
-                                <div>
-                                    <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Invoice No (Opsional)</label>
-                                    <input type="text" name="invoice_no" x-model="invoiceNo" class="block w-full rounded-xl border-slate-200 bg-slate-50/50 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors" placeholder="Otomatis jika kosong">
-                                </div>
+                                        <div x-show="selectedClient" x-cloak class="space-y-4 p-4 bg-gray-50 border border-gray-200 rounded-xl mt-2">
+                                            <div>
+                                                <label class="block text-xs font-semibold text-gray-600 mb-1">Nama Klien (Di Invoice)</label>
+                                                <input type="text" name="client_name" x-model="clientName" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs font-semibold text-gray-600 mb-1">Alamat Penagihan</label>
+                                                <textarea name="client_address" x-model="clientAddress" rows="2" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"></textarea>
+                                            </div>
+                                        </div>
 
-                                <div>
-                                    <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Invoice Date (Opsional)</label>
-                                    <input type="date" name="invoice_date" x-model="invoiceDate" class="block w-full rounded-xl border-slate-200 bg-slate-50/50 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors">
-                                </div>
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-sm font-semibold text-gray-700 mb-1">Period Start</label>
+                                                <input type="date" name="period_start" x-model="periodStart" required class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-semibold text-gray-700 mb-1">Period End</label>
+                                                <input type="date" name="period_end" x-model="periodEnd" required class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
+                                            </div>
+                                        </div>
 
-                                <div class="pt-4 border-t border-slate-100"></div>
+                                        <div>
+                                            <label class="block text-sm font-semibold text-gray-700 mb-1">Invoice Date</label>
+                                            <input type="date" name="invoice_date" x-model="invoiceDate" required class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
+                                        </div>
 
-                                <div>
-                                    <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Total Workers <span class="text-red-500">*</span></label>
-                                    <input type="number" name="total_workers" x-model="totalWorkers" required class="block w-full rounded-xl border-slate-200 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors" placeholder="Misal: 9">
-                                </div>
+                                        <hr class="my-4 border-gray-200">
 
-                                <div>
-                                    <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Total Approved Hours <span class="text-red-500">*</span></label>
-                                    <div class="relative">
-                                        <input type="number" step="0.01" name="total_approved_hours" x-model="totalHours" required class="block w-full rounded-xl border-slate-200 pl-4 pr-12 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors" placeholder="0.00">
-                                        <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                                            <span class="text-slate-400 sm:text-sm font-medium">hrs</span>
+                                        <div>
+                                            <label class="block text-sm font-semibold text-gray-700 mb-1">Approved Hours (Source)</label>
+                                            <input type="number" step="0.01" name="source_approved_hours" x-model="sourceHours" required class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm bg-gray-50">
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-sm font-semibold text-gray-700 mb-1">Billable Hours (To Client)</label>
+                                            <input type="number" step="0.01" name="billable_hours" x-model="billableHours" required class="mt-1 block w-full rounded-xl border-indigo-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 font-bold text-indigo-700 text-lg">
+                                        </div>
+
+                                        <div x-show="adjustment !== 0" x-cloak>
+                                            <label class="block text-sm font-semibold text-gray-700 mb-1 text-orange-600">Adjustment: <span x-text="adjustment.toFixed(2)"></span> hours</label>
+                                            <input type="text" name="adjustment_reason" x-model="adjustmentReason" placeholder="Reason for adjustment..." class="mt-1 block w-full rounded-xl border-orange-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 text-sm">
+                                            <p class="text-xs text-orange-500 mt-1">Wajib diisi karena angka berbeda.</p>
                                         </div>
                                     </div>
-                                </div>
 
-                                <div>
-                                    <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Total Amount <span class="text-red-500">*</span></label>
-                                    <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                            <span class="text-slate-400 sm:text-sm font-bold">$</span>
-                                        </div>
-                                        <input type="number" step="0.01" name="total_amount" :value="totalAmount" readonly class="block w-full rounded-xl border-slate-200 pl-8 pr-12 text-sm bg-slate-100 text-slate-500 cursor-not-allowed focus:ring-0 focus:border-slate-200 transition-colors" placeholder="0.00">
-                                        <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                                            <span class="text-slate-400 sm:text-sm font-medium">USD</span>
-                                        </div>
+                                    <div class="mt-8">
+                                        <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                                            Save as Draft
+                                        </button>
                                     </div>
-                                </div>
+                                </form>
                             </div>
-
-                            <div class="mt-8">
-                                <button type="submit" @click="setTimeout(() => window.location.reload(), 1500)" class="w-full flex items-center justify-center py-3.5 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all shadow-indigo-500/30">
-                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                                    Simpan & Buka PDF
-                                </button>
-                            </div>
-                        </form>
+                        </div>
                     </div>
 
-                    <!-- Right Column: Live Preview -->
+                    <!-- Live Preview Section -->
                     <div class="w-full lg:w-2/3">
-                        <div class="bg-slate-200/50 p-4 sm:p-8 rounded-3xl border border-slate-200 flex justify-center overflow-x-auto">
-                            <!-- PDF Paper Simulation -->
-                            <div class="bg-white w-full max-w-[800px] shadow-lg shrink-0 relative overflow-hidden" style="aspect-ratio: 1/1.2; min-height: 800px;">
-                                <!-- Invoice Content (Mirrors preview.blade.php visually) -->
-                                <div class="p-8 sm:p-12 h-full flex flex-col relative text-slate-800">
-                                    <div class="flex justify-between items-end pb-4 border-b-2 border-blue-600 mb-8">
-                                        <div class="flex items-center gap-3">
-                                            <img src="{{ asset('vendor-assets/kamerakita/logo-mark.svg') }}" alt="Logo" class="h-10">
-                                            <h1 class="text-3xl font-bold text-blue-600">KameraKita AI</h1>
-                                        </div>
+                        <div class="bg-gray-100 p-8 rounded-3xl h-full flex items-center justify-center border border-gray-200 shadow-inner">
+                            <div class="bg-white w-full max-w-2xl min-h-[800px] shadow-2xl relative overflow-hidden" style="padding: 3rem;">
+                                <!-- Simple modern invoice design -->
+                                <div class="flex flex-col h-full">
+                                    <div class="flex justify-between items-start border-b pb-8 mb-8">
                                         <div>
-                                            <h2 class="text-2xl font-bold text-slate-700 uppercase tracking-wide">Invoice Summary</h2>
+                                            <h1 class="text-4xl font-extrabold text-slate-800 tracking-tight">INVOICE</h1>
+                                            <p class="text-slate-500 mt-1">DRAFT PREVIEW</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <div class="w-16 h-16 bg-blue-600 rounded-lg flex items-center justify-center ml-auto mb-3">
+                                                <span class="text-white font-bold text-xl">KK</span>
+                                            </div>
+                                            <h2 class="text-xl font-bold text-slate-800">KameraKita</h2>
+                                            <p class="text-sm text-slate-500">Jakarta, Indonesia</p>
                                         </div>
                                     </div>
 
-                                    <div class="flex justify-end mb-12">
-                                        <table class="text-sm text-slate-700">
-                                            <tr>
-                                                <td class="font-bold pr-4 py-1">Invoice No:</td>
-                                                <td x-text="invoiceNo || defaultInvoiceNo"></td>
-                                            </tr>
-                                            <tr>
-                                                <td class="font-bold pr-4 py-1">Date:</td>
-                                                <td x-text="formattedDate"></td>
-                                            </tr>
-                                        </table>
-                                    </div>
-
-                                    <div class="mb-12 text-sm text-slate-800">
-                                        <p class="font-bold mb-1 text-slate-500 uppercase tracking-wider text-xs">Billed To:</p>
-                                        <p class="font-bold text-base">MyTron Labs Inc.</p>
-                                        <p>8 The Green, STE A, Dover City,</p>
-                                        <p>Kent County, DE 19901</p>
+                                    <div class="flex justify-between mb-10">
+                                        <div class="mb-12 text-sm text-slate-800">
+                                            <p class="font-bold mb-1 text-slate-500 uppercase tracking-wider text-xs">Bill To:</p>
+                                            <p class="font-bold text-base text-indigo-700" x-text="clientName || 'Select Client'"></p>
+                                            <p class="text-slate-600 whitespace-pre-line" x-text="clientAddress"></p>
+                                            <p x-show="periodStart && periodEnd" class="text-gray-500 mt-2">Billing Period: <br><span x-text="periodStart"></span> to <span x-text="periodEnd"></span></p>
+                                        </div>
+                                        <div class="text-right text-sm">
+                                            <p class="font-bold text-slate-500 uppercase tracking-wider text-xs mb-1">Date:</p>
+                                            <p x-text="invoiceDate || 'YYYY-MM-DD'"></p>
+                                        </div>
                                     </div>
 
                                     <div class="mb-8">
                                         <table class="w-full text-sm text-left border-collapse">
-                                            <thead class="bg-blue-600 text-white">
+                                            <thead class="bg-indigo-50 text-indigo-900 border-b-2 border-indigo-200">
                                                 <tr>
                                                     <th class="py-3 px-4 font-bold uppercase tracking-wider text-xs">Description</th>
-                                                    <th class="py-3 px-4 font-bold uppercase tracking-wider text-xs text-center">Total Workers</th>
-                                                    <th class="py-3 px-4 font-bold uppercase tracking-wider text-xs text-center">Total Approved Hours</th>
-                                                    <th class="py-3 px-4 font-bold uppercase tracking-wider text-xs text-center">Total Amount</th>
+                                                    <th class="py-3 px-4 font-bold uppercase tracking-wider text-xs text-center">Qty (Hours)</th>
+                                                    <th class="py-3 px-4 font-bold uppercase tracking-wider text-xs text-right">Rate</th>
+                                                    <th class="py-3 px-4 font-bold uppercase tracking-wider text-xs text-right">Amount</th>
                                                 </tr>
                                             </thead>
                                             <tbody class="border-b border-slate-200">
                                                 <tr>
-                                                    <td class="py-4 px-4 text-slate-800">Kamera Kita Workers</td>
-                                                    <td class="py-4 px-4 text-center text-slate-800 font-medium" x-text="totalWorkers || '-'"></td>
-                                                    <td class="py-4 px-4 text-center text-slate-800 font-medium" x-text="totalHours ? parseFloat(totalHours).toFixed(2) : '-'"></td>
-                                                    <td class="py-4 px-4 text-center text-slate-800 font-bold" x-text="totalAmount ? parseFloat(totalAmount).toFixed(2) : '-'"></td>
+                                                    <td class="py-4 px-4 text-slate-800">
+                                                        <span class="font-semibold">Video Data Collection</span>
+                                                        <template x-if="adjustment !== 0">
+                                                            <div class="text-xs text-orange-500 mt-1">Adjusted from <span x-text="sourceHours"></span> hrs (<span x-text="adjustmentReason"></span>)</div>
+                                                        </template>
+                                                    </td>
+                                                    <td class="py-4 px-4 text-center text-slate-800 font-medium" x-text="billableHours ? parseFloat(billableHours).toFixed(2) : '-'"></td>
+                                                    <td class="py-4 px-4 text-right text-slate-800" x-text="rate ? currency + ' ' + parseFloat(rate).toFixed(2) : '-'"></td>
+                                                    <td class="py-4 px-4 text-right text-slate-800 font-bold" x-text="totalAmount ? currency + ' ' + parseFloat(totalAmount).toFixed(2) : '-'"></td>
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </div>
-
-                                    <div class="text-xs italic text-slate-500 mt-auto mb-16">
-                                        * This summary represents the total workload without individual email details. The applied rate is 3.50 per billable hour.
-                                    </div>
-
-                                    <div class="absolute bottom-8 left-12 right-12 border-t border-slate-200 pt-4 text-center">
-                                        <p class="text-sm text-slate-500 mb-1">Thank you for your business!</p>
-                                        <p class="text-sm font-bold text-slate-400">KameraKita AI</p>
+                                    
+                                    <div class="flex justify-end mt-4">
+                                        <div class="w-1/2">
+                                            <div class="flex justify-between py-3 border-t-2 border-slate-800 font-bold text-lg">
+                                                <span>TOTAL DUE</span>
+                                                <span class="text-indigo-700" x-text="totalAmount ? currency + ' ' + parseFloat(totalAmount).toFixed(2) : '-'"></span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -191,50 +191,119 @@
             <!-- Tab 2: History (CRUD) -->
             <div x-show="activeTab === 'history'" style="display: none;" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform scale-95" x-transition:enter-end="opacity-100 transform scale-100">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-3xl border border-gray-150">
-                    <div class="p-6">
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
+                    <div class="p-6 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
+                        <form action="{{ route('invoices.index') }}" method="GET" class="flex space-x-2 w-full max-w-lg">
+                            <input type="text" name="search" value="{{ request('search') }}" placeholder="Search client or INV-..." class="rounded-lg border-gray-300 text-sm flex-1">
+                            <select name="status" class="rounded-lg border-gray-300 text-sm">
+                                <option value="">All Status</option>
+                                <option value="DRAFT" {{ request('status') == 'DRAFT' ? 'selected' : '' }}>DRAFT</option>
+                                <option value="ISSUED" {{ request('status') == 'ISSUED' ? 'selected' : '' }}>ISSUED</option>
+                                <option value="SENT" {{ request('status') == 'SENT' ? 'selected' : '' }}>SENT</option>
+                                <option value="PAID" {{ request('status') == 'PAID' ? 'selected' : '' }}>PAID</option>
+                                <option value="VOID" {{ request('status') == 'VOID' ? 'selected' : '' }}>VOID</option>
+                            </select>
+                            <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium">Filter</button>
+                        </form>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Invoice No</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date / Period</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Billable</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                @forelse($invoices as $inv)
                                     <tr>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Invoice No</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Workers</th>
-                                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Hours</th>
-                                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $inv->invoice_no }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $inv->client_name }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            {{ $inv->invoice_date->format('d M Y') }}<br>
+                                            <span class="text-xs text-gray-400">P: {{ $inv->period_start ? $inv->period_start->format('d M') . ' - ' . $inv->period_end->format('d M') : '-' }}</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">{{ number_format($inv->billable_hours, 2) }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 text-right">{{ $inv->currency }} {{ number_format($inv->total_amount, 2) }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                                {{ $inv->status == 'DRAFT' ? 'bg-gray-100 text-gray-800' : '' }}
+                                                {{ $inv->status == 'ISSUED' ? 'bg-blue-100 text-blue-800' : '' }}
+                                                {{ $inv->status == 'SENT' ? 'bg-yellow-100 text-yellow-800' : '' }}
+                                                {{ $inv->status == 'PAID' ? 'bg-green-100 text-green-800' : '' }}
+                                                {{ $inv->status == 'VOID' ? 'bg-red-100 text-red-800' : '' }}">
+                                                {{ $inv->status }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-medium space-x-2">
+                                            <a href="{{ route('invoices.show', $inv->id) }}" class="text-indigo-600 hover:text-indigo-900">View</a>
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    @forelse($invoices ?? [] as $inv)
-                                        <tr>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $inv->invoice_no }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ date('d M Y', strtotime($inv->invoice_date)) }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $inv->total_workers }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ number_format($inv->total_approved_hours, 2) }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 text-right">${{ number_format($inv->total_amount, 2) }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center space-x-3">
-                                                <a href="{{ route('invoices.show', $inv->id) }}" target="_blank" class="text-indigo-600 hover:text-indigo-900">Lihat PDF</a>
-                                                <form action="{{ route('invoices.destroy', $inv->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Yakin ingin menghapus invoice ini?');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="text-red-600 hover:text-red-900">Hapus</button>
-                                                </form>
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="6" class="px-6 py-12 text-center text-gray-500">
-                                                Belum ada invoice yang dibuat.
-                                            </td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
+                                @empty
+                                    <tr>
+                                        <td colspan="7" class="px-6 py-12 text-center text-gray-500">No invoices found.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                        <div class="px-6 py-3 border-t border-gray-200">
+                            {{ $invoices->links() }}
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
+
+    <script>
+        function invoiceApp() {
+            return {
+                activeTab: '{{ request()->has("page") || request()->has("search") || request()->has("status") ? "history" : "generator" }}',
+                selectedClient: '',
+                clientName: '',
+                clientAddress: '',
+                rate: 0,
+                currency: 'USD',
+                periodStart: '',
+                periodEnd: '',
+                invoiceDate: '{{ date("Y-m-d") }}',
+                sourceHours: 0,
+                billableHours: 0,
+                adjustmentReason: '',
+
+                get adjustment() {
+                    let s = parseFloat(this.sourceHours) || 0;
+                    let b = parseFloat(this.billableHours) || 0;
+                    return b - s;
+                },
+
+                get totalAmount() {
+                    let b = parseFloat(this.billableHours) || 0;
+                    let r = parseFloat(this.rate) || 0;
+                    return b * r;
+                },
+
+                init() {
+                    this.$watch('selectedClient', value => {
+                        if (!value) {
+                            this.clientName = '';
+                            this.clientAddress = '';
+                            this.rate = 0;
+                            return;
+                        }
+                        let select = document.querySelector('select[name="client_id"]');
+                        let option = select.options[select.selectedIndex];
+                        this.clientName = option.getAttribute('data-name');
+                        this.clientAddress = option.getAttribute('data-address') || '';
+                        this.rate = option.getAttribute('data-rate');
+                        this.currency = option.getAttribute('data-currency');
+                    });
+                }
+            }
+        }
+    </script>
 </x-app-layout>

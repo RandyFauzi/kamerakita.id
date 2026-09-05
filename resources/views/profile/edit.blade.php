@@ -82,7 +82,7 @@
                             </div>
                             <div class="col-span-2 mt-1">
                                 <p class="text-[10px] text-gray-400 font-medium mb-1 uppercase tracking-wider">Pemilik Rekening (No. Rek)</p>
-                                <p class="text-[14px] font-bold text-gray-800">{{ $partner->bank_account_owner ?? $partner->account_owner_name ?? '-' }} <span class="text-gray-500 font-mono font-medium text-xs block sm:inline sm:ml-1 mt-0.5 sm:mt-0">({{ $partner->bank_account_number ?? $partner->account_number ?? '-' }})</span></p>
+                                <p class="text-[14px] font-bold text-gray-800">{{ $partner->bank_account_owner  ?? '-' }} <span class="text-gray-500 font-mono font-medium text-xs block sm:inline sm:ml-1 mt-0.5 sm:mt-0">({{ $partner->bank_account_number  ?? '-' }})</span></p>
                             </div>
                         </div>
                     </div>

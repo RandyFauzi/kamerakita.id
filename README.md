@@ -22,10 +22,24 @@ npm install
 ```
 
 ### 2. Konfigurasi Environment (`.env`)
-Salin file `.env.example` menjadi `.env`, lalu sesuaikan variabel koneksi database dan kredensial utama:
+Sangat krusial untuk menggunakan konfigurasi produksi. Salin file `.env.production.example` menjadi `.env`, lalu sesuaikan variabel koneksi database dan AWS S3:
 ```bash
-cp .env.example .env
+cp .env.production.example .env
 php artisan key:generate
+```
+
+Pastikan **nilai-nilai berikut** sudah benar di file `.env` Anda:
+```ini
+APP_ENV=production
+APP_DEBUG=false
+LOG_LEVEL=warning
+
+# Wajib untuk skala produksi yang besar
+QUEUE_CONNECTION=redis
+CACHE_STORE=redis
+
+# Wajib untuk penyimpanan file media/bukti di Cloud
+FILESYSTEM_DISK=s3
 ```
 
 ### 3. Migrasi & Seeding Database
@@ -61,11 +75,14 @@ php artisan view:cache
 
 ---
 
-## Akun Demonstrasi Default (Testing)
-- Super Admin: `randyfauzi24@gmail.com`
-- Admin / QC: `admin@kamerakita.id`
-- Finance: `finance@kamerakita.id`
+## Konfigurasi Akun Awal (Development)
+Sistem ini menggunakan seeder database yang hanya diperbolehkan berjalan di mode `local` atau `development`.
+Jangan pernah menjalankan seeder ini di *production*.
 
-> **PENTING**: Semua akun di atas secara bawaan menggunakan kata sandi `password`. **Ubah kata sandi ini segera** jika di-*deploy* ke *server production*!
-- **Contributor**: `contributor1@kamerakita.id` (hingga `contributor5`)
-- **Worker**: `worker1@kamerakita.id` (hingga `worker95`)
+Untuk membuat akun admin pertama kali di *production*, gunakan perintah:
+```bash
+php artisan tinker
+```
+Lalu buat user secara manual dengan email perusahaan Anda dan password yang aman.
+
+> **PENTING**: Jangan pernah menggunakan kredensial dummy di lingkungan produksi. Segera ganti semua default password jika Anda pernah menggunakannya.

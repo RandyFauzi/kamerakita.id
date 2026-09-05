@@ -499,21 +499,21 @@
         <div class="bg-white rounded-[32px] p-6 border border-gray-150 shadow-sm space-y-6">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center pb-4 border-b border-gray-100 gap-4">
                 <div>
-                    <span class="block text-sm font-bold text-gray-900">Tagihan Klien (Mytronlabs)</span>
+                    <span class="block text-sm font-bold text-gray-900">Tagihan Klien Terbaru</span>
                     <span class="text-xs text-gray-400">Pencatatan faktur penagihan bulanan agensi ke klien</span>
                 </div>
                 <!-- Projections summaries -->
                 @php
-                    $cair = $clientInvoices->where('status', 'paid_by_client')->sum('total_amount_usd');
-                    $tertahan = $clientInvoices->where('status', 'unpaid_by_client')->sum('total_amount_usd');
+                    $cair = $clientInvoices->where('status', 'PAID')->sum('total_amount');
+                    $tertahan = $clientInvoices->whereIn('status', ['ISSUED', 'SENT'])->sum('total_amount');
                 @endphp
                 <div class="flex gap-4">
                     <div class="bg-emerald-50/50 border border-emerald-100 rounded-xl px-4 py-2">
-                        <span class="block text-[10px] text-gray-400 font-bold uppercase tracking-wider font-mono">Total Dana Cair</span>
+                        <span class="block text-[10px] text-gray-400 font-bold uppercase tracking-wider font-mono">Total Dana Cair (PAID)</span>
                         <span class="block text-sm font-black text-emerald-800">${{ number_format($cair, 2) }}</span>
                     </div>
                     <div class="bg-amber-50/50 border border-amber-100 rounded-xl px-4 py-2">
-                        <span class="block text-[10px] text-gray-400 font-bold uppercase tracking-wider font-mono">Dana Tertahan (Pending)</span>
+                        <span class="block text-[10px] text-gray-400 font-bold uppercase tracking-wider font-mono">Dana Tertahan (ISSUED/SENT)</span>
                         <span class="block text-sm font-black text-amber-800">${{ number_format($tertahan, 2) }}</span>
                     </div>
                 </div>
@@ -523,30 +523,29 @@
                 <table class="min-w-full divide-y divide-gray-100 text-sm">
                     <thead>
                         <tr class="text-gray-500">
-                            <th class="py-3 text-left font-semibold">Bulan Invoice</th>
-                            <th class="py-3 text-left font-semibold">Durasi Ditagihkan (Menit)</th>
+                            <th class="py-3 text-left font-semibold">Invoice No</th>
+                            <th class="py-3 text-left font-semibold">Client</th>
                             <th class="py-3 text-left font-semibold">Durasi Ditagihkan (Jam)</th>
-                            <th class="py-3 text-left font-semibold">Total Nilai Tagihan (USD)</th>
-                            <th class="py-3 text-left font-semibold">Status Pembayaran Klien</th>
+                            <th class="py-3 text-left font-semibold">Total Nilai Tagihan</th>
+                            <th class="py-3 text-left font-semibold">Status Pembayaran</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100 bg-white">
                         @forelse($clientInvoices as $invoice)
                             <tr>
-                                <td class="py-3.5 font-bold text-gray-900">{{ $invoice->invoice_month }}</td>
-                                <td class="py-3.5 text-gray-600 font-mono">{{ number_format($invoice->total_minutes_billed) }} menit</td>
-                                <td class="py-3.5 text-slate-800 font-semibold">{{ round($invoice->total_minutes_billed / 60, 1) }} jam</td>
-                                <td class="py-3.5 font-black text-slate-900">${{ number_format($invoice->total_amount_usd, 2) }}</td>
+                                <td class="py-3.5 font-bold text-gray-900">{{ $invoice->invoice_no }}</td>
+                                <td class="py-3.5 text-gray-900">{{ $invoice->client_name }}</td>
+                                <td class="py-3.5 text-slate-800 font-semibold">{{ number_format($invoice->billable_hours, 2) }} jam</td>
+                                <td class="py-3.5 font-black text-slate-900">{{ $invoice->currency }} {{ number_format($invoice->total_amount, 2) }}</td>
                                 <td class="py-3.5">
-                                    @if($invoice->status === 'paid_by_client')
-                                        <span class="inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold border bg-emerald-50 text-emerald-700 border-emerald-100">
-                                            Paid by Client
-                                        </span>
-                                    @else
-                                        <span class="inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold border bg-amber-50 text-amber-700 border-amber-100 animate-pulse">
-                                            Unpaid by Client
-                                        </span>
-                                    @endif
+                                    <span class="inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold border 
+                                        {{ $invoice->status == 'DRAFT' ? 'bg-gray-100 text-gray-800' : '' }}
+                                        {{ $invoice->status == 'ISSUED' ? 'bg-blue-100 text-blue-800' : '' }}
+                                        {{ $invoice->status == 'SENT' ? 'bg-yellow-100 text-yellow-800' : '' }}
+                                        {{ $invoice->status == 'PAID' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : '' }}
+                                        {{ $invoice->status == 'VOID' ? 'bg-red-100 text-red-800' : '' }}">
+                                        {{ $invoice->status }}
+                                    </span>
                                 </td>
                             </tr>
                         @empty

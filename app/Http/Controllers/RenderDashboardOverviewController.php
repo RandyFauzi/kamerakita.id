@@ -57,36 +57,41 @@ class RenderDashboardOverviewController extends Controller
         if ($user->hasFullAdminAccess() || $user->role === 'finance') {
             $metrics = $this->metricsService->getGlobalMetrics();
             
-            // Get last 10 submissions globally
-            $latestReports = VideoWorkReport::with(['partner'])
-                ->orderBy('created_at', 'desc')
-                ->limit(10)
-                ->get();
+            $latestReports = \Illuminate\Support\Facades\Cache::remember('admin_latest_reports', 300, function () {
+                return VideoWorkReport::with(['partner'])
+                    ->orderBy('created_at', 'desc')
+                    ->limit(10)
+                    ->get();
+            });
 
-            $clientInvoices = \App\Models\ClientInvoice::orderBy('created_at', 'desc')->get();
+            $clientInvoices = \Illuminate\Support\Facades\Cache::remember('admin_client_invoices', 300, function () {
+                return \App\Models\Invoice::with('client')->orderBy('created_at', 'desc')->limit(5)->get();
+            });
 
-            // Query monthly performance data
-            $isMysql = \Illuminate\Support\Facades\DB::getDriverName() === 'mysql';
-            $groupByRaw = $isMysql ? "DATE_FORMAT(submission_date, '%Y-%m')" : "strftime('%Y-%m', submission_date)";
-            $monthlyData = VideoWorkReport::select(
-                    \Illuminate\Support\Facades\DB::raw("$groupByRaw as month"),
-                    \Illuminate\Support\Facades\DB::raw("SUM(approved_duration_minutes) as total_minutes")
-                )
-                ->where('qc_status', 'approved')
-                ->where('submission_date', '>=', now()->subMonths(6)->startOfMonth())
-                ->groupBy('month')
-                ->orderBy('month', 'asc')
-                ->get();
+            $monthlyData = \Illuminate\Support\Facades\Cache::remember('admin_monthly_data', 600, function () {
+                $isMysql = \Illuminate\Support\Facades\DB::getDriverName() === 'mysql';
+                $groupByRaw = $isMysql ? "DATE_FORMAT(submission_date, '%Y-%m')" : "strftime('%Y-%m', submission_date)";
+                return VideoWorkReport::select(
+                        \Illuminate\Support\Facades\DB::raw("$groupByRaw as month"),
+                        \Illuminate\Support\Facades\DB::raw("SUM(approved_duration_minutes) as total_minutes")
+                    )
+                    ->where('qc_status', 'approved')
+                    ->where('submission_date', '>=', now()->subMonths(6)->startOfMonth())
+                    ->groupBy('month')
+                    ->orderBy('month', 'asc')
+                    ->get();
+            });
 
-            // Query daily average duration data
-            $dailyAverageData = VideoWorkReport::select(
-                    'submission_date',
-                    \Illuminate\Support\Facades\DB::raw("AVG(submitted_duration_minutes) as avg_minutes")
-                )
-                ->where('submission_date', '>=', now()->subDays(7)->toDateString())
-                ->groupBy('submission_date')
-                ->orderBy('submission_date', 'asc')
-                ->get();
+            $dailyAverageData = \Illuminate\Support\Facades\Cache::remember('admin_daily_average_data', 600, function () {
+                return VideoWorkReport::select(
+                        'submission_date',
+                        \Illuminate\Support\Facades\DB::raw("AVG(submitted_duration_minutes) as avg_minutes")
+                    )
+                    ->where('submission_date', '>=', now()->subDays(7)->toDateString())
+                    ->groupBy('submission_date')
+                    ->orderBy('submission_date', 'asc')
+                    ->get();
+            });
 
             return view('dashboard.admin', compact('metrics', 'latestReports', 'clientInvoices', 'monthlyData', 'dailyAverageData'));
         }

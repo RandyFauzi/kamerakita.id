@@ -12,6 +12,11 @@ Route::get('/user', function (Request $request) {
 
 // MCP Server Endpoint
 Route::post('/mcp', [McpServerController::class, 'handle'])
+    ->middleware([
+        'throttle:60,1', 
+        \App\Http\Middleware\McpAuthenticate::class,
+        \App\Http\Middleware\McpAuditLogger::class,
+    ])
     ->name('api.mcp.handle');
 
 

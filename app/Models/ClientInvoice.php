@@ -15,4 +15,14 @@ class ClientInvoice extends Model
         'total_amount_usd',
         'status',
     ];
+
+    protected static function booted(): void
+    {
+        $clearCache = function () {
+            \Illuminate\Support\Facades\Cache::forget('admin_client_invoices');
+        };
+
+        static::saved($clearCache);
+        static::deleted($clearCache);
+    }
 }

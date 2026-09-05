@@ -20,8 +20,8 @@ class PayrollCalculationTest extends TestCase
             'full_name' => 'John Doe',
             'base_hourly_rate' => 60000,
             'bank_name' => 'BCA',
-            'account_number' => '1234567890',
-            'account_owner_name' => 'John Doe Owner',
+            'bank_account_number' => '1234567890',
+            'bank_account_owner' => 'John Doe Owner',
         ]);
 
         // Create approved, unpaid work reports
