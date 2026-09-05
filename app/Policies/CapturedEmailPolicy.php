@@ -21,7 +21,7 @@ class CapturedEmailPolicy
      */
     public function view(User $user, CapturedEmail $capturedEmail): bool
     {
-        return false;
+        return $user->id === $capturedEmail->user_id || in_array($user->role, ['superadmin', 'admin']);
     }
 
     /**

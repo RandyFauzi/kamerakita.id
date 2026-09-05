@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\CapturedEmail;
 
 class MailboxController extends Controller
 {
@@ -11,14 +12,57 @@ class MailboxController extends Controller
 
     public function index()
     {
-        $emails = Auth::user()->capturedEmails()
-            ->select(['id', 'user_id', 'sender_address', 'subject', 'received_at', 'is_read', 'is_starred', 'message_content'])
-            ->orderBy('received_at', 'desc')
-            ->paginate(50);
-        return view('mailbox.index', compact('emails'));
+        return view('mailbox.index');
     }
 
-    public function toggleRead(Request $request, \App\Models\CapturedEmail $email)
+    public function fetchEmails(Request $request)
+    {
+        $query = CapturedEmail::query();
+        
+        if (!in_array(Auth::user()->role, ['superadmin', 'admin'])) {
+            $query->where('user_id', Auth::id());
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('subject', 'like', "%{$search}%")
+                  ->orWhere('sender_address', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('filter')) {
+            $filter = $request->filter;
+            if ($filter === 'unread') {
+                $query->where('is_read', false);
+            } elseif ($filter === 'read') {
+                $query->where('is_read', true);
+            } elseif ($filter === 'starred') {
+                $query->where('is_starred', true);
+            }
+        }
+
+        $emails = $query->select(['id', 'user_id', 'sender_address', 'subject', 'received_at', 'is_read', 'is_starred'])
+            ->orderBy('received_at', 'desc')
+            ->paginate(50);
+            
+        return response()->json($emails);
+    }
+
+    public function showEmail(CapturedEmail $email)
+    {
+        $this->authorize('view', $email);
+
+        return response()->json([
+            'id' => $email->id,
+            'subject' => $email->subject,
+            'sender_address' => $email->sender_address,
+            'received_at' => $email->received_at,
+            'sanitized_content' => $email->sanitized_content,
+        ]);
+    }
+
+    public function toggleRead(Request $request, CapturedEmail $email)
     {
         $this->authorize('update', $email);
 
@@ -30,7 +74,7 @@ class MailboxController extends Controller
         return response()->json(['success' => true]);
     }
 
-    public function toggleStarred(Request $request, \App\Models\CapturedEmail $email)
+    public function toggleStarred(Request $request, CapturedEmail $email)
     {
         $this->authorize('update', $email);
 

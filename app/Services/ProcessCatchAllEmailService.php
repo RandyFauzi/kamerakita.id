@@ -4,15 +4,17 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Models\CapturedEmail;
+use App\Models\MailboxSyncState;
 use Webklex\IMAP\Facades\Client;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class ProcessCatchAllEmailService
 {
     public function processEmails(): void
     {
-        Log::info("IMAP Catch-All: Menghubungkan ke server IMAP Hostinger...");
+        Log::info("IMAP Catch-All: Menghubungkan ke server IMAP...");
         
         try {
             $client = Client::account('default');
@@ -21,115 +23,125 @@ class ProcessCatchAllEmailService
 
             $folder = $client->getFolder('INBOX');
             
-            // Mengambil MAKSIMAL 50 pesan yang belum dibaca (Mencegah OOM)
-            $messages = $folder->query()->unseen()->limit(50)->get();
+            $status = $folder->getStatus();
+            $currentUidvalidity = $status['uidvalidity'] ?? null;
+            
+            if (!$currentUidvalidity) {
+                Log::error("IMAP Catch-All: Tidak bisa mendapatkan UIDVALIDITY. Menggunakan UID fallback (berisiko duplikat pada perubahan folder).");
+                $currentUidvalidity = 1; // Fallback
+            }
 
-            // Pre-load seluruh mapping email -> user_id ke memory (Menghindari N+1 Query)
-            $userMap = \App\Models\User::pluck('id', 'email')->keyBy(fn ($id, $email) => strtolower(trim($email)));
-            $userPrefixMap = \App\Models\User::pluck('id', 'email')->keyBy(function ($id, $email) {
-                return explode('@', strtolower(trim($email)))[0];
-            });
-            Log::info("IMAP Catch-All: Ditemukan " . $messages->count() . " pesan di INBOX.");
+            // Dapatkan state sync terakhir (menganggap ini catch-all level sistem)
+            $syncState = MailboxSyncState::firstOrCreate(
+                ['folder_name' => 'INBOX'],
+                ['uidvalidity' => $currentUidvalidity, 'last_uid' => 0]
+            );
 
-            $deletedCount = 0;
+            // Cek jika UIDVALIDITY berubah (misalnya folder dihapus lalu dibuat ulang di server)
+            if ($syncState->uidvalidity != $currentUidvalidity) {
+                Log::warning("IMAP Catch-All: UIDVALIDITY berubah (Lama: {$syncState->uidvalidity}, Baru: {$currentUidvalidity}). Melakukan reset last_uid.");
+                $syncState->update([
+                    'uidvalidity' => $currentUidvalidity,
+                    'last_uid' => 0
+                ]);
+            }
+
+            $lastUid = $syncState->last_uid;
+            
+            // Tarik max 100 email dengan UID > last_uid untuk mencegah OOM
+            Log::info("IMAP Catch-All: Menarik pesan dengan UID > {$lastUid}");
+            $messages = $folder->query()->whereUid($lastUid . ':*')->limit(100)->get();
+
+            $userMap = User::pluck('id', 'email')->keyBy(fn ($id, $email) => strtolower(trim($email)));
+            $userPrefixMap = User::pluck('id', 'email')->keyBy(fn ($id, $email) => explode('@', strtolower(trim($email)))[0]);
+
+            $highestUidProcessed = $lastUid;
 
             foreach ($messages as $message) {
-                $subject = $message->getSubject() ?: '(Tanpa Subjek)';
+                $uid = $message->getUid();
                 
-                // $message->getTo() returns an Attribute object.
-                // We MUST call ->all() or ->toArray() to get the array of Address objects for iteration.
+                // Skip if we accidentally got the last processed email again (IMAP inclusive range)
+                if ($uid <= $lastUid) {
+                    continue;
+                }
+
+                $subject = $message->getSubject() ?: '(Tanpa Subjek)';
+                $messageId = $message->getMessageId() ?: null;
+                
                 $toAttribute = $message->getTo();
                 $toAddresses = $toAttribute ? $toAttribute->all() : [];
                 
                 if (empty($toAddresses)) {
-                    Log::info("IMAP Catch-All: Pesan '" . $subject . "' tidak memiliki header 'To' standar.");
-                    
-                    // Coba periksa header 'delivered-to' atau 'cc'
                     $altTo = $message->getAttributes()['delivered_to'] ?? $message->getAttributes()['envelope_to'] ?? null;
-                    if ($altTo) {
-                        Log::info("IMAP Catch-All: Ditemukan rute alternatif: " . json_encode($altTo));
+                    // Simplify: if no To address, we can't route it
+                    if ($uid > $highestUidProcessed) {
+                        $highestUidProcessed = $uid;
                     }
-                    
-                    Log::info("IMAP Catch-All: Melewati pesan karena tidak ada alamat tujuan yang bisa diparsing.");
                     continue;
                 }
 
                 foreach ($toAddresses as $to) {
-                    // Webklex otomatis mengambil email bersih di $to->mail
                     $emailAddress = strtolower(trim($to->mail));
-                    
-                    // Mencari user di database menggunakan $userMap
-                    $userId = $userMap->get($emailAddress);
-                    
-                    if (!$userId) {
-                        $parts = explode('@', $emailAddress);
-                        $prefix = $parts[0];
-                        $userId = $userPrefixMap->get($prefix);
-                    }
+                    $userId = $userMap->get($emailAddress) ?? $userPrefixMap->get(explode('@', $emailAddress)[0]);
                     
                     if ($userId) {
-                        Log::info("IMAP Catch-All: User DITEMUKAN! (ID: " . $userId . ")");
-                        
                         $senderAddress = strtolower(trim($message->getFrom()[0]->mail ?? 'unknown'));
                         $dateAttr = $message->getDate();
-                        if ($dateAttr && $dateAttr->count() > 0) {
-                            $carbonDate = $dateAttr->first();
-                            $carbonDate->setTimezone(config('app.timezone'));
-                            $receivedAt = $carbonDate->toDateTimeString();
-                        } else {
-                            $receivedAt = now();
-                        }
+                        $receivedAt = ($dateAttr && $dateAttr->count() > 0) ? $dateAttr->first()->setTimezone(config('app.timezone'))->toDateTimeString() : now();
                         $content = $message->getHTMLBody() ?: $message->getTextBody();
 
                         try {
-                            // Gunakan firstOrCreate agar TIDAK DUPLIKAT meskipun ditarik berkali-kali
-                            $email = CapturedEmail::firstOrCreate(
-                                [
-                                    'user_id' => $userId,
-                                    'subject' => $subject,
-                                    'received_at' => $receivedAt,
-                                ],
-                                [
-                                    'sender_address' => $senderAddress,
-                                    'message_content' => $content,
-                                ]
-                            );
+                            DB::beginTransaction();
 
-                            if ($email->wasRecentlyCreated) {
-                                Log::info("IMAP Catch-All: BERHASIL: Pesan baru disimpan ke database!");
-                            } else {
-                                Log::info("IMAP Catch-All: DILEWATI: Pesan sudah ada di database (Anti-Duplikat).");
+                            // Use unique index for deduplication: user_id, imap_uidvalidity, imap_uid
+                            // Fallback deduplication: user_id, message_id if UIDVALIDITY changed
+                            $existing = CapturedEmail::where('user_id', $userId)
+                                ->where('imap_uidvalidity', $currentUidvalidity)
+                                ->where('imap_uid', $uid)
+                                ->exists();
+
+                            if (!$existing && $messageId) {
+                                // Fallback check across all validities
+                                $existing = CapturedEmail::where('user_id', $userId)
+                                    ->where('message_id', $messageId)
+                                    ->exists();
                             }
 
+                            if (!$existing) {
+                                CapturedEmail::create([
+                                    'user_id' => $userId,
+                                    'sender_address' => $senderAddress,
+                                    'subject' => $subject,
+                                    'message_content' => $content,
+                                    'imap_uid' => $uid,
+                                    'imap_uidvalidity' => $currentUidvalidity,
+                                    'message_id' => $messageId,
+                                    'received_at' => $receivedAt,
+                                ]);
+                                Log::info("IMAP Catch-All: Tersimpan untuk User ID $userId (UID: $uid)");
+                            } else {
+                                Log::info("IMAP Catch-All: Duplikat dilewati untuk User ID $userId (UID: $uid)");
+                            }
+
+                            DB::commit();
                         } catch (\Exception $dbErr) {
+                            DB::rollBack();
                             Log::error("IMAP Catch-All: GAGAL MENYIMPAN KE DB: " . $dbErr->getMessage());
                         }
-                    } else {
-                        Log::info("IMAP Catch-All: User tidak terdaftar di database (" . $emailAddress . "), pesan diabaikan.");
                     }
                 }
 
-                // Fitur Auto-Delete: Hapus pesan dari Hostinger jika umurnya lebih dari 14 hari
-                $twoWeeksAgo = now()->subDays(14);
-                $dateAttr = $message->getDate();
-                $messageDate = ($dateAttr && $dateAttr->count() > 0) ? $dateAttr->first() : null;
-                
-                if ($messageDate && $messageDate->lessThan($twoWeeksAgo)) {
-                    $message->delete();
-                    $deletedCount++;
-                    Log::info("IMAP Catch-All: Pesan ini berusia lebih dari 14 hari dan otomatis DIHAPUS dari server Hostinger.");
+                if ($uid > $highestUidProcessed) {
+                    $highestUidProcessed = $uid;
                 }
-
-                // Bebaskan memori per iterasi
+                
                 unset($message, $content);
                 if (gc_enabled()) gc_collect_cycles();
             }
 
-            if ($deletedCount > 0) {
-                $client->expunge();
-                Log::info("IMAP Catch-All: $deletedCount pesan kadaluarsa telah permanen dihapus dari Hostinger!");
-            } else {
-                Log::info("IMAP Catch-All: Selesai memproses semua email!");
+            if ($highestUidProcessed > $syncState->last_uid) {
+                $syncState->update(['last_uid' => $highestUidProcessed]);
+                Log::info("IMAP Catch-All: State diperbarui. Last UID: {$highestUidProcessed}");
             }
 
         } catch (\Exception $e) {
@@ -137,4 +149,3 @@ class ProcessCatchAllEmailService
         }
     }
 }
-

@@ -14,6 +14,9 @@ class CapturedEmail extends Model
         'sender_address',
         'subject',
         'message_content',
+        'imap_uid',
+        'imap_uidvalidity',
+        'message_id',
         'received_at',
         'is_read',
         'is_starred',
@@ -24,6 +27,14 @@ class CapturedEmail extends Model
         'is_read' => 'boolean',
         'is_starred' => 'boolean',
     ];
+
+    public function getSanitizedContentAttribute()
+    {
+        if (!$this->message_content) {
+            return '';
+        }
+        return clean($this->message_content);
+    }
 
     public function user()
     {
