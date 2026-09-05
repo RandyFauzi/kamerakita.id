@@ -33,7 +33,7 @@ class CapturedEmail extends Model
         if (!$this->message_content) {
             return '';
         }
-        return clean($this->message_content);
+        return clean($this->message_content, 'email');
     }
 
     public function user()
