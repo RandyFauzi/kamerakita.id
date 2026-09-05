@@ -118,12 +118,11 @@
                                             <h1 class="text-4xl font-extrabold text-slate-800 tracking-tight">INVOICE</h1>
                                             <p class="text-slate-500 mt-1">DRAFT PREVIEW</p>
                                         </div>
-                                        <div class="text-right">
-                                            <div class="w-16 h-16 bg-blue-600 rounded-lg flex items-center justify-center ml-auto mb-3">
-                                                <span class="text-white font-bold text-xl">KK</span>
-                                            </div>
+                                        <div class="text-right flex flex-col items-end">
+                                            <img src="{{ asset('images/Logo.webp') }}" alt="KameraKita" class="h-10 w-auto mb-3">
                                             <h2 class="text-xl font-bold text-slate-800">KameraKita</h2>
-                                            <p class="text-sm text-slate-500">Jakarta, Indonesia</p>
+                                            <p class="text-slate-500 text-xs mt-1">Jakarta, Indonesia</p>
+                                            <p class="text-slate-500 text-xs">contact@kamerakita.id</p>
                                         </div>
                                     </div>
 
