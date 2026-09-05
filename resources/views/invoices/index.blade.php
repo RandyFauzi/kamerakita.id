@@ -85,22 +85,9 @@
                                             <input type="date" name="invoice_date" x-model="invoiceDate" required class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
                                         </div>
 
-                                        <hr class="my-4 border-gray-200">
-
-                                        <div>
-                                            <label class="block text-sm font-semibold text-gray-700 mb-1">Approved Hours (Source)</label>
-                                            <input type="number" step="0.01" name="source_approved_hours" x-model="sourceHours" required class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm bg-gray-50">
-                                        </div>
-
                                         <div>
                                             <label class="block text-sm font-semibold text-gray-700 mb-1">Billable Hours (To Client)</label>
                                             <input type="number" step="0.01" name="billable_hours" x-model="billableHours" required class="mt-1 block w-full rounded-xl border-indigo-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 font-bold text-indigo-700 text-lg">
-                                        </div>
-
-                                        <div x-show="adjustment !== 0" x-cloak>
-                                            <label class="block text-sm font-semibold text-gray-700 mb-1 text-orange-600">Adjustment: <span x-text="adjustment.toFixed(2)"></span> hours</label>
-                                            <input type="text" name="adjustment_reason" x-model="adjustmentReason" placeholder="Reason for adjustment..." class="mt-1 block w-full rounded-xl border-orange-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 text-sm">
-                                            <p class="text-xs text-orange-500 mt-1">Wajib diisi karena angka berbeda.</p>
                                         </div>
                                     </div>
 
@@ -161,9 +148,6 @@
                                                 <tr>
                                                     <td class="py-4 px-4 text-slate-800">
                                                         <span class="font-semibold">Video Data Collection</span>
-                                                        <template x-if="adjustment !== 0">
-                                                            <div class="text-xs text-orange-500 mt-1">Adjusted from <span x-text="sourceHours"></span> hrs (<span x-text="adjustmentReason"></span>)</div>
-                                                        </template>
                                                     </td>
                                                     <td class="py-4 px-4 text-center text-slate-800 font-medium" x-text="billableHours ? parseFloat(billableHours).toFixed(2) : '-'"></td>
                                                     <td class="py-4 px-4 text-right text-slate-800" x-text="rate ? currency + ' ' + parseFloat(rate).toFixed(2) : '-'"></td>
@@ -271,15 +255,7 @@
                 periodStart: '',
                 periodEnd: '',
                 invoiceDate: '{{ date("Y-m-d") }}',
-                sourceHours: 0,
                 billableHours: 0,
-                adjustmentReason: '',
-
-                get adjustment() {
-                    let s = parseFloat(this.sourceHours) || 0;
-                    let b = parseFloat(this.billableHours) || 0;
-                    return b - s;
-                },
 
                 get totalAmount() {
                     let b = parseFloat(this.billableHours) || 0;

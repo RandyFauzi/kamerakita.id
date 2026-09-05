@@ -37,17 +37,10 @@ class InvoiceController extends Controller
             'period_start' => 'required|date',
             'period_end' => 'required|date|after_or_equal:period_start',
             'invoice_date' => 'required|date',
-            'source_approved_hours' => 'required|numeric|min:0',
             'billable_hours' => 'required|numeric|min:0',
-            'adjustment_reason' => 'nullable|string',
         ]);
 
-        if ($validated['billable_hours'] != $validated['source_approved_hours'] && empty($validated['adjustment_reason'])) {
-            return back()->withErrors(['adjustment_reason' => 'Adjustment reason is required if billable hours differ from approved hours.'])->withInput();
-        }
-
         $client = Client::findOrFail($validated['client_id']);
-        $adjustment = $validated['billable_hours'] - $validated['source_approved_hours'];
         $amount = $validated['billable_hours'] * $client->default_rate;
 
         // Use custom inputs if provided, otherwise fallback to template
@@ -77,11 +70,11 @@ class InvoiceController extends Controller
                 'currency' => $client->default_currency,
                 'period_start' => $validated['period_start'],
                 'period_end' => $validated['period_end'],
-                'source_approved_hours' => $validated['source_approved_hours'],
+                'source_approved_hours' => $validated['billable_hours'],
                 'billable_hours' => $validated['billable_hours'],
-                'adjustment_hours' => $adjustment,
-                'adjustment_reason' => $validated['adjustment_reason'],
-                'total_approved_hours' => $validated['source_approved_hours'],
+                'adjustment_hours' => 0,
+                'adjustment_reason' => null,
+                'total_approved_hours' => $validated['billable_hours'],
                 'total_workers' => 0,
                 'total_amount' => $amount,
                 'status' => 'DRAFT'

@@ -136,12 +136,6 @@
                                 <tr>
                                     <td class="py-5 px-6">
                                         <p class="font-bold text-slate-800">{{ $item->description }}</p>
-                                        @if($invoice->adjustment_hours != 0)
-                                            <p class="text-xs text-slate-500 mt-1">
-                                                Source: {{ number_format($invoice->source_approved_hours, 2) }} {{ $item->unit }} 
-                                                (Adj: {{ number_format($invoice->adjustment_hours, 2) }} - {{ $invoice->adjustment_reason }})
-                                            </p>
-                                        @endif
                                     </td>
                                     <td class="py-5 px-6 text-center text-slate-700">{{ number_format($item->quantity, 2) }} <span class="text-xs text-slate-400">{{ $item->unit }}</span></td>
                                     <td class="py-5 px-6 text-right text-slate-700">{{ $invoice->currency }} {{ number_format($item->unit_rate, 2) }}</td>

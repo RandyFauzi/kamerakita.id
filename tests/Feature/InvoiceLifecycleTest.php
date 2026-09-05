@@ -31,38 +31,20 @@ class InvoiceLifecycleTest extends TestCase
             'period_start' => '2026-08-01',
             'period_end' => '2026-08-31',
             'invoice_date' => '2026-09-01',
-            'source_approved_hours' => 100,
-            'billable_hours' => 90,
-            'adjustment_reason' => '10 hours non-billable client dispute'
+            'billable_hours' => 90
         ]);
 
         $this->assertDatabaseHas('invoices', [
             'client_id' => $this->client->id,
             'status' => 'DRAFT',
-            'source_approved_hours' => 100,
+            'source_approved_hours' => 90,
             'billable_hours' => 90,
-            'adjustment_hours' => -10,
+            'adjustment_hours' => 0,
             'total_amount' => 900 // 90 * 10.00
         ]);
         
         $invoice = Invoice::first();
         $response->assertRedirect(route('invoices.show', $invoice->id));
-    }
-
-    public function test_creation_fails_if_adjustment_reason_is_missing_when_hours_differ()
-    {
-        $response = $this->actingAs($this->admin)->post(route('invoices.store'), [
-            'client_id' => $this->client->id,
-            'period_start' => '2026-08-01',
-            'period_end' => '2026-08-31',
-            'invoice_date' => '2026-09-01',
-            'source_approved_hours' => 100,
-            'billable_hours' => 90,
-            'adjustment_reason' => ''
-        ]);
-
-        $response->assertSessionHasErrors('adjustment_reason');
-        $this->assertDatabaseCount('invoices', 0);
     }
 
     public function test_invoice_lifecycle_transitions()
