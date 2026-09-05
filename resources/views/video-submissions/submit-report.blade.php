@@ -9,11 +9,6 @@
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm rounded-2xl border border-gray-100 p-4 sm:p-6 space-y-5 sm:space-y-6">
                 
-                <div class="border-b border-gray-100 pb-4">
-                    <h3 class="text-lg font-bold text-gray-900">Form Laporan Harian Worker</h3>
-                    <p class="text-xs text-gray-400">Harap lampirkan screenshot total durasi dan bagian kualitas dari aplikasi.</p>
-                </div>
-
                 <div class="bg-indigo-50/50 border border-indigo-100 rounded-xl p-4 flex items-center gap-4">
                     <div class="bg-indigo-100 p-2.5 rounded-lg shrink-0 mr-1">
                         <svg class="w-5 h-5 text-indigo-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
