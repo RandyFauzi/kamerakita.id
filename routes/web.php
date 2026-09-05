@@ -192,8 +192,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/avatar/{path}', [\App\Http\Controllers\ShowAvatarController::class, '__invoke'])->where('path', '.*')->name('avatar.show');
 
     // Invoices
-    Route::get('/invoices/create', [\App\Http\Controllers\InvoiceController::class, 'create'])->name('invoices.create');
-    Route::post('/invoices/preview', [\App\Http\Controllers\InvoiceController::class, 'preview'])->name('invoices.preview');
+    Route::get('/invoices', [\App\Http\Controllers\InvoiceController::class, 'index'])->name('invoices.create'); // Kept name for backward compatibility with sidebar
+    Route::get('/invoices/index', [\App\Http\Controllers\InvoiceController::class, 'index'])->name('invoices.index');
+    Route::post('/invoices', [\App\Http\Controllers\InvoiceController::class, 'store'])->name('invoices.store');
+    Route::get('/invoices/{invoice}/preview', [\App\Http\Controllers\InvoiceController::class, 'show'])->name('invoices.show');
+    Route::delete('/invoices/{invoice}', [\App\Http\Controllers\InvoiceController::class, 'destroy'])->name('invoices.destroy');
 });
 
 // Public Fastwork Onboarding routes
