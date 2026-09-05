@@ -22,7 +22,7 @@
             
             <div class="flex items-center justify-between mb-8">
                 <div>
-                    <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Invoice Generator</h1>
+                    <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Ringkasan</h1>
                     <p class="text-sm text-slate-500 mt-1">Buat ringkasan tagihan (invoice) dengan mudah dan cepat.</p>
                 </div>
             </div>
