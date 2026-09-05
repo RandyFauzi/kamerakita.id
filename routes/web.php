@@ -190,6 +190,10 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/avatar/{path}', [\App\Http\Controllers\ShowAvatarController::class, '__invoke'])->where('path', '.*')->name('avatar.show');
+
+    // Invoices
+    Route::get('/invoices/create', [\App\Http\Controllers\InvoiceController::class, 'create'])->name('invoices.create');
+    Route::post('/invoices/preview', [\App\Http\Controllers\InvoiceController::class, 'preview'])->name('invoices.preview');
 });
 
 // Public Fastwork Onboarding routes
