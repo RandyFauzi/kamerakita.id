@@ -4,7 +4,9 @@
         invoiceDate: '',
         totalWorkers: '',
         totalHours: '',
-        totalAmount: '',
+        get totalAmount() {
+            return this.totalHours ? (parseFloat(this.totalHours) * 3.5).toFixed(2) : '';
+        },
         defaultInvoiceNo: 'INV-{{ date('Ymd') }}-XXX',
         get formattedDate() {
             if (this.invoiceDate) {
@@ -71,7 +73,7 @@
                                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                         <span class="text-slate-400 sm:text-sm font-bold">$</span>
                                     </div>
-                                    <input type="number" step="0.01" name="total_amount" x-model="totalAmount" required class="block w-full rounded-xl border-slate-200 pl-8 pr-12 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors" placeholder="0.00">
+                                    <input type="number" step="0.01" name="total_amount" :value="totalAmount" readonly class="block w-full rounded-xl border-slate-200 pl-8 pr-12 text-sm bg-slate-100 text-slate-500 cursor-not-allowed focus:ring-0 focus:border-slate-200 transition-colors" placeholder="0.00">
                                     <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
                                         <span class="text-slate-400 sm:text-sm font-medium">USD</span>
                                     </div>
@@ -154,7 +156,7 @@
 
                                 <!-- Disclaimer -->
                                 <div class="text-xs italic text-slate-500 mt-auto mb-16">
-                                    * This summary represents the total workload without individual email details. The applied rate is 4.00 per billable hour.
+                                    * This summary represents the total workload without individual email details. The applied rate is 3.50 per billable hour.
                                 </div>
 
                                 <!-- Footer -->

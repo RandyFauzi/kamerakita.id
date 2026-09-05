@@ -119,7 +119,7 @@
 
         <!-- Disclaimer -->
         <div class="text-sm italic text-gray-600 mb-20">
-            * This summary represents the total workload without individual email details. The applied rate is 4.00 per billable hour.
+            * This summary represents the total workload without individual email details. The applied rate is 3.50 per billable hour.
         </div>
 
         <!-- Footer -->
