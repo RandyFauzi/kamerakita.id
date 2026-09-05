@@ -85,9 +85,15 @@
                                             <input type="date" name="invoice_date" x-model="invoiceDate" required class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
                                         </div>
 
-                                        <div>
-                                            <label class="block text-sm font-semibold text-gray-700 mb-1">Billable Hours (To Client)</label>
-                                            <input type="number" step="0.01" name="billable_hours" x-model="billableHours" required class="mt-1 block w-full rounded-xl border-indigo-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 font-bold text-indigo-700 text-lg">
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-sm font-semibold text-gray-700 mb-1">Billable Hours</label>
+                                                <input type="number" step="0.01" name="billable_hours" x-model="billableHours" required class="mt-1 block w-full rounded-xl border-indigo-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 font-bold text-indigo-700 text-lg">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-semibold text-gray-700 mb-1">Rate (<span x-text="currency"></span>/hr)</label>
+                                                <input type="number" step="0.01" name="unit_rate" x-model="rate" required class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-lg">
+                                            </div>
                                         </div>
                                     </div>
 
@@ -250,7 +256,7 @@
                 selectedClient: '',
                 clientName: '',
                 clientAddress: '',
-                rate: 0,
+                rate: 3.5,
                 currency: 'USD',
                 periodStart: '',
                 periodEnd: '',
@@ -268,7 +274,7 @@
                         if (!value) {
                             this.clientName = '';
                             this.clientAddress = '';
-                            this.rate = 0;
+                            this.rate = 3.5;
                             return;
                         }
                         let select = document.querySelector('select[name="client_id"]');

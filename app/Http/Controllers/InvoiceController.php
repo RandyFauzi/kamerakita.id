@@ -38,10 +38,11 @@ class InvoiceController extends Controller
             'period_end' => 'required|date|after_or_equal:period_start',
             'invoice_date' => 'required|date',
             'billable_hours' => 'required|numeric|min:0',
+            'unit_rate' => 'required|numeric|min:0',
         ]);
 
         $client = Client::findOrFail($validated['client_id']);
-        $amount = $validated['billable_hours'] * $client->default_rate;
+        $amount = $validated['billable_hours'] * $validated['unit_rate'];
 
         // Use custom inputs if provided, otherwise fallback to template
         $finalClientName = !empty($validated['client_name']) ? $validated['client_name'] : $client->name;
@@ -66,7 +67,7 @@ class InvoiceController extends Controller
                 'client_email' => $client->email,
                 'client_address' => $finalClientAddress,
                 'client_tax_id' => $client->tax_id,
-                'unit_rate' => $client->default_rate,
+                'unit_rate' => $validated['unit_rate'],
                 'currency' => $client->default_currency,
                 'period_start' => $validated['period_start'],
                 'period_end' => $validated['period_end'],
@@ -84,7 +85,7 @@ class InvoiceController extends Controller
                 'description' => 'Video Data Collection',
                 'quantity' => $validated['billable_hours'],
                 'unit' => 'hours',
-                'unit_rate' => $client->default_rate,
+                'unit_rate' => $validated['unit_rate'],
                 'amount' => $amount
             ]);
 
