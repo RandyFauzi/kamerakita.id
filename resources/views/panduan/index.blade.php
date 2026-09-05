@@ -59,8 +59,7 @@
         </div>
     </div>
 
-    @push('scripts')
-    <!-- Gunakan versi 2.16.105 agar kompatibel lebih luas -->
+    <!-- Script tags moved out of push block because app-layout doesn't yield 'scripts' -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
@@ -183,5 +182,4 @@
             }
         }
     </script>
-    @endpush
 </x-app-layout>
