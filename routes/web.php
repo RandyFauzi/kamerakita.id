@@ -188,6 +188,11 @@ Route::middleware('auth')->group(function () {
     Route::patch('/mailbox/{email}/read', [App\Http\Controllers\MailboxController::class, 'toggleRead'])->name('mailbox.toggle-read');
     Route::patch('/mailbox/{email}/star', [App\Http\Controllers\MailboxController::class, 'toggleStarred'])->name('mailbox.toggle-star');
 
+    // Panduan Book
+    Route::get('/panduan', function () {
+        return view('panduan.index');
+    })->name('panduan.index');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
