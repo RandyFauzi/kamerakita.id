@@ -55,8 +55,8 @@ class MailboxController extends Controller
 
         return response()->json([
             'id' => $email->id,
-            'subject' => $email->subject,
-            'sender_address' => $email->sender_address,
+            'subject' => mb_convert_encoding((string) $email->subject, 'UTF-8', 'UTF-8'),
+            'sender_address' => mb_convert_encoding((string) $email->sender_address, 'UTF-8', 'UTF-8'),
             'received_at' => $email->received_at,
             'sanitized_content' => $email->sanitized_content,
         ]);
