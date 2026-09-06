@@ -18,4 +18,12 @@ return [
     'register_button' => 'Register Now',
     'already_registered' => 'Already registered?',
     'login_link' => 'Go to Dashboard',
+    'username_hint' => 'Use lowercase letters and numbers without spaces. This will be your internal email to receive task information.',
+    'username_placeholder' => 'example: budi123',
+    'confirm_password_label_full' => 'Confirm Password',
+    'activation_code_label' => 'Activation Code',
+    'activation_code_placeholder' => 'Example: KMK-01ASQW',
+    'referral_code_label' => 'Referral Code',
+    'referral_code_optional' => '(Optional — from your Vendor/Recruiter)',
+    'referral_code_placeholder' => 'Example: REF-ABCDEF',
 ];

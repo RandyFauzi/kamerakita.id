@@ -118,37 +118,37 @@
             <div class="calculator-grid">
               <div class="calculator-input" data-reveal style="--delay: 150ms;">
                 <div class="rate-card">
-                  <span>RATE PER JAM</span>
+                  <span>{{ __('landing.calc_rate') }}</span>
                   <strong>Rp 60.000</strong>
-                  <small>Dikalikan jam kerja harian yang laporan videonya lolos QC.</small>
+                  <small>{{ __('landing.calc_rate_desc') }}</small>
                 </div>
                 <fieldset>
-                  <legend>Pilih simulasi kerja</legend>
+                  <legend>{{ __('landing.calc_choose') }}</legend>
                   <div class="mode-list" id="calc-modes">
                       <!-- Filled by JS -->
                   </div>
                 </fieldset>
                 <div class="calc-facts">
-                  <div><span>DASAR HITUNG</span><strong>Jam approved</strong></div>
-                  <div><span>VERIFIKASI</span><strong>Lewat QC</strong></div>
+                  <div><span>{{ __('landing.calc_base') }}</span><strong>{{ __('landing.calc_base_val') }}</strong></div>
+                  <div><span>{{ __('landing.calc_verif') }}</span><strong>{{ __('landing.calc_verif_val') }}</strong></div>
                 </div>
               </div>
               <div class="earnings-card" data-reveal style="--delay: 230ms;">
                 <div class="earnings-copy" id="calc-monthly-container">
                     <div id="calc-monthly">
-                      <span>ESTIMASI TOTAL BULANAN</span>
+                      <span>{{ __('landing.calc_est_total') }}</span>
                       <strong>Rp 3.360.000</strong>
-                      <p>Dengan 2 jam/hari dan rate dasar Rp60.000/jam.</p>
+                      <p>{{ str_replace('{hours}', '2', __('landing.calc_est_desc')) }}</p>
                     </div>
                 </div>
                 <div class="weekly" id="calc-weekly-container">
                     <div id="calc-weekly">
-                      <span>POTENSI MINGGUAN</span>
+                      <span>{{ __('landing.calc_potensi') }}</span>
                       <strong>~ Rp 840.000</strong>
                     </div>
                 </div>
-                <a class="button button--blue calculator-cta" href="{{ route('onboarding.form') }}">MULAI DAFTAR SEKARANG</a>
-                <p class="disclaimer">Simulasi bukan jaminan pendapatan. Nominal mengikuti laporan approved dan ketentuan operasional.</p>
+                <a class="button button--blue calculator-cta" href="{{ route('onboarding.form') }}">{{ __('landing.calc_btn') }}</a>
+                <p class="disclaimer">{{ __('landing.calc_note') }}</p>
                 <img class="wallet-art float-slow" src="{{ asset('assets/figma/calculator-03.png') }}" alt="Ilustrasi dompet dengan uang rupiah">
               </div>
             </div>
@@ -193,22 +193,22 @@
           <div class="testimonial-grid">
               <article class="testimonial-card" data-reveal style="--delay: 90ms;">
                 <div class="quote-pair float-1" aria-hidden="true"><img src="{{ asset('assets/figma/testimonials-09.png') }}" alt=""><img src="{{ asset('assets/figma/testimonials-09.png') }}" alt=""></div>
-                <blockquote>Laporan rapi, pembayaran jadi lebih tenang</blockquote>
+                <blockquote>{{ __('landing.testi_1') }}</blockquote>
                 <div class="person"><img src="{{ asset('assets/figma/testimonials-02.png') }}" alt=""><cite>Asha Aulia</cite></div>
               </article>
               <article class="testimonial-card" data-reveal style="--delay: 170ms;">
                 <div class="quote-pair float-2" aria-hidden="true"><img src="{{ asset('assets/figma/testimonials-09.png') }}" alt=""><img src="{{ asset('assets/figma/testimonials-09.png') }}" alt=""></div>
-                <blockquote>Awalnya ragu, setelah rutin submit mulai terasa hasilnya</blockquote>
+                <blockquote>{{ __('landing.testi_2') }}</blockquote>
                 <div class="person"><img src="{{ asset('assets/figma/testimonials-01.png') }}" alt=""><cite>Irfan Tamami</cite></div>
               </article>
               <article class="testimonial-card" data-reveal style="--delay: 250ms;">
                 <div class="quote-pair float-3" aria-hidden="true"><img src="{{ asset('assets/figma/testimonials-09.png') }}" alt=""><img src="{{ asset('assets/figma/testimonials-09.png') }}" alt=""></div>
-                <blockquote>QC Jelas, jadi tahu laporan mana yang perlu diperbaiki</blockquote>
+                <blockquote>{{ __('landing.testi_3') }}</blockquote>
                 <div class="person"><img src="{{ asset('assets/figma/testimonials-03.png') }}" alt=""><cite>Jessica Halim</cite></div>
               </article>
               <article class="testimonial-card" data-reveal style="--delay: 330ms;">
                 <div class="quote-pair float-1" aria-hidden="true"><img src="{{ asset('assets/figma/testimonials-09.png') }}" alt=""><img src="{{ asset('assets/figma/testimonials-09.png') }}" alt=""></div>
-                <blockquote>Modal HP dan waktu luang, bisa mulai dari rumah</blockquote>
+                <blockquote>{{ __('landing.testi_4') }}</blockquote>
                 <div class="person"><img src="{{ asset('assets/figma/testimonials-06.png') }}" alt=""><cite>Nadya Salsabila</cite></div>
               </article>
           </div>
@@ -228,7 +228,7 @@
                  </button>
                </h3>
                <div class="faq-answer" aria-hidden="true">
-                 <div><p>Sama sekali tidak. Pendaftaran Mitra Kontributor di KAMERAKITA AI 100% GRATIS tanpa modal awal apa pun.</p></div>
+                 <div><p>{{ __('landing.faq_1_ans') }}</p></div>
                </div>
              </article>
              <article class="faq-item">
@@ -265,11 +265,11 @@
             <span class="brand__mark"><img src="{{ asset('vendor-assets/kamerakita/logo-mark.svg') }}" alt=""></span>
             <span>KameraKita<span class="brand__ai">AI</span></span>
           </a>
-          <p>Platform Rekam Video & Datasets Terpercaya No. 1 di Indonesia untuk Mitra & Enterprise Computer Vision.</p>
+          <p>{{ __('landing.footer_desc') }}</p>
         </div>
-        <div><h2>LAYANAN MITRA</h2><a href="#keunggulan">Keunggulan Mitra</a><a href="#kalkulator">Kalkulator Komisi</a><a href="#cara-kerja">{{ __('landing.nav.how_it_works') }}</a></div>
-        <div><h2>AKSES AKUN</h2><a href="{{ route('login') }}">{{ __('landing.nav.login') }}</a><a href="{{ route('onboarding.form') }}">Daftar Kontributor Baru</a><a href="{{ route('dashboard') }}">Dashboard Admin QC</a></div>
-        <div><h2>PERUSAHAAN</h2><p>Domain Resmi: <a href="{{ url('/') }}">{{ parse_url(url('/'), PHP_URL_HOST) ?? 'kamerakitaid.site' }}</a></p><p>PT KAMERAKITA AI Indonesia</p></div>
+        <div><h2>{{ __('landing.footer_services') }}</h2><a href="#keunggulan">Keunggulan Mitra</a><a href="#kalkulator">Kalkulator Komisi</a><a href="#cara-kerja">{{ __('landing.nav.how_it_works') }}</a></div>
+        <div><h2>{{ __('landing.footer_acc') }}</h2><a href="{{ route('login') }}">{{ __('landing.nav.login') }}</a><a href="{{ route('onboarding.form') }}">Daftar Kontributor Baru</a><a href="{{ route('dashboard') }}">Dashboard Admin QC</a></div>
+        <div><h2>{{ __('landing.footer_corp') }}</h2><p>Domain Resmi: <a href="{{ url('/') }}">{{ parse_url(url('/'), PHP_URL_HOST) ?? 'kamerakitaid.site' }}</a></p><p>{{ __('landing.footer_pt') }}</p></div>
       </div>
       <div class="footer-bottom"><span>© {{ date('Y') }} KAMERAKITA AI. All rights reserved.</span><div><span>Kebijakan Privasi</span><span>Syarat & Ketentuan</span></div></div>
     </footer>
@@ -359,12 +359,12 @@
               // Animate number change by cloning and replacing
               const oldMonthly = calcMonthlyContainer.querySelector('div');
               const newMonthly = oldMonthly.cloneNode(false);
-              newMonthly.innerHTML = `<span>ESTIMASI TOTAL BULANAN</span><strong>${formatRp(monthly)}</strong><p>Dengan ${mode.hours} jam/hari dan rate dasar Rp60.000/jam.</p>`;
+              newMonthly.innerHTML = `<span>{{ __('landing.calc_est_total') }}</span><strong>${formatRp(monthly)}</strong><p>Dengan ${mode.hours} jam/hari dan rate dasar Rp60.000/jam.</p>`;
               calcMonthlyContainer.replaceChild(newMonthly, oldMonthly);
               
               const oldWeekly = calcWeeklyContainer.querySelector('div');
               const newWeekly = oldWeekly.cloneNode(false);
-              newWeekly.innerHTML = `<span>POTENSI MINGGUAN</span><strong>~ ${formatRp(weekly)}</strong>`;
+              newWeekly.innerHTML = `<span>{{ __('landing.calc_potensi') }}</span><strong>~ ${formatRp(weekly)}</strong>`;
               calcWeeklyContainer.replaceChild(newWeekly, oldWeekly);
           }
           

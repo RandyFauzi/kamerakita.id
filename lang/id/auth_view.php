@@ -18,4 +18,12 @@ return [
     'register_button' => 'Daftar Sekarang',
     'already_registered' => 'Sudah terdaftar?',
     'login_link' => 'Masuk ke Dasbor',
+    'username_hint' => 'Gunakan huruf kecil dan angka tanpa spasi. Ini akan menjadi email internal Anda untuk menerima informasi tugas.',
+    'username_placeholder' => 'contoh: budi123',
+    'confirm_password_label_full' => 'Konfirmasi Kata Sandi',
+    'activation_code_label' => 'Kode Aktivasi (Activation Code)',
+    'activation_code_placeholder' => 'Contoh: KMK-01ASQW',
+    'referral_code_label' => 'Kode Referral',
+    'referral_code_optional' => '(Opsional — dari Vendor/Rekruter Anda)',
+    'referral_code_placeholder' => 'Contoh: REF-ABCDEF',
 ];

@@ -18,12 +18,12 @@
         <div>
             <label for="username" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">{{ __('auth_view.username_label') }}</label>
             <div class="flex items-stretch rounded-xl shadow-sm">
-                <input id="username" type="text" name="username" value="{{ old('username') }}" required autocomplete="username" class="block w-full px-3.5 py-2.5 border border-r-0 border-gray-200 rounded-l-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" placeholder="contoh: budi123">
+                <input id="username" type="text" name="username" value="{{ old('username') }}" required autocomplete="username" class="block w-full px-3.5 py-2.5 border border-r-0 border-gray-200 rounded-l-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" placeholder="{{ __('auth_view.username_placeholder') }}">
                 <span class="inline-flex items-center px-4 bg-gray-50 border border-l-0 border-gray-200 rounded-r-xl text-gray-500 text-sm font-medium">
                     @kamerakitaid.site
                 </span>
             </div>
-            <p class="text-[10px] text-gray-400 mt-1.5 leading-tight">Gunakan huruf kecil dan angka tanpa spasi. Ini akan menjadi email internal Anda untuk menerima informasi tugas.</p>
+            <p class="text-[10px] text-gray-400 mt-1.5 leading-tight">{{ __('auth_view.username_hint') }}</p>
             <x-input-error :messages="$errors->get('username')" class="mt-1" />
         </div>
 
@@ -36,15 +36,15 @@
 
         <!-- Confirm Password -->
         <div>
-            <label for="password_confirmation" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Konfirmasi Kata Sandi</label>
+            <label for="password_confirmation" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">{{ __('auth_view.confirm_password_label_full') }}</label>
             <input id="password_confirmation" type="password" name="password_confirmation" required autocomplete="new-password" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-1" />
         </div>
 
         <!-- Activation Code -->
         <div>
-            <label for="activation_code" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Kode Aktivasi (Activation Code)</label>
-            <input id="activation_code" type="text" name="activation_code" value="{{ old('activation_code') }}" required class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition placeholder-gray-300 font-mono" placeholder="Contoh: KMK-01ASQW">
+            <label for="activation_code" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">{{ __('auth_view.activation_code_label') }}</label>
+            <input id="activation_code" type="text" name="activation_code" value="{{ old('activation_code') }}" required class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition placeholder-gray-300 font-mono" placeholder="{{ __('auth_view.activation_code_placeholder') }}">
             <x-input-error :messages="$errors->get('activation_code')" class="mt-1" />
         </div>
 
@@ -52,9 +52,9 @@
         <div>
             <label for="referral_code" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
                 Kode Referral
-                <span class="normal-case font-normal text-gray-300 ml-1">(Opsional — dari Vendor/Rekruter Anda)</span>
+                <span class="normal-case font-normal text-gray-300 ml-1">{{ __('auth_view.referral_code_optional') }}</span>
             </label>
-            <input id="referral_code" type="text" name="referral_code" value="{{ old('referral_code') }}" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition placeholder-gray-300 font-mono" placeholder="Contoh: REF-ABCDEF">
+            <input id="referral_code" type="text" name="referral_code" value="{{ old('referral_code') }}" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition placeholder-gray-300 font-mono" placeholder="{{ __('auth_view.referral_code_placeholder') }}">
             <x-input-error :messages="$errors->get('referral_code')" class="mt-1" />
         </div>
 
