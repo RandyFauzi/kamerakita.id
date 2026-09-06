@@ -1,41 +1,38 @@
-@props(['placement' => 'bottom-end'])
+<div class="lang-switch-container">
+    <span class="lang-label {{ app()->getLocale() === 'id' ? 'active' : '' }}">ID</span>
+    <button type="button" class="lang-toggle {{ app()->getLocale() === 'en' ? 'switched' : '' }}" onclick="switchLanguage()" aria-label="Toggle Language">
+        <span class="lang-thumb"></span>
+    </button>
+    <span class="lang-label {{ app()->getLocale() === 'en' ? 'active' : '' }}">EN</span>
+</div>
 
-<x-dropdown align="{{ $placement === 'bottom-end' ? 'right' : 'left' }}" width="48">
-    <x-slot name="trigger">
-        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
-            <div>{{ strtoupper(app()->getLocale()) }}</div>
-            <div class="ms-1">
-                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                </svg>
-            </div>
-        </button>
-    </x-slot>
+<style>
+.lang-switch-container { display: inline-flex; align-items: center; gap: 8px; margin-right: 12px; }
+.lang-label { font-size: 13px; font-weight: 600; color: #9ca3af; transition: color 0.3s; font-family: sans-serif; }
+.lang-label.active { color: #0d7490; } /* matches the screenshot dark blue color */
+.lang-toggle { position: relative; width: 44px; height: 24px; background: #e5e7eb; border-radius: 100px; border: none; cursor: pointer; padding: 2px; transition: background 0.3s; display: inline-flex; align-items: center; box-sizing: border-box; }
+.lang-toggle.switched { background: #00668f; } /* matches screenshot toggle blue */
+.lang-thumb { display: block; width: 20px; height: 20px; background: white; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.1); transform: translateX(0); transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1); }
+.lang-toggle.switched .lang-thumb { transform: translateX(20px); }
+</style>
 
-    <x-slot name="content">
-        <!-- Locale Switcher Form -->
-        <form method="POST" action="{{ route('locale.switch') }}">
-            @csrf
-            
-            <input type="hidden" name="locale" value="id">
-            <x-dropdown-link :href="route('locale.switch')"
-                    onclick="event.preventDefault();
-                                this.closest('form').querySelector('input[name=locale]').value = 'id';
-                                this.closest('form').submit();">
-                🇮🇩 Bahasa Indonesia
-            </x-dropdown-link>
-        </form>
-
-        <form method="POST" action="{{ route('locale.switch') }}">
-            @csrf
-            
-            <input type="hidden" name="locale" value="en">
-            <x-dropdown-link :href="route('locale.switch')"
-                    onclick="event.preventDefault();
-                                this.closest('form').querySelector('input[name=locale]').value = 'en';
-                                this.closest('form').submit();">
-                🇬🇧 English
-            </x-dropdown-link>
-        </form>
-    </x-slot>
-</x-dropdown>
+<script>
+if (typeof switchLanguage !== 'function') {
+    function switchLanguage() {
+        const isEn = {{ app()->getLocale() === 'id' ? 'true' : 'false' }};
+        const newLocale = isEn ? 'en' : 'id';
+        const toggles = document.querySelectorAll('.lang-toggle');
+        toggles.forEach(t => t.classList.toggle('switched'));
+        
+        fetch('{{ route('locale.switch') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ locale: newLocale })
+        }).then(() => { window.location.reload(); }).catch(() => { window.location.reload(); });
+    }
+}
+</script>

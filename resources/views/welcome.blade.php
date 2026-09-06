@@ -37,41 +37,8 @@
           </nav>
           <div class="nav-actions">
             <!-- Language Toggle -->
-            <!-- Modern Toggle Switch -->
-<div class="lang-switch-container">
-    <span class="lang-label {{ app()->getLocale() === 'id' ? 'active' : '' }}">ID</span>
-    <button type="button" class="lang-toggle {{ app()->getLocale() === 'en' ? 'switched' : '' }}" onclick="switchLanguage()" aria-label="Toggle Language">
-        <span class="lang-thumb"></span>
-    </button>
-    <span class="lang-label {{ app()->getLocale() === 'en' ? 'active' : '' }}">EN</span>
-</div>
-
-<style>
-.lang-switch-container { display: inline-flex; align-items: center; gap: 8px; margin-right: 12px; }
-.lang-label { font-size: 13px; font-weight: 600; color: #9ca3af; transition: color 0.3s; }
-.lang-label.active { color: #111827; }
-.lang-toggle { position: relative; width: 44px; height: 24px; background: #e5e7eb; border-radius: 100px; border: none; cursor: pointer; padding: 2px; transition: background 0.3s; }
-.lang-toggle.switched { background: #0ea5e9; }
-.lang-thumb { display: block; width: 20px; height: 20px; background: white; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.1); transform: translateX(0); transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1); }
-.lang-toggle.switched .lang-thumb { transform: translateX(20px); }
-</style>
-
-<script>
-function switchLanguage() {
-    const isEn = {{ app()->getLocale() === 'id' ? 'true' : 'false' }};
-    const newLocale = isEn ? 'en' : 'id';
-    document.querySelector('.lang-toggle').classList.toggle('switched');
-    fetch('{{ route('locale.switch') }}', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({ locale: newLocale })
-    }).then(() => { window.location.reload(); }).catch(() => { window.location.reload(); });
-}
-</script>
+            <x-language-switcher />
+            
             <a class="button button--outline button--small" href="{{ route('jadi-vendor') }}">{{ __('landing.nav.vendor') }}</a>
             <a class="button button--blue button--small" href="{{ route('login') }}">{{ __('landing.nav.login') }}</a>
           </div>

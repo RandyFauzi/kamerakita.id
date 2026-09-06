@@ -46,7 +46,11 @@
         }
     </style>
 </head>
-<body class="font-sans antialiased text-neutralText-dark min-h-screen flex flex-col justify-between py-8 px-4">
+<body class="font-sans antialiased text-neutralText-dark min-h-screen flex flex-col justify-between py-8 px-4 relative">
+
+    <div class="absolute top-4 right-4 z-50">
+        <x-language-switcher />
+    </div>
 
     <!-- App Container -->
     <div x-data="{

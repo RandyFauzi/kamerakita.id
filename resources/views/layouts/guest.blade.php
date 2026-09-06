@@ -22,7 +22,10 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="text-gray-900 antialiased bg-[#f8f8f6]">
+    <body class="text-gray-900 antialiased bg-[#f8f8f6] relative">
+        <div class="absolute top-4 right-4">
+            <x-language-switcher />
+        </div>
         <div class="min-h-screen flex flex-col sm:justify-center items-center py-12 px-4 sm:px-0">
             <!-- Modern Logo Header -->
             <div class="mb-4">
