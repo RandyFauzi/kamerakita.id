@@ -8,7 +8,7 @@ return [
     'forgot_password' => 'Forgot password?',
     'remember_me' => 'Remember this device',
     'login_button' => 'Log In Now',
-    'no_account' => 'Don't have an account?',
+    'no_account' => 'Don\'t have an account?',
     'register_link' => 'Register New Account',
     'register_title' => 'Register New Account',
     'register_subtitle' => 'Complete your agency account registration data.',
