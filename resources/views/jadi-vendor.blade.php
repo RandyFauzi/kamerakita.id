@@ -156,21 +156,21 @@
             <!-- Navigation Links -->
             <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-700">
                 <a href="/#keunggulan" class="hover:text-sky-600 transition flex items-center gap-1">
-                    Keunggulan <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    {{ __('vendor_landing.nav.benefits') }} <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </a>
                 <a href="/#kalkulator" class="hover:text-sky-600 transition flex items-center gap-1">
-                    Kalkulator <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    {{ __('vendor_landing.nav.calculator') }} <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </a>
-                <a href="/#cara-kerja" class="hover:text-sky-600 transition">Cara Kerja</a>
-                <a href="/#mitra" class="hover:text-sky-600 transition">Testimony</a>
-                <a href="/#faq" class="hover:text-sky-600 transition">FAQ</a>
+                <a href="/#cara-kerja" class="hover:text-sky-600 transition">{{ __('vendor_landing.nav.how_it_works') }}</a>
+                <a href="/#mitra" class="hover:text-sky-600 transition">{{ __('vendor_landing.nav.testimony') }}</a>
+                <a href="/#faq" class="hover:text-sky-600 transition">{{ __('vendor_landing.nav.faq') }}</a>
             </nav>
 
             <!-- Action Button -->
             <div class="flex items-center gap-3">
                 <x-language-switcher />
                 <a href="{{ route('jadi-vendor') }}" class="hidden sm:inline-flex px-5 py-2 border-2 border-sky-500 text-sky-600 hover:bg-sky-50 hover:text-sky-700 font-bold rounded-xl text-sm transition shadow-sm">
-                    Jadi Vendor
+                    {{ __('vendor_landing.nav.become_vendor') }}
                 </a>
                 @auth
                     <a href="{{ route('dashboard') }}" class="btn-brand-navy px-6 py-2.5 text-sm">
@@ -189,12 +189,12 @@
 <main id="main" class="main-stack">
     <section class="hero" id="top" aria-labelledby="hero-title">
       <div class="hero-copy">
-        <p class="chip animate-fade-down"><span class="chip-dot"></span> KameraKita AI Partner Program</p>
+        <p class="chip animate-fade-down"><span class="chip-dot"></span> {!! __('vendor_landing.hero.badge') !!}</p>
         <h1 id="hero-title" class="animate-fade-up" data-delay="100">{!! __('vendor_landing.hero.title') !!}</h1>
         <p class="hero-description animate-fade-up" data-delay="200">{!! __('vendor_landing.hero.subtitle') !!}</p>
         <div class="hero-actions animate-fade-up" data-delay="300">
-          <a class="button button-primary" href="{{ $whatsappVendorUrl }}" target="_blank">Gabung Jadi Partner</a>
-          <a class="button button-outline" href="#features">Lihat Cara Kerjanya</a>
+          <a class="button button-primary" href="{{ $whatsappVendorUrl }}" target="_blank">{!! __('vendor_landing.hero.join_partner') !!}</a>
+          <a class="button button-outline" href="#features">{!! __('vendor_landing.hero.how_it_works') !!}</a>
         </div>
       </div>
 
@@ -220,32 +220,32 @@
     <section class="project-section surface-section" id="features" aria-labelledby="project-title">
       <div class="project-heading">
         <div class="animate-fade-right">
-          <p class="chip"><span class="chip-dot"></span> PROYEK DATA AI</p>
-          <h2 id="project-title">Membantu AI Memahami Dunia Nyata</h2>
+          <p class="chip"><span class="chip-dot"></span> {!! __('vendor_landing.features.badge') !!}</p>
+          <h2 id="project-title">{!! __('vendor_landing.features.title') !!}</h2>
         </div>
-        <p class="animate-fade-left" data-delay="150">Tim Anda membantu mengumpulkan video aktivitas<br class="desktop-break"> sehari-hari dari sudut pandang orang pertama untuk<br class="desktop-break"> kebutuhan pengembangan AI.</p>
+        <p class="animate-fade-left" data-delay="150">{!! __('vendor_landing.features.subtitle') !!}</p>
       </div>
 
       <div class="project-grid">
         <article class="project-card animate-fade-up" data-delay="100">
           <img src="{{ asset('vendor-assets/') }}/kamerakita/project-recording.png" alt="Ilustrasi perekaman aktivitas harian">
           <div class="project-copy">
-            <h3>Rekam Aktivitas Harian</h3>
-            <p>Worker memakai smartphone dan headstrap untuk merekam kegiatan seperti beres-beres, memasak, atau aktivitas rumah lainnya.</p>
+            <h3>{!! __('vendor_landing.features.item_1_title') !!}</h3>
+            <p>{!! __('vendor_landing.features.item_1_desc') !!}</p>
           </div>
         </article>
         <article class="project-card animate-fade-up" data-delay="250">
           <img src="{{ asset('vendor-assets/') }}/kamerakita/project-guideline.png" alt="Ilustrasi alur panduan proyek">
           <div class="project-copy">
-            <h3>Ikuti Panduan Proyek</h3>
-            <p>Setiap project punya arahan aktivitas, durasi, dan standar rekaman yang harus diikuti.</p>
+            <h3>{!! __('vendor_landing.features.item_2_title') !!}</h3>
+            <p>{!! __('vendor_landing.features.item_2_desc') !!}</p>
           </div>
         </article>
         <article class="project-card project-card-last animate-fade-up" data-delay="400">
           <img src="{{ asset('vendor-assets/') }}/kamerakita/project-verification.png" alt="Ilustrasi pengiriman data untuk verifikasi">
           <div class="project-copy">
-            <h3>Kirim untuk Diverifikasi</h3>
-            <p>Video yang selesai dikirim untuk dicek. Jam yang lolos validasi kemudian dihitung untuk pembayaran.</p>
+            <h3>{!! __('vendor_landing.features.item_3_title') !!}</h3>
+            <p>{!! __('vendor_landing.features.item_3_desc') !!}</p>
           </div>
         </article>
       </div>
@@ -253,41 +253,41 @@
 
     <section class="profit-section" id="pricing" aria-labelledby="profit-title">
       <div class="profit-heading animate-fade-down">
-        <p class="chip"><span class="chip-dot"></span> SIMULASI PERTUMBUHAN</p>
-        <h2 id="profit-title">Simulasikan Potensi Profit dari Skala Operasional Anda</h2>
+        <p class="chip"><span class="chip-dot"></span> {!! __('vendor_landing.pricing.badge') !!}</p>
+        <h2 id="profit-title">{!! __('vendor_landing.pricing.title') !!}</h2>
       </div>
 
       <div class="profit-grid">
         <article class="tier-card animate-fade-right" data-delay="100">
-          <div class="tier-name"><img src="{{ asset('vendor-assets/') }}/kamerakita/icon-tier-1.svg" alt=""><span>Tier 1: Minimal</span></div>
-          <p class="worker-count"><strong>9</strong><span>orang worker</span></p>
+          <div class="tier-name"><img src="{{ asset('vendor-assets/') }}/kamerakita/icon-tier-1.svg" alt=""><span>{!! __('vendor_landing.pricing.tier1_name') !!}</span></div>
+          <p class="worker-count"><strong>9</strong><span>{!! __('vendor_landing.pricing.workers') !!}</span></p>
           <div class="tier-profit">
-            <span>Estimasi profit/bulan</span>
+            <span>{!! __('vendor_landing.pricing.est_profit') !!}</span>
             <strong data-counter="7500000" data-prefix="Rp ">Rp 7.500.000</strong>
-            <small>Volume: 500 Jam</small>
+            <small>{!! __('vendor_landing.pricing.volume') !!}: 500 Jam</small>
           </div>
         </article>
 
         <article class="tier-card animate-fade-left" data-delay="250">
-          <div class="tier-name"><img src="{{ asset('vendor-assets/') }}/kamerakita/icon-tier-2.svg" alt=""><span>Tier 2: Menengah</span></div>
-          <p class="worker-count"><strong>20</strong><span>orang worker</span></p>
+          <div class="tier-name"><img src="{{ asset('vendor-assets/') }}/kamerakita/icon-tier-2.svg" alt=""><span>{!! __('vendor_landing.pricing.tier2_name') !!}</span></div>
+          <p class="worker-count"><strong>20</strong><span>{!! __('vendor_landing.pricing.workers') !!}</span></p>
           <div class="tier-profit">
-            <span>Estimasi profit/bulan</span>
+            <span>{!! __('vendor_landing.pricing.est_profit') !!}</span>
             <strong data-counter="18000000" data-prefix="Rp ">Rp 18.000.000</strong>
-            <small>Volume: 1.200 Jam</small>
+            <small>{!! __('vendor_landing.pricing.volume') !!}: 1.200 Jam</small>
           </div>
         </article>
 
         <article class="tier-card tier-large animate-zoom-in" data-delay="400">
           <img class="profit-art" src="{{ asset('vendor-assets/') }}/kamerakita/profit-wallet.png" alt="Dompet besar berisi uang rupiah">
           <div class="tier-name"><img src="{{ asset('vendor-assets/') }}/kamerakita/icon-tier-3.svg" alt=""><span>Tier 3: Agensi Skala Besar</span></div>
-          <p class="worker-count"><strong>50+</strong><span>orang worker</span></p>
+          <p class="worker-count"><strong>50+</strong><span>{!! __('vendor_landing.pricing.workers') !!}</span></p>
           <div class="tier-profit">
-            <span>Estimasi profit/bulan</span>
+            <span>{!! __('vendor_landing.pricing.est_profit') !!}</span>
             <strong class="blue-profit" data-counter="45000000" data-prefix="Rp " data-suffix="+">Rp 45.000.000+</strong>
-            <small>Volume: 3.000+ jam</small>
+            <small>{!! __('vendor_landing.pricing.volume') !!}: 3.000+ jam</small>
           </div>
-          <a class="button tier-button" href="{{ $whatsappVendorUrl }}" target="_blank">Gabung Jadi Partner</a>
+          <a class="button tier-button" href="{{ $whatsappVendorUrl }}" target="_blank">{!! __('vendor_landing.hero.join_partner') !!}</a>
         </article>
       </div>
     </section>
@@ -295,27 +295,27 @@
     <section class="how-section" id="faq" aria-labelledby="how-title">
       <div class="how-heading">
         <div class="animate-fade-right">
-          <p class="chip"><span class="chip-dot"></span> CARA KERJA</p>
-          <h2 id="how-title">Mulai Jadi Partner dalam 3 Langkah</h2>
+          <p class="chip"><span class="chip-dot"></span> {!! __('vendor_landing.steps.badge') !!}</p>
+          <h2 id="how-title">{!! __('vendor_landing.steps.title') !!}</h2>
         </div>
-        <a class="button how-button animate-fade-left" data-delay="150" href="{{ $whatsappVendorUrl }}" target="_blank">Gabung Jadi Partner</a>
+        <a class="button how-button animate-fade-left" data-delay="150" href="{{ $whatsappVendorUrl }}" target="_blank">{!! __('vendor_landing.hero.join_partner') !!}</a>
       </div>
 
       <div class="steps-grid">
         <article class="step animate-fade-up" data-delay="100">
           <span class="step-number">1</span>
           <h3>JOIN</h3>
-          <p>Daftarkan agency Anda. Siapkan worker, smartphone, dan headstrap.</p>
+          <p>{!! __('vendor_landing.steps.step1_desc') !!}</p>
         </article>
         <article class="step animate-fade-up" data-delay="250">
           <span class="step-number">2</span>
           <h3>OPERATE</h3>
-          <p>Jalankan project sesuai guideline KameraKita</p>
+          <p>{!! __('vendor_landing.steps.step2_desc') !!}</p>
         </article>
         <article class="step animate-fade-up" data-delay="400">
           <span class="step-number">3</span>
           <h3>EARN</h3>
-          <p>Terima pembayaran dari jam data yang berhasil divalidasi.</p>
+          <p>{!! __('vendor_landing.steps.step3_desc') !!}</p>
         </article>
       </div>
     </section>
@@ -323,9 +323,9 @@
     <section class="final-cta" id="contact" aria-labelledby="cta-title">
       <img class="cta-art animate-fade-right" src="{{ asset('vendor-assets/') }}/kamerakita/final-cta-art.png" alt="Ilustrasi AI dan aliran koin">
       <div class="cta-copy animate-fade-left" data-delay="150">
-        <h2 id="cta-title">Siap buka peluang bisnis baru dari proyek<br class="desktop-break"> AI global?</h2>
-        <p>Masuk lebih awal, bangun operasional, dan nikmati<br class="desktop-break"> potensi margin dari setiap jam yang tervalidasi.</p>
-        <a class="button button-yellow" href="{{ $whatsappVendorUrl }}" target="_blank">Gabung Jadi Partner</a>
+        <h2 id="cta-title">{!! __('vendor_landing.cta.title') !!}</h2>
+        <p>{!! __('vendor_landing.cta.subtitle') !!}</p>
+        <a class="button button-yellow" href="{{ $whatsappVendorUrl }}" target="_blank">{!! __('vendor_landing.hero.join_partner') !!}</a>
       </div>
     </section>
   </main>
