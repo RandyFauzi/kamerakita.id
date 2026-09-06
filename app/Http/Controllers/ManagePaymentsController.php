@@ -148,7 +148,25 @@ class ManagePaymentsController extends Controller
             ];
         }
 
-        return view('payments.manage', compact('workers', 'payoutHistory', 'search', 'sort'));
+        $currentPage = \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPage();
+        $perPage = 50;
+        $currentItems = array_slice($payoutHistory, ($currentPage - 1) * $perPage, $perPage);
+        $paginatedHistory = new \Illuminate\Pagination\LengthAwarePaginator($currentItems, count($payoutHistory), $perPage, $currentPage, [
+            'path' => \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPath(),
+            'query' => $request->query()
+        ]);
+
+        $totalPayoutsCount = count($payoutHistory);
+        $totalPaidAmount = collect($payoutHistory)->sum('total_amount');
+
+        return view('payments.manage', [
+            'workers' => $workers, 
+            'payoutHistory' => $paginatedHistory, 
+            'totalPayoutsCount' => $totalPayoutsCount,
+            'totalPaidAmount' => $totalPaidAmount,
+            'search' => $search, 
+            'sort' => $sort
+        ]);
     }
 
     /**

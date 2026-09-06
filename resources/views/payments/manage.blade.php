@@ -8,7 +8,7 @@
     @php
         $queuedAmount = collect($workers)->sum('total_amount');
         $queuedReportCount = collect($workers)->sum(fn ($worker) => count($worker['reports']));
-        $paidAmount = collect($payoutHistory)->sum('total_amount');
+        $paidAmount = $totalPaidAmount ?? 0;
     @endphp
 
     <style>
@@ -214,7 +214,7 @@
                 <button @click="currentTab = 'history'"
                         :class="currentTab === 'history' ? 'bg-white text-indigo-700 shadow-sm' : 'text-gray-500 hover:text-gray-900'"
                         class="min-h-10 rounded-lg px-3 py-2 text-[11px] font-black uppercase tracking-wider transition focus:outline-none sm:px-4">
-                    Riwayat <span class="ml-1 rounded-full bg-slate-200 px-2 py-0.5 text-slate-700">{{ count($payoutHistory) }}</span>
+                    Riwayat <span class="ml-1 rounded-full bg-slate-200 px-2 py-0.5 text-slate-700">{{ $totalPayoutsCount ?? count($payoutHistory) }}</span>
                 </button>
             </div>
 
@@ -434,6 +434,12 @@
                         </div>
                     </div>
                 @endforelse
+
+                @if(method_exists($payoutHistory, 'hasPages') && $payoutHistory->hasPages())
+                    <div class="mt-6">
+                        {{ $payoutHistory->links() }}
+                    </div>
+                @endif
             </div>
         </div>
 
