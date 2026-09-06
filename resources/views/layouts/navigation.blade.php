@@ -43,6 +43,11 @@
                 </div>
             </div>
 
+            <!-- Language Switcher -->
+            <div class="hidden sm:flex sm:items-center sm:ms-6">
+                <x-language-switcher />
+            </div>
+
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 <x-dropdown align="right" width="48">
@@ -78,7 +83,7 @@
                             <x-dropdown-link :href="route('logout')"
                                     onclick="event.preventDefault();
                                                 this.closest('form').submit();">
-                                {{ __('Log Out') }}
+                                {{ __('common.logout') }}
                             </x-dropdown-link>
                         </form>
                     </x-slot>
@@ -147,6 +152,17 @@
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
 
+                <!-- Mobile Language Switcher (Simple Form) -->
+                <div class="px-4 py-2">
+                    <form method="POST" action="{{ route('locale.switch') }}" class="flex space-x-2">
+                        @csrf
+                        <input type="hidden" name="locale" value="{{ app()->getLocale() === 'id' ? 'en' : 'id' }}">
+                        <button type="submit" class="text-sm font-medium text-gray-500 hover:text-gray-700">
+                            {{ app()->getLocale() === 'id' ? '🇬🇧 Switch to English' : '🇮🇩 Ganti ke Bahasa Indonesia' }}
+                        </button>
+                    </form>
+                </div>
+
                 <!-- Authentication -->
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
@@ -154,7 +170,7 @@
                     <x-responsive-nav-link :href="route('logout')"
                             onclick="event.preventDefault();
                                         this.closest('form').submit();">
-                        {{ __('Log Out') }}
+                        {{ __('common.logout') }}
                     </x-responsive-nav-link>
                 </form>
             </div>

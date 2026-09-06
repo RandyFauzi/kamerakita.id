@@ -11,7 +11,10 @@ use App\Http\Controllers\RenderDashboardOverviewController;
 use App\Http\Controllers\ExportPayrollDataController;
 use App\Http\Controllers\ManageAdminUsersController;
 use App\Http\Controllers\ManagePartnerDemographicsController;
+use App\Http\Controllers\LocaleController;
 use Illuminate\Support\Facades\Route;
+
+Route::post('/locale', [LocaleController::class, 'switch'])->name('locale.switch');
 
 Route::get('/', function () {
     return view('welcome');

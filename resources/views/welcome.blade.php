@@ -36,6 +36,14 @@
             <a href="#faq" class="nav-link">FAQ</a>
           </nav>
           <div class="nav-actions">
+            <!-- Language Toggle -->
+            <form method="POST" action="{{ route('locale.switch') }}" style="display:inline;">
+                @csrf
+                <input type="hidden" name="locale" value="{{ app()->getLocale() === 'id' ? 'en' : 'id' }}">
+                <button type="submit" class="button button--outline button--small" style="padding: 0 12px; font-weight: bold; border: 1px solid #d1d5db; color: #4b5563; background: white; cursor: pointer;">
+                    {{ app()->getLocale() === 'id' ? '🇬🇧 EN' : '🇮🇩 ID' }}
+                </button>
+            </form>
             <a class="button button--outline button--small" href="{{ route('jadi-vendor') }}">Jadi Mitra Vendor</a>
             <a class="button button--blue button--small" href="{{ route('login') }}">Masuk / Daftar</a>
           </div>
