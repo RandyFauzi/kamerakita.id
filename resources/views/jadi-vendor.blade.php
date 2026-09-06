@@ -189,8 +189,8 @@
     <section class="hero" id="top" aria-labelledby="hero-title">
       <div class="hero-copy">
         <p class="chip animate-fade-down"><span class="chip-dot"></span> KameraKita AI Partner Program</p>
-        <h1 id="hero-title" class="animate-fade-up" data-delay="100">Bangun Agensi AI Anda<br><span class="gradient-text">Profit Tanpa Batas</span></h1>
-        <p class="hero-description animate-fade-up" data-delay="200">Jadilah Official Vendor KameraKita. Kami siapkan kontrak AI global,<br class="desktop-break"> Anda cukup kelola tim dan nikmati marginnya</p>
+        <h1 id="hero-title" class="animate-fade-up" data-delay="100">{!! __('vendor_landing.hero.title') !!}</h1>
+        <p class="hero-description animate-fade-up" data-delay="200">{!! __('vendor_landing.hero.subtitle') !!}</p>
         <div class="hero-actions animate-fade-up" data-delay="300">
           <a class="button button-primary" href="{{ $whatsappVendorUrl }}" target="_blank">Gabung Jadi Partner</a>
           <a class="button button-outline" href="#features">Lihat Cara Kerjanya</a>

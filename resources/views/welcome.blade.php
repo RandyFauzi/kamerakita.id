@@ -29,10 +29,10 @@
         </button>
         <div class="nav-panel" id="nav-panel">
           <nav aria-label="Navigasi utama">
-            <a href="#keunggulan" class="nav-link">Keunggulan<span class="nav-chevron" aria-hidden="true">⌄</span></a>
-            <a href="#kalkulator" class="nav-link">Kalkulator<span class="nav-chevron" aria-hidden="true">⌄</span></a>
-            <a href="#cara-kerja" class="nav-link">Cara Kerja</a>
-            <a href="#mitra" class="nav-link">Testimony</a>
+            <a href="#keunggulan" class="nav-link">{{ __('landing.nav.benefits') }}<span class="nav-chevron" aria-hidden="true">⌄</span></a>
+            <a href="#kalkulator" class="nav-link">{{ __('landing.nav.earnings') }}<span class="nav-chevron" aria-hidden="true">⌄</span></a>
+            <a href="#cara-kerja" class="nav-link">{{ __('landing.nav.how_it_works') }}</a>
+            <a href="#mitra" class="nav-link">{{ __('landing.nav.faq') }}</a>
             <a href="#faq" class="nav-link">FAQ</a>
           </nav>
           <div class="nav-actions">
@@ -45,7 +45,7 @@
                 </button>
             </form>
             <a class="button button--outline button--small" href="{{ route('jadi-vendor') }}">Jadi Mitra Vendor</a>
-            <a class="button button--blue button--small" href="{{ route('login') }}">Masuk / Daftar</a>
+            <a class="button button--blue button--small" href="{{ route('login') }}">{{ __('landing.nav.login') }}</a>
           </div>
         </div>
       </div>
@@ -56,11 +56,11 @@
         <section class="hero">
           <div class="hero-inner">
             <div class="hero-copy" data-reveal>
-              <h1>Kerja rumah<br>jadi <em>cuan!</em></h1>
-              <p>Sambil ngepel, nyuci piring, atau beres-beres rumah, kamu bisa dapat penghasilan tambahan sampai jutaan rupiah sebulan. Tanpa modal, cukup rekam pakai HP-mu.</p>
+              <h1>{!! __('landing.hero.title') !!}</h1>
+              <p>{{ __('landing.hero.subtitle') }}</p>
               <div class="hero-actions">
-                <a class="button button--yellow" href="{{ route('onboarding.form') }}">Mulai Daftar Sekarang</a>
-                <a class="button button--ghost" href="#cara-kerja">Lihat Cara Kerja</a>
+                <a class="button button--yellow" href="{{ route('onboarding.form') }}">{{ __('landing.hero.cta_primary') }}</a>
+                <a class="button button--ghost" href="#cara-kerja">{{ __('landing.hero.cta_secondary') }}</a>
               </div>
               <div class="contributors">
                 <div class="avatar-stack" aria-hidden="true">
@@ -254,9 +254,9 @@
           <img class="cta-banner" src="{{ asset('assets/figma/cta-banner.png') }}" alt="Kontributor KameraKita menggunakan ponsel di rumah">
           <div class="cta-copy">
             <div data-reveal>
-              <h2>Siap ubah kerja rumah jadi<br>cuan sampingan?</h2>
-              <p>Kuota mitra terbatas di tiap wilayah. Jangan lewatkan kesempatan jadi perintis KameraKita AI.</p>
-              <a class="button button--blue button--large" href="{{ route('onboarding.form') }}">Mulai Daftar Sekarang</a>
+              <h2>{!! __('landing.cta.title') !!}</h2>
+              <p>{{ __('landing.cta.subtitle') }}</p>
+              <a class="button button--blue button--large" href="{{ route('onboarding.form') }}">{{ __('landing.hero.cta_primary') }}</a>
             </div>
           </div>
         </section>
@@ -272,8 +272,8 @@
           </a>
           <p>Platform Rekam Video & Datasets Terpercaya No. 1 di Indonesia untuk Mitra & Enterprise Computer Vision.</p>
         </div>
-        <div><h2>LAYANAN MITRA</h2><a href="#keunggulan">Keunggulan Mitra</a><a href="#kalkulator">Kalkulator Komisi</a><a href="#cara-kerja">Cara Kerja</a></div>
-        <div><h2>AKSES AKUN</h2><a href="{{ route('login') }}">Masuk / Daftar</a><a href="{{ route('onboarding.form') }}">Daftar Kontributor Baru</a><a href="{{ route('dashboard') }}">Dashboard Admin QC</a></div>
+        <div><h2>LAYANAN MITRA</h2><a href="#keunggulan">Keunggulan Mitra</a><a href="#kalkulator">Kalkulator Komisi</a><a href="#cara-kerja">{{ __('landing.nav.how_it_works') }}</a></div>
+        <div><h2>AKSES AKUN</h2><a href="{{ route('login') }}">{{ __('landing.nav.login') }}</a><a href="{{ route('onboarding.form') }}">Daftar Kontributor Baru</a><a href="{{ route('dashboard') }}">Dashboard Admin QC</a></div>
         <div><h2>PERUSAHAAN</h2><p>Domain Resmi: <a href="{{ url('/') }}">{{ parse_url(url('/'), PHP_URL_HOST) ?? 'kamerakitaid.site' }}</a></p><p>PT KAMERAKITA AI Indonesia</p></div>
       </div>
       <div class="footer-bottom"><span>© {{ date('Y') }} KAMERAKITA AI. All rights reserved.</span><div><span>Kebijakan Privasi</span><span>Syarat & Ketentuan</span></div></div>
