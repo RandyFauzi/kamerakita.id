@@ -72,7 +72,8 @@ class ManagePartnerDemographicsController extends Controller
                 $query->where(function ($q) use ($search) {
                     $q->where('full_name', 'like', "%{$search}%")
                         ->orWhere('mitra_id', 'like', "%{$search}%")
-                        ->orWhere('whatsapp_number', 'like', "%{$search}%");
+                        ->orWhere('whatsapp_number', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%");
                 });
             })
             ->when($role, function ($query, $role) {
@@ -306,7 +307,8 @@ class ManagePartnerDemographicsController extends Controller
                 $query->where(function ($q) use ($search) {
                     $q->where('full_name', 'like', "%{$search}%")
                         ->orWhere('mitra_id', 'like', "%{$search}%")
-                        ->orWhere('whatsapp_number', 'like', "%{$search}%");
+                        ->orWhere('whatsapp_number', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%");
                 });
             })
             ->when($role, function ($query, $role) {
