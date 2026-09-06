@@ -27,7 +27,7 @@ button { font: inherit; }
 .skip-link { position: fixed; z-index: 1000; top: 10px; left: 10px; padding: 10px 14px; border-radius: 8px; color: #fff; background: var(--slate-900); transform: translateY(-160%); transition: transform 180ms ease; }
 .skip-link:focus { transform: translateY(0); }
 
-.navbar { height: 81px; background: #fff; border-bottom: 1px solid rgba(226, 232, 240, 0.9); position: relative; z-index: 100; }
+.navbar { height: 81px; background: #fff; border-bottom: 1px solid rgba(226, 232, 240, 0.9); position: sticky; top: 0; z-index: 1000; }
 .nav-shell { width: min(var(--page-width), calc(100% - 64px)); height: 100%; margin: auto; display: flex; align-items: center; justify-content: space-between; }
 .brand { display: inline-flex; align-items: center; gap: 12px; font-size: 20px; line-height: 1; font-weight: 800; letter-spacing: -0.55px; white-space: nowrap; }
 .brand__mark { width: 40px; height: 40px; padding: 0; border-radius: 10px; background: transparent; border: none; overflow: hidden; }

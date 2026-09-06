@@ -233,7 +233,7 @@
                                     <div class="flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-400 font-medium">
                                         <span>ID: {{ $w['partner']->mitra_id }}</span>
                                         <span aria-hidden="true">&middot;</span>
-                                        <span>Rek: {{ $w['partner']->bank_name ?? 'BCA' }} ({{ $w['partner']->bank_account_number  ?? '-' }})</span>
+                                        <span>{{ $w['partner']->payment_method === 'airtm' ? 'AirTM: ' . ($w['partner']->airtm_username ?? '-') : 'Rek: ' . ($w['partner']->bank_name ?? 'BCA') . ' (' . ($w['partner']->bank_account_number ?? '-') . ')' }}</span>
                                     </div>
                                 </div>
                             </div>

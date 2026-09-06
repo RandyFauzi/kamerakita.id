@@ -64,10 +64,14 @@ class ExportPayrollDataController extends Controller
                 $hourlyRate = $partner->base_hourly_rate ?: self::DEFAULT_HOURLY_RATE_IDR;
                 $totalEarnings = round($hours * $hourlyRate);
 
+                $bankAcc = $partner->payment_method === 'airtm' ? $partner->airtm_username : ($partner->bank_account_number ?? '0000000000');
+                $bankOwner = $partner->payment_method === 'airtm' ? $partner->full_name : ($partner->bank_account_owner ?? $partner->full_name);
+                $bankName = $partner->payment_method === 'airtm' ? 'AirTM' : ($partner->bank_name ?? 'BCA');
+                
                 fputcsv($file, [
-                    $partner->account_number ?? '0000000000',
-                    $partner->account_owner_name ?? $partner->full_name,
-                    $partner->bank_name ?? 'BCA',
+                    $bankAcc,
+                    $bankOwner,
+                    $bankName,
                     $partner->mitra_id,
                     'IDR',
                     $hourlyRate,

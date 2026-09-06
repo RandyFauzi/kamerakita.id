@@ -17,6 +17,8 @@ class HandcapWaService
      */
     public function sendMessage(string $phone, string $message, string $priority = 'normal', string $session = 'default')
     {
+        $phone = \App\Helpers\PhoneHelper::formatForGateway($phone);
+
         $apiKey = env('HANDCAP_WA_API_KEY');
         if (empty($apiKey)) {
             throw new \Exception("HANDCAP_WA_API_KEY is missing from .env");

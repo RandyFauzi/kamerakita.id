@@ -65,6 +65,9 @@ class ProfileController extends Controller
                     'nik',
                     'whatsapp_number',
                     'full_address',
+                    'country_code',
+                    'payment_method',
+                    'airtm_username',
                     'bank_name',
                     'bank_account_number',
                     'bank_account_owner',
@@ -72,9 +75,6 @@ class ProfileController extends Controller
                     'has_headstrap',
                 ])
                 ->all();
-
-            $partnerData['account_number'] = $partnerData['bank_account_number'] ?? null;
-            $partnerData['account_owner_name'] = $partnerData['bank_account_owner'] ?? null;
 
             $user->partner->update($partnerData);
         }

@@ -224,18 +224,35 @@
                     </div>
 
                     <div class="space-y-6">
+                        <!-- Country of Residence -->
+                        <div>
+                            <label class="block text-sm font-bold text-slate-800 mb-2">Negara Tempat Tinggal (Country of Residence)</label>
+                            <select name="country_code" id="input-country" class="w-full p-3.5 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-slate-800 font-medium shadow-sm outline-none" required>
+                                @php
+                                    $countries = config('countries');
+                                    $selectedCountry = old('country_code', $partner->country_code ?? 'ID');
+                                @endphp
+                                @foreach($countries as $code => $country)
+                                    <option value="{{ $code }}" data-code="{{ $country['phone_code'] }}" {{ $selectedCountry == $code ? 'selected' : '' }}>
+                                        {{ $country['name'] }} ({{ $country['phone_code'] }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
                         <!-- WhatsApp -->
                         <div class="bg-blue-50/50 p-5 rounded-2xl border border-blue-100">
                             <label class="block text-sm font-bold text-slate-800 mb-2">No. WhatsApp Aktif</label>
                             <div class="flex rounded-xl shadow-sm border border-slate-200 overflow-hidden bg-white focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500">
-                                <span class="inline-flex items-center px-4 bg-slate-50 text-slate-500 font-bold border-r border-slate-200">+62</span>
+                                <span id="wa-prefix" class="inline-flex items-center px-4 bg-slate-50 text-slate-500 font-bold border-r border-slate-200">{{ $countries[$selectedCountry]['phone_code'] ?? '+62' }}</span>
                                 <input type="tel" name="whatsapp_number" id="input-wa" class="flex-1 block w-full border-0 p-3.5 text-slate-900 font-medium focus:ring-0 outline-none" placeholder="81234567890" value="{{ old('whatsapp_number', $partner->whatsapp_number ?? '') }}" required>
                             </div>
                         </div>
                         
-                        <!-- Bank Info -->
-                        <div class="space-y-4">
-                            <h3 class="font-bold text-slate-800 text-lg border-b border-slate-100 pb-2">Informasi Rekening Bank</h3>
+                        <!-- Bank Info (Indonesia) -->
+                        <div id="indonesia-payment" class="space-y-4">
+                            <input type="hidden" name="payment_method" id="input-payment-method" value="bank_transfer">
+                            <h3 class="font-bold text-slate-800 text-lg border-b border-slate-100 pb-2">Informasi Rekening Bank (Indonesia)</h3>
                             
                             <div>
                                 <label class="block text-sm font-bold text-slate-700 mb-2">Nama Bank</label>
@@ -263,6 +280,20 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
                                     Nama harus sesuai buku tabungan.
                                 </p>
+                            </div>
+                        </div>
+
+                        <!-- International Payment (AirTM) -->
+                        <div id="international-payment" class="space-y-4 hidden">
+                            <h3 class="font-bold text-slate-800 text-lg border-b border-slate-100 pb-2">International Payment</h3>
+                            <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 flex gap-3 text-sm text-indigo-800">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                <p>International payments are currently processed exclusively through <strong>AirTM</strong>.</p>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-2">AirTM Username / Email</label>
+                                <input type="text" name="airtm_username" id="input-airtm" class="w-full p-3.5 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-slate-800 font-medium shadow-sm outline-none" placeholder="e.g. john_doe" value="{{ old('airtm_username', $partner->airtm_username ?? '') }}">
                             </div>
                         </div>
                     </div>
@@ -345,11 +376,22 @@
             // Validate Screen 5 (Data) before going to 6
             if (currentStep === 5 && direction === 1) {
                 const wa = document.getElementById('input-wa').value;
-                const bank = document.getElementById('input-bank').value;
-                const acc = document.getElementById('input-acc').value;
-                const owner = document.getElementById('input-owner').value;
+                const isID = document.getElementById('input-country').value === 'ID';
                 
-                if(!wa || !bank || !acc || !owner) {
+                let isValid = true;
+                if (!wa) isValid = false;
+                
+                if (isID) {
+                    const bank = document.getElementById('input-bank').value;
+                    const acc = document.getElementById('input-acc').value;
+                    const owner = document.getElementById('input-owner').value;
+                    if(!bank || !acc || !owner) isValid = false;
+                } else {
+                    const airtm = document.getElementById('input-airtm').value;
+                    if(!airtm) isValid = false;
+                }
+                
+                if(!isValid) {
                     const container = document.getElementById('screen-5');
                     container.classList.add('animate-[shake_0.5s_ease-in-out]');
                     setTimeout(() => container.classList.remove('animate-[shake_0.5s_ease-in-out]'), 500);
@@ -446,6 +488,70 @@
                 }
             }
         }
+
+        
+        // Handle Country Change
+        document.getElementById('input-country').addEventListener('change', function(e) {
+            const selectedOption = this.options[this.selectedIndex];
+            const countryCode = this.value;
+            const phoneCode = selectedOption.getAttribute('data-code');
+            
+            // Update WA Prefix
+            document.getElementById('wa-prefix').innerText = phoneCode;
+            
+            const indoSection = document.getElementById('indonesia-payment');
+            const intlSection = document.getElementById('international-payment');
+            const paymentMethodInput = document.getElementById('input-payment-method');
+            
+            const bankInput = document.getElementById('input-bank');
+            const accInput = document.getElementById('input-acc');
+            const ownerInput = document.getElementById('input-owner');
+            const airtmInput = document.getElementById('input-airtm');
+            
+            if (countryCode === 'ID') {
+                indoSection.classList.remove('hidden');
+                intlSection.classList.add('hidden');
+                
+                paymentMethodInput.value = 'bank_transfer';
+                
+                // Enable Indonesia inputs, require them
+                bankInput.disabled = false; bankInput.required = true;
+                accInput.disabled = false; accInput.required = true;
+                ownerInput.disabled = false; ownerInput.required = true;
+                
+                // Disable AirTM inputs, remove require
+                airtmInput.disabled = true; airtmInput.required = false;
+            } else {
+                indoSection.classList.add('hidden');
+                intlSection.classList.remove('hidden');
+                
+                paymentMethodInput.value = 'airtm';
+                
+                // Disable Indonesia inputs, remove require
+                bankInput.disabled = true; bankInput.required = false;
+                accInput.disabled = true; accInput.required = false;
+                ownerInput.disabled = true; ownerInput.required = false;
+                
+                // Enable AirTM inputs, require them
+                airtmInput.disabled = false; airtmInput.required = true;
+                
+                // Confirm clear data if bank had values
+                if (bankInput.value || accInput.value || ownerInput.value) {
+                    if (confirm("Changing your country will switch your payment method and clear the current bank details. Proceed?")) {
+                        bankInput.value = '';
+                        accInput.value = '';
+                        ownerInput.value = '';
+                    } else {
+                        // Revert country selection
+                        this.value = 'ID';
+                        this.dispatchEvent(new Event('change'));
+                    }
+                }
+            }
+        });
+        
+        // Trigger initial load
+        document.getElementById('input-country').dispatchEvent(new Event('change'));
 
         const checkbox = document.getElementById('tos_accepted');
         const submitBtn = document.getElementById('btn-submit');

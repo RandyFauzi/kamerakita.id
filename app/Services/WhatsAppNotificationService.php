@@ -43,6 +43,8 @@ class WhatsAppNotificationService
      */
     public function sendMessage(string $phone, string $message): bool
     {
+        $phone = \App\Helpers\PhoneHelper::formatForGateway($phone);
+
         if (empty($phone)) {
             return false;
         }
