@@ -15,8 +15,7 @@ return [
 
     'clients' => array_filter([
         
-        // Admin Master Token (Bisa akses semua tools)
-        env('MCP_SECRET_KEY') => [
+        env('MCP_SECRET_KEY', 'kamerakita-mcp-2026') => [
             'name' => 'Admin Control Plane',
             'permissions' => ['*'], // * berarti semua akses (READ, WRITE, CRITICAL)
         ],
