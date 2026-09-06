@@ -14,10 +14,10 @@ class PullMailboxEmailsCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(\App\Services\ProcessCatchAllEmailService $service)
     {
-        $this->info('Dispatching email pull process to queue...');
-        SyncMailboxJob::dispatch();
-        $this->info('Dispatched.');
+        $this->info('Starting email pull process synchronously...');
+        $service->processEmails();
+        $this->info('Finished.');
     }
 }
