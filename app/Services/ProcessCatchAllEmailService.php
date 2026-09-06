@@ -49,8 +49,9 @@ class ProcessCatchAllEmailService
             $lastUid = $syncState->last_uid;
             
             // Tarik max 100 email dengan UID > last_uid untuk mencegah OOM
-            Log::info("IMAP Catch-All: Menarik pesan dengan UID > {$lastUid}");
-            $messages = $folder->query()->whereUid($lastUid . ':*')->limit(100)->get();
+            $searchUid = $lastUid > 0 ? $lastUid : 1;
+            Log::info("IMAP Catch-All: Menarik pesan dengan UID > {$lastUid} (Query UID: {$searchUid}:*)");
+            $messages = $folder->query()->whereUid($searchUid . ':*')->limit(100)->get();
 
             $userMap = User::pluck('id', 'email')->keyBy(fn ($id, $email) => strtolower(trim($email)));
             $userPrefixMap = User::pluck('id', 'email')->keyBy(fn ($id, $email) => explode('@', strtolower(trim($email)))[0]);
