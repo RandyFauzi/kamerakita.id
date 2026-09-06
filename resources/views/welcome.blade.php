@@ -37,14 +37,42 @@
           </nav>
           <div class="nav-actions">
             <!-- Language Toggle -->
-            <form method="POST" action="{{ route('locale.switch') }}" style="display:inline;">
-                @csrf
-                <input type="hidden" name="locale" value="{{ app()->getLocale() === 'id' ? 'en' : 'id' }}">
-                <button type="submit" class="button button--outline button--small" style="padding: 0 12px; font-weight: bold; border: 1px solid #d1d5db; color: #4b5563; background: white; cursor: pointer;">
-                    {{ app()->getLocale() === 'id' ? '🇬🇧 EN' : '🇮🇩 ID' }}
-                </button>
-            </form>
-            <a class="button button--outline button--small" href="{{ route('jadi-vendor') }}">Jadi Mitra Vendor</a>
+            <!-- Modern Toggle Switch -->
+<div class="lang-switch-container">
+    <span class="lang-label {{ app()->getLocale() === 'id' ? 'active' : '' }}">ID</span>
+    <button type="button" class="lang-toggle {{ app()->getLocale() === 'en' ? 'switched' : '' }}" onclick="switchLanguage()" aria-label="Toggle Language">
+        <span class="lang-thumb"></span>
+    </button>
+    <span class="lang-label {{ app()->getLocale() === 'en' ? 'active' : '' }}">EN</span>
+</div>
+
+<style>
+.lang-switch-container { display: inline-flex; align-items: center; gap: 8px; margin-right: 12px; }
+.lang-label { font-size: 13px; font-weight: 600; color: #9ca3af; transition: color 0.3s; }
+.lang-label.active { color: #111827; }
+.lang-toggle { position: relative; width: 44px; height: 24px; background: #e5e7eb; border-radius: 100px; border: none; cursor: pointer; padding: 2px; transition: background 0.3s; }
+.lang-toggle.switched { background: #0ea5e9; }
+.lang-thumb { display: block; width: 20px; height: 20px; background: white; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.1); transform: translateX(0); transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1); }
+.lang-toggle.switched .lang-thumb { transform: translateX(20px); }
+</style>
+
+<script>
+function switchLanguage() {
+    const isEn = {{ app()->getLocale() === 'id' ? 'true' : 'false' }};
+    const newLocale = isEn ? 'en' : 'id';
+    document.querySelector('.lang-toggle').classList.toggle('switched');
+    fetch('{{ route('locale.switch') }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({ locale: newLocale })
+    }).then(() => { window.location.reload(); }).catch(() => { window.location.reload(); });
+}
+</script>
+            <a class="button button--outline button--small" href="{{ route('jadi-vendor') }}">{{ __('landing.nav.vendor') }}</a>
             <a class="button button--blue button--small" href="{{ route('login') }}">{{ __('landing.nav.login') }}</a>
           </div>
         </div>
@@ -90,21 +118,21 @@
         <section class="benefits section" id="keunggulan">
           <div class="section-heading" data-reveal>
             <span class="eyebrow">KENAPA HARUS GABUNG?</span>
-            <h2>Kerja simpel, hasil maksimal!</h2>
-            <p>Kamu cukup rekam aktivitas harian dari rumah. Laporan yang lolos approved akan masuk rekap pendapatan secara transparan.</p>
+            <h2>{!! __('landing.features.title2') !!}</h2>
+            <p>{{ __('landing.features.subtitle2') }}</p>
           </div>
           <div class="benefit-grid">
               <article class="benefit-card" data-reveal style="--delay: 90ms;">
                 <div class="benefit-art"><img class="float-1" src="{{ asset('assets/figma/benefits-ai-figma.png') }}" alt="Ilustrasi Bantu AI Biar Pintar"></div>
-                <h3>Bantu AI Biar Pintar</h3><p>KameraKita AI ngajarin teknologi pintar (AI) biar bisa paham cara manusia beraktivitas di dalam rumah.</p>
+                <h3>{{ __('landing.features.item_1_title') }}</h3><p>{{ __('landing.features.item_1_desc') }}</p>
               </article>
               <article class="benefit-card" data-reveal style="--delay: 180ms;">
                 <div class="benefit-art"><img class="float-2" src="{{ asset('assets/figma/benefits-record-figma.png') }}" alt="Ilustrasi Rekam Kegiatan Rumah"></div>
-                <h3>Rekam Kegiatan Rumah</h3><p>Tugas kamu cuma pakai alat di kepala, lalu rekam aktivitas harian kayak ngepel, nyuci piring, atau beres-beres.</p>
+                <h3>{{ __('landing.features.item_2_title') }}</h3><p>{{ __('landing.features.item_2_desc') }}</p>
               </article>
               <article class="benefit-card" data-reveal style="--delay: 270ms;">
                 <div class="benefit-art"><img class="float-3" src="{{ asset('assets/figma/benefits-wallet-figma.png') }}" alt="Ilustrasi Kirim Video & Terima Cuan"></div>
-                <h3>Kirim Video & Terima Cuan</h3><p>Kerjaan rumah beres, dompet tetep tebel. Gak perlu keahlian khusus, semua orang semua kalangan pasti bisa!</p>
+                <h3>{{ __('landing.features.item_3_title') }}</h3><p>{{ __('landing.features.item_3_desc') }}</p>
               </article>
           </div>
         </section>
@@ -116,8 +144,8 @@
             <span class="ambient ambient--yellow" aria-hidden="true"></span>
             <div class="section-heading" data-reveal style="--delay: 80ms;">
               <span class="eyebrow">SIMULASI CUAN MINGGUAN</span>
-              <h2>Pilih ritme kerja yang paling cocok</h2>
-              <p>Rate dasar Rp60.000 per jam rekaman bersih. Simulasi ini membantu kamu membayangkan potensi cuan mingguan sebelum mulai.</p>
+              <h2>{!! __('landing.calculator.title2') !!}</h2>
+              <p>{{ __('landing.calculator.subtitle2') }}</p>
             </div>
             
             <div class="calculator-grid">
@@ -165,24 +193,24 @@
           <span class="steps-glow steps-glow--blue" aria-hidden="true"></span><span class="steps-glow steps-glow--yellow" aria-hidden="true"></span>
           <div class="section-heading" data-reveal>
             <span class="eyebrow">CARA KERJA</span>
-            <h2>Cuma 3 langkah buat mulai dapet cuan</h2>
-            <p>Dari daftar sampai pembayaran, semuanya dibuat simpel dan bakal dipandu tim KameraKita.</p>
+            <h2>{!! __('landing.steps.title2') !!}</h2>
+            <p>{{ __('landing.steps.subtitle2') }}</p>
           </div>
           <div class="step-grid">
               <article class="step-card" data-reveal style="--delay: 100ms;">
                 <img class="step-art step-float" style="--float-delay: 0ms;" src="{{ asset('assets/figma/steps-03.png') }}" alt="Ilustrasi langkah 1">
                 <strong class="step-number">1</strong>
-                <h3>Gabung & Ikuti Briefing</h3><p>Daftar lewat WhatsApp, lalu tim kami bakal jelasin cara kerja, tugas, dan kebutuhan alat.</p>
+                <h3>{{ __('landing.steps.step_1_title') }}</h3><p>{{ __('landing.steps.step_1_desc') }}</p>
               </article>
               <article class="step-card" data-reveal style="--delay: 200ms;">
                 <img class="step-art step-float" style="--float-delay: 160ms;" src="{{ asset('assets/figma/steps-01.png') }}" alt="Ilustrasi langkah 2">
                 <strong class="step-number">2</strong>
-                <h3>Rekam Aktivitasmu</h3><p>Pilih tugas yang tersedia, pasang HP sesuai panduan, lalu rekam aktivitas sehari-hari seperti biasa.</p>
+                <h3>{{ __('landing.steps.step_2_title') }}</h3><p>{{ __('landing.steps.step_2_desc') }}</p>
               </article>
               <article class="step-card" data-reveal style="--delay: 300ms;">
                 <img class="step-art step-float" style="--float-delay: 320ms;" src="{{ asset('assets/figma/steps-09.png') }}" alt="Ilustrasi langkah 3">
                 <strong class="step-number">3</strong>
-                <h3>Upload & Terima Bayaran</h3><p>Kirim hasil rekaman untuk dicek. Setelah lolos QC, durasi approved masuk ke pembayaran bulanan.</p>
+                <h3>{{ __('landing.steps.step_3_title') }}</h3><p>{{ __('landing.steps.step_3_desc') }}</p>
               </article>
           </div>
         </section>
@@ -192,8 +220,8 @@
           <span class="testimonial-glow testimonial-glow--one" aria-hidden="true"></span><span class="testimonial-glow testimonial-glow--two" aria-hidden="true"></span>
           <div class="section-heading" data-reveal>
             <span class="eyebrow">TESTIMONY</span>
-            <h2>Cerita kontributor yang mulai punya<br>penghasilan tambahan</h2>
-            <p>Beberapa pengalaman yang menggambarkan bagaimana alur kerja, QC, dan pembayaran dijalankan dengan lebih rapi.</p>
+            <h2>{!! __('landing.testimonials.title2') !!}</h2>
+            <p>{{ __('landing.testimonials.subtitle2') }}</p>
           </div>
           <div class="testimonial-grid">
               <article class="testimonial-card" data-reveal style="--delay: 90ms;">
@@ -223,13 +251,13 @@
         <section class="faq section" id="faq">
           <div class="section-heading" data-reveal>
             <span class="eyebrow">FAQ</span>
-            <h2>Pertanyaan yang Sering Diajukan</h2>
+            <h2>{{ __('landing.faq.title') }}</h2>
           </div>
           <div class="faq-list" data-reveal style="--delay: 100ms;" id="faq-list">
              <article class="faq-item">
                <h3>
                  <button type="button" aria-expanded="false" class="faq-btn">
-                   <span>Apakah pendaftaran mitra dipungut biaya?</span><span class="faq-plus" aria-hidden="true">+</span>
+                   <span>{{ __('landing.faq.q1_q') }}</span><span class="faq-plus" aria-hidden="true">+</span>
                  </button>
                </h3>
                <div class="faq-answer" aria-hidden="true">
@@ -239,11 +267,11 @@
              <article class="faq-item">
                <h3>
                  <button type="button" aria-expanded="false" class="faq-btn">
-                   <span>Kapan komisi hasil rekap durasi akan dicairkan?</span><span class="faq-plus" aria-hidden="true">+</span>
+                   <span>{{ __('landing.faq.q3_q2') }}</span><span class="faq-plus" aria-hidden="true">+</span>
                  </button>
                </h3>
                <div class="faq-answer" aria-hidden="true">
-                 <div><p>Pencairan komisi diproses manual oleh admin sesuai jadwal operasional berdasarkan rekap durasi yang sudah approved.</p></div>
+                 <div><p>{{ __('landing.faq.q3_a2') }}</p></div>
                </div>
              </article>
           </div>
