@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KameraKita AI - Form Pendaftaran Kontributor</title>
+    <title>{{ __('onboarding.title') }}</title>
     <link rel="icon" href="{{ asset('images/Logo.webp') }}" type="image/webp">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -132,17 +132,17 @@
                     <div class="p-8 sm:p-10 flex flex-col gap-8 text-center -mt-6 relative z-20">
                         <div class="space-y-3">
                             <h1 class="text-2xl sm:text-[32px] font-semibold text-neutralText-dark leading-tight">Gabung jadi Kontributor Sekarang!</h1>
-                            <p class="text-neutralText-muted text-base sm:text-[20px] leading-snug max-w-[600px] mx-auto">Langsung isi formulir, atau daftar lewat WhatsApp agar dibantu oleh tim kami.</p>
+                            <p class="text-neutralText-muted text-base sm:text-[20px] leading-snug max-w-[600px] mx-auto">{{ __('onboarding.welcome_desc') }}</p>
                         </div>
 
                         <div class="flex flex-col sm:flex-row gap-3">
                             <button type="button" @click="nextStep()" class="flex-1 bg-brand-500 hover:bg-brand-600 text-white font-medium py-4 px-6 rounded-[18px] flex items-center justify-center gap-3 transition-all shadow-md text-[18px]">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                                <span>ISI FORM PENDAFTARAN</span>
+                                <span>{{ __('onboarding.btn_form') }}</span>
                             </button>
                             <a href="https://wa.me/6285389933194" target="_blank" class="flex-1 border-2 border-brand-500 text-brand-500 hover:bg-brand-50 font-medium py-4 px-6 rounded-[18px] flex items-center justify-center gap-3 transition-all text-[18px]">
                                 <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-1.099 4.019 4.142-1.087z"/></svg>
-                                <span>DAFTAR LEWAT WHATSAPP</span>
+                                <span>{{ __('onboarding.btn_wa') }}</span>
                             </a>
                         </div>
                     </div>
@@ -163,10 +163,10 @@
                     <div class="flex justify-between items-center w-full pt-4">
                         <button type="button" @click="prevStep()" class="flex items-center gap-2 px-6 py-4 rounded-[18px] text-brand-500 hover:bg-brand-50 font-medium text-[18px] transition-all">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                            <span>Kembali</span>
+                            <span>{{ __('onboarding.btn_back') }}</span>
                         </button>
                         <button type="button" @click="if(formData.full_name) nextStep()" :disabled="!formData.full_name" class="flex items-center justify-center gap-2 px-6 py-4 rounded-[56px] bg-brand-500 text-white hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed font-medium text-[18px] min-w-[150px] transition-all shadow-md">
-                            <span>Lanjut</span>
+                            <span>{{ __('onboarding.btn_next') }}</span>
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                         </button>
                     </div>
@@ -187,10 +187,10 @@
                     <div class="flex justify-between items-center w-full pt-4">
                         <button type="button" @click="prevStep()" class="flex items-center gap-2 px-6 py-4 rounded-[18px] text-brand-500 hover:bg-brand-50 font-medium text-[18px] transition-all">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                            <span>Kembali</span>
+                            <span>{{ __('onboarding.btn_back') }}</span>
                         </button>
                         <button type="button" @click="if(formData.whatsapp_number) nextStep()" :disabled="!formData.whatsapp_number" class="flex items-center justify-center gap-2 px-6 py-4 rounded-[56px] bg-brand-500 text-white hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed font-medium text-[18px] min-w-[150px] transition-all shadow-md">
-                            <span>Lanjut</span>
+                            <span>{{ __('onboarding.btn_next') }}</span>
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                         </button>
                     </div>
@@ -223,10 +223,10 @@
                     <div class="flex justify-between items-center w-full pt-4">
                         <button type="button" @click="prevStep()" class="flex items-center gap-2 px-6 py-4 rounded-[18px] text-brand-500 hover:bg-brand-50 font-medium text-[18px] transition-all">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                            <span>Kembali</span>
+                            <span>{{ __('onboarding.btn_back') }}</span>
                         </button>
                         <button type="button" @click="if(formData.device_type) nextStep()" :disabled="!formData.device_type" class="flex items-center justify-center gap-2 px-6 py-4 rounded-[56px] bg-brand-500 text-white hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed font-medium text-[18px] min-w-[150px] transition-all shadow-md">
-                            <span>Lanjut</span>
+                            <span>{{ __('onboarding.btn_next') }}</span>
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                         </button>
                     </div>
@@ -242,7 +242,7 @@
                             <button type="button" @click="formData.has_headstrap = 'Ya, sudah punya'" 
                                     :class="formData.has_headstrap === 'Ya, sudah punya' ? 'bg-[#0285c6]/10 border-brand-500 text-brand-500' : 'bg-white border-[#a7a7a7] text-neutralText-muted hover:border-brand-500'"
                                     class="flex-1 border py-4 px-6 rounded-[41px] flex items-center justify-between transition-all font-medium text-[20px]">
-                                <span>Ya, sudah punya</span>
+                                <span>{{ __('onboarding.step_headstrap_yes') }}</span>
                                 <div class="w-6 h-6 rounded-full border-2 border-brand-500 flex items-center justify-center" :class="formData.has_headstrap === 'Ya, sudah punya' ? 'bg-brand-500' : ''">
                                     <svg x-show="formData.has_headstrap === 'Ya, sudah punya'" class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                                 </div>
@@ -250,7 +250,7 @@
                             <button type="button" @click="formData.has_headstrap = 'Tidak, belum Punya'" 
                                     :class="formData.has_headstrap === 'Tidak, belum Punya' ? 'bg-[#0285c6]/10 border-brand-500 text-brand-500' : 'bg-white border-[#a7a7a7] text-neutralText-muted hover:border-brand-500'"
                                     class="flex-1 border py-4 px-6 rounded-[41px] flex items-center justify-between transition-all font-medium text-[20px]">
-                                <span>Tidak, belum Punya</span>
+                                <span>{{ __('onboarding.step_headstrap_no') }}</span>
                                 <div class="w-6 h-6 rounded-full border-2 border-brand-500 flex items-center justify-center" :class="formData.has_headstrap === 'Tidak, belum Punya' ? 'bg-brand-500' : ''">
                                     <svg x-show="formData.has_headstrap === 'Tidak, belum Punya'" class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                                 </div>
@@ -262,11 +262,11 @@
                     <div class="flex justify-between items-center w-full pt-4">
                         <button type="button" @click="prevStep()" class="flex items-center gap-2 px-6 py-4 rounded-[18px] text-brand-500 hover:bg-brand-50 font-medium text-[18px] transition-all">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                            <span>Kembali</span>
+                            <span>{{ __('onboarding.btn_back') }}</span>
                         </button>
                         <button type="button" @click="if(formData.has_headstrap) submitForm()" :disabled="!formData.has_headstrap || isSubmitting" class="flex items-center justify-center gap-2 px-6 py-4 rounded-[56px] bg-brand-500 text-white hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed font-medium text-[18px] min-w-[150px] transition-all shadow-md">
-                            <span x-show="!isSubmitting">Lanjut</span>
-                            <span x-show="isSubmitting">Memproses...</span>
+                            <span x-show="!isSubmitting">{{ __('onboarding.btn_next') }}</span>
+                            <span x-show="isSubmitting">{{ __('onboarding.submitting') }}</span>
                             <svg x-show="!isSubmitting" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                         </button>
                     </div>

@@ -60,11 +60,11 @@
 
         <div class="flex items-center justify-between pt-2">
             <a class="text-xs text-indigo-650 hover:underline font-semibold" href="{{ route('login') }}">
-                Sudah punya akun?
+                {{ __('auth_view.already_registered') }}
             </a>
 
             <button type="submit" class="px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white font-bold text-xs uppercase tracking-widest rounded-xl transition shadow-sm">
-                Daftar Akun
+                {{ __('auth_view.register_button') }}
             </button>
         </div>
     </form>
