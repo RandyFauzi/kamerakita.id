@@ -31,6 +31,7 @@ abstract class BaseTool implements McpToolInterface
             case 'partners': return \App\Models\Partner::query();
             case 'video_work_reports': return \App\Models\VideoWorkReport::query();
             case 'captured_emails': return \App\Models\CapturedEmail::query();
+            case 'mailbox_sync_states': return \App\Models\MailboxSyncState::query();
             default: throw new \Exception("Resource not allowed: {$resource}");
         }
     }
