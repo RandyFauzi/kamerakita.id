@@ -6,7 +6,7 @@ return [
         'how_it_works' => 'How it Works',
         'testimony' => 'Testimony',
         'faq' => 'FAQ',
-        'become_vendor' => 'Become Vendor',
+        'become_vendor' => 'Become a Vendor',
         'login' => 'Log in / Register',
         'dashboard' => 'Dashboard',
     ],

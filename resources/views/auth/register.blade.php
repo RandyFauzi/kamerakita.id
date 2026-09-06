@@ -1,7 +1,7 @@
 <x-guest-layout>
     <div class="mb-6 text-center">
-        <h3 class="text-xl font-bold text-gray-900">Daftar Akun Baru</h3>
-        <p class="text-xs text-gray-400 mt-1">Lengkapi data pendaftaran akun agensi Anda.</p>
+        <h3 class="text-xl font-bold text-gray-900">{{ __('auth_view.register_title') }}</h3>
+        <p class="text-xs text-gray-400 mt-1">{{ __('auth_view.register_subtitle') }}</p>
     </div>
 
     <form method="POST" action="{{ route('register') }}" class="space-y-4">
@@ -9,14 +9,14 @@
 
         <!-- Name -->
         <div>
-            <label for="name" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Nama Lengkap</label>
+            <label for="name" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">{{ __('auth_view.name_label') }}</label>
             <input id="name" type="text" name="name" value="{{ old('name') }}" required autofocus autocomplete="name" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
             <x-input-error :messages="$errors->get('name')" class="mt-1" />
         </div>
 
         <!-- Username -->
         <div>
-            <label for="username" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Username Baru</label>
+            <label for="username" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">{{ __('auth_view.username_label') }}</label>
             <div class="flex items-stretch rounded-xl shadow-sm">
                 <input id="username" type="text" name="username" value="{{ old('username') }}" required autocomplete="username" class="block w-full px-3.5 py-2.5 border border-r-0 border-gray-200 rounded-l-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" placeholder="contoh: budi123">
                 <span class="inline-flex items-center px-4 bg-gray-50 border border-l-0 border-gray-200 rounded-r-xl text-gray-500 text-sm font-medium">
@@ -29,7 +29,7 @@
 
         <!-- Password -->
         <div>
-            <label for="password" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Kata Sandi</label>
+            <label for="password" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">{{ __('auth_view.password_label') }}</label>
             <input id="password" type="password" name="password" required autocomplete="new-password" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
             <x-input-error :messages="$errors->get('password')" class="mt-1" />
         </div>

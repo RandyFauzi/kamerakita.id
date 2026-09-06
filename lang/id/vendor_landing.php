@@ -6,7 +6,7 @@ return [
         'how_it_works' => 'Cara Kerja',
         'testimony' => 'Testimony',
         'faq' => 'FAQ',
-        'become_vendor' => 'Jadi Vendor',
+        'become_vendor' => 'Jadi Mitra Vendor',
         'login' => 'Masuk / Daftar',
         'dashboard' => 'Dashboard',
     ],
