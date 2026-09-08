@@ -20,7 +20,7 @@
                 </div>
                 <div class="flex items-center gap-3">
                     <span class="bg-emerald-50 text-emerald-800 text-[10px] font-black px-3 py-1.5 rounded-full uppercase border border-emerald-100">Aktif</span>
-                    <button type="button" aria-label="Tutup pemberitahuan" @click="showBanner = false" class="absolute top-4 right-4 w-9 h-9 inline-flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-lg">
+                    <button type="button" aria-label="{{ __('dashboard.general.close_notification') }}" @click="showBanner = false" class="absolute top-4 right-4 w-9 h-9 inline-flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-lg">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                         </svg>
@@ -39,7 +39,7 @@
                     </svg>
                 </div>
                 <div>
-                    <span class="block text-[10px] font-black tracking-widest text-violet-200 uppercase mb-1">Kode Referral Anda</span>
+                    <span class="block text-[10px] font-black tracking-widest text-violet-200 uppercase mb-1">{{ __('dashboard.general.your_referral_code') }}</span>
                     <span class="block text-3xl sm:text-4xl font-black text-white font-mono tracking-widest">{{ $partner->referral_code }}</span>
                     <span class="block text-xs text-violet-200 mt-2">Minta calon Worker mengisi kode ini saat mendaftar → mereka otomatis terhubung ke Anda.</span>
                 </div>

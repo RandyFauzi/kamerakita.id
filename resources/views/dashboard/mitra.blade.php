@@ -20,8 +20,8 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
-                    <span class="bg-emerald-50 text-emerald-800 text-[10px] font-black px-3 py-1.5 rounded-full uppercase border border-emerald-100">Tim Verified</span>
-                    <button type="button" aria-label="Tutup pemberitahuan" @click="showBanner = false" class="absolute top-4 right-4 w-9 h-9 inline-flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-lg">
+                    <span class="bg-emerald-50 text-emerald-800 text-[10px] font-black px-3 py-1.5 rounded-full uppercase border border-emerald-100">{{ __('dashboard.general.team_verified') }}</span>
+                    <button type="button" aria-label="{{ __('dashboard.general.close_notification') }}" @click="showBanner = false" class="absolute top-4 right-4 w-9 h-9 inline-flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-lg">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                         </svg>
@@ -40,7 +40,7 @@
                     </svg>
                 </div>
                 <div>
-                    <span class="block text-[10px] font-black tracking-widest text-indigo-200 uppercase">Kode Referral Anda</span>
+                    <span class="block text-[10px] font-black tracking-widest text-indigo-200 uppercase">{{ __('dashboard.general.your_referral_code') }}</span>
                     <span class="block text-2xl sm:text-3xl font-black text-white font-mono tracking-widest mt-1">{{ $partner->referral_code }}</span>
                     <span class="block text-xs text-indigo-200 mt-1">Bagikan kode ini ke calon Worker yang ingin bergabung di bawah tim Anda.</span>
                 </div>
@@ -58,10 +58,10 @@
             <div class="lg:col-span-2">
                 <x-glass-orb-card 
                     title="Rp{{ number_format($metrics['commission_paid_earnings'] + $metrics['commission_pending_earnings'], 0, ',', '.') }}"
-                    subtitle="KOMISI TIM WORKER (RATE Rp{{ number_format($metrics['commission_hourly_rate'], 0, ',', '.') }}/JAM)"
-                    label1="PENDING KOMISI"
+                    subtitle="{{ __('dashboard.general.worker_team_commission') }} (RATE Rp{{ number_format($metrics['commission_hourly_rate'], 0, ',', '.') }}/{{ __('dashboard.general.hour') }})"
+                    label1="{{ __('dashboard.general.pending_commission') }}"
                     value1="Rp{{ number_format($metrics['commission_pending_earnings'], 0, ',', '.') }}"
-                    label2="TOTAL JAM KERJA"
+                    label2="{{ __('dashboard.general.total_hours') }} KERJA"
                     value2="{{ $metrics['total_all_time_hours_formatted'] }}"
                 >
                     <x-slot name="actionSlot">
@@ -77,10 +77,10 @@
                 </x-glass-orb-card>
             </div>
 
-            <!-- Right: Investment balance card (1 col) - PENDAPATAN PRIBADI -->
+            <!-- Right: Investment balance card (1 col) - {{ __('dashboard.general.personal_income') }} -->
             <div class="bg-white rounded-2xl sm:rounded-[32px] p-5 sm:p-8 border border-gray-150 shadow-sm flex flex-col justify-between gap-5 min-h-[180px] sm:min-h-[220px]">
                 <div>
-                    <span class="block text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">PENDAPATAN PRIBADI (RATE Rp{{ number_format($metrics['personal_hourly_rate'], 0, ',', '.') }}/JAM)</span>
+                    <span class="block text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">{{ __('dashboard.general.personal_income') }} (RATE Rp{{ number_format($metrics['personal_hourly_rate'], 0, ',', '.') }}/{{ __('dashboard.general.hour') }})</span>
                     <h3 class="text-2xl font-black text-slate-800 mt-3">Rp{{ number_format($metrics['personal_paid_earnings'] + $metrics['personal_pending_earnings'], 0, ',', '.') }}</h3>
                     <div class="flex items-center gap-2 mt-2">
                         <span class="text-xs text-slate-400 font-medium">Own Record:</span>

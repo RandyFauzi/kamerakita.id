@@ -11,8 +11,8 @@
                         </svg>
                     </div>
                     <div class="space-y-1">
-                        <span class="block text-xs font-black tracking-widest text-blue-600 uppercase">AKUN PEKERJA AKTIF</span>
-                        <p class="text-sm leading-5 text-gray-500 max-w-xl">Kirim laporan kerja harian beserta bukti untuk diproses oleh tim verifikasi.</p>
+                        <span class="block text-xs font-black tracking-widest text-blue-600 uppercase">{{ __('dashboard.general.worker_account_active') }}</span>
+                        <p class="text-sm leading-5 text-gray-500 max-w-xl">{{ __('dashboard.general.worker_account_desc') }}</p>
                         <!-- Progress bar -->
                         <div class="w-full bg-blue-100 h-2 rounded-full mt-3 overflow-hidden">
                             <div class="bg-blue-600 h-full rounded-full" style="width: 75%"></div>
@@ -21,9 +21,9 @@
                 </div>
                 <div class="flex items-center gap-3 w-full md:w-auto">
                     <a href="{{ route('video-submissions.submit-report.create') }}" class="w-full md:w-auto min-h-11 inline-flex items-center justify-center px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-xl text-xs font-bold text-white shadow-md shadow-blue-500/30 transition-all duration-300 transform hover:-translate-y-0.5">
-                        Kirim Laporan Baru
+                        {{ __('dashboard.general.submit_new_report') }}
                     </a>
-                    <button type="button" aria-label="Tutup pemberitahuan" @click="showBanner = false" class="absolute top-4 right-4 w-9 h-9 inline-flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-lg">
+                    <button type="button" aria-label="{{ __('dashboard.general.close_notification') }}" @click="showBanner = false" class="absolute top-4 right-4 w-9 h-9 inline-flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-lg">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                         </svg>
@@ -54,12 +54,12 @@
         <div class="w-full">
             <x-glass-orb-card 
                 title="Rp{{ number_format($metrics['total_earnings'], 0, ',', '.') }}"
-                subtitle="ESTIMASI PENDAPATAN (Rp{{ number_format($metrics['hourly_rate'], 0, ',', '.') }}/JAM)"
-                label1="TOTAL JAM"
+                subtitle="{{ __('dashboard.general.est_income') }} (Rp{{ number_format($metrics['hourly_rate'], 0, ',', '.') }}/{{ __('dashboard.general.hour') }})"
+                label1="{{ __('dashboard.general.total_hours') }}"
                 value1="{{ $metrics['all_time_hours_formatted'] }}"
-                label2="KETERANGAN"
-                value2="Gaji berdasar jam approved"
-                actionText="Kirim Laporan Baru"
+                label2="{{ __('dashboard.general.description') }}"
+                value2="{{ __('dashboard.general.income_approved') }}"
+                actionText="{{ __('dashboard.general.submit_new_report') }}"
                 actionUrl="{{ route('video-submissions.submit-report.create') }}"
             />
         </div>
@@ -78,14 +78,14 @@
                 @endphp
                 <div class="bg-slate-200/50 rounded-[28px] p-2 flex flex-col h-full">
                     <div class="text-center py-2 pb-3">
-                        <span class="text-[13px] font-bold text-slate-500">Statistik Anda</span>
+                        <span class="text-[13px] font-bold text-slate-500">{{ __('dashboard.general.your_stats') }}</span>
                     </div>
                     <div class="bg-[#f0f1f3] rounded-[24px] p-5 sm:p-6 flex-grow flex flex-col justify-center border border-white/60 shadow-sm">
                         
                         <div class="flex justify-between items-center text-center">
                             <!-- Dikirim -->
                             <div class="flex-1">
-                                <h3 class="text-[13px] font-semibold text-slate-400 mb-2">Dikirim</h3>
+                                <h3 class="text-[13px] font-semibold text-slate-400 mb-2">{{ __('dashboard.general.submitted') }}</h3>
                                 <div class="text-2xl sm:text-3xl font-bold text-slate-800 tracking-tight">
                                     {{ $metrics['total_submitted_minutes'] }}
                                 </div>
@@ -96,7 +96,7 @@
                             
                             <!-- Approved -->
                             <div class="flex-1">
-                                <h3 class="text-[13px] font-semibold text-slate-400 mb-2">Approved</h3>
+                                <h3 class="text-[13px] font-semibold text-slate-400 mb-2">{{ __('dashboard.general.approved') }}</h3>
                                 <div class="text-2xl sm:text-3xl font-bold text-slate-800 tracking-tight">
                                     {{ $metrics['all_time_minutes'] }}
                                 </div>
@@ -107,7 +107,7 @@
                             
                             <!-- Rate -->
                             <div class="flex-1">
-                                <h3 class="text-[13px] font-semibold text-slate-400 mb-2">Tingkat</h3>
+                                <h3 class="text-[13px] font-semibold text-slate-400 mb-2">{{ __('dashboard.general.level') }}</h3>
                                 <div class="text-2xl sm:text-3xl font-bold text-slate-800 tracking-tight">
                                     {{ $percentApp }}<span class="text-base sm:text-lg text-slate-800 font-bold ml-0.5">%</span>
                                 </div>
@@ -120,7 +120,7 @@
                                 <svg class="w-3.5 h-3.5 text-rose-500" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M12 2L14.5 9L22 10.5L16 15.5L17.5 23L12 19L6.5 23L8 15.5L2 10.5L9.5 9L12 2Z" />
                                 </svg>
-                                Selalu perhatikan kualitas
+                                {{ __('dashboard.general.attention_quality') }}
                             </div>
                         </div>
                     </div>
@@ -135,7 +135,7 @@
                     if ($mins == 0) {
                         $tb = "Ayo Mulai!";
                         $tn = "Semangat kerjakan";
-                        $sub = "video pertama Anda hari ini.";
+                        $sub = "{{ __('dashboard.general.first_video_today') }}";
                     } elseif ($mins < 120) {
                         $tb = "Sedikit lagi!";
                         $tn = "Selesaikan target";
@@ -155,8 +155,8 @@
                     }
                     
                     $percentage = min(100, round(($mins / 360) * 100));
-                    $fLeft = $hours . " jam diselesaikan";
-                    $fRight = "Total tertinggi 6 jam";
+                    $fLeft = $hours . " {{ __('dashboard.general.hours_completed') }}";
+                    $fRight = "{{ __('dashboard.general.highest_total') }} 6 jam";
                 @endphp
 
                 <mission-card 
@@ -299,8 +299,8 @@
                             </svg>
                         </div>
                         <div>
-                            <h3 class="text-slate-800 font-extrabold text-lg sm:text-xl tracking-tight leading-tight">Papan Peringkat</h3>
-                            <p class="text-slate-500 text-[11px] sm:text-xs font-medium mt-1 leading-tight">Lihat posisi Anda di antara mitra lainnya!</p>
+                            <h3 class="text-slate-800 font-extrabold text-lg sm:text-xl tracking-tight leading-tight">{{ __('dashboard.general.leaderboard') }}</h3>
+                            <p class="text-slate-500 text-[11px] sm:text-xs font-medium mt-1 leading-tight">{{ __('dashboard.general.leaderboard_desc') }}</p>
                         </div>
                     </div>
                     <div class="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-full flex items-center justify-center shadow-sm border border-sky-100 transform group-hover:translate-x-1 transition-transform duration-300 shrink-0">

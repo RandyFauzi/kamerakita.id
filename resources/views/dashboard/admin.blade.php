@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="w-full flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3">
             <h2 class="font-bold text-xl sm:text-2xl text-gray-800 leading-tight">
-                {{ __('Dashboard Admin') }}
+                {{ __('dashboard.general.admin_dashboard') }}
             </h2>
             <!-- Actions removed as requested -->
         </div>
@@ -20,8 +20,8 @@
                         </svg>
                     </div>
                     <div class="space-y-1">
-                        <span class="block text-xs font-black tracking-widest text-blue-600 uppercase">SISTEM MONITORING AGENT</span>
-                        <p class="text-sm text-gray-500 max-w-xl">Super Admin memiliki kontrol penuh atas verifikasi QC, penetapan rate pendapatan dasar mitra, serta penarikan ekspor CSV bank bulk transfer.</p>
+                        <span class="block text-xs font-black tracking-widest text-blue-600 uppercase">{{ __('dashboard.general.admin_system_monitoring') }}</span>
+                        <p class="text-sm text-gray-500 max-w-xl">{{ __('dashboard.general.admin_system_desc') }}</p>
                         <!-- Progress bar -->
                         <div class="w-full bg-blue-100 h-2 rounded-full mt-3 overflow-hidden">
                             <div class="bg-blue-650 h-full rounded-full" style="width: 100%"></div>
@@ -30,9 +30,9 @@
                 </div>
                 <div class="flex items-center gap-3 w-full md:w-auto">
                     <a href="{{ route('video-submissions.qc-room') }}" class="w-full md:w-auto min-h-11 inline-flex items-center justify-center px-5 py-2.5 bg-indigo-600 text-white rounded-xl text-xs font-bold shadow-sm hover:bg-indigo-700 transition">
-                        Buka QC Room
+                        {{ __('dashboard.general.open_qc_room') }}
                     </a>
-                    <button type="button" aria-label="Tutup pemberitahuan" @click="showBanner = false" class="absolute top-4 right-4 w-9 h-9 inline-flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-lg">
+                    <button type="button" aria-label="{{ __('dashboard.general.close_notification') }}" @click="showBanner = false" class="absolute top-4 right-4 w-9 h-9 inline-flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-lg">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                         </svg>
@@ -75,12 +75,12 @@
                 <div class="absolute inset-0 bg-white/10 backdrop-blur-[1px] pointer-events-none"></div>
 
                 <div class="relative z-10">
-                    <span class="block text-xs font-bold uppercase tracking-wider text-slate-500 font-mono">GLOBAL ALL-TIME MINUTES TIM APPROVED</span>
+                    <span class="block text-xs font-bold uppercase tracking-wider text-slate-500 font-mono">{{ __('dashboard.general.global_all_time_approved') }}</span>
                     <div class="flex flex-wrap items-baseline gap-2 mt-3">
                         <span class="text-3xl sm:text-4xl font-black text-slate-900">{{ $metrics['global_all_time_hours_formatted'] }}</span>
-                        <span class="text-xs text-slate-500 font-bold uppercase font-mono">Approved</span>
+                        <span class="text-xs text-slate-500 font-bold uppercase font-mono">{{ __('dashboard.general.approved') }}</span>
                     </div>
-                    <span class="block text-xs text-slate-400 font-medium mt-1">Total durasi data terkumpul di agensi Kamerakita.ai</span>
+                    <span class="block text-xs text-slate-400 font-medium mt-1">{{ __('dashboard.general.total_duration_desc') }}</span>
                     
                     <!-- Queue Status Durations Breakdown (Sleek Inline Row) -->
                     <div class="mt-4 pt-4 border-t border-slate-900/10 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs font-mono font-medium text-slate-500">
@@ -108,7 +108,7 @@
                         📊 Ekspor Excel Tracker
                     </a>
                     <a href="{{ route('video-submissions.qc-room') }}" class="flex items-center justify-center gap-2 py-3.5 bg-white/60 hover:bg-white/80 text-gray-800 font-bold text-xs rounded-2xl shadow-sm transition">
-                        Buka QC Room
+                        {{ __('dashboard.general.open_qc_room') }}
                     </a>
                 </div>
             </div>
