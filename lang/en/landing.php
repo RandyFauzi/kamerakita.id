@@ -8,6 +8,7 @@ return array (
     'how_it_works' => 'How it Works',
     'earnings' => 'Earnings Estimate',
     'faq' => 'FAQ',
+    'testimonials' => 'Testimonials',
     'login' => 'Login',
     'dashboard' => 'Dashboard',
     'register' => 'Register Now',

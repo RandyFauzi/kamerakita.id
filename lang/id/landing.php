@@ -8,6 +8,7 @@ return array (
     'how_it_works' => 'Cara Kerja',
     'earnings' => 'Estimasi Cuan',
     'faq' => 'Tanya Jawab',
+    'testimonials' => 'Testimoni',
     'login' => 'Masuk Akun',
     'dashboard' => 'Dashboard',
     'register' => 'Daftar Sekarang',

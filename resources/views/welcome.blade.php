@@ -32,8 +32,8 @@
             <a href="#keunggulan" class="nav-link">{{ __('landing.nav.benefits') }}<span class="nav-chevron" aria-hidden="true">⌄</span></a>
             <a href="#kalkulator" class="nav-link">{{ __('landing.nav.earnings') }}<span class="nav-chevron" aria-hidden="true">⌄</span></a>
             <a href="#cara-kerja" class="nav-link">{{ __('landing.nav.how_it_works') }}</a>
-            <a href="#mitra" class="nav-link">{{ __('landing.nav.faq') }}</a>
-            <a href="#faq" class="nav-link">FAQ</a>
+            <a href="#mitra" class="nav-link">{{ __('landing.nav.testimonials') }}</a>
+            <a href="#faq" class="nav-link">{{ __('landing.nav.faq') }}</a>
           </nav>
           <div class="nav-actions">
             <!-- Language Toggle -->
