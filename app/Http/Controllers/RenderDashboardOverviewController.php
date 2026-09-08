@@ -57,16 +57,15 @@ class RenderDashboardOverviewController extends Controller
         if ($user->hasFullAdminAccess() || $user->role === 'finance') {
             $metrics = $this->metricsService->getGlobalMetrics();
             
-            $latestReports = \Illuminate\Support\Facades\Cache::remember('admin_latest_reports', 300, function () {
-                return VideoWorkReport::with(['partner'])
-                    ->orderBy('created_at', 'desc')
-                    ->limit(10)
-                    ->get();
-            });
+            $latestReports = VideoWorkReport::with(['partner'])
+                ->orderBy('created_at', 'desc')
+                ->limit(10)
+                ->get();
 
-            $clientInvoices = \Illuminate\Support\Facades\Cache::remember('admin_client_invoices', 300, function () {
-                return \App\Models\Invoice::with('client')->orderBy('created_at', 'desc')->limit(5)->get();
-            });
+            $clientInvoices = \App\Models\Invoice::with('client')
+                ->orderBy('created_at', 'desc')
+                ->limit(5)
+                ->get();
 
             $monthlyData = collect(\Illuminate\Support\Facades\Cache::remember('admin_monthly_data', 600, function () {
                 $isMysql = \Illuminate\Support\Facades\DB::getDriverName() === 'mysql';
