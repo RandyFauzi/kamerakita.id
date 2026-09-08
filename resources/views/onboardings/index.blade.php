@@ -3,12 +3,12 @@
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
                 <h2 class="font-bold text-2xl text-gray-800 leading-tight">
-                    Pendaftar Baru
+                    {{ __('dashboard.onboardings.title') }}
                 </h2>
-                <p class="text-xs text-gray-400 mt-1">Daftar calon kontributor/mitra yang baru mendaftar.</p>
+                <p class="text-xs text-gray-400 mt-1">{{ __('dashboard.onboardings.desc') }}</p>
             </div>
             <div class="flex items-center gap-2 bg-white px-4 py-2 border border-gray-150 rounded-2xl shadow-sm text-xs font-mono text-gray-500">
-                <span>Total Registrasi:</span>
+                <span>{{ __('dashboard.onboardings.total_registrations') }}</span>
                 <strong class="text-indigo-650 font-bold">{{ \App\Models\FastworkOnboarding::count() }}</strong>
             </div>
         </div>
@@ -27,7 +27,7 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-2xl border border-gray-150 p-6">
                 <form action="{{ route('admin.onboardings.index') }}" method="GET" class="flex flex-col md:flex-row gap-4 items-end">
                     <div class="flex-1 w-full">
-                        <label for="search" class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 font-mono">Cari Nama / WhatsApp / Perangkat / Username</label>
+                        <label for="search" class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 font-mono">{{ __('dashboard.onboardings.search_label') }}</label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -36,13 +36,13 @@
                             </div>
                             <input type="text" name="search" id="search" value="{{ request('search') }}" 
                                    class="block w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition bg-white placeholder-gray-300"
-                                   placeholder="Masukkan kata kunci pencarian...">
+                                   placeholder="{{ __('dashboard.onboardings.search_placeholder') }}">
                         </div>
                     </div>
                     
                     <div class="flex gap-2 w-full md:w-auto">
                         <button type="submit" class="flex-1 md:flex-none px-6 py-2.5 bg-gray-900 hover:bg-gray-800 text-white font-bold text-xs uppercase tracking-widest rounded-xl transition shadow-sm">
-                            Cari Data
+                            {{ __('dashboard.onboardings.search_btn') }}
                         </button>
                         @if(request('search'))
                             <a href="{{ route('admin.onboardings.index') }}" class="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs uppercase tracking-widest rounded-xl transition text-center">
@@ -59,14 +59,14 @@
                     <table class="min-w-full divide-y divide-gray-100">
                         <thead class="bg-gray-50/50">
                             <tr>
-                                <th scope="col" class="w-16 px-4 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">No.</th>
-                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Nama Lengkap</th>
+                                <th scope="col" class="w-16 px-4 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('dashboard.onboardings.col_no') }}</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('dashboard.onboardings.col_full_name') }}</th>
                                 
-                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">No. WhatsApp</th>
-                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Tipe Perangkat Apple</th>
-                                <th scope="col" class="px-6 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Headstrap</th>
-                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Tanggal Daftar</th>
-                                <th scope="col" class="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Aksi</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('dashboard.onboardings.col_whatsapp') }}</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('dashboard.onboardings.col_apple_device') }}</th>
+                                <th scope="col" class="px-6 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('dashboard.onboardings.col_headstrap') }}</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('dashboard.onboardings.col_registered_at') }}</th>
+                                <th scope="col" class="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('dashboard.onboardings.col_action') }}</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-100">

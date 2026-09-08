@@ -61,9 +61,9 @@
                     <div class="flex flex-col md:flex-row gap-4 items-end">
                         <!-- Dropdown Periode -->
                         <div class="w-full md:w-80">
-                            <label for="period" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 font-mono">Pilih Periode (Rabu–Selasa)</label>
+                            <label for="period" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 font-mono">{{ __('dashboard.qc_room.choose_period') }}</label>
                             <select name="period" id="period" onchange="this.form.submit()" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition bg-white text-gray-700 font-medium">
-                                <option value="all" {{ $selectedPeriodKey === 'all' ? 'selected' : '' }}>Semua Periode (All-Time)</option>
+                                <option value="all" {{ $selectedPeriodKey === 'all' ? 'selected' : '' }}>{{ __('dashboard.qc_room.all_periods') }}</option>
                                 @foreach($periods as $p)
                                     <option value="{{ $p['start']->format('Y-m-d') . '|' . $p['end']->format('Y-m-d') }}" 
                                         {{ $selectedPeriodKey === ($p['start']->format('Y-m-d') . '|' . $p['end']->format('Y-m-d')) ? 'selected' : '' }}>
@@ -75,9 +75,9 @@
                         
                         <!-- Group Filter -->
                         <div class="w-full md:w-44">
-                            <label for="group" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 font-mono">Pilih Grup</label>
+                            <label for="group" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 font-mono">{{ __('dashboard.qc_room.choose_group') }}</label>
                             <select name="group" id="group" onchange="this.form.submit()" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition bg-white text-gray-700 font-medium">
-                                <option value="">Semua Grup</option>
+                                <option value="">{{ __('dashboard.qc_room.all_groups') }}</option>
                                 @foreach($groups as $group)
                                     <option value="{{ $group }}" {{ $selectedGroup === $group ? 'selected' : '' }}>{{ $group }}</option>
                                 @endforeach
@@ -88,7 +88,7 @@
                         <div class="flex-1 w-full overflow-hidden mt-4 md:mt-0">
                             @if(!empty($periodDays))
                                 <div class="flex items-center justify-between mb-2">
-                                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest font-mono">Filter Hari (Opsional)</span>
+                                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest font-mono">{{ __('dashboard.qc_room.filter_day_optional') }}</span>
                                 </div>
                                 <div class="flex gap-2 overflow-x-auto pb-1" style="scrollbar-width: none;">
                                     @foreach($periodDays as $day)
@@ -147,14 +147,14 @@
                         <div class="flex flex-col md:flex-row gap-3 items-end w-full md:w-auto shrink-0">
                             <!-- Search Input -->
                             <div class="w-full md:w-64">
-                                <label for="search" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 font-mono">Cari Nama/ID Mitra</label>
+                                <label for="search" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 font-mono">{{ __('dashboard.qc_room.search_partner') }}</label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                                         </svg>
                                     </div>
-                                    <input type="text" name="search" id="search" value="{{ $search }}" placeholder="Cari..." class="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-white">
+                                    <input type="text" name="search" id="search" value="{{ $search }}" placeholder="{{ __('dashboard.qc_room.search_placeholder') }}" class="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-white">
                                 </div>
                             </div>
                             
@@ -192,15 +192,15 @@
             <!-- Dynamic Stats Summary -->
             <div class="flex flex-wrap items-center gap-3 mb-6">
                 <div class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 flex items-center gap-2 shadow-xs">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono">Total Dikirim Periode Ini:</span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono">{{ __('dashboard.qc_room.total_submitted_period') }}</span>
                     <span class="text-sm font-black text-slate-800 font-mono">{{ $filteredSubmittedDuration }}</span>
                 </div>
                 <div class="bg-emerald-50 border border-emerald-250 rounded-xl px-4 py-2.5 flex items-center gap-2 shadow-xs">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-800 font-mono">Total Rilis Disetujui:</span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-800 font-mono">{{ __('dashboard.qc_room.total_released_approved') }}</span>
                     <span class="text-sm font-black text-emerald-700 font-mono">{{ $filteredApprovedDuration }}</span>
                 </div>
                 <div class="bg-indigo-50 border border-indigo-200 rounded-xl px-4 py-2.5 flex items-center gap-2 shadow-xs">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-800 font-mono">Mitra Pengirim:</span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-800 font-mono">{{ __('dashboard.qc_room.submitting_partners') }}</span>
                     <span class="text-sm font-black text-indigo-700 font-mono">{{ $partners->total() }}</span>
                 </div>
             </div>
@@ -211,11 +211,11 @@
                     <table class="min-w-full divide-y divide-gray-150">
                         <thead class="bg-slate-50/70">
                             <tr>
-                                <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider font-mono">Mitra (Worker)</th>
-                                <th scope="col" class="px-6 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider font-mono">Total Dilaporkan</th>
-                                <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider font-mono">Durasi Verifikasi</th>
-                                <th scope="col" class="px-6 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider font-mono">Status</th>
-                                <th scope="col" class="px-6 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider font-mono">Aksi</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider font-mono">{{ __('dashboard.qc_room.col_worker') }}</th>
+                                <th scope="col" class="px-6 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider font-mono">{{ __('dashboard.qc_room.col_total_reported') }}</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider font-mono">{{ __('dashboard.qc_room.col_verification_duration') }}</th>
+                                <th scope="col" class="px-6 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider font-mono">{{ __('dashboard.qc_room.col_status') }}</th>
+                                <th scope="col" class="px-6 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider font-mono">{{ __('dashboard.qc_room.col_action') }}</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-100">
@@ -265,7 +265,7 @@
                                                 <span class="block text-[10px] text-gray-500 truncate max-w-xs mt-1.5 font-sans" title="{{ $partner->period_approval->verifier_notes }}">Catatan: {{ $partner->period_approval->verifier_notes }}</span>
                                             @endif
                                         @else
-                                            <span class="text-gray-400 italic text-xs">Belum diperiksa</span>
+                                            <span class="text-gray-400 italic text-xs">{{ __('dashboard.qc_room.status_unreviewed') }}</span>
                                         @endif
                                     </td>
 
@@ -273,19 +273,19 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-center">
                                         @if($partner->approval_status === 'paid')
                                             <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border bg-blue-50 text-blue-700 border-blue-200">
-                                                Paid (Lunas)
+                                                {{ __('dashboard.qc_room.status_paid') }}
                                             </span>
                                         @elseif($partner->approval_status === 'approved')
                                             <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border bg-emerald-50 text-emerald-700 border-emerald-200">
-                                                Rilis (Approved)
+                                                {{ __('dashboard.qc_room.status_approved') }}
                                             </span>
                                         @elseif($partner->approval_status === 'draft')
                                             <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border bg-amber-50 text-amber-700 border-amber-250">
-                                                Draf (Admin)
+                                                {{ __('dashboard.qc_room.status_draft') }}
                                             </span>
                                         @else
                                             <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border bg-gray-50 text-gray-500 border-gray-200">
-                                                Belum Diperiksa
+                                                {{ __('dashboard.qc_room.status_unreviewed') }}
                                             </span>
                                         @endif
                                     </td>
@@ -293,7 +293,7 @@
                                     <!-- Action -->
                                     <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium" @click.stop>
                                         <button type="button" @click="togglePartner('{{ $partner->id }}')" class="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition shadow-xs">
-                                            <span x-text="isExpanded('{{ $partner->id }}') ? 'Tutup' : 'Periksa Laporan'"></span>
+                                            <span x-text="isExpanded('{{ $partner->id }}') ? '{{ addslashes(__('dashboard.qc_room.btn_close')) }}' : '{{ addslashes(__('dashboard.qc_room.btn_check_report')) }}'"></span>
                                         </button>
                                     </td>
                                 </tr>
@@ -305,7 +305,7 @@
                                             
                                             <!-- Left Panel (5 columns): Form Verifikasi -->
                                             <div class="lg:col-span-5 space-y-4 pr-0 lg:pr-6 border-0 lg:border-r border-slate-100">
-                                                <h4 class="text-xs font-black text-slate-800 uppercase tracking-widest font-mono">Panel Verifikasi Periode</h4>
+                                                <h4 class="text-xs font-black text-slate-800 uppercase tracking-widest font-mono">{{ __('dashboard.qc_room.panel_title') }}</h4>
                                                 
                                                 @if($selectedPeriodKey === 'all')
                                                     <div class="w-full bg-indigo-50 border border-indigo-100 rounded-xl p-4 text-center text-xs font-medium text-indigo-700 leading-relaxed">
@@ -320,7 +320,7 @@
                                                     
                                                     <!-- Input Durasi Disetujui -->
                                                     <div>
-                                                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 font-mono">Durasi yang Disetujui (Menit)</label>
+                                                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 font-mono">{{ __('dashboard.qc_room.approved_duration_label') }}</label>
                                                         <div class="relative">
                                                             <input type="number" name="approved_minutes" value="{{ old('approved_minutes', $partner->input_approved_minutes) }}" required min="0" 
                                                                    {{ $partner->approval_status === 'paid' ? 'disabled' : '' }}
@@ -335,7 +335,7 @@
                                                     
                                                     <!-- Input Catatan Admin/QC -->
                                                     <div>
-                                                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 font-mono">Catatan Masukan / Alasan</label>
+                                                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 font-mono">{{ __('dashboard.qc_room.notes_label') }}</label>
                                                         <textarea name="verifier_notes" rows="3" placeholder="Catatan opsional atau penyesuaian SOP..."
                                                                   {{ $partner->approval_status === 'paid' ? 'disabled' : '' }}
                                                                   class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 leading-relaxed">{{ old('verifier_notes', $partner->input_verifier_notes) }}</textarea>
@@ -348,12 +348,12 @@
                                                                 <button type="submit" form="form-{{ $partner->id }}" 
                                                                         x-on:click.prevent="$el.form.action='{{ route('video-submissions.save-draft') }}'; $el.form.submit()"
                                                                         class="flex-1 justify-center inline-flex items-center px-4 py-2.5 bg-white hover:bg-slate-50 border border-gray-205 text-gray-750 font-bold text-xs uppercase tracking-wider rounded-xl transition duration-150 shadow-xs">
-                                                                    Simpan Draf
+                                                                    {{ __('dashboard.qc_room.save_draft') }}
                                                                 </button>
                                                                 <button type="submit" form="form-{{ $partner->id }}"
                                                                         x-on:click.prevent="$el.form.action='{{ route('video-submissions.finalize') }}'; $el.form.submit()"
                                                                         class="flex-1 justify-center inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-650 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition duration-150 shadow-md shadow-indigo-50 font-bold">
-                                                                    Rilis & Approve
+                                                                    {{ __('dashboard.qc_room.release_approve') }}
                                                                 </button>
                                                             @endif
                                                         </div>
@@ -361,7 +361,7 @@
                                                             <button type="submit" form="form-{{ $partner->id }}"
                                                                     x-on:click.prevent="if(confirm('Apakah Anda yakin ingin membatalkan status persetujuan periode ini? Seluruh laporan kerja harian mitra akan kembali ke status review.')) { $el.form.action='{{ route('video-submissions.revert-period') }}'; $el.form.submit() }"
                                                                     class="w-full justify-center inline-flex items-center px-4 py-2 bg-rose-50 hover:bg-rose-100 border border-rose-250 text-rose-800 font-bold text-xs uppercase tracking-wider rounded-xl transition duration-150 shadow-xs">
-                                                                Batalkan & Reset Persetujuan
+                                                                {{ __('dashboard.qc_room.cancel_reset_approval') }}
                                                             </button>
                                                         @elseif($partner->approval_status === 'paid')
                                                             <div class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-center text-xs font-bold text-slate-500 font-mono">
@@ -373,7 +373,7 @@
                                                 @endif
                                             </div>
 
-                                            <!-- Right Panel (7 columns): Daftar Laporan Kerja Harian -->
+                                            <!-- Right Panel (7 columns): {{ __('dashboard.qc_room.daily_reports_list') }} -->
                                             <div class="lg:col-span-7 flex flex-col" x-data="{
                                                 partnerSelectedReports: [],
                                                 get totalSelectedMinutes() {
@@ -394,7 +394,7 @@
                                                 }
                                             }">
                                                 <h4 class="text-xs font-black text-slate-800 uppercase tracking-widest mb-3 font-mono flex items-center justify-between">
-                                                    <span>Daftar Laporan Kerja Harian</span>
+                                                    <span>{{ __('dashboard.qc_room.daily_reports_list') }}</span>
                                                 </h4>
                                                 
                                                 <div class="overflow-x-auto border border-slate-100 rounded-2xl">
@@ -404,11 +404,11 @@
                                                                 <th class="px-4 py-2 text-left text-[10px] font-bold text-slate-500 uppercase font-mono w-8">
                                                                     <input type="checkbox" @click="toggleAll" :checked="partnerSelectedReports.length > 0 && partnerSelectedReports.length === document.querySelectorAll('.report-checkbox-{{ $partner->id }}').length" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 transition cursor-pointer">
                                                                 </th>
-                                                                <th class="px-4 py-2 text-left text-[10px] font-bold text-slate-500 uppercase font-mono">ID Laporan</th>
-                                                                <th class="px-4 py-2 text-left text-[10px] font-bold text-slate-500 uppercase font-mono">Tanggal Kerja</th>
-                                                                <th class="px-4 py-2 text-center text-[10px] font-bold text-slate-500 uppercase font-mono">Durasi Kirim</th>
-                                                                <th class="px-4 py-2 text-center text-[10px] font-bold text-slate-500 uppercase font-mono">Status Harian</th>
-                                                                <th class="px-4 py-2 text-center text-[10px] font-bold text-slate-500 uppercase font-mono">Aksi</th>
+                                                                <th class="px-4 py-2 text-left text-[10px] font-bold text-slate-500 uppercase font-mono">{{ __('dashboard.qc_room.col_report_id') }}</th>
+                                                                <th class="px-4 py-2 text-left text-[10px] font-bold text-slate-500 uppercase font-mono">{{ __('dashboard.qc_room.col_work_date') }}</th>
+                                                                <th class="px-4 py-2 text-center text-[10px] font-bold text-slate-500 uppercase font-mono">{{ __('dashboard.qc_room.col_submitted_duration') }}</th>
+                                                                <th class="px-4 py-2 text-center text-[10px] font-bold text-slate-500 uppercase font-mono">{{ __('dashboard.qc_room.col_daily_status') }}</th>
+                                                                <th class="px-4 py-2 text-center text-[10px] font-bold text-slate-500 uppercase font-mono">{{ __('dashboard.qc_room.col_action') }}</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody class="divide-y divide-gray-100 bg-white">
@@ -452,7 +452,7 @@
                                                                                         'project_name' => $report->project_name,
                                                                                         'date' => $report->submission_date->translatedFormat('d F Y'),
                                                                                         'duration' => $report->submitted_duration_formatted,
-                                                                                        'status' => $partner->approval_status === 'paid' ? 'Paid (Lunas)' : ($partner->approval_status === 'approved' ? 'Rilis (Approved)' : ($partner->approval_status === 'draft' ? 'Draf (Admin)' : 'Belum Diperiksa')),
+                                                                                        'status' => $partner->approval_status === 'paid' ? '{{ __('dashboard.qc_room.status_paid') }}' : ($partner->approval_status === 'approved' ? '{{ __('dashboard.qc_room.status_approved') }}' : ($partner->approval_status === 'draft' ? '{{ __('dashboard.qc_room.status_draft') }}' : '{{ __('dashboard.qc_room.status_unreviewed') }}')),
                                                                                         'approved_min' => $report->approved_duration_minutes,
                                                                                         'email_img' => $report->evidence_email_image_url,
                                                                                         'quality_img' => $report->evidence_app_quality_image_url,
@@ -471,7 +471,7 @@
                                                                                     <form action="{{ route('video-submissions.restore-report', $report->id) }}" method="POST" class="inline" onsubmit="event.preventDefault(); confirmRestore(this)">
                                                                                         @csrf
                                                                                         <button type="submit" class="inline-flex items-center px-2 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-lg text-[9px] font-bold border border-emerald-200 transition">
-                                                                                            Batal Tolak
+                                                                                            {{ __('dashboard.qc_room.btn_cancel_reject') }}
                                                                                         </button>
                                                                                     </form>
                                                                                 @elseif($report->qc_status === 'approved')
@@ -526,12 +526,12 @@
                                                 <!-- Floating Action Bar for Batch Approve -->
                                                 <div x-show="partnerSelectedReports.length > 0" x-transition x-cloak class="mt-4 p-4 bg-indigo-50 border border-indigo-200 rounded-2xl flex items-center justify-between shadow-sm">
                                                     <div class="text-xs font-bold text-indigo-800">
-                                                        <span x-text="partnerSelectedReports.length"></span> Laporan Dipilih
+                                                        <span x-text="partnerSelectedReports.length"></span> {{ __('dashboard.qc_room.reports_selected') }}
                                                         <span class="opacity-50 mx-2">|</span>
-                                                        Total Kirim: <span x-text="totalSelectedMinutes"></span> menit
+                                                        {{ __('dashboard.qc_room.total_submitted') }} <span x-text="totalSelectedMinutes"></span> menit
                                                     </div>
                                                     <button type="button" @click="confirmBatchApprove('{{ $partner->id }}', partnerSelectedReports, totalSelectedMinutes)" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-sm transition">
-                                                        Setujui Terpilih
+                                                        {{ __('dashboard.qc_room.approve_selected') }}
                                                     </button>
                                                 </div>
                                             </div>
@@ -542,7 +542,7 @@
                             @empty
                                 <tr>
                                     <td colspan="5" class="px-6 py-12 text-center text-gray-500">
-                                        <span class="text-sm">Tidak ada data pengumpulan laporan mitra untuk periode ini.</span>
+                                        <span class="text-sm">{{ __('dashboard.qc_room.empty_reports') }}</span>
                                     </td>
                                 </tr>
                             @endforelse
@@ -565,7 +565,7 @@
                 <!-- Modal Header -->
                 <div class="px-6 py-4 bg-slate-950 text-white flex justify-between items-center">
                     <div>
-                        <span class="text-[9px] uppercase font-bold text-indigo-400 tracking-widest font-mono">Detail Laporan Harian</span>
+                        <span class="text-[9px] uppercase font-bold text-indigo-400 tracking-widest font-mono">{{ __('dashboard.qc_room.modal_report_detail') }}</span>
                         <h3 class="text-base font-black leading-tight" x-text="activeDailyReport.date"></h3>
                     </div>
                     <button @click="showDetailModal = false" class="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors">
@@ -580,11 +580,11 @@
                     <!-- Report Fields Grid -->
                     <div class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-2xl text-xs font-semibold text-slate-700">
                         <div>
-                            <span class="block text-[9px] text-gray-400 font-normal uppercase font-mono">ID Laporan</span>
+                            <span class="block text-[9px] text-gray-400 font-normal uppercase font-mono">{{ __('dashboard.qc_room.col_report_id') }}</span>
                             <span class="block font-bold text-slate-800 font-mono" x-text="activeDailyReport.id"></span>
                         </div>
                         <div>
-                            <span class="block text-[9px] text-gray-400 font-normal uppercase font-mono">Tanggal Kerja</span>
+                            <span class="block text-[9px] text-gray-400 font-normal uppercase font-mono">{{ __('dashboard.qc_room.col_work_date') }}</span>
                             <span class="block font-bold text-slate-800" x-text="activeDailyReport.date"></span>
                         </div>
                         <div>
@@ -592,19 +592,19 @@
                             <span class="block font-bold text-slate-800 font-mono" x-text="activeDailyReport.duration"></span>
                         </div>
                         <div>
-                            <span class="block text-[9px] text-gray-400 font-normal uppercase font-mono">Status</span>
+                            <span class="block text-[9px] text-gray-400 font-normal uppercase font-mono">{{ __('dashboard.qc_room.col_status') }}</span>
                             <span class="block font-bold text-slate-800" x-text="activeDailyReport.status"></span>
                         </div>
                     </div>
 
                     <!-- Proof/Evidence Image Grid -->
                     <div class="space-y-3">
-                        <span class="block text-[10px] font-black text-slate-400 uppercase tracking-wider font-mono">Foto Bukti (SOP)</span>
+                        <span class="block text-[10px] font-black text-slate-400 uppercase tracking-wider font-mono">{{ __('dashboard.qc_room.evidence_sop') }}</span>
                         <div class="grid grid-cols-2 gap-4">
                             <!-- Email image -->
                             <div class="space-y-1.5" x-show="activeDailyReport.email_img">
-                                <span class="block text-[9px] text-gray-400 uppercase font-mono">Bukti Email Register</span>
-                                <span class="text-[9px] font-bold text-slate-500 uppercase tracking-wider font-mono block mb-1" x-text="activeDailyReport.project_name === 'atlas' ? 'Durasi & Kualitas' : 'Durasi App'">Durasi & Kualitas</span>
+                                <span class="block text-[9px] text-gray-400 uppercase font-mono">{{ __('dashboard.qc_room.evidence_register_email') }}</span>
+                                <span class="text-[9px] font-bold text-slate-500 uppercase tracking-wider font-mono block mb-1" x-text="activeDailyReport.project_name === 'atlas' ? '{{ __('dashboard.qc_room.evidence_duration_quality') }}' : '{{ __('dashboard.qc_room.evidence_app_duration') }}'">{{ __('dashboard.qc_room.evidence_duration_quality') }}</span>
                                 <a :href="activeDailyReport.email_img" target="_blank" class="relative group block w-full overflow-hidden rounded-xl border border-slate-200">
                                     <img :src="activeDailyReport.email_img" class="w-full h-24 object-cover group-hover:scale-105 transition duration-150">
                                     <div class="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/10 transition flex items-center justify-center">
@@ -615,8 +615,8 @@
                             
                             <!-- Quality image (Minutes Data only) -->
                             <div class="space-y-1.5" x-show="activeDailyReport.project_name !== 'atlas' && activeDailyReport.quality_img">
-                                <span class="block text-[9px] text-gray-400 uppercase font-mono">Bukti Kualitas Video</span>
-                                <span class="text-[9px] font-bold text-slate-500 uppercase tracking-wider font-mono block mb-1">Kualitas App</span>
+                                <span class="block text-[9px] text-gray-400 uppercase font-mono">{{ __('dashboard.qc_room.evidence_video_quality') }}</span>
+                                <span class="text-[9px] font-bold text-slate-500 uppercase tracking-wider font-mono block mb-1">{{ __('dashboard.qc_room.evidence_app_quality') }}</span>
                                 <a :href="activeDailyReport.quality_img" target="_blank" class="relative group block w-full overflow-hidden rounded-xl border border-slate-200">
                                     <img :src="activeDailyReport.quality_img" class="w-full h-24 object-cover group-hover:scale-105 transition duration-150">
                                     <div class="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/10 transition flex items-center justify-center">
@@ -627,7 +627,7 @@
 
                             <!-- Submitted images (Atlas only) -->
                             <div class="space-y-1.5 col-span-2 mt-2" x-show="activeDailyReport.project_name === 'atlas' && activeDailyReport.submitted_imgs && activeDailyReport.submitted_imgs.length > 0">
-                                <span class="block text-[9px] text-gray-400 uppercase font-mono">Bukti Unggahan/Submitted</span>
+                                <span class="block text-[9px] text-gray-400 uppercase font-mono">{{ __('dashboard.qc_room.evidence_submitted_proof') }}</span>
                                 <div class="grid grid-cols-2 gap-3">
                                     <template x-for="(img, idx) in activeDailyReport.submitted_imgs" :key="idx">
                                         <a :href="img" target="_blank" class="relative group block w-full overflow-hidden rounded-xl border border-slate-200">
@@ -685,7 +685,7 @@
             function confirmRestore(form) {
                 Swal.fire({
                     ...swalOptions,
-                    title: 'Batal Tolak?',
+                    title: '{{ __('dashboard.qc_room.btn_cancel_reject') }}?',
                     text: "Apakah Anda yakin ingin membatalkan status revisi dan mengembalikan laporan ini ke antrean review?",
                     icon: 'question',
                     showCancelButton: true,
@@ -852,8 +852,8 @@
                 <!-- Modal Header -->
                 <div class="px-6 py-4 bg-slate-950 text-white flex justify-between items-center shrink-0">
                     <div>
-                        <span class="text-[9px] uppercase font-bold text-indigo-400 tracking-widest font-mono">Bantuan Admin</span>
-                        <h3 class="text-base font-black leading-tight">Buat Laporan untuk Mitra</h3>
+                        <span class="text-[9px] uppercase font-bold text-indigo-400 tracking-widest font-mono">{{ __('dashboard.qc_room.admin_help') }}</span>
+                        <h3 class="text-base font-black leading-tight">{{ __('dashboard.qc_room.create_report_for_partner') }}</h3>
                     </div>
                     <button @click="showCreateModal = false" type="button" class="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -888,12 +888,12 @@
                                 this.search = '';
                             }
                         }" class="relative">
-                            <label class="block text-sm font-semibold text-gray-700 mb-1">Pilih Akun Mitra <span class="text-red-500">*</span></label>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">{{ __('dashboard.qc_room.select_partner_account') }} <span class="text-red-500">*</span></label>
                             
                             <input type="hidden" name="partner_id" :value="selectedId" required>
                             
                             <button type="button" @click="open = !open" @click.away="open = false" class="relative w-full bg-white border border-gray-200 rounded-xl pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm min-h-11 shadow-sm transition-shadow">
-                                <span class="block truncate" x-text="selectedName || '-- Pilih Mitra --'" :class="{ 'text-gray-400': !selectedName, 'text-gray-900': selectedName }"></span>
+                                <span class="block truncate" x-text="selectedName || '{{ __('dashboard.qc_room.choose_partner') }}'" :class="{ 'text-gray-400': !selectedName, 'text-gray-900': selectedName }"></span>
                                 <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                                     <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="none" stroke="currentColor">
                                         <path d="M7 7l3-3 3 3m0 6l-3 3-3-3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
@@ -915,7 +915,7 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                             </svg>
                                         </div>
-                                        <input type="text" x-model="search" placeholder="Cari mitra..." class="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-gray-50 focus:bg-white transition-colors" @click.stop @keydown.enter.prevent>
+                                        <input type="text" x-model="search" placeholder="{{ __('dashboard.qc_room.search_partner_placeholder') }}" class="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-gray-50 focus:bg-white transition-colors" @click.stop @keydown.enter.prevent>
                                     </div>
                                 </div>
 
@@ -936,14 +936,14 @@
                                         <svg class="h-6 w-6 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
-                                        Mitra tidak ditemukan.
+                                        {{ __('dashboard.qc_room.partner_not_found') }}
                                     </div>
                                 </ul>
                             </div>
                         </div>
 
                         <div>
-                            <label for="project_name_admin" class="block text-sm font-semibold text-gray-700 mb-1">Pilih Aplikasi <span class="text-red-500">*</span></label>
+                            <label for="project_name_admin" class="block text-sm font-semibold text-gray-700 mb-1">{{ __('dashboard.qc_room.select_app') }} <span class="text-red-500">*</span></label>
                             <select name="project_name" id="project_name_admin" x-model="project_name" required class="block w-full min-h-11 px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                                 <option value="atlas">Atlas</option>
                                 <option value="minutes_data">Minutes Data</option>
@@ -952,12 +952,12 @@
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
                             <div>
-                                <label for="submission_date_admin" class="block text-sm font-semibold text-gray-700 mb-1">Tanggal Pengambilan Data <span class="text-red-500">*</span></label>
+                                <label for="submission_date_admin" class="block text-sm font-semibold text-gray-700 mb-1">{{ __('dashboard.qc_room.data_collection_date') }} <span class="text-red-500">*</span></label>
                                 <input type="date" name="submission_date" id="submission_date_admin" value="{{ date('Y-m-d') }}" max="{{ date('Y-m-d') }}" required class="block w-full min-h-11 px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                             </div>
 
                             <div x-data="{ hours: '', minutes: '' }">
-                                <label class="block text-sm font-semibold text-gray-700 mb-1">Total Durasi Kerja <span class="text-red-500">*</span></label>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">{{ __('dashboard.qc_room.total_work_duration') }} <span class="text-red-500">*</span></label>
                                 <div class="grid grid-cols-2 gap-3">
                                     <div class="relative">
                                         <input type="number" inputmode="numeric" x-model="hours" min="0" max="24" placeholder="0" class="block w-full min-h-11 pr-12 pl-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
@@ -975,7 +975,7 @@
                         <div class="bg-slate-50 border border-gray-100 rounded-xl p-4 space-y-3">
                             <div class="flex justify-between items-center border-b border-gray-200/50 pb-2">
                                 <span class="text-sm font-bold text-slate-800">
-                                    1. <span x-show="project_name === 'atlas'">Screenshot Total Durasi & Kualitas</span>
+                                    1. <span x-show="project_name === 'atlas'">Screenshot Total {{ __('dashboard.qc_room.evidence_duration_quality') }}</span>
                                        <span x-show="project_name === 'minutes_data'" style="display: none;">Screenshot Total Durasi</span>
                                      <span class="text-red-500">*</span>
                                 </span>
@@ -1002,7 +1002,7 @@
                                 Batal
                             </button>
                             <button type="submit" class="w-full sm:w-auto min-h-12 inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 border border-transparent rounded-xl font-semibold text-sm text-white hover:from-blue-700 hover:to-indigo-700 transition-all duration-300">
-                                Buat Laporan
+                                {{ __('dashboard.qc_room.create_report') }}
                             </button>
                         </div>
                     </form>

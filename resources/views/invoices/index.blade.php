@@ -1,14 +1,19 @@
 <x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-bold text-xl sm:text-2xl text-gray-800 leading-tight">
+            {{ __('dashboard.sidebar.invoice') }}
+        </h2>
+    </x-slot>
     <div class="py-12" x-data="invoiceApp()">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="mb-6 flex justify-between items-center">
                 <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight">Client Invoices</h2>
                 <div class="flex space-x-2">
                     <button @click="activeTab = 'generator'" :class="{ 'bg-indigo-600 text-white': activeTab === 'generator', 'bg-white text-gray-700 hover:bg-gray-50': activeTab !== 'generator' }" class="px-5 py-2.5 rounded-full text-sm font-medium transition-colors shadow-sm border border-gray-200">
-                        Buat Invoice Baru
+                        {{ __('dashboard.invoices.new_invoice_btn') }}
                     </button>
                     <button @click="activeTab = 'history'" :class="{ 'bg-indigo-600 text-white': activeTab === 'history', 'bg-white text-gray-700 hover:bg-gray-50': activeTab !== 'history' }" class="px-5 py-2.5 rounded-full text-sm font-medium transition-colors shadow-sm border border-gray-200">
-                        Riwayat Invoice
+                        {{ __('dashboard.invoices.history_btn') }}
                     </button>
                 </div>
             </div>
@@ -49,9 +54,9 @@
                                     
                                     <div class="space-y-5">
                                         <div>
-                                            <label class="block text-sm font-semibold text-gray-700 mb-1">Pilih Klien (Template)</label>
+                                            <label class="block text-sm font-semibold text-gray-700 mb-1">{{ __('dashboard.invoices.select_client') }}</label>
                                             <select name="client_id" x-model="selectedClient" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
-                                                <option value="">Pilih Client...</option>
+                                                <option value="">{{ __('dashboard.invoices.select_client_placeholder') }}</option>
                                                 @foreach($clients as $c)
                                                     <option value="{{ $c->id }}" data-rate="{{ $c->default_rate }}" data-currency="{{ $c->default_currency }}" data-name="{{ $c->name }}" data-address="{{ $c->address }}">{{ $c->name }}</option>
                                                 @endforeach
@@ -60,11 +65,11 @@
 
                                         <div x-show="selectedClient" x-cloak class="space-y-4 p-4 bg-gray-50 border border-gray-200 rounded-xl mt-2">
                                             <div>
-                                                <label class="block text-xs font-semibold text-gray-600 mb-1">Nama Klien (Di Invoice)</label>
+                                                <label class="block text-xs font-semibold text-gray-600 mb-1">{{ __('dashboard.invoices.client_name_invoice') }}</label>
                                                 <input type="text" name="client_name" x-model="clientName" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
                                             </div>
                                             <div>
-                                                <label class="block text-xs font-semibold text-gray-600 mb-1">Alamat Penagihan</label>
+                                                <label class="block text-xs font-semibold text-gray-600 mb-1">{{ __('dashboard.invoices.billing_address') }}</label>
                                                 <textarea name="client_address" x-model="clientAddress" rows="2" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"></textarea>
                                             </div>
                                         </div>
@@ -99,7 +104,7 @@
 
                                     <div class="mt-8">
                                         <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
-                                            Save as Draft
+                                            {{ __('dashboard.invoices.save_draft') }}
                                         </button>
                                     </div>
                                 </form>

@@ -31,7 +31,7 @@
                 {{ $header }}
             @else
                 <h2 class="font-bold text-lg text-gray-800 leading-tight truncate">
-                    {{ __('Ringkasan') }}
+                    {{ __('dashboard.sidebar.summary') }}
                 </h2>
             @endif
         </div>

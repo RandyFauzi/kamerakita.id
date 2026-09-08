@@ -10,16 +10,16 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-3xl p-8 max-w-lg mx-auto">
                 <div class="text-center mb-8">
                     <h3 class="text-2xl font-extrabold text-slate-800 tracking-tight">KameraKita <span class="text-sky-600">Top Workers</span></h3>
-                    <p class="text-sm text-slate-500 max-w-sm mx-auto" x-text="currentTab === 'weekly' ? 'Peringkat kontributor berdasarkan total durasi video yang dikirim minggu ini.' : 'Peringkat kontributor terbaik berdasarkan total durasi video disetujui.'"></p>
+                    <p class="text-sm text-slate-500 max-w-sm mx-auto" x-text="currentTab === 'weekly' ? '{{ addslashes(__('dashboard.leaderboard.subtitle_weekly')) }}' : '{{ addslashes(__('dashboard.leaderboard.subtitle_all_time')) }}'"></p>
                 </div>
 
                 <!-- Tabs -->
                 <div class="flex gap-2 p-1 bg-slate-100 rounded-2xl mb-8">
                     <button @click="currentTab = 'weekly'" :class="{ 'bg-white shadow-sm text-sky-700': currentTab === 'weekly', 'text-slate-500 hover:text-slate-700': currentTab !== 'weekly' }" class="flex-1 py-2.5 px-4 rounded-xl font-bold text-sm transition-all duration-200">
-                        Minggu Ini
+                        {{ __('dashboard.leaderboard.this_week') }}
                     </button>
                     <button @click="currentTab = 'allTime'" :class="{ 'bg-white shadow-sm text-sky-700': currentTab === 'allTime', 'text-slate-500 hover:text-slate-700': currentTab !== 'allTime' }" class="flex-1 py-2.5 px-4 rounded-xl font-bold text-sm transition-all duration-200">
-                        Sepanjang Waktu
+                        {{ __('dashboard.leaderboard.all_time') }}
                     </button>
                 </div>
 
@@ -29,7 +29,7 @@
                         <div class="w-full flex flex-col items-center">
                             <interactive-leaderboard theme="light" players="{{ $weeklyData }}"></interactive-leaderboard>
                             <p class="mt-8 text-xs text-slate-400 italic text-center max-w-xs leading-relaxed">
-                                * Catatan: Angka di atas adalah total durasi terkirim. Durasi akan diverifikasi ulang dengan total disetujui, sehingga skor akhir dapat berubah.
+                                {{ __('dashboard.leaderboard.note') }}
                             </p>
                         </div>
                     </template>
@@ -62,7 +62,7 @@
                 if (players.length === 0) {
                     this.innerHTML = `
                         <div class="w-full text-center py-10 text-slate-400 font-medium animate-pulse">
-                            Belum ada data skor untuk periode ini.
+                            {{ __('dashboard.leaderboard.empty_state') }}
                         </div>
                     `;
                     return;

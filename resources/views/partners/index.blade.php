@@ -2,13 +2,13 @@
     <x-slot name="header">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <h2 class="font-bold text-2xl text-gray-800 leading-tight">
-                {{ __('Manajemen Data Kemitraan (Vendor & Worker)') }}
+                {{ __('dashboard.partners.title') }}
             </h2>
             <a href="{{ route('partners.create') }}" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-650 border border-transparent rounded-xl font-semibold text-xs text-white uppercase tracking-widest hover:from-blue-700 hover:to-indigo-700 transition shadow-md shadow-indigo-100">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
                 </svg>
-                Registrasi Mitra / Worker Baru
+                {{ __('dashboard.partners.register_new') }}
             </a>
         </div>
     </x-slot>
@@ -103,9 +103,9 @@
                 <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-5">
                     <div class="flex items-start justify-between gap-3">
                         <div>
-                            <span class="block text-[10px] font-black uppercase tracking-widest text-gray-400">Total Pengguna</span>
+                            <span class="block text-[10px] font-black uppercase tracking-widest text-gray-400">{{ __('dashboard.partners.total_users') }}</span>
                             <strong class="mt-2 block text-2xl font-black text-slate-900 sm:text-3xl">{{ number_format($summary['total_users'], 0, ',', '.') }}</strong>
-                            <span class="mt-1 block text-xs text-gray-400">Seluruh akun kemitraan</span>
+                            <span class="mt-1 block text-xs text-gray-400">{{ __('dashboard.partners.all_partnerships') }}</span>
                         </div>
                         <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -118,9 +118,9 @@
                 <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-5">
                     <div class="flex items-start justify-between gap-3">
                         <div>
-                            <span class="block text-[10px] font-black uppercase tracking-widest text-gray-400">Worker/Kontributor</span>
+                            <span class="block text-[10px] font-black uppercase tracking-widest text-gray-400">{{ __('dashboard.partners.worker_contributor') }}</span>
                             <strong class="mt-2 block text-2xl font-black text-blue-700 sm:text-3xl">{{ number_format($summary['total_workers'], 0, ',', '.') }}</strong>
-                            <span class="mt-1 block text-xs text-gray-400">Akun pelaksana pekerjaan</span>
+                            <span class="mt-1 block text-xs text-gray-400">{{ __('dashboard.partners.job_executor') }}</span>
                         </div>
                         <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -133,9 +133,9 @@
                 <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-5">
                     <div class="flex items-start justify-between gap-3">
                         <div>
-                            <span class="block text-[10px] font-black uppercase tracking-widest text-gray-400">Total Mitra</span>
+                            <span class="block text-[10px] font-black uppercase tracking-widest text-gray-400">{{ __('dashboard.partners.total_mitra') }}</span>
                             <strong class="mt-2 block text-2xl font-black text-emerald-700 sm:text-3xl">{{ number_format($summary['total_mitra'], 0, ',', '.') }}</strong>
-                            <span class="mt-1 block text-xs text-gray-400">Akun Vendor Koordinator</span>
+                            <span class="mt-1 block text-xs text-gray-400">{{ __('dashboard.partners.vendor_coordinator') }}</span>
                         </div>
                         <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -148,9 +148,9 @@
                 <a href="{{ route('partners.index', array_merge(request()->except('page'), ['status' => 'active'])) }}" class="rounded-2xl border border-emerald-100 bg-white p-4 shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50/30 sm:p-5">
                     <div class="flex items-start justify-between gap-3">
                         <div>
-                            <span class="block text-[10px] font-black uppercase tracking-widest text-gray-400">Pernah Aktif</span>
+                            <span class="block text-[10px] font-black uppercase tracking-widest text-gray-400">{{ __('dashboard.partners.ever_active') }}</span>
                             <strong class="mt-2 block text-2xl font-black text-emerald-700 sm:text-3xl">{{ number_format($summary['total_active'], 0, ',', '.') }}</strong>
-                            <span class="mt-1 block text-xs text-gray-400">Pernah kirim laporan (all time)</span>
+                            <span class="mt-1 block text-xs text-gray-400">{{ __('dashboard.partners.submitted_reports_all_time') }}</span>
                         </div>
                         <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -163,9 +163,9 @@
                 <a href="{{ route('partners.index', array_merge(request()->except('page'), ['status' => 'inactive'])) }}" class="rounded-2xl border border-amber-100 bg-white p-4 shadow-sm transition hover:border-amber-200 hover:bg-amber-50/30 sm:p-5">
                     <div class="flex items-start justify-between gap-3">
                         <div>
-                            <span class="block text-[10px] font-black uppercase tracking-widest text-gray-400">Akun Inactive</span>
+                            <span class="block text-[10px] font-black uppercase tracking-widest text-gray-400">{{ __('dashboard.partners.inactive_account') }}</span>
                             <strong class="mt-2 block text-2xl font-black text-amber-700 sm:text-3xl">{{ number_format($summary['total_inactive'], 0, ',', '.') }}</strong>
-                            <span class="mt-1 block text-xs text-gray-400">Tidak laporan 2 hari</span>
+                            <span class="mt-1 block text-xs text-gray-400">{{ __('dashboard.partners.no_report_2_days') }}</span>
                         </div>
                         <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -178,9 +178,9 @@
                 <div class="rounded-2xl border border-rose-100 bg-white p-4 shadow-sm sm:p-5">
                     <div class="flex items-start justify-between gap-3">
                         <div>
-                            <span class="block text-[10px] font-black uppercase tracking-widest text-gray-400">Akun Suspended</span>
+                            <span class="block text-[10px] font-black uppercase tracking-widest text-gray-400">{{ __('dashboard.partners.suspended_account') }}</span>
                             <strong class="mt-2 block text-2xl font-black text-rose-700 sm:text-3xl">{{ number_format($summary['total_suspended'], 0, ',', '.') }}</strong>
-                            <span class="mt-1 block text-xs text-gray-400">Akses sedang dinonaktifkan</span>
+                            <span class="mt-1 block text-xs text-gray-400">{{ __('dashboard.partners.access_deactivated') }}</span>
                         </div>
                         <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-50 text-rose-600">
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -200,14 +200,14 @@
                         
                         <!-- Search Input -->
                         <div class="flex-grow w-full md:w-auto">
-                            <label for="search" class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 font-mono">Cari Nama / ID / WA / Email</label>
+                            <label for="search" class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 font-mono">{{ __('dashboard.partners.search_label') }}</label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                                     </svg>
                                 </div>
-                                <input type="text" name="search" id="search" value="{{ $search }}" placeholder="Ketik nama, ID, WA, atau Email..." class="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition shadow-sm">
+                                <input type="text" name="search" id="search" value="{{ $search }}" placeholder="{{ __('dashboard.partners.search_placeholder') }}" class="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition shadow-sm">
                             </div>
                         </div>
                         
@@ -220,7 +220,7 @@
                                 <svg class="w-4 h-4 md:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
                                 </svg>
-                                <span class="hidden md:inline">Salin</span>
+                                <span class="hidden md:inline">{{ __('dashboard.partners.copy_btn') }}</span>
                             </button>
                             @if($search || $role || $status || (isset($group) && $group) || $mitraId || $fullName || $hourlyRate || $headstrap || $whatsapp || $mitraParent || $clientRegistered)
                                 <a href="{{ route('partners.index') }}" class="flex-none justify-center inline-flex items-center px-4 py-2.5 bg-gray-55 border border-gray-200 rounded-xl font-semibold text-sm text-gray-700 hover:bg-gray-100 transition shadow-sm" title="Reset Filter">
@@ -243,18 +243,18 @@
                                     <th scope="col" class="w-10 px-4 py-4 text-center">
                                         <input type="checkbox" @change="toggleSelectAll($event)" :checked="selectedIds.length === @js($partners->count()) && @js($partners->count()) > 0" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
                                     </th>
-                                    <th scope="col" class="w-16 px-4 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">No.</th>
-                                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">ID Vendor</th>
-                                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Nama Lengkap</th>
-                                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Peran (Role)</th>
-                                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Grup</th>
-                                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Nominal/Jam</th>
-                                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Headstrap</th>
-                                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">WhatsApp</th>
-                                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Vendor Atasan</th>
-                                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Registrasi Klien</th>
-                                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                                    <th scope="col" class="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Aksi</th>
+                                    <th scope="col" class="w-16 px-4 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('dashboard.partners.col_no') }}</th>
+                                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('dashboard.partners.col_vendor_id') }}</th>
+                                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('dashboard.partners.col_full_name') }}</th>
+                                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('dashboard.partners.col_role') }}</th>
+                                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('dashboard.partners.col_group') }}</th>
+                                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('dashboard.partners.col_rate') }}</th>
+                                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('dashboard.partners.col_headstrap') }}</th>
+                                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('dashboard.partners.col_whatsapp') }}</th>
+                                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('dashboard.partners.col_parent_vendor') }}</th>
+                                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('dashboard.partners.col_client_reg') }}</th>
+                                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('dashboard.partners.col_status') }}</th>
+                                    <th scope="col" class="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('dashboard.partners.col_action') }}</th>
                                 </tr>
                                 <tr class="bg-slate-100/50 border-t border-slate-205">
                                     <th class="px-4 py-2"></th>
@@ -681,7 +681,7 @@
                                         <div class="mt-4 space-y-4">
                                             <!-- Group bulk selection -->
                                             <div>
-                                                <label for="bulk_group" class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 font-mono">Grup</label>
+                                                <label for="bulk_group" class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 font-mono">{{ __('dashboard.partners.col_group') }}</label>
                                                 <select name="group_name" id="bulk_group" class="block w-full py-1.5 px-2.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white">
                                                     <option value="no_change">Tidak Ada Perubahan</option>
                                                     <option value="clear">Hapus Grup (Kosongkan)</option>
@@ -693,7 +693,7 @@
 
                                             <!-- Status bulk selection -->
                                             <div>
-                                                <label for="bulk_status" class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 font-mono">Status</label>
+                                                <label for="bulk_status" class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 font-mono">{{ __('dashboard.partners.col_status') }}</label>
                                                 <select name="status" id="bulk_status" class="block w-full py-1.5 px-2.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white">
                                                     <option value="no_change">Tidak Ada Perubahan</option>
                                                     <option value="active">Active</option>
@@ -720,7 +720,7 @@
 
                                             <!-- Parent Mitra selection -->
                                             <div x-data="{ parentOption: 'no_change' }">
-                                                <label for="bulk_parent_option" class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 font-mono">Vendor Atasan</label>
+                                                <label for="bulk_parent_option" class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 font-mono">{{ __('dashboard.partners.col_parent_vendor') }}</label>
                                                 <select name="mitra_parent_id" id="bulk_parent_option" x-model="parentOption" class="block w-full py-1.5 px-2.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white">
                                                     <option value="no_change">Tidak Ada Perubahan</option>
                                                     <option value="clear">Hapus Vendor Atasan (Kosongkan)</option>

@@ -2,10 +2,10 @@
     <x-slot name="header">
         <div class="w-full flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3">
             <h2 class="font-bold text-xl sm:text-2xl text-gray-800 leading-tight">
-                {{ __('Kelola Kode Aktivasi & Grup') }}
+                {{ __('dashboard.activation_codes.title') }}
             </h2>
             <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 rounded-xl text-xs font-bold shadow-sm transition">
-                ← Kembali ke Dashboard
+                {{ __('dashboard.activation_codes.back_to_dashboard') }}
             </a>
         </div>
     </x-slot>
@@ -25,29 +25,29 @@
             <!-- Left Column: Add New Code Form -->
             <div class="bg-white rounded-2xl sm:rounded-3xl p-6 border border-gray-150 shadow-sm space-y-5 h-fit">
                 <div>
-                    <h3 class="font-extrabold text-base text-gray-900">Buat Kode Aktivasi Baru</h3>
-                    <p class="text-xs text-gray-400 mt-1">Gunakan kode ini untuk mengelompokkan kontributor saat pendaftaran.</p>
+                    <h3 class="font-extrabold text-base text-gray-900">{{ __('dashboard.activation_codes.create_new_code') }}</h3>
+                    <p class="text-xs text-gray-400 mt-1">{{ __('dashboard.activation_codes.create_desc') }}</p>
                 </div>
 
                 <form method="POST" action="{{ route('activation-codes.store') }}" class="space-y-4">
                     @csrf
 
                     <div class="bg-gray-50 border border-gray-150 rounded-xl p-3.5 space-y-1">
-                        <span class="block text-[10px] font-bold text-gray-405 uppercase tracking-wider font-mono">FORMAT KODE OTOMATIS</span>
+                        <span class="block text-[10px] font-bold text-gray-405 uppercase tracking-wider font-mono">{{ __('dashboard.activation_codes.auto_format') }}</span>
                         <span class="block text-xs text-gray-700 font-bold font-mono">KMK-[NO][HURUF ACAK]</span>
-                        <p class="text-[10px] text-gray-400">Sistem akan men-generate kode unik secara otomatis (contoh: KMK-03ASQW).</p>
+                        <p class="text-[10px] text-gray-400">{{ __('dashboard.activation_codes.auto_format_desc') }}</p>
                     </div>
 
                     <div>
-                        <label for="group_name" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Nama Kelompok / Grup Baru</label>
+                        <label for="group_name" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">{{ __('dashboard.activation_codes.group_name_label') }}</label>
                         <input id="group_name" type="text" name="group_name" value="{{ old('group_name') }}" required 
                                class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition placeholder-gray-300" 
-                               placeholder="Contoh: Group D, Group Mytron">
+                               placeholder="{{ __('dashboard.activation_codes.group_name_placeholder') }}">
                         <x-input-error :messages="$errors->get('group_name')" class="mt-1" />
                     </div>
 
                     <button type="submit" class="w-full py-3 bg-gray-900 hover:bg-gray-800 text-white font-bold text-xs uppercase tracking-widest rounded-xl transition shadow-sm">
-                        Simpan Kode Aktivasi
+                        {{ __('dashboard.activation_codes.save_code_btn') }}
                     </button>
                 </form>
             </div>
@@ -58,17 +58,17 @@
                 <!-- Group Stats Cards -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-5 border border-blue-100/40 shadow-sm">
-                        <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono">TOTAL MITRA GROUP A</span>
+                        <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono">{{ __('dashboard.activation_codes.total_group_a') }}</span>
                         <div class="flex items-baseline gap-2 mt-2">
                             <span class="text-3xl font-black text-slate-900">{{ $groupCounts['Group A'] ?? 0 }}</span>
-                            <span class="text-xs text-slate-500 font-bold uppercase font-mono">Kontributor</span>
+                            <span class="text-xs text-slate-500 font-bold uppercase font-mono">{{ __('dashboard.activation_codes.contributors_count') }}</span>
                         </div>
                     </div>
                     <div class="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl p-5 border border-emerald-100/40 shadow-sm">
-                        <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono">TOTAL MITRA GROUP B</span>
+                        <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono">{{ __('dashboard.activation_codes.total_group_b') }}</span>
                         <div class="flex items-baseline gap-2 mt-2">
                             <span class="text-3xl font-black text-slate-900">{{ $groupCounts['Group B'] ?? 0 }}</span>
-                            <span class="text-xs text-slate-500 font-bold uppercase font-mono">Kontributor</span>
+                            <span class="text-xs text-slate-500 font-bold uppercase font-mono">{{ __('dashboard.activation_codes.contributors_count') }}</span>
                         </div>
                     </div>
                 </div>
@@ -76,17 +76,17 @@
                 <!-- Codes Table -->
                 <div class="bg-white rounded-2xl sm:rounded-3xl border border-gray-150 shadow-sm overflow-hidden">
                     <div class="p-6 border-b border-gray-100">
-                        <h3 class="font-extrabold text-base text-gray-900">Daftar Kode Aktivasi</h3>
-                        <p class="text-xs text-gray-400 mt-1">Daftar kode aktif yang digunakan untuk pendaftaran.</p>
+                        <h3 class="font-extrabold text-base text-gray-900">{{ __('dashboard.activation_codes.code_list_title') }}</h3>
+                        <p class="text-xs text-gray-400 mt-1">{{ __('dashboard.activation_codes.code_list_desc') }}</p>
                     </div>
 
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-sm text-gray-500">
                             <thead class="text-xs text-gray-450 uppercase bg-gray-50/50 border-b border-gray-100 font-bold">
                                 <tr>
-                                    <th scope="col" class="px-6 py-4">Kode Aktivasi</th>
-                                    <th scope="col" class="px-6 py-4">Grup Tujuan</th>
-                                    <th scope="col" class="px-6 py-4 text-right">Aksi</th>
+                                    <th scope="col" class="px-6 py-4">{{ __('dashboard.activation_codes.col_code') }}</th>
+                                    <th scope="col" class="px-6 py-4">{{ __('dashboard.activation_codes.col_target_group') }}</th>
+                                    <th scope="col" class="px-6 py-4 text-right">{{ __('dashboard.activation_codes.col_action') }}</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100">

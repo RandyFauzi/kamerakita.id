@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-bold text-xl sm:text-2xl text-gray-800 leading-tight">
-            {{ __('Manajemen Pembayaran Gaji') }}
+            {{ __('dashboard.payments_manage.title') }}
         </h2>
     </x-slot>
 
@@ -105,20 +105,20 @@
             <section class="overflow-hidden rounded-2xl bg-slate-950 p-5 text-white shadow-sm sm:rounded-3xl sm:p-7">
                 <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                     <div class="max-w-2xl">
-                        <span class="text-[10px] font-black uppercase tracking-widest text-indigo-300">Payroll Desk</span>
-                        <h3 class="mt-2 text-xl font-black tracking-tight sm:text-2xl">Pembayaran Gaji Worker</h3>
+                        <span class="text-[10px] font-black uppercase tracking-widest text-indigo-300">{{ __('dashboard.payments_manage.payroll_desk') }}</span>
+                        <h3 class="mt-2 text-xl font-black tracking-tight sm:text-2xl">{{ __('dashboard.payments_manage.worker_salary_payment') }}</h3>
                         <p class="mt-2 text-xs leading-5 text-slate-300 sm:text-sm">
-                            Kelola laporan yang telah disetujui, salin rekening tujuan, lalu catat pembayaran dengan bukti transfer.
+                            {{ __('dashboard.payments_manage.payroll_desc') }}
                         </p>
                     </div>
                     <div class="flex items-center gap-3 border-t border-slate-800 pt-4 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
                         <div>
-                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Siap Dibayar</span>
-                            <strong class="mt-1 block text-lg font-black text-white">{{ $queuedReportCount }} laporan</strong>
+                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">{{ __('dashboard.payments_manage.ready_to_pay') }}</span>
+                            <strong class="mt-1 block text-lg font-black text-white">{{ $queuedReportCount }} {{ __('dashboard.payments_manage.reports_unit') }}</strong>
                         </div>
                         <span class="h-9 w-px bg-slate-800"></span>
                         <div>
-                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Antrean</span>
+                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">{{ __('dashboard.payments_manage.total_queue') }}</span>
                             <strong class="mt-1 block text-lg font-black text-emerald-400">Rp {{ number_format($queuedAmount, 0, ',', '.') }}</strong>
                         </div>
                     </div>
@@ -129,7 +129,7 @@
                 <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-5">
                     <div class="flex items-center justify-between gap-3">
                         <div>
-                            <span class="block text-[10px] font-black uppercase tracking-widest text-slate-400">Worker Menunggu</span>
+                            <span class="block text-[10px] font-black uppercase tracking-widest text-slate-400">{{ __('dashboard.payments_manage.waiting_workers') }}</span>
                             <strong class="mt-2 block text-2xl font-black text-slate-900">{{ count($workers) }}</strong>
                         </div>
                         <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
@@ -142,7 +142,7 @@
                 <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-5">
                     <div class="flex items-center justify-between gap-3">
                         <div>
-                            <span class="block text-[10px] font-black uppercase tracking-widest text-slate-400">Nominal Menunggu</span>
+                            <span class="block text-[10px] font-black uppercase tracking-widest text-slate-400">{{ __('dashboard.payments_manage.waiting_amount') }}</span>
                             <strong class="mt-2 block text-xl font-black text-indigo-700">Rp {{ number_format($queuedAmount, 0, ',', '.') }}</strong>
                         </div>
                         <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
@@ -155,7 +155,7 @@
                 <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-5">
                     <div class="flex items-center justify-between gap-3">
                         <div>
-                            <span class="block text-[10px] font-black uppercase tracking-widest text-slate-400">Total Sudah Dibayar</span>
+                            <span class="block text-[10px] font-black uppercase tracking-widest text-slate-400">{{ __('dashboard.payments_manage.total_paid') }}</span>
                             <strong class="mt-2 block text-xl font-black text-emerald-700">Rp {{ number_format($paidAmount, 0, ',', '.') }}</strong>
                         </div>
                         <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
@@ -174,8 +174,8 @@
 
                     <div class="flex items-center gap-3 w-full sm:w-auto">
                         <select name="sort" onchange="this.form.submit()" class="block w-full sm:w-40 px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-gray-700 font-medium">
-                            <option value="date" {{ (request('sort') ?? 'date') === 'date' ? 'selected' : '' }}>Urut Terbaru</option>
-                            <option value="name" {{ request('sort') === 'name' ? 'selected' : '' }}>Urut Abjad (A-Z)</option>
+                            <option value="date" {{ (request('sort') ?? 'date') === 'date' ? 'selected' : '' }}>{{ __('dashboard.payments_manage.sort_newest') }}</option>
+                            <option value="name" {{ request('sort') === 'name' ? 'selected' : '' }}>{{ __('dashboard.payments_manage.sort_alpha') }}</option>
                         </select>
                     </div>
 
@@ -185,7 +185,7 @@
                                 <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
                             </svg>
                         </div>
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama, email, atau norek..." class="block w-full sm:w-64 pl-9 pr-3 py-2 border border-gray-200 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('dashboard.payments_manage.search_placeholder') }}" class="block w-full sm:w-64 pl-9 pr-3 py-2 border border-gray-200 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
                     <button type="submit" class="hidden">Search</button>
                 </form>
@@ -209,12 +209,12 @@
                 <button @click="currentTab = 'queue'"
                         :class="currentTab === 'queue' ? 'bg-white text-indigo-700 shadow-sm' : 'text-gray-500 hover:text-gray-900'"
                         class="min-h-10 rounded-lg px-3 py-2 text-[11px] font-black uppercase tracking-wider transition focus:outline-none sm:px-4">
-                    Antrean <span class="ml-1 rounded-full bg-indigo-50 px-2 py-0.5 text-indigo-700">{{ count($workers) }}</span>
+                    {{ __('dashboard.payments_manage.tab_queue') }} <span class="ml-1 rounded-full bg-indigo-50 px-2 py-0.5 text-indigo-700">{{ count($workers) }}</span>
                 </button>
                 <button @click="currentTab = 'history'"
                         :class="currentTab === 'history' ? 'bg-white text-indigo-700 shadow-sm' : 'text-gray-500 hover:text-gray-900'"
                         class="min-h-10 rounded-lg px-3 py-2 text-[11px] font-black uppercase tracking-wider transition focus:outline-none sm:px-4">
-                    Riwayat <span class="ml-1 rounded-full bg-slate-200 px-2 py-0.5 text-slate-700">{{ $totalPayoutsCount ?? count($payoutHistory) }}</span>
+                    {{ __('dashboard.payments_manage.tab_history') }} <span class="ml-1 rounded-full bg-slate-200 px-2 py-0.5 text-slate-700">{{ $totalPayoutsCount ?? count($payoutHistory) }}</span>
                 </button>
             </div>
 
@@ -240,7 +240,7 @@
 
                             <div class="flex items-center gap-6 w-full md:w-auto justify-between md:justify-end">
                                 <div class="text-left md:text-right">
-                                    <span class="block text-[10px] font-bold text-gray-450 uppercase tracking-wider">Total Tagihan</span>
+                                    <span class="block text-[10px] font-bold text-gray-450 uppercase tracking-wider">{{ __('dashboard.payments_manage.col_total_bill') }}</span>
                                     <div class="flex items-center gap-2 justify-start md:justify-end">
                                         @if($w['has_custom_rate'])
                                             <span class="text-[9px] font-bold uppercase tracking-wider text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-200">Custom (Rp {{ number_format($w['rate'], 0, ',', '.') }}/j)</span>
@@ -248,7 +248,7 @@
                                         <span class="block text-lg font-black {{ $w['has_custom_rate'] ? 'text-amber-600' : 'text-indigo-600' }} leading-tight">Rp {{ number_format($w['total_amount'], 0, ',', '.') }}</span>
                                     </div>
                                     <div class="flex items-center gap-1.5 justify-start md:justify-end mt-0.5">
-                                        <span class="text-[10px] font-medium text-gray-400">Untuk {{ count($w['reports']) }} Laporan</span>
+                                        <span class="text-[10px] font-medium text-gray-400">{{ __('dashboard.payments_manage.for_reports', ['count' => count($w['reports'])]) }}</span>
                                         <span class="text-[10px] font-bold {{ $w['has_custom_rate'] ? 'text-amber-700 bg-amber-50 border-amber-200' : 'text-indigo-700 bg-indigo-50 border-indigo-100' }} border px-1.5 py-0.5 rounded">{{ $w['total_minutes'] }} Menit</span>
                                     </div>
                                 </div>
@@ -257,7 +257,7 @@
                                     <button type="button" 
                                             @click.stop="openPayModal(@js($w))"
                                             class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-750 text-white rounded-xl text-xs font-bold tracking-wider transition shadow-sm shadow-indigo-100">
-                                        Proses Bayar
+                                        {{ __('dashboard.payments_manage.process_pay') }}
                                     </button>
                                     <div class="p-1 text-gray-400 hover:bg-gray-50 rounded-lg transition-transform duration-200" :class="expanded ? 'rotate-180' : ''">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -275,11 +275,11 @@
                                     <table class="min-w-full divide-y divide-gray-200/60 text-xs">
                                         <thead>
                                             <tr class="text-gray-450 font-bold text-left uppercase tracking-wider">
-                                                <th class="pb-3 pt-2">ID Laporan</th>
-                                                <th class="pb-3 pt-2">Tanggal Kerja</th>
-                                                <th class="pb-3 pt-2">Durasi Disetujui</th>
-                                                <th class="pb-3 pt-2">Est. Gaji (Rp)</th>
-                                                <th class="pb-3 pt-2 text-right">Status QC</th>
+                                                <th class="pb-3 pt-2">{{ __('dashboard.payments_manage.col_report_id') }}</th>
+                                                <th class="pb-3 pt-2">{{ __('dashboard.payments_manage.col_work_date') }}</th>
+                                                <th class="pb-3 pt-2">{{ __('dashboard.payments_manage.col_approved_duration') }}</th>
+                                                <th class="pb-3 pt-2">{{ __('dashboard.payments_manage.col_est_salary') }}</th>
+                                                <th class="pb-3 pt-2 text-right">{{ __('dashboard.payments_manage.col_qc_status') }}</th>
                                             </tr>
                                         </thead>
                                         <tbody class="divide-y divide-gray-100 font-medium text-slate-700">
@@ -313,9 +313,9 @@
                             </svg>
                             </div>
                             <div>
-                            <h4 class="text-base font-black text-slate-900">Tidak Ada Antrean Pembayaran</h4>
+                            <h4 class="text-base font-black text-slate-900">{{ __('dashboard.payments_manage.empty_queue_title') }}</h4>
                             <p class="mt-2 text-sm leading-6 text-gray-500">
-                                Semua laporan yang telah disetujui sudah dibayar. Antrean baru akan muncul setelah admin menyetujui laporan worker.
+                                Semua {{ __('dashboard.payments_manage.reports_unit') }} yang telah disetujui sudah dibayar. Antrean baru akan muncul setelah admin menyetujui {{ __('dashboard.payments_manage.reports_unit') }} worker.
                             </p>
                             </div>
                         </div>
@@ -336,21 +336,21 @@
                                 <div class="space-y-0.5">
                                     <h4 class="text-base font-black text-slate-900">{{ $pay['partner']->full_name }}</h4>
                                     <div class="flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-400 font-medium">
-                                        <span>Tanggal Bayar: {{ $pay['paid_at']->translatedFormat('d F Y - H:i') }}</span>
+                                        <span>{{ __('dashboard.payments_manage.paid_date') }} {{ $pay['paid_at']->translatedFormat('d F Y - H:i') }}</span>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="flex items-center gap-6 w-full md:w-auto justify-between md:justify-end">
                                 <div class="text-left md:text-right">
-                                    <span class="block text-[10px] font-bold text-gray-450 uppercase tracking-wider">Total Dibayar</span>
+                                    <span class="block text-[10px] font-bold text-gray-450 uppercase tracking-wider">{{ __('dashboard.payments_manage.col_total_paid') }}</span>
                                     <div class="flex items-center gap-2 justify-start md:justify-end">
                                         @if($pay['has_custom_rate'])
                                             <span class="text-[9px] font-bold uppercase tracking-wider text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-200">Custom (Rp {{ number_format($pay['rate'], 0, ',', '.') }}/j)</span>
                                         @endif
                                         <span class="block text-lg font-black {{ $pay['has_custom_rate'] ? 'text-amber-600' : 'text-emerald-600' }} leading-tight">Rp {{ number_format($pay['total_amount'], 0, ',', '.') }}</span>
                                     </div>
-                                    <span class="block text-[10px] font-medium text-gray-400 mt-0.5">Untuk {{ count($pay['reports']) }} Laporan</span>
+                                    <span class="block text-[10px] font-medium text-gray-400 mt-0.5">{{ __('dashboard.payments_manage.for_reports', ['count' => count($pay['reports'])]) }}</span>
                                 </div>
 
                                 <div class="flex items-center gap-3">
@@ -365,14 +365,14 @@
                                         </a>
                                     @endif
 
-                                    <form action="{{ route('payments.cancel') }}" method="POST" @click.stop onsubmit="return confirm('Apakah Anda yakin ingin membatalkan/menghapus riwayat pembayaran ini? Seluruh laporan dalam batch ini akan otomatis dikembalikan ke status Unpaid.')" class="inline-block">
+                                    <form action="{{ route('payments.cancel') }}" method="POST" @click.stop onsubmit="return confirm('Apakah Anda yakin ingin membatalkan/menghapus riwayat pembayaran ini? Seluruh {{ __('dashboard.payments_manage.reports_unit') }} dalam batch ini akan otomatis dikembalikan ke status Unpaid.')" class="inline-block">
                                         @csrf
                                         <input type="hidden" name="batch_id" value="{{ $pay['batch_id'] }}">
                                         <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-2 bg-rose-50 border border-rose-100 hover:bg-rose-100 text-rose-700 rounded-xl text-xs font-bold transition duration-200">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                             </svg>
-                                            Batal Bayar
+                                            {{ __('dashboard.payments_manage.cancel_payment') }}
                                         </button>
                                     </form>
 
@@ -392,9 +392,9 @@
                                     <table class="min-w-full divide-y divide-gray-200/60 text-xs">
                                         <thead>
                                             <tr class="text-gray-450 font-bold text-left uppercase tracking-wider">
-                                                <th class="pb-3 pt-2">ID Laporan</th>
-                                                <th class="pb-3 pt-2">Tanggal Kerja</th>
-                                                <th class="pb-3 pt-2">Durasi Kerja</th>
+                                                <th class="pb-3 pt-2">{{ __('dashboard.payments_manage.col_report_id') }}</th>
+                                                <th class="pb-3 pt-2">{{ __('dashboard.payments_manage.col_work_date') }}</th>
+                                                <th class="pb-3 pt-2">{{ __('dashboard.payments_manage.col_work_duration') }}</th>
                                                 <th class="pb-3 pt-2 text-right">Status</th>
                                             </tr>
                                         </thead>
@@ -426,9 +426,9 @@
                             </svg>
                             </div>
                             <div>
-                            <h4 class="text-base font-black text-slate-900">Belum Ada Riwayat Pembayaran</h4>
+                            <h4 class="text-base font-black text-slate-900">{{ __('dashboard.payments_manage.empty_history_title') }}</h4>
                             <p class="mt-2 text-sm leading-6 text-gray-500">
-                                Pembayaran yang telah dikonfirmasi akan tersimpan dan ditampilkan pada bagian ini.
+                                {{ __('dashboard.payments_manage.empty_history_desc') }}
                             </p>
                             </div>
                         </div>
@@ -450,7 +450,7 @@
                     <!-- Modal Header -->
                     <div class="px-6 py-4 bg-slate-950 text-white flex justify-between items-center">
                         <div>
-                            <span class="text-[10px] uppercase font-black text-indigo-400 tracking-widest">Kirim Gaji Kolektif</span>
+                            <span class="text-[10px] uppercase font-black text-indigo-400 tracking-widest">{{ __('dashboard.payments_manage.send_collective_salary') }}</span>
                             <h3 class="text-base font-black leading-tight" x-text="activeWorker.partner.full_name"></h3>
                         </div>
                         <button @click="showPayModal = false" class="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors">
@@ -470,49 +470,49 @@
                         <!-- Earnings Summary Card -->
                         <div class="bg-gradient-to-br from-indigo-500 to-indigo-700 text-white rounded-2xl p-5 shadow-inner flex justify-between items-center">
                             <div>
-                                <span class="block text-[9px] uppercase tracking-wider text-indigo-200 font-bold">Total Nilai Transfer</span>
+                                <span class="block text-[9px] uppercase tracking-wider text-indigo-200 font-bold">{{ __('dashboard.payments_manage.total_transfer_value') }}</span>
                                 <span class="block text-2xl font-black tracking-tight" x-text="'Rp ' + new Intl.NumberFormat('id-ID').format(activeWorker.total_amount)"></span>
                                 <span class="block text-[10px] text-indigo-100 mt-1" x-text="'Total Menit: ' + activeWorker.total_minutes + ' m (' + Number(activeWorker.hours).toFixed(2) + ' jam)'"></span>
                             </div>
                             <div class="text-right">
-                                <span class="block text-[9px] uppercase tracking-wider text-indigo-200 font-bold">Rate / Jam</span>
+                                <span class="block text-[9px] uppercase tracking-wider text-indigo-200 font-bold">{{ __('dashboard.payments_manage.rate_per_hour') }}</span>
                                 <span class="block text-sm font-black" x-text="'Rp ' + new Intl.NumberFormat('id-ID').format(activeWorker.rate)"></span>
                             </div>
                         </div>
 
                         <!-- Bank Detail Copy Box -->
                         <div class="bg-slate-50 border border-gray-200 rounded-2xl p-4 space-y-3">
-                            <span class="block text-[10px] font-bold text-gray-450 uppercase tracking-wider">Rekening Tujuan</span>
+                            <span class="block text-[10px] font-bold text-gray-450 uppercase tracking-wider">{{ __('dashboard.payments_manage.destination_account') }}</span>
                             
                             <div class="grid grid-cols-2 gap-4 text-xs font-semibold text-slate-700">
                                 <div>
-                                    <span class="block text-[9px] text-gray-400 font-normal uppercase">Nama Bank</span>
+                                    <span class="block text-[9px] text-gray-400 font-normal uppercase">{{ __('dashboard.payments_manage.bank_name') }}</span>
                                     <span class="block font-bold text-slate-800" x-text="activeWorker.partner.bank_name || 'BCA'"></span>
                                 </div>
                                 <div>
-                                    <span class="block text-[9px] text-gray-400 font-normal uppercase">Pemilik Rekening</span>
+                                    <span class="block text-[9px] text-gray-400 font-normal uppercase">{{ __('dashboard.payments_manage.account_owner') }}</span>
                                     <span class="block font-bold text-slate-800" x-text="activeWorker.partner.bank_account_owner  || activeWorker.partner.full_name"></span>
                                 </div>
                             </div>
 
                             <div class="bg-white border border-gray-200 rounded-xl p-3 flex justify-between items-center shadow-sm">
                                 <div class="space-y-0.5">
-                                    <span class="block text-[9px] text-gray-400 uppercase leading-none">Nomor Rekening</span>
+                                    <span class="block text-[9px] text-gray-400 uppercase leading-none">{{ __('dashboard.payments_manage.account_number') }}</span>
                                     <span class="font-mono text-sm font-black tracking-wider text-indigo-650" x-text="activeWorker.partner.bank_account_number  || '-'"></span>
                                 </div>
                                 <button type="button" 
                                         @click="copyToClipboard(activeWorker.partner.bank_account_number )"
                                         class="inline-flex items-center gap-1.5 px-3 py-1.5 border border-indigo-100 bg-indigo-50 text-indigo-700 rounded-lg text-[10px] font-bold hover:bg-indigo-100 transition duration-150">
-                                    <span x-text="copySuccess ? 'Tersalin!' : 'Salin'"></span>
+                                    <span x-text="copySuccess ? '{{ addslashes(__('dashboard.payments_manage.copied_btn')) }}' : '{{ addslashes(__('dashboard.payments_manage.copy_btn')) }}'"></span>
                                 </button>
                             </div>
                         </div>
 
                         <!-- Upload Proof Input -->
                         <div class="space-y-1.5">
-                            <label for="payment_proof" class="block text-xs font-bold text-gray-400 uppercase tracking-wider">Unggah Bukti Transfer <span class="text-red-500">*</span></label>
+                            <label for="payment_proof" class="block text-xs font-bold text-gray-400 uppercase tracking-wider">{{ __('dashboard.payments_manage.upload_proof') }} <span class="text-red-500">*</span></label>
                             <input type="file" name="payment_proof" id="payment_proof" required class="block w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition file:cursor-pointer">
-                            <p class="text-[10px] text-gray-400">Pastikan bukti transfer mencantumkan nominal transfer yang tepat dan nama rekening tujuan yang sesuai.</p>
+                            <p class="text-[10px] text-gray-400">{{ __('dashboard.payments_manage.upload_proof_hint') }}</p>
                         </div>
 
                         <!-- Admin Fee Note -->
@@ -523,7 +523,7 @@
                                 </svg>
                             </div>
                             <p class="text-[10px] text-orange-800 leading-normal font-medium">
-                                Biaya admin transfer antar bank (LLG / RTGS / BI-Fast) sebesar <strong>Rp 2.500</strong> sepenuhnya dibebankan kepada penerima (Mitra).
+                                {{ __('dashboard.payments_manage.admin_fee_note') }}
                             </p>
                         </div>
 
@@ -533,7 +533,7 @@
                                 Batalkan
                             </button>
                             <button type="submit" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-750 text-white font-bold text-xs rounded-xl shadow-md shadow-indigo-100 transition">
-                                Konfirmasi & Bayar
+                                {{ __('dashboard.payments_manage.confirm_pay_btn') }}
                             </button>
                         </div>
                     </form>

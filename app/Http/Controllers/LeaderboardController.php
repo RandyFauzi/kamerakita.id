@@ -38,7 +38,7 @@ class LeaderboardController extends Controller
                 
                 return [
                     'name' => $name,
-                    'score' => number_format($score->total_score) . ' Menit',
+                    'score' => number_format($score->total_score) . ' ' . __('dashboard.leaderboard.minutes_unit'),
                     'avatar' => $avatar,
                 ];
             });
