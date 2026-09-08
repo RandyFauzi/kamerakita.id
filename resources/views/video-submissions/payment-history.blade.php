@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-bold text-xl sm:text-2xl text-gray-800 leading-tight">
-            {{ __('Riwayat Pembayaran Gaji') }}
+            {{ __('{{ __("dashboard.salary_history.title") }}') }}
         </h2>
     </x-slot>
 
@@ -51,21 +51,21 @@
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
-                    Kembali ke Dashboard
+                    {{ __("dashboard.salary_history.back_to_dashboard") }}
                 </a>
-                <span class="text-[10px] sm:text-xs text-gray-400 font-semibold uppercase tracking-wider">Riwayat Gaji</span>
+                <span class="text-[10px] sm:text-xs text-gray-400 font-semibold uppercase tracking-wider">{{ __("dashboard.salary_history.salary_history") }}</span>
             </div>
 
             <!-- Page Header Card -->
             <div class="overflow-hidden shadow-sm rounded-2xl sm:rounded-3xl p-4 sm:p-6 text-white relative" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);">
                 <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div class="space-y-1">
-                        <span class="bg-indigo-500/20 text-indigo-300 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">Riwayat Transfer</span>
-                        <h3 class="text-xl font-black tracking-tight">Riwayat Penerimaan Gaji</h3>
-                        <p class="text-xs text-slate-350 max-w-xl leading-normal">Daftar lengkap bukti transfer bank dan rincian laporan kerja harian Anda yang telah dibayarkan oleh Finance.</p>
+                        <span class="bg-indigo-500/20 text-indigo-300 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">{{ __("dashboard.salary_history.transfer_history") }}</span>
+                        <h3 class="text-xl font-black tracking-tight">{{ __("dashboard.salary_history.title") }}</h3>
+                        <p class="text-xs text-slate-350 max-w-xl leading-normal">{{ __("dashboard.salary_history.subtitle") }}</p>
                     </div>
                     <div class="w-full md:w-auto bg-white/10 backdrop-blur-md border border-white/10 rounded-xl sm:rounded-2xl px-4 py-2.5 text-xs text-indigo-200 font-bold shrink-0">
-                        Rate Anda: <span class="text-white font-black">Rp {{ number_format($partner->base_hourly_rate ?: 54000, 0, ',', '.') }}</span> / Jam
+                        {{ __("dashboard.salary_history.your_rate") }}: <span class="text-white font-black">Rp {{ number_format($partner->base_hourly_rate ?: 54000, 0, ',', '.') }}</span> / Jam
                     </div>
                 </div>
                 <!-- Premium subtle background glows -->
@@ -86,18 +86,18 @@
                                     </svg>
                                 </div>
                                 <div class="space-y-0.5">
-                                    <span class="block text-[10px] font-bold {{ $pay['has_custom_rate'] ? 'text-amber-600' : 'text-emerald-600' }} uppercase tracking-wider">Transfer Selesai</span>
+                                    <span class="block text-[10px] font-bold {{ $pay['has_custom_rate'] ? 'text-amber-600' : 'text-emerald-600' }} uppercase tracking-wider">{{ __("dashboard.salary_history.transfer_complete") }}</span>
                                     <span class="block text-sm font-black text-slate-800">{{ $pay['paid_at']->translatedFormat('d F Y - H:i') }}</span>
                                 </div>
                             </div>
 
-                            <!-- Right: Nominal, Proof button and expand indicator -->
+                            <!-- Right: {{ __("dashboard.salary_history.nominal") }}, Proof button and expand indicator -->
                             <div class="flex items-end gap-3 w-full md:w-auto justify-between md:justify-end pt-3 md:pt-0 border-t border-gray-100 md:border-0">
                                 <div class="text-left md:text-right">
-                                    <span class="block text-[9px] font-bold text-gray-455 uppercase tracking-wider">Total Gaji Diterima</span>
+                                    <span class="block text-[9px] font-bold text-gray-455 uppercase tracking-wider">{{ __("dashboard.salary_history.total_received") }}</span>
                                     <div class="flex items-center gap-2 justify-start md:justify-end">
                                         @if($pay['has_custom_rate'])
-                                            <span class="text-[9px] font-bold uppercase tracking-wider text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-200">Rate Khusus</span>
+                                            <span class="text-[9px] font-bold uppercase tracking-wider text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-200">{{ __("dashboard.salary_history.custom_rate") }}</span>
                                         @endif
                                         <span class="block text-lg font-black {{ $pay['has_custom_rate'] ? 'text-amber-600' : 'text-slate-900' }} leading-tight">Rp {{ number_format($pay['total_amount'], 0, ',', '.') }}</span>
                                     </div>
@@ -113,7 +113,7 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                             </svg>
-                                            Bukti Transfer
+                                            {{ __("dashboard.salary_history.proof_modal_title") }}
                                         </button>
                                     @endif
                                     <div class="p-1.5 text-gray-450 hover:bg-slate-50 rounded-lg transition-transform duration-200" :class="open ? 'rotate-180' : ''">
@@ -139,7 +139,7 @@
                                                 <span class="inline-flex px-2 py-1 rounded-full text-[9px] font-black uppercase border bg-emerald-50 border-emerald-150 text-emerald-800">Dibayar</span>
                                             </div>
                                             <div class="flex items-center justify-between mt-3 pt-3 border-t border-gray-100 text-xs">
-                                                <span class="text-gray-400">Durasi disetujui</span>
+                                                <span class="text-gray-400">{{ __("dashboard.salary_history.duration") }} disetujui</span>
                                                 <strong class="text-slate-800">{{ $report->approved_duration_formatted }}</strong>
                                             </div>
                                         </div>
@@ -150,8 +150,8 @@
                                         <thead>
                                             <tr class="text-gray-450 font-bold text-left uppercase tracking-wider">
                                                 <th class="pb-2">ID Laporan</th>
-                                                <th class="pb-2">Tanggal Kerja</th>
-                                                <th class="pb-2">Durasi Kerja</th>
+                                                <th class="pb-2">{{ __("dashboard.salary_history.work_date") }}</th>
+                                                <th class="pb-2">{{ __("dashboard.salary_history.duration") }} Kerja</th>
                                                 <th class="pb-2 text-right">Status Bayar</th>
                                             </tr>
                                         </thead>
@@ -181,9 +181,9 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
                         </div>
-                        <h4 class="text-sm font-bold text-slate-800">Belum Ada Riwayat Pembayaran</h4>
+                        <h4 class="text-sm font-bold text-slate-800">{{ __("dashboard.salary_history.no_payment_yet") }}</h4>
                         <p class="text-xs text-gray-450 max-w-xs mx-auto leading-relaxed">
-                            Semua laporan Anda yang telah disetujui (Approved) saat ini masih berada dalam antrean pembayaran admin.
+                            {{ __("dashboard.salary_history.no_payment_desc") }}
                         </p>
                     </div>
                 @endforelse
@@ -197,7 +197,7 @@
                     <!-- Modal Header -->
                     <div class="px-6 py-4 bg-slate-950 text-white flex justify-between items-center">
                         <div>
-                            <h3 class="text-sm font-black tracking-tight">Bukti Transfer Pembayaran</h3>
+                            <h3 class="text-sm font-black tracking-tight">{{ __("dashboard.salary_history.proof_modal_title") }} Pembayaran</h3>
                         </div>
                         <button @click="showProofModal = false" class="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -210,7 +210,7 @@
                     <div class="p-3 sm:p-6 bg-slate-50 flex items-center justify-center min-h-[240px] sm:min-h-[300px] max-h-[70vh] overflow-y-auto">
                         <template x-if="proofUrl && !imageFailed">
                             <a :href="proofUrl" target="_blank" class="block max-w-full">
-                                <img :src="proofUrl" x-on:error="imageFailed = true" class="object-contain max-h-[60vh] rounded-2xl border border-gray-250 bg-white" alt="Bukti Transfer">
+                                <img :src="proofUrl" x-on:error="imageFailed = true" class="object-contain max-h-[60vh] rounded-2xl border border-gray-250 bg-white" alt="{{ __("dashboard.salary_history.proof_modal_title") }}">
                             </a>
                         </template>
                         <template x-if="!proofUrl || imageFailed">
@@ -223,7 +223,7 @@
                     <!-- Modal Footer -->
                     <div class="px-6 py-4 border-t border-gray-100 flex justify-end">
                         <button type="button" @click="showProofModal = false" class="px-5 py-2 bg-gray-900 hover:bg-gray-800 text-white rounded-xl text-xs font-bold transition">
-                            Tutup
+                            {{ __("dashboard.salary_history.close") }}
                         </button>
                     </div>
                 </div>

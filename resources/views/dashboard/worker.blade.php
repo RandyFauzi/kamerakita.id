@@ -66,7 +66,7 @@
 
         <!-- Statistik Progres Video Section -->
         <div class="space-y-4 sm:space-y-6">
-            <span class="block text-xs font-black tracking-widest text-slate-400 uppercase font-mono">Statistik Progres Video</span>
+            <span class="block text-xs font-black tracking-widest text-slate-400 uppercase font-mono">{{ __('dashboard.worker_dashboard.progress_stats') }}</span>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 
@@ -133,30 +133,30 @@
                     $completedLaps = min(3, floor($mins / 120));
                     
                     if ($mins == 0) {
-                        $tb = "Ayo Mulai!";
-                        $tn = "Semangat kerjakan";
-                        $sub = "{{ __('dashboard.general.first_video_today') }}";
+                        $tb = __('dashboard.worker_dashboard.msg_0_tb');
+                        $tn = __('dashboard.worker_dashboard.msg_0_tn');
+                        $sub = __('dashboard.worker_dashboard.msg_0_sub');
                     } elseif ($mins < 120) {
-                        $tb = "Sedikit lagi!";
-                        $tn = "Selesaikan target";
-                        $sub = "menuju 2 jam pertama Anda.";
+                        $tb = __('dashboard.worker_dashboard.msg_120_tb');
+                        $tn = __('dashboard.worker_dashboard.msg_120_tn');
+                        $sub = __('dashboard.worker_dashboard.msg_120_sub');
                     } elseif ($mins < 240) {
-                        $tb = "Hebat!";
-                        $tn = "Anda melewati 2 jam.";
-                        $sub = "Lanjut selesaikan menuju 4 jam?";
+                        $tb = __('dashboard.worker_dashboard.msg_240_tb');
+                        $tn = __('dashboard.worker_dashboard.msg_240_tn');
+                        $sub = __('dashboard.worker_dashboard.msg_240_sub');
                     } elseif ($mins < 360) {
-                        $tb = "Luar Biasa!";
-                        $tn = "Menuju batas maksimal.";
-                        $sub = "Sedikit lagi capai 6 jam!";
+                        $tb = __('dashboard.worker_dashboard.msg_360_tb');
+                        $tn = __('dashboard.worker_dashboard.msg_360_tn');
+                        $sub = __('dashboard.worker_dashboard.msg_360_sub');
                     } else {
-                        $tb = "Misi Selesai!";
-                        $tn = "Target tercapai.";
-                        $sub = "Lebih dari 6 jam pun tetap dihitung!";
+                        $tb = __('dashboard.worker_dashboard.msg_max_tb');
+                        $tn = __('dashboard.worker_dashboard.msg_max_tn');
+                        $sub = __('dashboard.worker_dashboard.msg_max_sub');
                     }
                     
                     $percentage = min(100, round(($mins / 360) * 100));
-                    $fLeft = $hours . " {{ __('dashboard.general.hours_completed') }}";
-                    $fRight = "{{ __('dashboard.general.highest_total') }} 6 jam";
+                    $fLeft = $hours . " " . __('dashboard.worker_dashboard.hours_completed');
+                    $fRight = __('dashboard.worker_dashboard.highest_total') . " 6 jam";
                 @endphp
 
                 <mission-card 
@@ -314,8 +314,8 @@
         <!-- Recent reports list -->
         <div class="bg-white rounded-2xl sm:rounded-[32px] p-4 sm:p-6 border border-gray-150 shadow-sm">
             <div class="flex justify-between items-center gap-3 pb-4 border-b border-gray-100 mb-4">
-                <span class="block text-sm font-bold text-gray-900">Riwayat Laporan Video Terakhir</span>
-                <a href="{{ route('video-submissions.report-history') }}" class="text-xs font-bold text-indigo-600 hover:text-indigo-800">Lihat semua</a>
+                <span class="block text-sm font-bold text-gray-900">{{ __("dashboard.worker_dashboard.latest_report") }}</span>
+                <a href="{{ route('video-submissions.report-history') }}" class="text-xs font-bold text-indigo-600 hover:text-indigo-800">{{ __("dashboard.worker_dashboard.view_all") }}</a>
             </div>
             @php
                 $qcColors = [
@@ -335,7 +335,7 @@
                     <article class="rounded-xl border border-gray-150 p-4 space-y-3">
                         <div class="flex items-start justify-between gap-3">
                             <div>
-                                <span class="block text-xs text-gray-400">Tanggal kerja</span>
+                                <span class="block text-xs text-gray-400">{{ __("dashboard.worker_dashboard.col_work_date") }}</span>
                                 <strong class="block text-sm text-gray-900 mt-0.5">{{ $report->submission_date->translatedFormat('d F Y') }}</strong>
                             </div>
                             <span class="inline-flex px-2.5 py-1 rounded-full text-[10px] font-bold border {{ $qcColors[$report->qc_status] }}">
@@ -343,16 +343,16 @@
                             </span>
                         </div>
                         <div class="grid grid-cols-2 gap-3 text-xs">
-                            <div><span class="block text-gray-400">Durasi kirim</span><strong class="text-gray-800">{{ $report->submitted_duration_formatted }}</strong></div>
-                            <div><span class="block text-gray-400">Disetujui</span><strong class="text-gray-800">{{ $report->approved_duration_formatted }}</strong></div>
+                            <div><span class="block text-gray-400">{{ __("dashboard.worker_dashboard.col_submitted_duration") }}</span><strong class="text-gray-800">{{ $report->submitted_duration_formatted }}</strong></div>
+                            <div><span class="block text-gray-400">{{ __("dashboard.worker_dashboard.col_approved_duration") }}</span><strong class="text-gray-800">{{ $report->approved_duration_formatted }}</strong></div>
                         </div>
                         <div class="flex items-center justify-between pt-3 border-t border-gray-100">
-                            <span class="text-xs text-gray-400">Status pembayaran</span>
+                            <span class="text-xs text-gray-400">{{ __("dashboard.worker_dashboard.col_pay_status") }}</span>
                             <span class="inline-flex px-2.5 py-1 rounded-full text-[10px] font-bold border {{ $payColors[$report->payment_status] }}">{{ ucfirst($report->payment_status) }}</span>
                         </div>
                     </article>
                 @empty
-                    <p class="py-6 text-center text-gray-450 text-xs">Belum ada riwayat laporan video dikirim.</p>
+                    <p class="py-6 text-center text-gray-450 text-xs">{{ __("dashboard.worker_dashboard.no_report_yet") }}</p>
                 @endforelse
             </div>
 
@@ -360,11 +360,11 @@
                 <table class="min-w-full divide-y divide-gray-100 text-sm">
                     <thead>
                         <tr class="text-gray-500">
-                            <th class="py-3 text-left font-semibold">Tanggal Kerja</th>
-                            <th class="py-3 text-left font-semibold">Durasi Kirim</th>
-                            <th class="py-3 text-left font-semibold">Durasi Disetujui</th>
-                            <th class="py-3 text-left font-semibold">Status QC</th>
-                            <th class="py-3 text-left font-semibold">Status Bayar</th>
+                            <th class="py-3 text-left font-semibold">{{ __("dashboard.worker_dashboard.col_work_date") }}</th>
+                            <th class="py-3 text-left font-semibold">{{ __("dashboard.worker_dashboard.col_submitted_duration") }}</th>
+                            <th class="py-3 text-left font-semibold">{{ __("dashboard.worker_dashboard.col_approved_duration") }}</th>
+                            <th class="py-3 text-left font-semibold">{{ __("dashboard.worker_dashboard.col_qc_status") }}</th>
+                            <th class="py-3 text-left font-semibold">{{ __("dashboard.worker_dashboard.col_pay_status") }}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100 bg-white">
@@ -386,7 +386,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="py-8 text-center text-gray-450 text-xs">Belum ada riwayat laporan video dikirim.</td>
+                                <td colspan="5" class="py-8 text-center text-gray-450 text-xs">{{ __("dashboard.worker_dashboard.no_report_yet") }}</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -403,13 +403,13 @@
                     </svg>
                 </div>
                 <div>
-                    <h3 class="text-[16px] md:text-lg font-bold text-gray-900 mb-0.5">Kotak Masuk (Mailbox)</h3>
-                    <p class="text-gray-500 text-[13px] md:text-sm leading-snug">Cek pesan, pengumuman, dan pembaruan terbaru dari tim KameraKita.</p>
+                    <h3 class="text-[16px] md:text-lg font-bold text-gray-900 mb-0.5">{{ __("dashboard.mailbox.inbox") }}</h3>
+                    <p class="text-gray-500 text-[13px] md:text-sm leading-snug">{{ __("dashboard.mailbox.cta_desc") }}</p>
                 </div>
             </div>
             
             <a href="{{ route('mailbox.index') }}" class="w-full md:w-auto shrink-0 bg-indigo-600 text-white hover:bg-indigo-700 px-6 py-3 rounded-xl font-bold text-[14px] shadow-sm transition-colors text-center flex items-center justify-center gap-2 group">
-                Buka Mailbox
+                {{ __("dashboard.mailbox.open_mailbox") }}
                 <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
                 </svg>

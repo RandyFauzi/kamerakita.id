@@ -17,9 +17,9 @@
             <div class="overflow-hidden rounded-2xl bg-slate-950 p-4 text-white shadow-sm sm:rounded-3xl sm:p-6">
                 <div class="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
                     <div>
-                        <span class="text-[10px] font-black uppercase tracking-wider text-indigo-300">Laporan Kerja</span>
-                        <h3 class="mt-1 text-xl font-black tracking-tight">Riwayat Laporan Video</h3>
-                        <p class="mt-1 text-xs text-slate-300">Menampilkan seluruh laporan yang dikirim oleh akun Anda.</p>
+                        <span class="text-[10px] font-black uppercase tracking-wider text-indigo-300">{{ __("dashboard.report_history.work_report") }}</span>
+                        <h3 class="mt-1 text-xl font-black tracking-tight">{{ __("dashboard.report_history.title") }}</h3>
+                        <p class="mt-1 text-xs text-slate-300">{{ __("dashboard.report_history.subtitle") }}</p>
                     </div>
 
                     @if($partner->partner_role === 'worker')
@@ -27,7 +27,7 @@
                             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 5v14m7-7H5"/>
                             </svg>
-                            Kirim Laporan Baru
+                            {{ __("dashboard.report_history.new_report") }}
                         </a>
                     @endif
                 </div>
@@ -35,11 +35,11 @@
 
             <div class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-5">
                 <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-5">
-                    <span class="block text-[10px] font-black uppercase tracking-widest text-slate-400">Total Laporan</span>
+                    <span class="block text-[10px] font-black uppercase tracking-widest text-slate-400">{{ __("dashboard.report_history.total_reports") }}</span>
                     <strong class="mt-2 block text-2xl font-black text-slate-900">{{ number_format($summary['total_reports'], 0, ',', '.') }}</strong>
                 </div>
                 <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-5">
-                    <span class="block text-[10px] font-black uppercase tracking-widest text-slate-400">Menunggu QC</span>
+                    <span class="block text-[10px] font-black uppercase tracking-widest text-slate-400">{{ __("dashboard.report_history.pending_qc") }}</span>
                     <strong class="mt-2 block text-2xl font-black text-amber-700">{{ number_format($summary['pending_reports'], 0, ',', '.') }}</strong>
                 </div>
                 <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-5">
@@ -47,18 +47,18 @@
                     <strong class="mt-2 block text-2xl font-black text-emerald-700">{{ number_format($summary['approved_reports'], 0, ',', '.') }}</strong>
                 </div>
                 <div class="rounded-2xl border border-rose-100 bg-white p-4 shadow-sm sm:p-5">
-                    <span class="block text-[10px] font-black uppercase tracking-widest text-slate-400">Ditolak</span>
+                    <span class="block text-[10px] font-black uppercase tracking-widest text-slate-400">{{ __("dashboard.report_history.rejected") }}</span>
                     <strong class="mt-2 block text-2xl font-black text-rose-700">{{ number_format($summary['rejected_reports'], 0, ',', '.') }}</strong>
                 </div>
                 <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-5">
-                    <span class="block text-[10px] font-black uppercase tracking-widest text-slate-400">Durasi Unpaid</span>
+                    <span class="block text-[10px] font-black uppercase tracking-widest text-slate-400">{{ __("dashboard.report_history.unpaid_duration") }}</span>
                     <strong class="mt-2 block text-2xl font-black text-indigo-700">{{ $formatMinutes($summary['unpaid_minutes']) }}</strong>
                 </div>
             </div>
 
             <div class="flex flex-wrap gap-2">
                 <a href="{{ route('video-submissions.report-history', array_merge(request()->except('page'), ['status' => 'all'])) }}" class="rounded-xl px-4 py-2 text-xs font-bold uppercase transition {{ $status === 'all' ? 'bg-gray-900 text-white shadow-sm' : 'border border-gray-200 bg-white text-gray-500 hover:bg-gray-50' }}">
-                    Semua Laporan
+                    {{ __("dashboard.report_history.all_reports") }}
                 </a>
                 <a href="{{ route('video-submissions.report-history', array_merge(request()->except('page'), ['status' => 'pending'])) }}" class="rounded-xl px-4 py-2 text-xs font-bold uppercase transition {{ $status === 'pending' ? 'border border-yellow-200 bg-yellow-100 text-yellow-800 shadow-sm' : 'border border-gray-200 bg-white text-gray-500 hover:bg-gray-50' }}">
                     Pending ({{ $summary['pending_reports'] }})
@@ -78,25 +78,25 @@
                 <form action="{{ route('video-submissions.report-history') }}" method="GET" class="flex flex-col items-end gap-4 md:flex-row">
                     <input type="hidden" name="status" value="{{ $status }}">
                     <div class="w-full flex-1">
-                        <label for="search" class="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-gray-400">Cari Laporan</label>
+                        <label for="search" class="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-gray-400">{{ __("dashboard.report_history.search_report") }}</label>
                         <div class="relative">
                             <svg class="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                             </svg>
-                            <input type="text" name="search" id="search" value="{{ request('search') }}" placeholder="Cari berdasarkan ID Laporan..." class="block w-full rounded-xl border border-gray-200 py-2.5 pl-10 pr-3 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <input type="text" name="search" id="search" value="{{ request('search') }}" placeholder="{{ __("dashboard.report_history.search_placeholder") }}" class="block w-full rounded-xl border border-gray-200 py-2.5 pl-10 pr-3 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                         </div>
                     </div>
                     <div class="w-full md:w-48">
-                        <label for="start_date" class="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-gray-400">Dari Tanggal</label>
+                        <label for="start_date" class="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-gray-400">{{ __("dashboard.report_history.from_date") }}</label>
                         <input type="date" name="start_date" id="start_date" value="{{ $startDate }}" class="block w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     </div>
                     <div class="w-full md:w-48">
-                        <label for="end_date" class="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-gray-400">Sampai Tanggal</label>
+                        <label for="end_date" class="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-gray-400">{{ __("dashboard.report_history.to_date") }}</label>
                         <input type="date" name="end_date" id="end_date" value="{{ $endDate }}" class="block w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     </div>
                     <div class="flex w-full gap-2 md:w-auto">
-                        <button type="submit" class="inline-flex flex-1 items-center justify-center rounded-xl bg-gray-900 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-gray-800 md:flex-none">Filter</button>
-                        <a href="{{ route('video-submissions.report-history') }}" class="inline-flex flex-1 items-center justify-center rounded-xl border border-gray-200 bg-gray-100 px-5 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-200 md:flex-none">Reset</a>
+                        <button type="submit" class="inline-flex flex-1 items-center justify-center rounded-xl bg-gray-900 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-gray-800 md:flex-none">{{ __("dashboard.report_history.filter") }}</button>
+                        <a href="{{ route('video-submissions.report-history') }}" class="inline-flex flex-1 items-center justify-center rounded-xl border border-gray-200 bg-gray-100 px-5 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-200 md:flex-none">{{ __("dashboard.report_history.reset") }}</a>
                     </div>
                 </form>
             </div>
@@ -106,14 +106,14 @@
                     <table class="min-w-full divide-y divide-gray-100">
                         <thead class="bg-gray-50/50">
                             <tr>
-                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">ID Laporan</th>
-                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Tanggal Kerja</th>
-                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Durasi Kirim</th>
-                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Durasi Disetujui</th>
-                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Status QC</th>
-                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Status Bayar</th>
-                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Catatan Admin</th>
-                                <th class="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider text-gray-500">Aksi</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __("dashboard.report_history.id_laporan") }}</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __("dashboard.report_history.tanggal_kerja") }}</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __("dashboard.report_history.durasi_kirim") }}</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __("dashboard.report_history.durasi_disetujui") }}</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __("dashboard.report_history.status_qc") }}</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __("dashboard.report_history.status_bayar") }}</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __("dashboard.report_history.catatan_admin") }}</th>
+                                <th class="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider text-gray-500">{{ __("dashboard.report_history.aksi") }}</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100 bg-white">
@@ -158,7 +158,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="8" class="px-6 py-12 text-center text-sm font-semibold text-gray-400">Belum ada riwayat laporan yang sesuai.</td>
+                                    <td colspan="8" class="px-6 py-12 text-center text-sm font-semibold text-gray-400">{{ __("dashboard.report_history.belum_ada") }}</td>
                                 </tr>
                             @endforelse
                         </tbody>
