@@ -35,5 +35,9 @@
                 </h2>
             @endif
         </div>
+
+        <div class="flex items-center shrink-0">
+            <x-language-switcher />
+        </div>
     </div>
 </header>
