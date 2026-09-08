@@ -452,7 +452,7 @@
                                                                                         'project_name' => $report->project_name,
                                                                                         'date' => $report->submission_date->translatedFormat('d F Y'),
                                                                                         'duration' => $report->submitted_duration_formatted,
-                                                                                        'status' => $partner->approval_status === 'paid' ? '{{ __('dashboard.qc_room.status_paid') }}' : ($partner->approval_status === 'approved' ? '{{ __('dashboard.qc_room.status_approved') }}' : ($partner->approval_status === 'draft' ? '{{ __('dashboard.qc_room.status_draft') }}' : '{{ __('dashboard.qc_room.status_unreviewed') }}')),
+                                                                                        'status' => $partner->approval_status === 'paid' ? __('dashboard.qc_room.status_paid') : ($partner->approval_status === 'approved' ? __('dashboard.qc_room.status_approved') : ($partner->approval_status === 'draft' ? __('dashboard.qc_room.status_draft') : __('dashboard.qc_room.status_unreviewed'))),
                                                                                         'approved_min' => $report->approved_duration_minutes,
                                                                                         'email_img' => $report->evidence_email_image_url,
                                                                                         'quality_img' => $report->evidence_app_quality_image_url,
