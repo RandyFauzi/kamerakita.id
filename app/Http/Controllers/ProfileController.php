@@ -76,6 +76,10 @@ class ProfileController extends Controller
                 ])
                 ->all();
 
+            if (isset($validated['partner_email'])) {
+                $partnerData['email'] = $validated['partner_email'];
+            }
+
             $user->partner->update($partnerData);
         }
 

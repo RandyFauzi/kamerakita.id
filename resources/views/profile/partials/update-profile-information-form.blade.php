@@ -55,6 +55,13 @@
                     </div>
 
                     <div>
+                        <label for="partner_email" class="block text-sm font-semibold text-gray-700 mb-1">Email Aplikasi yang terdaftar</label>
+                        <input id="partner_email" name="partner_email" type="email" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" value="{{ old('partner_email', $partner->email ?? $user->email) }}">
+                        <p class="text-xs text-gray-500 mt-1">Hanya diisi jika Anda login di aplikasi rekam video menggunakan email yang berbeda.</p>
+                        <x-input-error class="mt-2" :messages="$errors->get('partner_email')" />
+                    </div>
+
+                    <div>
                         <label for="nik" class="block text-sm font-semibold text-gray-700 mb-1">NIK</label>
                         <input id="nik" name="nik" type="text" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" value="{{ old('nik', $partner->nik) }}">
                         <x-input-error class="mt-2" :messages="$errors->get('nik')" />

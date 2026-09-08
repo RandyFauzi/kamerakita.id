@@ -23,6 +23,7 @@ class ProfileUpdateRequest extends FormRequest
         if ($partner = $this->user()?->partner) {
             $rules = array_merge($rules, [
                 'full_name' => ['required', 'string', 'max:255'],
+                'partner_email' => ['nullable', 'email', 'max:255'],
                 'nik' => ['nullable', 'string', 'max:30', Rule::unique('partners', 'nik')->ignore($partner->id)],
                 'whatsapp_number' => ['required', 'string', 'max:20'],
                 'full_address' => ['nullable', 'string'],
