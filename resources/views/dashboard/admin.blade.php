@@ -470,7 +470,7 @@
                                         @endif
                                     </div>
                                 </td>
-                                <td class="py-3.5 text-gray-600">{{ $report->submission_date->translatedFormat('d F Y') }}</td>
+                                <td class="py-3.5 text-gray-600">{{ $report->submission_date ? $report->submission_date->translatedFormat('d F Y') : '-' }}</td>
                                 <td class="py-3.5 text-slate-800 font-bold">{{ $report->submitted_duration_formatted }}</td>
                                 <td class="py-3.5">
                                     @php
