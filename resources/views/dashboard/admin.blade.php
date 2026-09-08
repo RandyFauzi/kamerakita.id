@@ -450,12 +450,24 @@
                     </thead>
                     <tbody class="divide-y divide-gray-100 bg-white">
                         @forelse($latestReports as $report)
+                            @if(!($report instanceof \App\Models\VideoWorkReport))
+                                @php
+                                    \Illuminate\Support\Facades\Log::error('Dashboard Type Mismatch: Expected VideoWorkReport, got ' . get_debug_type($report));
+                                @endphp
+                                @continue
+                            @endif
                             <tr>
                                 <td class="py-3.5 font-bold text-indigo-600">{{ substr($report->id, 0, 8) }}...</td>
                                 <td class="py-3.5">
                                     <div class="flex flex-col">
-                                        <span class="font-medium text-gray-900">{{ $report->partner->full_name }}</span>
-                                        <span class="text-xs text-gray-450 font-mono">{{ $report->partner->mitra_id }}</span>
+                                        @if(!$report->partner)
+                                            @php \Illuminate\Support\Facades\Log::warning('Data integrity warning: Orphaned VideoWorkReport with no partner', ['report_id' => $report->id]); @endphp
+                                            <span class="font-medium text-red-600">Unknown Partner (Orphaned)</span>
+                                            <span class="text-xs text-gray-450 font-mono">-</span>
+                                        @else
+                                            <span class="font-medium text-gray-900">{{ $report->partner->full_name }}</span>
+                                            <span class="text-xs text-gray-450 font-mono">{{ $report->partner->mitra_id }}</span>
+                                        @endif
                                     </div>
                                 </td>
                                 <td class="py-3.5 text-gray-600">{{ $report->submission_date->translatedFormat('d F Y') }}</td>
@@ -468,9 +480,14 @@
                                             'approved' => 'bg-emerald-50 text-emerald-700 border-emerald-100',
                                             'rejected' => 'bg-rose-50 text-rose-700 border-rose-100',
                                         ];
+                                        $qcColor = $qcColors[$report->qc_status] ?? null;
+                                        if (!$qcColor) {
+                                            \Illuminate\Support\Facades\Log::warning('Unexpected qc_status enum value', ['report_id' => $report->id, 'status' => $report->qc_status]);
+                                            $qcColor = 'bg-gray-50 text-gray-600 border-gray-200';
+                                        }
                                     @endphp
-                                    <span class="inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold border {{ $qcColors[$report->qc_status] }}">
-                                        {{ ucfirst($report->qc_status) }}
+                                    <span class="inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold border {{ $qcColor }}">
+                                        {{ ucfirst($report->qc_status ?? 'Unknown') }}
                                     </span>
                                 </td>
                                 <td class="py-3.5">
@@ -479,9 +496,14 @@
                                             'unpaid' => 'bg-gray-50 text-gray-600 border-gray-150',
                                             'paid' => 'bg-emerald-50 text-emerald-700 border-emerald-100',
                                         ];
+                                        $payColor = $payColors[$report->payment_status] ?? null;
+                                        if (!$payColor) {
+                                            \Illuminate\Support\Facades\Log::warning('Unexpected payment_status enum value', ['report_id' => $report->id, 'status' => $report->payment_status]);
+                                            $payColor = 'bg-gray-50 text-gray-600 border-gray-200';
+                                        }
                                     @endphp
-                                    <span class="inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold border {{ $payColors[$report->payment_status] }}">
-                                        {{ ucfirst($report->payment_status) }}
+                                    <span class="inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold border {{ $payColor }}">
+                                        {{ ucfirst($report->payment_status ?? 'Unknown') }}
                                     </span>
                                 </td>
                             </tr>
