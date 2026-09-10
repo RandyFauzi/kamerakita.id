@@ -1,4 +1,7 @@
 <!-- Mobile Sidebar Overlay Backdrop -->
+@php
+    $partner = \App\Models\Partner::where('user_id', Auth::id())->first();
+@endphp
 <div class="fixed inset-0 bg-slate-950/40 backdrop-blur-xs z-30 md:hidden transition-opacity duration-300 opacity-0 pointer-events-none" id="sidebar-overlay" style="z-index: 30" onclick="
     document.getElementById('sidebar').classList.add('-translate-x-full');
     this.classList.add('opacity-0', 'pointer-events-none');
