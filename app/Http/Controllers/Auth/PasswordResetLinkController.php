@@ -30,16 +30,29 @@ class PasswordResetLinkController extends Controller
             'email' => ['required', 'email'],
         ]);
 
-        // We will send the password reset link to this user. Once we have attempted
-        // to send the link, we will examine the response then see the message we
-        // need to show to the user. Finally, we'll send out a proper response.
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
+        $email = $request->email;
+        $user = \App\Models\User::where('email', $email)->first();
 
-        return $status == Password::RESET_LINK_SENT
-                    ? back()->with('status', __($status))
-                    : back()->withInput($request->only('email'))
-                        ->withErrors(['email' => __($status)]);
+        // Check if there's already a pending request to prevent spam
+        $recentRequest = \App\Models\PasswordRecoveryRequest::where('identifier', $email)
+            ->where('status', 'pending')
+            ->where('created_at', '>=', now()->subMinutes(30))
+            ->first();
+
+        if (!$recentRequest) {
+            \App\Models\PasswordRecoveryRequest::create([
+                'user_id' => $user?->id,
+                'identifier' => $email,
+                'status' => 'pending',
+                'expires_at' => now()->addHours(24),
+                'request_ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
+
+            // Optional: send notification to admin here
+        }
+
+        // Always return the exact same generic response to prevent enumeration
+        return back()->with('status', __('Jika akun tersebut terdaftar, kami akan memproses permintaan pemulihan akun Anda segera.'));
     }
 }

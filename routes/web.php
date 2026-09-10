@@ -72,10 +72,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('admin.event');
 
     // Rekruter Management Routes
-    Route::get('/rekruter', [\App\Http\Controllers\RekruterController::class, 'index'])
+    Route::delete('/admin/users/{user}', [ManageAdminUsersController::class, 'destroy'])
+        ->middleware('role:superadmin')
+        ->name('admin-users.destroy');
+
+    // Admin Password Recovery Management
+    Route::get('/admin/password-recoveries', [\App\Http\Controllers\Admin\PasswordRecoveryController::class, 'index'])
         ->middleware('role:superadmin,admin')
-        ->name('rekruter.index');
-    Route::get('/rekruter/{rekruter}', [\App\Http\Controllers\RekruterController::class, 'show'])
+        ->name('admin.password-recoveries.index');
+    Route::post('/admin/password-recoveries/{recoveryRequest}/approve', [\App\Http\Controllers\Admin\PasswordRecoveryController::class, 'approve'])
+        ->middleware('role:superadmin,admin')
+        ->name('admin.password-recoveries.approve');
+    Route::post('/admin/password-recoveries/{recoveryRequest}/reject', [\App\Http\Controllers\Admin\PasswordRecoveryController::class, 'reject'])
+        ->middleware('role:superadmin,admin')
+        ->name('admin.password-recoveries.reject');
+    Route::post('/admin/password-recoveries/{recoveryRequest}/block', [\App\Http\Controllers\Admin\PasswordRecoveryController::class, 'block'])
+        ->middleware('role:superadmin,admin')
+        ->name('admin.password-recoveries.block');
+
+    Route::post('/leaderboard/reset', [\App\Http\Controllers\LeaderboardController::class, 'reset'])
         ->middleware('role:superadmin,admin')
         ->name('rekruter.show');
     Route::patch('/rekruter/commission/{commission}/pay', [\App\Http\Controllers\RekruterController::class, 'markCommissionPaid'])

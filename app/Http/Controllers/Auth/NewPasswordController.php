@@ -37,27 +37,37 @@ class NewPasswordController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        // Here we will attempt to reset the user's password. If it is successful we
-        // will update the password on an actual user model and persist it to the
-        // database. Otherwise we will parse the error and return the response.
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function (User $user) use ($request) {
-                $user->forceFill([
-                    'password' => Hash::make($request->password),
-                    'remember_token' => Str::random(60),
-                ])->save();
+        $user = User::where('email', $request->email)->first();
+        if (!$user) {
+            return back()->withErrors(['email' => __('We can\'t find a user with that e-mail address.')]);
+        }
 
-                event(new PasswordReset($user));
-            }
-        );
+        // Find a valid token
+        $validTokenRecord = \App\Models\PasswordRecoveryToken::where('user_id', $user->id)
+            ->where('used_at', null)
+            ->where('expires_at', '>', now())
+            ->get()
+            ->first(function ($record) use ($request) {
+                return Hash::check($request->token, $record->token_hash);
+            });
 
-        // If the password was successfully reset, we will redirect the user back to
-        // the application's home authenticated view. If there is an error we can
-        // redirect them back to where they came from with their error message.
-        return $status == Password::PASSWORD_RESET
-                    ? redirect()->route('login')->with('status', __($status))
-                    : back()->withInput($request->only('email'))
-                        ->withErrors(['email' => __($status)]);
+        if (!$validTokenRecord) {
+            return back()->withErrors(['email' => __('This password reset token is invalid or has expired.')]);
+        }
+
+        // Reset the password
+        $user->forceFill([
+            'password' => Hash::make($request->password),
+            'remember_token' => Str::random(60),
+        ])->save();
+
+        // Invalidate token
+        $validTokenRecord->update([
+            'used_at' => now()
+        ]);
+
+        event(new PasswordReset($user));
+
+        return redirect()->route('login')->with('status', __('Your password has been reset!'));
     }
 }
