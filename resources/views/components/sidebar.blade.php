@@ -96,7 +96,10 @@
 
             <!-- GROUP 2: ADMIN OPERASIONAL -->
             @if(Auth::user()->canAccessQcRoom() || in_array(Auth::user()->role ?? '', ['superadmin', 'admin']))
-            <details class="group border-t border-gray-100 pt-3" open>
+            @php
+                $isAdminActive = request()->routeIs('video-submissions.*', 'payments.*', 'payroll.*', 'invoices.*', 'partners.*', 'admin.onboardings.*', 'admin.password-recoveries.*');
+            @endphp
+            <details name="sidebar-menu" class="group border-t border-gray-100 pt-3" {{ $isAdminActive ? 'open' : '' }}>
                 <summary class="flex items-center justify-between px-3 py-2 cursor-pointer rounded-xl text-[10px] font-bold text-gray-400 uppercase tracking-wider hover:bg-gray-50 transition-colors">
                     <span>Modul Admin</span>
                     <svg class="w-4 h-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -152,7 +155,10 @@
 
             <!-- GROUP 3: VENDOR / MITRA -->
             @if($partner && $partner->partner_role === 'mitra')
-            <details class="group border-t border-gray-100 pt-3" open>
+            @php
+                $isVendorActive = request()->routeIs('vendor.workers.*', 'vendor.reports.*', 'vendor.payments.*');
+            @endphp
+            <details name="sidebar-menu" class="group border-t border-gray-100 pt-3" {{ $isVendorActive ? 'open' : '' }}>
                 <summary class="flex items-center justify-between px-3 py-2 cursor-pointer rounded-xl text-[10px] font-bold text-gray-400 uppercase tracking-wider hover:bg-gray-50 transition-colors">
                     <span>Vendor Operasional</span>
                     <svg class="w-4 h-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -182,7 +188,10 @@
 
             <!-- GROUP 4: SISTEM (Superadmin) -->
             @if(Auth::user()->role === 'superadmin')
-            <details class="group border-t border-gray-100 pt-3" open>
+            @php
+                $isSistemActive = request()->routeIs('activation-codes.*', 'admin-users.*');
+            @endphp
+            <details name="sidebar-menu" class="group border-t border-gray-100 pt-3" {{ $isSistemActive ? 'open' : '' }}>
                 <summary class="flex items-center justify-between px-3 py-2 cursor-pointer rounded-xl text-[10px] font-bold text-gray-400 uppercase tracking-wider hover:bg-gray-50 transition-colors">
                     <span>Sistem Akses</span>
                     <svg class="w-4 h-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -259,3 +268,21 @@
         </div>
     </div>
 </div>
+
+<!-- Fallback for older browsers that don't support <details name=""> -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const details = document.querySelectorAll('details[name="sidebar-menu"]');
+        details.forEach((targetDetail) => {
+            targetDetail.addEventListener('toggle', () => {
+                if (targetDetail.open) {
+                    details.forEach((detail) => {
+                        if (detail !== targetDetail) {
+                            detail.removeAttribute('open');
+                        }
+                    });
+                }
+            });
+        });
+    });
+</script>
