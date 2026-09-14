@@ -1,6 +1,6 @@
 @php
     $partner = \App\Models\Partner::where('user_id', Auth::id())->first();
-    $isUser = $partner && in_array($partner->partner_role, ['worker', 'mitra'], true);
+    $isUser = $partner && in_array($partner->partner_role, ['worker', 'mitra', 'rekruter'], true);
 @endphp
 
 @if($isUser)
