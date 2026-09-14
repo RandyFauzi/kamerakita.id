@@ -142,7 +142,7 @@ class EditRejectedVideoWorkReportController extends Controller
     {
         $partner = Partner::query()
             ->where('user_id', Auth::id())
-            ->where('partner_role', 'worker')
+            ->whereIn('partner_role', ['worker', 'mitra'])
             ->firstOrFail();
 
         abort_unless($report->partner_id === $partner->id, 403);

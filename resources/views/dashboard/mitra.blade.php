@@ -19,8 +19,11 @@
                         </div>
                     </div>
                 </div>
-                <div class="flex items-center gap-3">
-                    <span class="bg-emerald-50 text-emerald-800 text-[10px] font-black px-3 py-1.5 rounded-full uppercase border border-emerald-100">{{ __('dashboard.general.team_verified') }}</span>
+                <div class="flex items-center gap-3 w-full md:w-auto mt-4 md:mt-0">
+                    <span class="hidden md:inline-block bg-emerald-50 text-emerald-800 text-[10px] font-black px-3 py-1.5 rounded-full uppercase border border-emerald-100">{{ __('dashboard.general.team_verified') }}</span>
+                    <a href="{{ route('video-submissions.submit-report.create') }}" class="w-full md:w-auto min-h-9 inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-lg text-xs font-bold text-white shadow-md shadow-blue-500/30 transition-all duration-300">
+                        {{ __('dashboard.general.submit_new_report') }}
+                    </a>
                     <button type="button" aria-label="{{ __('dashboard.general.close_notification') }}" @click="showBanner = false" class="absolute top-4 right-4 w-9 h-9 inline-flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-lg">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -90,9 +93,23 @@
                     </div>
                 </div>
 
-                <span class="block text-center text-xs font-bold text-gray-400 py-3 bg-gray-50 border border-gray-150 rounded-2xl font-mono">
-                    Pending: Rp{{ number_format($metrics['personal_pending_earnings'], 0, ',', '.') }}
-                </span>
+                <div class="space-y-2 mt-4">
+                    <span class="block text-center text-xs font-bold text-gray-400 py-2 bg-gray-50 border border-gray-150 rounded-xl font-mono">
+                        Pending: Rp{{ number_format($metrics['personal_pending_earnings'], 0, ',', '.') }}
+                    </span>
+                    <a href="{{ route('video-submissions.submit-report.create') }}" class="w-full inline-flex items-center justify-center px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-xl text-xs font-bold text-white shadow-md transition-all duration-300">
+                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                        </svg>
+                        {{ __('dashboard.general.submit_new_report') }}
+                    </a>
+                    <a href="{{ route('video-submissions.report-history') }}" class="w-full inline-flex items-center justify-center px-4 py-2.5 bg-white border border-gray-200 hover:bg-gray-50 rounded-xl text-xs font-bold text-indigo-600 shadow-sm transition-all duration-300">
+                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                        </svg>
+                        Riwayat QC Pribadi
+                    </a>
+                </div>
             </div>
         </div>
 
