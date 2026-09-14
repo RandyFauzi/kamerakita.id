@@ -13,7 +13,7 @@ use Throwable;
 
 class ExportPayrollDataController extends Controller
 {
-    private const DEFAULT_HOURLY_RATE_IDR = 54000;
+    private const DEFAULT_HOURLY_RATE_IDR = 60000;
 
     /**
      * Export unpaid approved video work reports into bank-ready Bulk Transfer CSV format.

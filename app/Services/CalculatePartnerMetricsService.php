@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\Http;
 
 class CalculatePartnerMetricsService
 {
-    private const DEFAULT_WORKER_HOURLY_RATE_IDR = 50000;
-    private const MITRA_COMMISSION_HOURLY_RATE_IDR = 9000;
-    private const DEFAULT_MITRA_OWN_HOURLY_RATE_IDR = 63000;
+    private const DEFAULT_WORKER_HOURLY_RATE_IDR = 60000;
+    private const MITRA_COMMISSION_HOURLY_RATE_IDR = 10000;
+    private const DEFAULT_MITRA_OWN_HOURLY_RATE_IDR = 60000;
 
     /**
      * Get dynamic metrics for a single Worker partner.

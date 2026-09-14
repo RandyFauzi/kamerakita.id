@@ -93,7 +93,7 @@ class RegisteredUserController extends Controller
             'has_headstrap' => false,
             'status' => 'active',
             'group_name' => $groupName,
-            'base_hourly_rate' => 50000, // default rate in IDR
+            'base_hourly_rate' => $recruiterPartner ? 50000 : 60000,
             'user_id' => $user->id,
             // Link to recruiter if a valid referral code was provided
             'recruiter_partner_id' => $recruiterPartner ? $recruiterPartner->id : null,

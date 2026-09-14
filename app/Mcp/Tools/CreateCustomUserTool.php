@@ -79,7 +79,7 @@ class CreateCustomUserTool extends BaseTool
             'has_headstrap' => false,
             'status' => 'active',
             'group_name' => 'Group A',
-            'base_hourly_rate' => 50000,
+            'base_hourly_rate' => 60000,
             'user_id' => $user->id,
         ]);
 

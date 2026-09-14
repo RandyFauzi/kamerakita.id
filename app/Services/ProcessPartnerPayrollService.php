@@ -23,7 +23,7 @@ class ProcessPartnerPayrollService
 
             $totalApprovedMinutes = $unpaidReports->sum('approved_duration_minutes');
             $totalHours = $totalApprovedMinutes / 60;
-            $hourlyRate = $partner->base_hourly_rate;
+            $hourlyRate = $partner->base_hourly_rate ?: 60000;
             $totalEarnings = round($totalHours * $hourlyRate);
 
             // Update all to paid

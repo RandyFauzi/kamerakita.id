@@ -410,8 +410,8 @@ class VerifyVideoWorkReportController extends Controller
         ]);
 
         $partner = $report->partner;
-        $rateApplied = $validated['custom_rate'] ?? ($partner ? $partner->base_hourly_rate : 50000);
-        $rateApplied = $rateApplied ?: 50000;
+        $rateApplied = $validated['custom_rate'] ?? ($partner ? $partner->base_hourly_rate : 60000);
+        $rateApplied = $rateApplied ?: 60000;
 
         $report->update([
             'qc_status' => 'approved',
@@ -451,8 +451,8 @@ class VerifyVideoWorkReportController extends Controller
 
         $partnerId = $reports->first()->partner_id;
         $partner = Partner::find($partnerId);
-        $rateApplied = $validated['custom_rate'] ?? ($partner ? $partner->base_hourly_rate : 50000);
-        $rateApplied = $rateApplied ?: 50000;
+        $rateApplied = $validated['custom_rate'] ?? ($partner ? $partner->base_hourly_rate : 60000);
+        $rateApplied = $rateApplied ?: 60000;
 
         $totalReported = $reports->sum('submitted_duration_minutes');
 
