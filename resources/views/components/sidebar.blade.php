@@ -1,15 +1,16 @@
 <!-- Mobile Sidebar Overlay Backdrop -->
 @php
     $partner = \App\Models\Partner::where('user_id', Auth::id())->first();
-@endphp
-<div class="fixed inset-0 bg-slate-950/40 backdrop-blur-xs z-30 md:hidden transition-opacity duration-300 opacity-0 pointer-events-none" id="sidebar-overlay" style="z-index: 30" onclick="
+@endphp<!-- Sidebar Overlay -->
+<div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 transition-opacity duration-300 opacity-0 pointer-events-none md:hidden" id="sidebar-overlay" onclick="
     document.getElementById('sidebar').classList.add('-translate-x-full');
     this.classList.add('opacity-0', 'pointer-events-none');
     this.classList.remove('opacity-100', 'pointer-events-auto');
     document.body.classList.remove('overflow-hidden');
 "></div>
 
-<div class="fixed inset-y-0 left-0 z-40 w-64 max-w-[85vw] bg-white border-r border-gray-200/60 flex flex-col justify-between transition-transform duration-300 transform md:translate-x-0 -translate-x-full shadow-xl md:shadow-none" id="sidebar" style="z-index: 40; width: min(16rem, 85vw)">
+<!-- Sidebar -->
+<div class="fixed inset-y-0 left-0 z-50 w-64 max-w-[85vw] bg-white border-r border-gray-200/60 flex flex-col justify-between transition-transform duration-300 transform md:translate-x-0 -translate-x-full shadow-xl md:shadow-none" id="sidebar" style="z-index: 50; width: min(16rem, 85vw)">
     <div class="flex flex-col h-full overflow-hidden">
         <!-- Logo Header -->
         <div class="h-16 flex items-center justify-between px-5 border-b border-gray-100 shrink-0">
