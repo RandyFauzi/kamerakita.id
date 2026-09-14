@@ -137,6 +137,25 @@
                                                                             <label class="block text-sm font-medium text-gray-700">Nomor WhatsApp</label>
                                                                             <input type="text" name="whatsapp_number" value="{{ $data['worker']->whatsapp_number }}" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                                                                         </div>
+                                                                        
+                                                                        <hr class="my-4 border-gray-200">
+                                                                        <h4 class="text-sm font-bold text-gray-900 mb-2">Informasi Pembayaran (Opsional)</h4>
+                                                                        
+                                                                        <div>
+                                                                            <label class="block text-sm font-medium text-gray-700">Nama Bank / e-Wallet</label>
+                                                                            <input type="text" name="bank_name" value="{{ $data['worker']->bank_name }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Contoh: BCA, Mandiri, DANA, dll">
+                                                                        </div>
+                                                                        <div>
+                                                                            <label class="block text-sm font-medium text-gray-700">Nomor Rekening</label>
+                                                                            <input type="text" name="bank_account_number" value="{{ $data['worker']->bank_account_number }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                                                        </div>
+                                                                        <div>
+                                                                            <label class="block text-sm font-medium text-gray-700">Atas Nama Rekening</label>
+                                                                            <input type="text" name="bank_account_owner" value="{{ $data['worker']->bank_account_owner }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                                                        </div>
+
+                                                                        <hr class="my-4 border-gray-200">
+                                                                        
                                                                         <div>
                                                                             <label class="block text-sm font-medium text-gray-700">Password Baru (Opsional)</label>
                                                                             <input type="password" name="password" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Kosongkan jika tidak ingin mengubah password">

@@ -159,6 +159,9 @@ class VendorController extends Controller
         $rules = [
             'name' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s]*$/'],
             'whatsapp_number' => ['required', 'string', 'max:20'],
+            'bank_name' => ['nullable', 'string', 'max:100'],
+            'bank_account_number' => ['nullable', 'string', 'max:50'],
+            'bank_account_owner' => ['nullable', 'string', 'max:100'],
         ];
 
         if ($request->filled('password')) {
@@ -177,6 +180,17 @@ class VendorController extends Controller
         // Update Partner
         $workerPartner->full_name = $request->name;
         $workerPartner->whatsapp_number = $request->whatsapp_number;
+        
+        if ($request->has('bank_name')) {
+            $workerPartner->bank_name = $request->bank_name;
+        }
+        if ($request->has('bank_account_number')) {
+            $workerPartner->bank_account_number = $request->bank_account_number;
+        }
+        if ($request->has('bank_account_owner')) {
+            $workerPartner->bank_account_owner = $request->bank_account_owner;
+        }
+        
         $workerPartner->save();
 
         return redirect()->back()->with('success', 'Data worker ' . $workerUser->name . ' berhasil diperbarui!');
