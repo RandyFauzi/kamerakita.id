@@ -248,6 +248,17 @@ class ManagePartnerDemographicsController extends Controller
         $validated['account_number'] = $validated['bank_account_number'] ?? null;
         $validated['account_owner_name'] = $validated['bank_account_owner'] ?? null;
 
+        // Preventive Validation: Don't allow demoting to Worker if they still have team members
+        if ($partner->partner_role !== 'worker' && $validated['partner_role'] === 'worker') {
+            $childWorkersCount = \App\Models\Partner::where('mitra_parent_id', $partner->id)
+                ->orWhere('recruiter_partner_id', $partner->id)
+                ->count();
+
+            if ($childWorkersCount > 0) {
+                return redirect()->back()->withInput()->with('error', "Tidak bisa mengubah status! Mitra/Rekruter ini masih memiliki {$childWorkersCount} Worker di bawahnya. Kosongkan/pindahkan dulu Workernya sebelum mengubah status.");
+            }
+        }
+
         DB::transaction(function () use ($partner, $validated) {
             $password = $validated['password'] ?? null;
             unset($validated['password']);
