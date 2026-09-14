@@ -140,7 +140,7 @@ class CalculatePartnerMetricsService
     {
         // Workers recruited via referral code
         $recruitedWorkers = \App\Models\Partner::where('recruiter_partner_id', $rekruter->id)
-            ->with(['videoWorkReports' => fn($q) => $q->where('qc_status', 'approved')])
+            ->with(['videoWorkReports'])
             ->get();
 
         // Commission records from recruiter_commissions table
@@ -153,12 +153,16 @@ class CalculatePartnerMetricsService
 
         $workersData = [];
         foreach ($recruitedWorkers as $worker) {
-            $approvedMinutes = $worker->videoWorkReports->sum('approved_duration_minutes');
+            $reportedMinutes = $worker->videoWorkReports->sum('duration_minutes');
+            $approvedMinutes = $worker->videoWorkReports->where('qc_status', 'approved')->sum('approved_duration_minutes');
+            
+            $reportedHours = round($reportedMinutes / 60, 1);
             $approvedHours = round($approvedMinutes / 60, 1);
             $workerCommission = $commissions->firstWhere('worker_partner_id', $worker->id);
 
             $workersData[] = [
                 'worker' => $worker,
+                'reported_hours' => $reportedHours,
                 'approved_hours' => $approvedHours,
                 'milestone_reached' => $workerCommission !== null,
                 'milestone_status' => $workerCommission?->status,

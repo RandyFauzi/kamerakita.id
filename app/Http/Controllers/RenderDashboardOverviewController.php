@@ -47,6 +47,12 @@ class RenderDashboardOverviewController extends Controller
             }
 
             if ($partner->partner_role === 'rekruter') {
+                // Auto-generate referral code if Rekruter doesn't have one
+                if (empty($partner->referral_code)) {
+                    $partner->referral_code = 'REF-' . strtoupper(str_replace('-', '', $partner->mitra_id ?? 'RKR')) . '-' . strtoupper(\Illuminate\Support\Str::random(4));
+                    $partner->save();
+                }
+
                 $metrics = $this->metricsService->getRekruterMetrics($partner);
 
                 return view('dashboard.rekruter', compact('partner', 'metrics'));

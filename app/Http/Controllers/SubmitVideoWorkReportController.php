@@ -19,8 +19,8 @@ class SubmitVideoWorkReportController extends Controller
     {
         $partner = Partner::where('user_id', Auth::id())->first();
 
-        if (! $partner || !in_array($partner->partner_role, ['worker', 'mitra'])) {
-            return redirect()->route('dashboard')->with('error', 'Hanya akun dengan profil Worker atau Mitra yang dapat mengakses halaman ini.');
+        if (! $partner || !in_array($partner->partner_role, ['worker', 'mitra', 'rekruter'])) {
+            return redirect()->route('dashboard')->with('error', 'Hanya akun dengan profil Kontributor, Mitra, atau Rekruter yang dapat mengakses halaman ini.');
         }
 
         return view('video-submissions.submit-report', compact('partner'));
@@ -30,7 +30,7 @@ class SubmitVideoWorkReportController extends Controller
     {
         $partner = Partner::where('user_id', Auth::id())->first();
 
-        if (! $partner || !in_array($partner->partner_role, ['worker', 'mitra'])) {
+        if (! $partner || !in_array($partner->partner_role, ['worker', 'mitra', 'rekruter'])) {
             return redirect()->route('dashboard')->with('error', 'Akses ditolak.');
         }
 
