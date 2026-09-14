@@ -15,7 +15,7 @@ class ListPartnerReportHistoryController extends Controller
             ->where('user_id', Auth::id())
             ->firstOrFail();
 
-        abort_unless(in_array($partner->partner_role, ['worker', 'mitra', 'rekruter'], true), 403);
+        abort_unless(in_array(strtolower(trim($partner->partner_role)), ['worker', 'mitra', 'rekruter']), 403);
 
         $baseQuery = VideoWorkReport::query()
             ->with(['partner', 'verifier'])
