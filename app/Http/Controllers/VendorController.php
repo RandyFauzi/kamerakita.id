@@ -75,6 +75,12 @@ class VendorController extends Controller
             abort(403, 'Unauthorized access.');
         }
 
+        // Auto-generate referral code if Mitra doesn't have one
+        if (empty($partner->referral_code)) {
+            $partner->referral_code = 'REF-' . strtoupper(str_replace('-', '', $partner->mitra_id)) . '-' . strtoupper(\Illuminate\Support\Str::random(4));
+            $partner->save();
+        }
+
         $metrics = $metricsService->getMitraMetrics($partner);
 
         return view('vendor.workers', compact('metrics', 'partner'));

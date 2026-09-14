@@ -22,15 +22,44 @@
                 </div>
             @endif
             <div class="bg-white rounded-2xl sm:rounded-[32px] p-4 sm:p-6 border border-gray-150 shadow-sm" x-data="{ showAddWorkerModal: {{ $errors->any() ? 'true' : 'false' }} }">
-                <div class="flex justify-between items-center pb-4 border-b border-gray-100 mb-4">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 pb-4 border-b border-gray-100 mb-4">
                     <div>
                         <span class="block text-sm font-bold text-gray-900">Manajemen Anggota Tim</span>
                         <span class="text-xs text-gray-400">Daftar worker di bawah naungan Anda</span>
                     </div>
-                    <button @click="showAddWorkerModal = true" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-colors shadow-sm flex items-center gap-2">
+                    <button @click="showAddWorkerModal = true" class="w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                        Tambah Anggota
+                        Tambah Anggota Manual
                     </button>
+                </div>
+
+                <!-- Referral Info Box -->
+                <div class="mb-6 bg-gradient-to-br from-indigo-50/80 to-blue-50/80 border border-indigo-100 rounded-xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div>
+                        <h4 class="font-bold text-indigo-900 text-sm">Undang Worker secara Mandiri</h4>
+                        <p class="text-xs text-indigo-700 mt-1">Bagikan link ini agar worker bisa mendaftar sendiri dan <b>langsung masuk</b> ke tim Anda.</p>
+                    </div>
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
+                        <input type="text" readonly value="{{ route('register', ['ref' => $partner->referral_code]) }}" id="refLink" class="text-xs border-indigo-200 bg-white shadow-sm rounded-lg px-3 py-2 w-full sm:w-64 text-gray-600 focus:ring-0 focus:border-indigo-200" title="Link Pendaftaran Worker">
+                        <button type="button" onclick="
+                            const copyText = document.getElementById('refLink');
+                            copyText.select();
+                            copyText.setSelectionRange(0, 99999);
+                            navigator.clipboard.writeText(copyText.value);
+                            const btn = this;
+                            const originalText = btn.innerText;
+                            btn.innerText = 'Tersalin!';
+                            btn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
+                            btn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+                            setTimeout(() => { 
+                                btn.innerText = originalText; 
+                                btn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
+                                btn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+                            }, 2000);
+                        " class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2.5 rounded-lg transition-colors shadow-sm whitespace-nowrap">
+                            Salin Link
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Modal Tambah Worker -->
@@ -84,35 +113,35 @@
                     </div>
                 </div>
 
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-100 text-sm">
+                <div class="overflow-x-auto pb-4">
+                    <table class="w-full text-sm min-w-[700px]">
                         <thead>
                             <tr class="text-gray-500">
-                                <th class="py-3 text-left font-semibold">ID Worker</th>
-                                <th class="py-3 text-left font-semibold">Nama Worker</th>
-                                <th class="py-3 text-left font-semibold">All Time</th>
-                                <th class="py-3 text-left font-semibold">Paid</th>
-                                <th class="py-3 text-left font-semibold">Pending</th>
-                                <th class="py-3 text-left font-semibold">Estimasi Pending Gaji</th>
-                                <th class="py-3 text-left font-semibold">WhatsApp</th>
-                                <th class="py-3 text-center font-semibold">Aksi</th>
+                                <th class="py-3 text-left font-semibold whitespace-nowrap px-2">ID Worker</th>
+                                <th class="py-3 text-left font-semibold whitespace-nowrap px-2">Nama Worker</th>
+                                <th class="py-3 text-left font-semibold whitespace-nowrap px-2">All Time</th>
+                                <th class="py-3 text-left font-semibold whitespace-nowrap px-2">Paid</th>
+                                <th class="py-3 text-left font-semibold whitespace-nowrap px-2">Pending</th>
+                                <th class="py-3 text-left font-semibold whitespace-nowrap px-2">Estimasi Pending Gaji</th>
+                                <th class="py-3 text-left font-semibold whitespace-nowrap px-2">WhatsApp</th>
+                                <th class="py-3 text-center font-semibold whitespace-nowrap px-2">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100 bg-white">
                             @forelse($metrics['workers_data'] as $data)
                                 <tr x-data="{ showEditModal: false }">
-                                    <td class="py-3.5 font-bold text-indigo-650">{{ $data['worker']->mitra_id }}</td>
-                                    <td class="py-3.5 font-medium text-gray-900">{{ $data['worker']->full_name }}</td>
-                                    <td class="py-3.5 text-gray-600">{{ $data['metrics']['all_time_hours_formatted'] }}</td>
-                                    <td class="py-3.5 text-emerald-800">{{ $data['metrics']['paid_hours_formatted'] }}</td>
-                                    <td class="py-3.5 text-amber-800 font-bold">{{ $data['metrics']['pending_hours_formatted'] }}</td>
-                                    <td class="py-3.5 font-extrabold text-slate-800">Rp{{ number_format($data['metrics']['pending_earnings'], 0, ',', '.') }}</td>
-                                    <td class="py-3.5 text-indigo-600 font-medium">
+                                    <td class="py-3.5 px-2 font-bold text-indigo-650 whitespace-nowrap">{{ $data['worker']->mitra_id }}</td>
+                                    <td class="py-3.5 px-2 font-medium text-gray-900 whitespace-nowrap">{{ $data['worker']->full_name }}</td>
+                                    <td class="py-3.5 px-2 text-gray-600 whitespace-nowrap">{{ $data['metrics']['all_time_hours_formatted'] }}</td>
+                                    <td class="py-3.5 px-2 text-emerald-800 whitespace-nowrap">{{ $data['metrics']['paid_hours_formatted'] }}</td>
+                                    <td class="py-3.5 px-2 text-amber-800 font-bold whitespace-nowrap">{{ $data['metrics']['pending_hours_formatted'] }}</td>
+                                    <td class="py-3.5 px-2 font-extrabold text-slate-800 whitespace-nowrap">Rp{{ number_format($data['metrics']['pending_earnings'], 0, ',', '.') }}</td>
+                                    <td class="py-3.5 px-2 text-indigo-600 font-medium whitespace-nowrap">
                                         <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $data['worker']->whatsapp_number) }}" target="_blank" class="hover:underline">
                                             {{ $data['worker']->whatsapp_number }}
                                         </a>
                                     </td>
-                                    <td class="py-3.5 text-center">
+                                    <td class="py-3.5 px-2 text-center whitespace-nowrap">
                                         <button @click="showEditModal = true" class="text-blue-600 hover:text-blue-800 text-sm font-medium">Edit</button>
 
                                         <!-- Edit Modal -->
