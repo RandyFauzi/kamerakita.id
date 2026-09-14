@@ -1,6 +1,6 @@
 @php
     $partner = \App\Models\Partner::where('user_id', Auth::id())->first();
-    $isUser = $partner && in_array($partner->partner_role, ['worker', 'mitra'], true);
+    $isUser = $partner && in_array(strtolower(trim($partner->partner_role)), ['worker', 'mitra', 'rekruter']);
 @endphp
 <header class="min-h-16 flex items-start sm:items-center px-4 py-3 sm:px-6 lg:px-8 sticky top-0 z-20 bg-[#f8f8f6]/95 backdrop-blur-md border-b border-gray-200/70" style="z-index: 20">
     <div class="flex items-start sm:items-center gap-3 w-full min-w-0">

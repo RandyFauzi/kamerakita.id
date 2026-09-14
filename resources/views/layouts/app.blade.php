@@ -36,7 +36,7 @@
                 <!-- Main Content Slot -->
                 @php
                     $partner = \App\Models\Partner::where('user_id', Auth::id())->first();
-                    $isUser = $partner && in_array($partner->partner_role, ['worker', 'mitra'], true);
+                    $isUser = $partner && in_array(strtolower(trim($partner->partner_role)), ['worker', 'mitra', 'rekruter']);
                 @endphp
                 <main class="flex-1 min-w-0 px-4 pt-3 sm:p-6 {{ $isUser ? 'pb-28 md:pb-6' : 'pb-6' }}">
                     {{ $slot }}
