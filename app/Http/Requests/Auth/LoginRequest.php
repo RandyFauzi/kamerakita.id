@@ -21,6 +21,22 @@ class LoginRequest extends FormRequest
     }
 
     /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('username')) {
+            $username = $this->username;
+            if (!str_contains($username, '@')) {
+                $username .= '@kamerakitaid.site';
+            }
+            $this->merge([
+                'email' => $username,
+            ]);
+        }
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, ValidationRule|array<mixed>|string>

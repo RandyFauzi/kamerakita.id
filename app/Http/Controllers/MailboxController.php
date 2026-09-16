@@ -85,4 +85,12 @@ class MailboxController extends Controller
         $email->update($validated);
         return response()->json(['success' => true]);
     }
+
+    public function destroy(CapturedEmail $email)
+    {
+        $this->authorize('delete', $email);
+
+        $email->delete();
+        return response()->json(['success' => true]);
+    }
 }

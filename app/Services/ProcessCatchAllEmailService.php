@@ -47,7 +47,7 @@ class ProcessCatchAllEmailService
             $stats['UIDVALIDITY'] = $currentUidvalidity;
 
             $syncState = MailboxSyncState::firstOrCreate(
-                ['folder_name' => 'INBOX'],
+                ['email_account' => 'default', 'folder_name' => 'INBOX'],
                 ['uidvalidity' => $currentUidvalidity, 'last_uid' => 0]
             );
 
@@ -69,7 +69,6 @@ class ProcessCatchAllEmailService
             $stats['FETCHED_COUNT'] = $messages->count();
 
             $userMap = User::pluck('id', 'email')->keyBy(fn ($id, $email) => strtolower(trim($email)));
-            $userPrefixMap = User::pluck('id', 'email')->keyBy(fn ($id, $email) => explode('@', strtolower(trim($email)))[0]);
 
             $highestUidProcessed = $lastUid;
 
@@ -88,13 +87,11 @@ class ProcessCatchAllEmailService
                     $timestamp = $dateAttr->first()->setTimezone(config('app.timezone'))->toDateTimeString();
                 }
 
-                // 2. CRITICAL - recipient extraction (Prioritize Envelope/Delivered-To over Header To)
                 $resolvedRecipients = [];
                 
                 $attributes = $message->getAttributes();
                 $deliveredTo = $attributes['delivered_to'] ?? $attributes['envelope_to'] ?? null;
                 
-                // If delivered_to exists and is string or array, parse it
                 if ($deliveredTo) {
                     if (is_array($deliveredTo)) {
                         foreach ($deliveredTo as $dt) {
@@ -105,7 +102,6 @@ class ProcessCatchAllEmailService
                     }
                 }
 
-                // Fallback to Header To if Envelope is empty
                 if (empty($resolvedRecipients)) {
                     $toAttribute = $message->getTo();
                     $toAddresses = $toAttribute ? $toAttribute->all() : [];
@@ -116,29 +112,36 @@ class ProcessCatchAllEmailService
                     }
                 }
                 
-                // Clean up any empty strings
                 $resolvedRecipients = array_filter($resolvedRecipients);
 
                 if (empty($resolvedRecipients)) {
-                    // Permanently unroutable (no recipient whatsoever). We must advance cursor to avoid infinite loop.
                     Log::warning("IMAP Catch-All: UNMATCHED_RECIPIENT (No Recipient Found)", [
                         'uid' => $uid,
                         'message_id' => $messageId,
                         'subject' => $subject,
                         'timestamp' => $timestamp
                     ]);
+                    \App\Models\MailboxUnmatchedEmail::updateOrCreate(
+                        ['email_account' => 'default', 'imap_uidvalidity' => $currentUidvalidity, 'imap_uid' => $uid],
+                        [
+                            'recipient' => null,
+                            'sender' => strtolower(trim($message->getFrom()[0]->mail ?? 'unknown')),
+                            'subject' => $subject,
+                            'message_id' => $messageId,
+                            'received_at' => $timestamp,
+                            'reason' => 'No Recipient Found'
+                        ]
+                    );
                     $stats['UNMATCHED_COUNT']++;
                     $stats['PROCESSED_COUNT']++;
                     if ($uid > $highestUidProcessed) $highestUidProcessed = $uid;
                     continue;
                 }
 
-                // Try to find a matching user
                 $userId = null;
                 $matchedRecipient = null;
                 
                 foreach ($resolvedRecipients as $recipientEmail) {
-                    // Exact Match (Prioritized)
                     if ($userMap->has($recipientEmail)) {
                         $userId = $userMap->get($recipientEmail);
                         $matchedRecipient = $recipientEmail;
@@ -146,20 +149,7 @@ class ProcessCatchAllEmailService
                     }
                 }
                 
-                // Prefix Match Fallback
                 if (!$userId) {
-                    foreach ($resolvedRecipients as $recipientEmail) {
-                        $prefix = explode('@', $recipientEmail)[0];
-                        if ($userPrefixMap->has($prefix)) {
-                            $userId = $userPrefixMap->get($prefix);
-                            $matchedRecipient = $recipientEmail;
-                            break;
-                        }
-                    }
-                }
-
-                if (!$userId) {
-                    // Permanently unroutable (no matching user in DB). We must advance cursor to avoid infinite loop.
                     Log::warning("IMAP Catch-All: UNMATCHED_RECIPIENT", [
                         'recipient' => implode(', ', $resolvedRecipients),
                         'uid' => $uid,
@@ -167,6 +157,17 @@ class ProcessCatchAllEmailService
                         'subject' => $subject,
                         'timestamp' => $timestamp
                     ]);
+                    \App\Models\MailboxUnmatchedEmail::updateOrCreate(
+                        ['email_account' => 'default', 'imap_uidvalidity' => $currentUidvalidity, 'imap_uid' => $uid],
+                        [
+                            'recipient' => implode(', ', $resolvedRecipients),
+                            'sender' => strtolower(trim($message->getFrom()[0]->mail ?? 'unknown')),
+                            'subject' => $subject,
+                            'message_id' => $messageId,
+                            'received_at' => $timestamp,
+                            'reason' => 'Recipient not registered'
+                        ]
+                    );
                     $stats['UNMATCHED_COUNT']++;
                     $stats['PROCESSED_COUNT']++;
                     if ($uid > $highestUidProcessed) $highestUidProcessed = $uid;

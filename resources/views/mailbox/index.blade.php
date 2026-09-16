@@ -166,12 +166,17 @@
                 <div class="flex-1 flex flex-col min-h-0 bg-white">
                     <!-- Viewer Header -->
                     <div class="h-20 px-6 flex items-center justify-between border-b border-slate-100 shrink-0 bg-white">
-                        <div class="flex items-center gap-4">
+                        <div class="flex items-center gap-4 min-w-0">
                             <!-- Mobile Back Button -->
-                            <button @click="selectedEmailId = null" class="md:hidden p-2 -ml-2 text-slate-400 hover:text-slate-600 rounded-lg">
+                            <button @click="selectedEmailId = null" class="md:hidden p-2 -ml-2 text-slate-400 hover:text-slate-600 rounded-lg shrink-0">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                             </button>
                             <h2 class="text-xl font-bold text-slate-800 truncate" x-text="selectedEmailData ? (selectedEmailData.subject || '(No Subject)') : 'Loading...'"></h2>
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <button @click="deleteEmail(selectedEmailId)" x-show="selectedEmailId" class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Hapus Email">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            </button>
                         </div>
                     </div>
 
@@ -248,7 +253,13 @@
                             'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
                         }
                     })
-                    .then(res => res.json())
+                    .then(async res => {
+                        if (!res.ok) {
+                            if (res.status === 401 || res.status === 419) window.location.reload();
+                            throw new Error(`HTTP Error ${res.status}`);
+                        }
+                        return res.json();
+                    })
                     .then(data => {
                         this.emails = data.data;
                         this.currentPage = data.current_page;
@@ -257,7 +268,7 @@
                     })
                     .catch(err => {
                         this.isLoadingList = false;
-                        this.showToast("Gagal memuat list email.", "error");
+                        this.showToast("Gagal memuat list email. Periksa koneksi Anda.", "error");
                     });
                 },
 
@@ -266,26 +277,64 @@
                     this.selectedEmailData = null;
                     this.isLoadingBody = true;
 
-                    // Mark as read immediately in UI
-                    let emailObj = this.emails.find(e => e.id === id);
-                    if (emailObj && !emailObj.is_read) {
-                        this.toggleRead(id, true);
-                    }
-
                     fetch(`/mailbox/api/emails/${id}`, {
                         headers: {
                             'Accept': 'application/json',
                             'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
                         }
                     })
-                    .then(res => res.json())
+                    .then(async res => {
+                        if (!res.ok) {
+                            if (res.status === 401 || res.status === 419) window.location.reload();
+                            throw new Error(`HTTP Error ${res.status}`);
+                        }
+                        return res.json();
+                    })
                     .then(data => {
                         this.selectedEmailData = data;
                         this.isLoadingBody = false;
+                        
+                        // Mark as read ONLY after successful detail fetch
+                        let emailObj = this.emails.find(e => e.id === id);
+                        if (emailObj && !emailObj.is_read) {
+                            this.toggleRead(id, true);
+                        }
                     })
                     .catch(err => {
                         this.isLoadingBody = false;
                         this.showToast("Gagal memuat konten email.", "error");
+                    });
+                },
+
+                deleteEmail(id) {
+                    if (!id) return;
+                    if (!confirm('Apakah Anda yakin ingin menghapus email ini?')) return;
+                    
+                    fetch(`/mailbox/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
+                        }
+                    })
+                    .then(async res => {
+                        if (!res.ok) {
+                            if (res.status === 401 || res.status === 419) window.location.reload();
+                            throw new Error(`HTTP Error ${res.status}`);
+                        }
+                        this.emails = this.emails.filter(e => e.id !== id);
+                        this.selectedEmailId = null;
+                        this.selectedEmailData = null;
+                        this.showToast('Email berhasil dihapus', 'success');
+                        
+                        if(this.emails.length === 0 && this.currentPage > 1) {
+                            this.fetchEmails(this.currentPage - 1);
+                        } else if(this.emails.length === 0) {
+                            this.fetchEmails(1);
+                        }
+                    })
+                    .catch(err => {
+                        this.showToast('Terjadi kesalahan saat menghapus email.', 'error');
                     });
                 },
 
@@ -306,7 +355,14 @@
                                 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
                             },
                             body: JSON.stringify({ is_read: status })
-                        }).catch(err => {
+                        })
+                        .then(res => {
+                            if (!res.ok) {
+                                if (res.status === 401 || res.status === 419) window.location.reload();
+                                throw new Error('Failed to save read status');
+                            }
+                        })
+                        .catch(err => {
                             email.is_read = !status;
                         });
                     }
@@ -324,7 +380,14 @@
                                 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
                             },
                             body: JSON.stringify({ is_starred: email.is_starred })
-                        }).catch(err => {
+                        })
+                        .then(res => {
+                            if (!res.ok) {
+                                if (res.status === 401 || res.status === 419) window.location.reload();
+                                throw new Error('Failed to save starred status');
+                            }
+                        })
+                        .catch(err => {
                             email.is_starred = !email.is_starred;
                         });
                     }

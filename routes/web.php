@@ -205,6 +205,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/mailbox/api/emails/{email}', [App\Http\Controllers\MailboxController::class, 'showEmail'])->name('mailbox.api.email.show');
     Route::patch('/mailbox/{email}/read', [App\Http\Controllers\MailboxController::class, 'toggleRead'])->name('mailbox.toggle-read');
     Route::patch('/mailbox/{email}/star', [App\Http\Controllers\MailboxController::class, 'toggleStarred'])->name('mailbox.toggle-star');
+    Route::delete('/mailbox/{email}', [App\Http\Controllers\MailboxController::class, 'destroy'])->name('mailbox.destroy');
 
     // Panduan Book
     Route::get('/panduan', function () {

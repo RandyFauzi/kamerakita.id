@@ -45,7 +45,7 @@ class CapturedEmailPolicy
      */
     public function delete(User $user, CapturedEmail $capturedEmail): bool
     {
-        return false;
+        return $user->id === $capturedEmail->user_id || in_array($user->role, ['superadmin', 'admin']);
     }
 
     /**
