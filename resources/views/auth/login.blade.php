@@ -19,10 +19,31 @@
                     @kamerakitaid.site
                 </span>
             </div>
-            <p class="text-[10px] text-gray-400 mt-1.5 leading-tight">Gunakan username akun Anda.</p>
+            <p id="username-hint" class="text-[10px] text-gray-400 mt-1.5 leading-tight">Gunakan username akun Anda.</p>
+            <p id="username-warning" class="text-[10px] text-red-500 font-bold mt-1.5 hidden animate-pulse">❌ Jangan ketik "@gmail.com" atau "@kamerakitaid.site". Cukup ketik nama depannya saja!</p>
             <x-input-error :messages="$errors->get('email')" class="mt-1" />
             <x-input-error :messages="$errors->get('username')" class="mt-1" />
         </div>
+
+        <script>
+            document.getElementById('username').addEventListener('input', function() {
+                const hint = document.getElementById('username-hint');
+                const warning = document.getElementById('username-warning');
+                if (this.value.includes('@')) {
+                    hint.classList.add('hidden');
+                    warning.classList.remove('hidden');
+                    this.classList.add('border-red-500', 'focus:ring-red-500', 'focus:border-red-500');
+                    this.classList.remove('border-gray-200', 'focus:ring-indigo-500', 'focus:border-indigo-500');
+                } else {
+                    warning.classList.add('hidden');
+                    hint.classList.remove('hidden');
+                    this.classList.remove('border-red-500', 'focus:ring-red-500', 'focus:border-red-500');
+                    this.classList.add('border-gray-200', 'focus:ring-indigo-500', 'focus:border-indigo-500');
+                }
+            });
+            // Trigger check on load in case of autofill
+            setTimeout(() => document.getElementById('username').dispatchEvent(new Event('input')), 100);
+        </script>
 
         <!-- Password -->
         <div>
