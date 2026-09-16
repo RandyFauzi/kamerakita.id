@@ -199,13 +199,17 @@ Route::middleware(['auth'])->prefix('vendor')->name('vendor.')->group(function (
 });
 
 Route::middleware('auth')->group(function () {
-    // Mailbox Internal
+    // Mailbox Internal (UI)
     Route::get('/mailbox', [App\Http\Controllers\MailboxController::class, 'index'])->name('mailbox.index');
-    Route::get('/mailbox/api/emails', [App\Http\Controllers\MailboxController::class, 'fetchEmails'])->name('mailbox.api.emails');
-    Route::get('/mailbox/api/emails/{email}', [App\Http\Controllers\MailboxController::class, 'showEmail'])->name('mailbox.api.email.show');
-    Route::patch('/mailbox/{email}/read', [App\Http\Controllers\MailboxController::class, 'toggleRead'])->name('mailbox.toggle-read');
-    Route::patch('/mailbox/{email}/star', [App\Http\Controllers\MailboxController::class, 'toggleStarred'])->name('mailbox.toggle-star');
-    Route::delete('/mailbox/{email}', [App\Http\Controllers\MailboxController::class, 'destroy'])->name('mailbox.destroy');
+    
+    // Mailbox API (Throttled for abuse protection)
+    Route::middleware('throttle:60,1')->group(function () {
+        Route::get('/mailbox/api/emails', [App\Http\Controllers\MailboxController::class, 'fetchEmails'])->name('mailbox.api.emails');
+        Route::get('/mailbox/api/emails/{email}', [App\Http\Controllers\MailboxController::class, 'showEmail'])->name('mailbox.api.email.show');
+        Route::patch('/mailbox/{email}/read', [App\Http\Controllers\MailboxController::class, 'toggleRead'])->name('mailbox.toggle-read');
+        Route::patch('/mailbox/{email}/star', [App\Http\Controllers\MailboxController::class, 'toggleStarred'])->name('mailbox.toggle-star');
+        Route::delete('/mailbox/{email}', [App\Http\Controllers\MailboxController::class, 'destroy'])->name('mailbox.destroy');
+    });
 
     // Panduan Book
     Route::get('/panduan', function () {

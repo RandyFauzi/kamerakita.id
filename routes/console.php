@@ -18,3 +18,4 @@ Schedule::command('app:pull-mailbox-emails')
     ->onOneServer();
 
 Schedule::command('app:clean-expired-emails')->daily();
+Schedule::command('mailbox:prune-quarantine')->daily();
