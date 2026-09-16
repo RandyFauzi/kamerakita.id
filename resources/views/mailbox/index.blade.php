@@ -1,5 +1,5 @@
 <x-mailbox-layout>
-    <div x-data="mailboxApp()" class="flex w-full h-full bg-white text-slate-800 relative">
+    <div x-data="mailboxApp()" class="flex w-full h-full bg-white text-slate-800 relative overflow-hidden min-h-0">
         
         <!-- Toast Notification -->
         <div x-show="toast.show" 
@@ -16,10 +16,10 @@
         </div>
 
         <!-- Sidebar (Left Column) -->
-        <div class="w-64 flex-shrink-0 border-r border-slate-100 bg-[#F9FAFB] flex flex-col justify-between hidden md:flex">
-            <div>
+        <div class="w-64 flex-shrink-0 border-r border-slate-100 bg-[#F9FAFB] flex flex-col justify-between hidden md:flex min-h-0">
+            <div class="flex flex-col min-h-0 flex-1">
                 <!-- Header / Logo -->
-                <div class="h-20 flex items-center px-8 border-b border-slate-100">
+                <div class="h-20 flex items-center px-8 border-b border-slate-100 shrink-0">
                     <div class="flex items-center gap-3">
                         <span class="w-10 h-10 rounded-xl overflow-hidden shrink-0 flex items-center justify-center bg-white shadow-sm border border-slate-100">
                             <img src="{{ asset('images/Logo.webp') }}" alt="Kamerakita.ai" class="max-h-6 max-w-6 object-contain">
@@ -32,9 +32,9 @@
                 </div>
 
                 <!-- Navigation -->
-                <div class="p-6">
+                <div class="p-6 overflow-y-auto flex-1">
 
-                    <button @click="fetchEmails(1)" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-xl shadow-sm transition-all duration-200 flex justify-center items-center gap-2 mb-8">
+                    <button @click="fetchEmails(1)" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-xl shadow-sm transition-all duration-200 flex justify-center items-center gap-2 mb-8 shrink-0">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
                         Refresh Newest
                     </button>
@@ -62,7 +62,7 @@
                 </div>
             </div>
             
-            <div class="p-6 border-t border-slate-100">
+            <div class="p-6 border-t border-slate-100 shrink-0">
                 <a href="{{ route('dashboard') }}" class="flex items-center justify-center gap-2 w-full text-sm font-semibold text-slate-500 hover:text-slate-900 bg-white border border-slate-200 py-2.5 rounded-lg shadow-sm transition-all hover:bg-slate-50">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
                     Back to Dashboard
@@ -71,7 +71,7 @@
         </div>
 
         <!-- Email List -->
-        <div class="w-full md:w-[380px] lg:w-[420px] bg-slate-50 flex flex-col border-r border-slate-200 shrink-0 relative z-10" :class="{'hidden md:flex': selectedEmailId}">
+        <div class="w-full md:w-[380px] lg:w-[420px] bg-slate-50 flex flex-col min-h-0 border-r border-slate-200 shrink-0 relative z-10" :class="{'hidden md:flex': selectedEmailId}">
             
             <!-- List Header -->
             <div class="h-20 px-6 flex items-center justify-between border-b border-slate-200 bg-white shrink-0">
@@ -134,7 +134,7 @@
             </div>
 
             <!-- Pagination -->
-            <div class="p-4 bg-white border-t border-slate-200 flex items-center justify-between text-sm text-slate-500" x-show="totalPages > 1">
+            <div class="p-4 bg-white border-t border-slate-200 flex items-center justify-between text-sm text-slate-500 shrink-0" x-show="totalPages > 1">
                 <button @click="fetchEmails(currentPage - 1)" :disabled="currentPage === 1" class="px-3 py-1 bg-slate-100 rounded disabled:opacity-50">Prev</button>
                 <span x-text="`Page ${currentPage} of ${totalPages}`"></span>
                 <button @click="fetchEmails(currentPage + 1)" :disabled="currentPage === totalPages" class="px-3 py-1 bg-slate-100 rounded disabled:opacity-50">Next</button>
@@ -142,7 +142,7 @@
         </div>
 
         <!-- Viewer (Right Column) -->
-        <div class="flex-1 flex flex-col min-w-0 bg-white relative z-20" :class="{'hidden md:flex': !selectedEmailId}">
+        <div class="flex-1 flex flex-col min-w-0 min-h-0 bg-white relative z-20" :class="{'hidden md:flex': !selectedEmailId}">
             
             <!-- Absolute Top Right Logged-in Info -->
             <div class="absolute top-4 right-6 text-right z-50">
@@ -153,8 +153,8 @@
             </div>
 
             <template x-if="!selectedEmailId">
-                <div class="flex-1 flex flex-col items-center justify-center bg-slate-50/50">
-                    <div class="w-24 h-24 bg-white rounded-full shadow-sm flex items-center justify-center mb-6">
+                <div class="flex-1 flex flex-col items-center justify-center bg-slate-50/50 min-h-0">
+                    <div class="w-24 h-24 bg-white rounded-full shadow-sm flex items-center justify-center mb-6 shrink-0">
                         <svg class="w-10 h-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 19v-8.93a2 2 0 01.89-1.664l7-4.666a2 2 0 012.22 0l7 4.666A2 2 0 0121 10.07V19M3 19a2 2 0 002 2h14a2 2 0 002-2M3 19l6.75-4.5M21 19l-6.75-4.5M3 10l6.75 4.5M21 10l-6.75 4.5m0 0l-1.14.76a2 2 0 01-2.22 0l-1.14-.76"/></svg>
                     </div>
                     <h2 class="text-xl font-bold text-slate-800 mb-2">No email selected</h2>
@@ -196,7 +196,7 @@
                     </div>
 
                     <!-- Email Body -->
-                    <div class="flex-1 overflow-y-auto bg-white p-8">
+                    <div class="flex-1 overflow-y-auto bg-white p-8 min-h-0">
                         <div x-show="isLoadingBody" class="flex justify-center p-8">
                             <svg class="animate-spin h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -205,7 +205,7 @@
                         </div>
                         
                         <div x-show="!isLoadingBody && selectedEmailData" 
-                             class="prose prose-slate max-w-none text-[15px] leading-relaxed"
+                             class="prose prose-slate max-w-none text-[15px] leading-relaxed break-words"
                              x-html="selectedEmailData ? selectedEmailData.sanitized_content : ''">
                         </div>
                     </div>
