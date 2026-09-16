@@ -142,7 +142,7 @@
         </div>
 
         <!-- Viewer (Right Column) -->
-        <div class="flex-1 flex flex-col min-w-0 min-h-0 bg-white relative z-20" :class="{'hidden md:flex': !selectedEmailId}">
+        <div class="flex-1 min-w-0 min-h-0 bg-white relative z-20" :class="{'hidden md:flex': !selectedEmailId}">
             
             <!-- Absolute Top Right Logged-in Info -->
             <div class="absolute top-4 right-6 text-right z-50">
@@ -153,7 +153,7 @@
             </div>
 
             <template x-if="!selectedEmailId">
-                <div class="flex-1 flex flex-col items-center justify-center bg-slate-50/50 min-h-0">
+                <div class="absolute inset-0 flex flex-col items-center justify-center bg-slate-50/50">
                     <div class="w-24 h-24 bg-white rounded-full shadow-sm flex items-center justify-center mb-6 shrink-0">
                         <svg class="w-10 h-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 19v-8.93a2 2 0 01.89-1.664l7-4.666a2 2 0 012.22 0l7 4.666A2 2 0 0121 10.07V19M3 19a2 2 0 002 2h14a2 2 0 002-2M3 19l6.75-4.5M21 19l-6.75-4.5M3 10l6.75 4.5M21 10l-6.75 4.5m0 0l-1.14.76a2 2 0 01-2.22 0l-1.14-.76"/></svg>
                     </div>
@@ -163,7 +163,7 @@
             </template>
 
             <template x-if="selectedEmailId">
-                <div class="flex-1 flex flex-col min-h-0 bg-white">
+                <div class="absolute inset-0 flex flex-col bg-white">
                     <!-- Viewer Header -->
                     <div class="h-20 px-6 flex items-center justify-between border-b border-slate-100 shrink-0 bg-white">
                         <div class="flex items-center gap-4 min-w-0">
@@ -196,7 +196,7 @@
                     </div>
 
                     <!-- Email Body -->
-                    <div class="flex-1 overflow-y-auto bg-white p-8 min-h-0">
+                    <div class="flex-1 overflow-y-auto bg-white p-8">
                         <div x-show="isLoadingBody" class="flex justify-center p-8">
                             <svg class="animate-spin h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -205,7 +205,7 @@
                         </div>
                         
                         <div x-show="!isLoadingBody && selectedEmailData" 
-                             class="prose prose-slate max-w-none text-[15px] leading-relaxed break-words"
+                             class="prose prose-slate max-w-none text-[15px] leading-relaxed break-words whitespace-pre-wrap"
                              x-html="selectedEmailData ? selectedEmailData.sanitized_content : ''">
                         </div>
                     </div>
