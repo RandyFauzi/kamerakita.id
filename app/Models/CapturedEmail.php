@@ -47,8 +47,9 @@ class CapturedEmail extends Model
                 $content = '<div style="font-family: sans-serif; font-size: 14px; white-space: pre-wrap; word-wrap: break-word; padding: 16px; color: #333;">' . htmlspecialchars($content) . '</div>';
             }
 
-            // Injeksi tag <base target="_blank"> dan CSP untuk memblokir tracking pixel (hanya izinkan base64 image)
-            $headTags = '<base target="_blank"><meta http-equiv="Content-Security-Policy" content="img-src data: cid:;">';
+            // Injeksi tag <base target="_blank"> agar link terbuka di tab baru, bukan terjebak di dalam iframe
+            // (CSP pemblokir gambar telah dihapus sesuai permintaan agar desain email tetap utuh dan rapi)
+            $headTags = '<base target="_blank">';
             
             if (stripos($content, '<head>') !== false) {
                 $content = preg_replace('/<head>/i', '<head>' . $headTags, $content, 1);
