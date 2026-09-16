@@ -82,7 +82,7 @@
                                                 Pending
                                             </span>
                                         @elseif($req->status === 'approved')
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
                                                 Approved
                                             </span>
                                         @elseif($req->status === 'rejected')
@@ -100,7 +100,7 @@
                                             <div class="flex space-x-2">
                                                 <form action="{{ route('admin.password-recoveries.approve', $req) }}" method="POST" onsubmit="return confirm('Approve this request and send reset link?');">
                                                     @csrf
-                                                    <button type="submit" class="inline-flex items-center px-3 py-1.5 bg-green-500 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-600 transition">
+                                                    <button type="submit" class="inline-flex items-center px-3 py-1.5 bg-emerald-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-emerald-700 transition">
                                                         Approve
                                                     </button>
                                                 </form>
