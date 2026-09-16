@@ -35,34 +35,32 @@ class CapturedEmail extends Model
         }
         
         try {
-            // Pastikan string adalah UTF-8 yang valid untuk mencegah json_encode() crash (Malformed UTF-8)
-            $rawContent = $this->message_content;
-            $content = mb_convert_encoding($rawContent, 'UTF-8', 'UTF-8');
+            // Pastikan string adalah UTF-8 yang valid
+            $content = mb_convert_encoding($this->message_content, 'UTF-8', 'UTF-8');
 
-            // Hapus blok <style> dan <head> secara agresif sebelum Purifier, 
-            // termasuk yang sudah ter-encode menjadi entitas HTML (kasus text/plain cacat dari sender)
-            $content = preg_replace('/<style\b[^>]*>(.*?)<\/style>/is', '', $content);
-            $content = preg_replace('/<head\b[^>]*>(.*?)<\/head>/is', '', $content);
-            $content = preg_replace('/&lt;style\b.*?&gt;(.*?)&lt;\/style&gt;/is', '', $content);
-            $content = preg_replace('/&lt;head\b.*?&gt;(.*?)&lt;\/head&gt;/is', '', $content);
+            // Hapus tag script sebagai lapisan pertahanan ekstra (defense-in-depth)
+            // Walaupun iframe sandbox sudah memblokir eksekusi JS.
+            $content = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', '', $content);
 
-            // Batasi ukuran total konten untuk mencegah crash dan CPU spike (maks 500KB) 
-            // Diletakkan SEBELUM regex base64 untuk menghindari catastrophic backtracking
-            if (strlen($content) > 500000) {
-                $content = substr($content, 0, 500000) . '<br><br><em>[Pesan terpotong karena terlalu panjang]</em>';
+            // Cek apakah email hanya berisi teks murni tanpa tag HTML sama sekali
+            if (strip_tags($content) === $content) {
+                $content = '<div style="font-family: sans-serif; font-size: 14px; white-space: pre-wrap; word-wrap: break-word; padding: 16px; color: #333;">' . htmlspecialchars($content) . '</div>';
             }
 
-            // Hapus gambar inline (base64) yang sangat besar sebelum diproses Purifier
-            // Ini untuk mencegah memory exhaustion (PHP Fatal Error) saat parsing HTML yang kompleks
-            $content = preg_replace('/src=["\']data:image\/[^;]+;base64[^"\']+["\']/i', 'src="#" alt="[Inline Image Removed]"', $content);
+            // Injeksi tag <base target="_blank"> ke dalam <head> agar link terbuka di tab baru, bukan terjebak di dalam iframe
+            if (stripos($content, '<head>') !== false) {
+                $content = preg_replace('/<head>/i', '<head><base target="_blank">', $content, 1);
+            } else if (stripos($content, '<html>') !== false) {
+                $content = preg_replace('/<html>/i', '<html><head><base target="_blank"></head>', $content, 1);
+            } else {
+                $content = '<head><base target="_blank"></head>' . $content;
+            }
 
-            
-            return clean($content, 'email');
+            return $content;
         } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::error("HTMLPurifier failed: " . $e->getMessage());
-            // Fallback aman jika Purifier gagal (misal karena tag HTML cacat ekstrim)
+            \Illuminate\Support\Facades\Log::error("Email content formatting failed: " . $e->getMessage());
             $safeContent = mb_convert_encoding($this->message_content, 'UTF-8', 'UTF-8');
-            return nl2br(htmlentities(strip_tags($safeContent)));
+            return '<div style="padding: 16px;">' . nl2br(htmlentities(strip_tags($safeContent))) . '</div>';
         }
     }
 

@@ -196,7 +196,7 @@
                     </div>
 
                     <!-- Email Body -->
-                    <div class="flex-1 overflow-y-auto bg-white p-8">
+                    <div class="flex-1 overflow-hidden bg-white">
                         <div x-show="isLoadingBody" class="flex justify-center p-8">
                             <svg class="animate-spin h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -204,10 +204,13 @@
                             </svg>
                         </div>
                         
-                        <div x-show="!isLoadingBody && selectedEmailData" 
-                             class="prose prose-slate max-w-none text-[15px] leading-relaxed break-words whitespace-pre-wrap"
-                             x-html="selectedEmailData ? selectedEmailData.sanitized_content : ''">
-                        </div>
+                        <template x-if="!isLoadingBody && selectedEmailData">
+                            <iframe 
+                                class="w-full h-full border-0 bg-white"
+                                sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin"
+                                :srcdoc="selectedEmailData.sanitized_content"
+                            ></iframe>
+                        </template>
                     </div>
                 </div>
             </template>
