@@ -39,6 +39,13 @@ class CapturedEmail extends Model
             $rawContent = $this->message_content;
             $content = mb_convert_encoding($rawContent, 'UTF-8', 'UTF-8');
 
+            // Hapus blok <style> dan <head> secara agresif sebelum Purifier, 
+            // termasuk yang sudah ter-encode menjadi entitas HTML (kasus text/plain cacat dari sender)
+            $content = preg_replace('/<style\b[^>]*>(.*?)<\/style>/is', '', $content);
+            $content = preg_replace('/<head\b[^>]*>(.*?)<\/head>/is', '', $content);
+            $content = preg_replace('/&lt;style\b.*?&gt;(.*?)&lt;\/style&gt;/is', '', $content);
+            $content = preg_replace('/&lt;head\b.*?&gt;(.*?)&lt;\/head&gt;/is', '', $content);
+
             // Batasi ukuran total konten untuk mencegah crash dan CPU spike (maks 500KB) 
             // Diletakkan SEBELUM regex base64 untuk menghindari catastrophic backtracking
             if (strlen($content) > 500000) {
