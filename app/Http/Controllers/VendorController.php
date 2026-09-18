@@ -96,7 +96,7 @@ class VendorController extends Controller
         }
 
         $request->validate([
-            'name' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s]*$/'],
+            'name' => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9._-]+$/'],
             'whatsapp_number' => ['required', 'string', 'max:20'],
             'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::min(8)],
@@ -163,7 +163,7 @@ class VendorController extends Controller
         $workerUser = $workerPartner->user;
 
         $rules = [
-            'name' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s]*$/'],
+            'name' => ['required', 'string', 'max:255'],
             'whatsapp_number' => ['required', 'string', 'max:20'],
             'bank_name' => ['nullable', 'string', 'max:100'],
             'bank_account_number' => ['nullable', 'string', 'max:50'],

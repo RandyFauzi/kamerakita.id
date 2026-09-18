@@ -32,7 +32,7 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s]*$/'], // Enforce letters only for names
+            'name' => ['required', 'string', 'max:255'], // Enforce letters only for names
             'username' => ['required', 'string', 'lowercase', 'max:50', 'alpha_dash', function ($attribute, $value, $fail) {
                 if (User::where('email', $value . '@kamerakitaid.site')->exists()) {
                     $fail('Username ini sudah digunakan.');
