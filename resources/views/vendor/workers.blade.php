@@ -131,7 +131,10 @@
                             @forelse($metrics['workers_data'] as $data)
                                 <tr x-data="{ showEditModal: false }">
                                     <td class="py-3.5 px-2 font-bold text-indigo-650 whitespace-nowrap">{{ $data['worker']->mitra_id }}</td>
-                                    <td class="py-3.5 px-2 font-medium text-gray-900 whitespace-nowrap">{{ $data['worker']->full_name }}</td>
+                                    <td class="py-3.5 px-2 whitespace-nowrap">
+                                        <div class="font-medium text-gray-900">{{ $data['worker']->full_name }}</div>
+                                        <div class="text-xs text-gray-500">{{ $data['worker']->user->email ?? $data['worker']->email ?? '-' }}</div>
+                                    </td>
                                     <td class="py-3.5 px-2 text-gray-600 whitespace-nowrap">{{ $data['metrics']['all_time_hours_formatted'] }}</td>
                                     <td class="py-3.5 px-2 text-emerald-800 whitespace-nowrap">{{ $data['metrics']['paid_hours_formatted'] }}</td>
                                     <td class="py-3.5 px-2 text-amber-800 font-bold whitespace-nowrap">{{ $data['metrics']['pending_hours_formatted'] }}</td>
