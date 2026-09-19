@@ -62,6 +62,7 @@
 
         <x-push-prompt />
         <x-mobile-bottom-nav />
+        <x-ios-install-prompt />
 
         <!-- PWA Service Worker Registration -->
         <script>

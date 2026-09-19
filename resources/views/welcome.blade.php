@@ -405,6 +405,8 @@
       });
     </script>
 
+      <x-ios-install-prompt />
+
       <!-- PWA Service Worker Registration -->
       <script>
           if ('serviceWorker' in navigator) {
@@ -417,3 +419,4 @@
       </script>
 </body>
 </html>
+
