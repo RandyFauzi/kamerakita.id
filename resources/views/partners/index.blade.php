@@ -390,111 +390,161 @@
                                     <th class="px-6 py-2"></th>
                                 </tr>
                             </thead>
-                            <tbody class="bg-white divide-y divide-gray-100">
+                            <!-- We remove the outer tbody wrapper to allow multiple tbodies (one per item) -->
                             @forelse($partners as $partner)
-                                <tr class="hover:bg-gray-50/50 transition-colors duration-150">
-                                    <td class="w-10 px-4 py-4 text-center whitespace-nowrap">
-                                        <input type="checkbox" :value="'{{ $partner->id }}'" x-model="selectedIds" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                                    </td>
-                                    <td class="w-16 px-4 py-4 whitespace-nowrap text-center text-sm font-semibold text-gray-500">
-                                        {{ $partners->firstItem() + $loop->index }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-indigo-650">
-                                        {{ $partner->mitra_id }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        <div class="flex flex-col">
-                                            <span>{{ $partner->full_name }}</span>
-                                            <span class="text-xs text-gray-400 font-normal">{{ $partner->user?->email ?? 'Belum punya akun login' }}</span>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 uppercase font-mono text-xs">
-                                        @if($partner->partner_role === 'mitra')
-                                            Mitra
-                                        @elseif($partner->partner_role === 'rekruter')
-                                            Rekruter
-                                        @else
-                                            Worker
-                                        @endif
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        @if($partner->group_name)
-                                            <span class="inline-flex items-center justify-center px-2 py-1 bg-indigo-50 text-indigo-700 text-[10px] font-bold rounded-md whitespace-nowrap shadow-sm border border-indigo-100">
-                                                {{ $partner->group_name }}
-                                            </span>
-                                        @else
-                                            <span class="inline-flex items-center justify-center px-2 py-1 bg-gray-50 text-gray-500 text-[10px] font-bold rounded-md whitespace-nowrap shadow-sm border border-gray-100">
-                                                -
-                                            </span>
-                                        @endif
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-800">
-                                        Rp{{ number_format($partner->base_hourly_rate ?? 0, 0, ',', '.') }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border {{ $partner->has_headstrap ? 'bg-sky-50 text-sky-700 border-sky-200' : 'bg-gray-50 text-gray-500 border-gray-200' }}">
-                                            {{ $partner->has_headstrap ? 'Sudah' : 'Belum' }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-650">
-                                        {{ $partner->whatsapp_number }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {{ $partner->mitraParent->full_name ?? '-' }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border {{ $partner->is_client_registered ? 'bg-emerald-50 text-emerald-700 border-emerald-250' : 'bg-rose-50 text-rose-700 border-rose-250' }}">
-                                            {{ $partner->is_client_registered ? 'Registered' : 'Unregistered' }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border {{ $partner->statusBadgeClasses() }}">
-                                            {{ $partner->statusLabel() }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <div class="flex items-center justify-end gap-2">
+                                @php
+                                    $hasChildren = in_array($partner->partner_role, ['mitra', 'rekruter']);
+                                    $children = $partner->partner_role === 'mitra' ? $partner->workers : ($partner->partner_role === 'rekruter' ? $partner->recruitedWorkers : collect());
+                                @endphp
+                                <tbody x-data="{ expanded: false }" class="bg-white border-b border-gray-100 last:border-none">
+                                    <tr class="hover:bg-gray-50/50 transition-colors duration-150 {{ $hasChildren ? 'cursor-pointer' : '' }}" 
+                                        @if($hasChildren) @click="if(!$event.target.closest('button') && !$event.target.closest('a') && !$event.target.closest('input')) expanded = !expanded" @endif>
+                                        
+                                        <td class="w-10 px-4 py-4 text-center whitespace-nowrap">
+                                            <input type="checkbox" :value="'{{ $partner->id }}'" x-model="selectedIds" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                        </td>
+                                        <td class="w-16 px-4 py-4 whitespace-nowrap text-center text-sm font-semibold text-gray-500">
+                                            {{ $partners->firstItem() + $loop->index }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-indigo-650">
+                                            <div class="flex items-center gap-2">
+                                                @if($hasChildren)
+                                                <svg class="w-4 h-4 text-gray-400 transition-transform duration-200" :class="{ 'rotate-180': expanded }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
+                                                @endif
+                                                {{ $partner->mitra_id }}
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                            <div class="flex flex-col">
+                                                <span>{{ $partner->full_name }}</span>
+                                                <span class="text-xs text-gray-400 font-normal">{{ $partner->user?->email ?? 'Belum punya akun login' }}</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 uppercase font-mono text-xs">
                                             @if($partner->partner_role === 'mitra')
-                                                <a href="{{ route('partners.index', array_merge(request()->except(['mitra_parent', 'recruiter_parent', 'role', 'worker_type', 'page']), ['mitra_parent' => $partner->id])) }}" class="p-1.5 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition" title="Lihat Worker Bawahan">
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                                                </a>
+                                                Mitra
                                             @elseif($partner->partner_role === 'rekruter')
-                                                <a href="{{ route('partners.index', array_merge(request()->except(['mitra_parent', 'recruiter_parent', 'role', 'worker_type', 'page']), ['recruiter_parent' => $partner->id])) }}" class="p-1.5 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition" title="Lihat Rekrutan">
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                                                </a>
+                                                Rekruter
+                                            @else
+                                                Worker
                                             @endif
-                                            <a href="{{ route('partners.edit', $partner) }}" class="p-1.5 text-gray-500 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition" title="Edit">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                                </svg>
-                                            </a>
-                                            <button
-                                                type="button"
-                                                @click="openDeleteModal(@js([
-                                                    'name' => $partner->full_name,
-                                                    'mitraId' => $partner->mitra_id,
-                                                    'role' => $partner->partner_role === 'mitra' ? 'Mitra' : 'Worker',
-                                                    'url' => route('partners.destroy', $partner),
-                                                ]))"
-                                                class="p-1.5 text-gray-500 hover:text-red-650 hover:bg-red-50 rounded-lg transition"
-                                                title="Hapus"
-                                                aria-label="Hapus akun {{ $partner->full_name }}"
-                                            >
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            @if($partner->group_name)
+                                                <span class="inline-flex items-center justify-center px-2 py-1 bg-indigo-50 text-indigo-700 text-[10px] font-bold rounded-md whitespace-nowrap shadow-sm border border-indigo-100">
+                                                    {{ $partner->group_name }}
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center justify-center px-2 py-1 bg-gray-50 text-gray-500 text-[10px] font-bold rounded-md whitespace-nowrap shadow-sm border border-gray-100">
+                                                    -
+                                                </span>
+                                            @endif
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-800">
+                                            Rp{{ number_format($partner->base_hourly_rate ?? 0, 0, ',', '.') }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border {{ $partner->has_headstrap ? 'bg-sky-50 text-sky-700 border-sky-200' : 'bg-gray-50 text-gray-500 border-gray-200' }}">
+                                                {{ $partner->has_headstrap ? 'Sudah' : 'Belum' }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-650">
+                                            {{ $partner->whatsapp_number }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            {{ $partner->mitraParent->full_name ?? '-' }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border {{ $partner->is_client_registered ? 'bg-emerald-50 text-emerald-700 border-emerald-250' : 'bg-rose-50 text-rose-700 border-rose-250' }}">
+                                                {{ $partner->is_client_registered ? 'Registered' : 'Unregistered' }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border {{ $partner->statusBadgeClasses() }}">
+                                                {{ $partner->statusLabel() }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <div class="flex items-center justify-end gap-2">
+                                                <a href="{{ route('partners.edit', $partner) }}" class="p-1.5 text-gray-500 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition" title="Edit">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                                    </svg>
+                                                </a>
+                                                <button
+                                                    type="button"
+                                                    @click="openDeleteModal(@js([
+                                                        'name' => $partner->full_name,
+                                                        'mitraId' => $partner->mitra_id,
+                                                        'role' => $partner->partner_role === 'mitra' ? 'Mitra' : 'Worker',
+                                                        'url' => route('partners.destroy', $partner),
+                                                    ]))"
+                                                    class="p-1.5 text-gray-500 hover:text-red-650 hover:bg-red-50 rounded-lg transition"
+                                                    title="Hapus"
+                                                    aria-label="Hapus akun {{ $partner->full_name }}"
+                                                >
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <!-- Expanded Content -->
+                                    @if($hasChildren)
+                                    <tr x-show="expanded" x-cloak class="bg-gray-50/50">
+                                        <td colspan="13" class="px-0 py-0 border-t border-gray-100">
+                                            <div x-show="expanded" x-collapse>
+                                                <div class="px-8 py-5 border-l-4 border-indigo-500">
+                                                    <h4 class="text-xs font-black text-gray-500 uppercase tracking-widest mb-3">Daftar Bawahan ({{ $children->count() }} Orang)</h4>
+                                                    @if($children->count() > 0)
+                                                    <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+                                                        <table class="min-w-full divide-y divide-gray-100">
+                                                            <thead class="bg-gray-50">
+                                                                <tr>
+                                                                    <th scope="col" class="px-4 py-2.5 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider">ID Vendor</th>
+                                                                    <th scope="col" class="px-4 py-2.5 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Nama Lengkap</th>
+                                                                    <th scope="col" class="px-4 py-2.5 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Tarif/Jam</th>
+                                                                    <th scope="col" class="px-4 py-2.5 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                                                                    <th scope="col" class="px-4 py-2.5 text-right text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Aksi</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody class="divide-y divide-gray-100 bg-white">
+                                                                @foreach($children as $child)
+                                                                <tr class="hover:bg-gray-50/50">
+                                                                    <td class="px-4 py-2.5 whitespace-nowrap text-xs font-semibold text-indigo-650">{{ $child->mitra_id }}</td>
+                                                                    <td class="px-4 py-2.5 whitespace-nowrap text-xs font-medium text-gray-900">{{ $child->full_name }}</td>
+                                                                    <td class="px-4 py-2.5 whitespace-nowrap text-xs text-gray-700">Rp{{ number_format($child->base_hourly_rate ?? 0, 0, ',', '.') }}</td>
+                                                                    <td class="px-4 py-2.5 whitespace-nowrap">
+                                                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border {{ $child->statusBadgeClasses() }}">{{ $child->statusLabel() }}</span>
+                                                                    </td>
+                                                                    <td class="px-4 py-2.5 whitespace-nowrap text-right text-xs">
+                                                                        <a href="{{ route('partners.edit', $child) }}" class="text-indigo-600 hover:text-indigo-900 font-semibold">Edit</a>
+                                                                    </td>
+                                                                </tr>
+                                                                @endforeach
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                    @else
+                                                        <div class="text-sm text-gray-400 italic">Belum ada bawahan yang terdaftar.</div>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    @endif
+                                </tbody>
                             @empty
-                                <tr>
-                                    <td colspan="13" class="px-6 py-12 text-center text-gray-500">
-                                        <span class="text-sm">Tidak ada Data Vendor atau worker ditemukan.</span>
-                                    </td>
-                                </tr>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="13" class="px-6 py-12 text-center text-gray-500">
+                                            <span class="text-sm">Tidak ada Data Vendor atau worker ditemukan.</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
                             @endforelse
-                        </tbody>
                     </table>
                 </div>
 

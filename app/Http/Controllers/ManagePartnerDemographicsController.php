@@ -68,7 +68,7 @@ class ManagePartnerDemographicsController extends Controller
             ->pluck('group_name');
 
         $partners = Partner::query()
-            ->with(['mitraParent', 'user'])
+            ->with(['mitraParent', 'user', 'workers.user', 'recruitedWorkers.user'])
             ->withMax('videoWorkReports', 'submission_date')
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
