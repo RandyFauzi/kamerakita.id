@@ -192,42 +192,56 @@
             </section>
 
             <!-- Tabs Navigation -->
-            <div class="flex overflow-x-auto space-x-2 border-b border-gray-200 pb-px">
-                <a href="{{ route('partners.index', array_merge(request()->except(['role', 'worker_type', 'mitra_parent', 'recruiter_parent', 'page']))) }}" 
-                   class="whitespace-nowrap py-3 px-5 border-b-2 font-medium text-sm transition-colors
-                   {{ !request('role') && !request('worker_type') && !request('mitra_parent') && !request('recruiter_parent') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">
-                    Semua Data
-                </a>
-                
-                <a href="{{ route('partners.index', array_merge(request()->except(['role', 'worker_type', 'mitra_parent', 'recruiter_parent', 'page']), ['role' => 'mitra'])) }}" 
-                   class="whitespace-nowrap py-3 px-5 border-b-2 font-medium text-sm transition-colors
-                   {{ request('role') == 'mitra' && !request('mitra_parent') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">
-                    Mitra Kordinator
-                </a>
-                
-                <a href="{{ route('partners.index', array_merge(request()->except(['role', 'worker_type', 'mitra_parent', 'recruiter_parent', 'page']), ['role' => 'worker', 'worker_type' => 'langsung'])) }}" 
-                   class="whitespace-nowrap py-3 px-5 border-b-2 font-medium text-sm transition-colors
-                   {{ request('worker_type') == 'langsung' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">
-                    Worker Langsung
-                </a>
-                
-                <a href="{{ route('partners.index', array_merge(request()->except(['role', 'worker_type', 'mitra_parent', 'recruiter_parent', 'page']), ['role' => 'rekruter'])) }}" 
-                   class="whitespace-nowrap py-3 px-5 border-b-2 font-medium text-sm transition-colors
-                   {{ request('role') == 'rekruter' && !request('recruiter_parent') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">
-                    Rekruter
-                </a>
+            <div class="mb-4">
+                <div class="inline-flex bg-gray-200/60 p-1.5 rounded-2xl overflow-x-auto max-w-full shadow-inner ring-1 ring-gray-900/5">
+                    <a href="{{ route('partners.index', array_merge(request()->except(['role', 'worker_type', 'mitra_parent', 'recruiter_parent', 'page']))) }}" 
+                       class="whitespace-nowrap flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 ease-out
+                       {{ !request('role') && !request('worker_type') && !request('mitra_parent') && !request('recruiter_parent') 
+                          ? 'bg-white text-indigo-700 shadow-[0_2px_8px_rgba(0,0,0,0.08)] ring-1 ring-gray-900/5' 
+                          : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/50' }}">
+                        Semua Data
+                    </a>
+                    
+                    <a href="{{ route('partners.index', array_merge(request()->except(['role', 'worker_type', 'mitra_parent', 'recruiter_parent', 'page']), ['role' => 'mitra'])) }}" 
+                       class="whitespace-nowrap flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 ease-out
+                       {{ request('role') == 'mitra' && !request('mitra_parent') 
+                          ? 'bg-white text-emerald-700 shadow-[0_2px_8px_rgba(0,0,0,0.08)] ring-1 ring-gray-900/5' 
+                          : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/50' }}">
+                        Mitra Kordinator
+                    </a>
+                    
+                    <a href="{{ route('partners.index', array_merge(request()->except(['role', 'worker_type', 'mitra_parent', 'recruiter_parent', 'page']), ['role' => 'worker', 'worker_type' => 'langsung'])) }}" 
+                       class="whitespace-nowrap flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 ease-out
+                       {{ request('worker_type') == 'langsung' 
+                          ? 'bg-white text-blue-700 shadow-[0_2px_8px_rgba(0,0,0,0.08)] ring-1 ring-gray-900/5' 
+                          : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/50' }}">
+                        Worker Langsung
+                    </a>
+                    
+                    <a href="{{ route('partners.index', array_merge(request()->except(['role', 'worker_type', 'mitra_parent', 'recruiter_parent', 'page']), ['role' => 'rekruter'])) }}" 
+                       class="whitespace-nowrap flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 ease-out
+                       {{ request('role') == 'rekruter' && !request('recruiter_parent') 
+                          ? 'bg-white text-amber-700 shadow-[0_2px_8px_rgba(0,0,0,0.08)] ring-1 ring-gray-900/5' 
+                          : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/50' }}">
+                        Rekruter
+                    </a>
 
-                @if(request('mitra_parent'))
-                <a href="#" class="whitespace-nowrap py-3 px-5 border-b-2 font-medium text-sm transition-colors border-indigo-500 text-indigo-600">
-                    Bawahan Mitra
-                </a>
-                @endif
-                
-                @if(request('recruiter_parent'))
-                <a href="#" class="whitespace-nowrap py-3 px-5 border-b-2 font-medium text-sm transition-colors border-indigo-500 text-indigo-600">
-                    Bawahan Rekruter
-                </a>
-                @endif
+                    @if(request('mitra_parent'))
+                    <a href="{{ route('partners.index', array_merge(request()->except(['mitra_parent', 'page']), ['role' => 'mitra'])) }}" title="Tutup Filter Bawahan" class="whitespace-nowrap flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 ease-out bg-indigo-600 text-white shadow-[0_2px_8px_rgba(79,70,229,0.3)] ring-1 ring-indigo-700/50 hover:bg-indigo-700">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-4-4h-1m-4 6H2v-2a4 4 0 014-4h3m4 6v-2a4 4 0 00-4-4m4 6h4m-8-8a4 4 0 100-8 4 4 0 000 8zm8 0a3 3 0 100-6"></path></svg>
+                        Bawahan Mitra
+                        <svg class="w-4 h-4 ml-1 opacity-70 hover:opacity-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </a>
+                    @endif
+                    
+                    @if(request('recruiter_parent'))
+                    <a href="{{ route('partners.index', array_merge(request()->except(['recruiter_parent', 'page']), ['role' => 'rekruter'])) }}" title="Tutup Filter Bawahan" class="whitespace-nowrap flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 ease-out bg-indigo-600 text-white shadow-[0_2px_8px_rgba(79,70,229,0.3)] ring-1 ring-indigo-700/50 hover:bg-indigo-700">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-4-4h-1m-4 6H2v-2a4 4 0 014-4h3m4 6v-2a4 4 0 00-4-4m4 6h4m-8-8a4 4 0 100-8 4 4 0 000 8zm8 0a3 3 0 100-6"></path></svg>
+                        Bawahan Rekruter
+                        <svg class="w-4 h-4 ml-1 opacity-70 hover:opacity-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </a>
+                    @endif
+                </div>
             </div>
 
             <!-- Form Filter & Table Wrapper -->
