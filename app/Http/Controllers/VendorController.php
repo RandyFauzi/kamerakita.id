@@ -18,7 +18,7 @@ class VendorController extends Controller
             abort(403, 'Unauthorized access.');
         }
 
-        $reports = VideoWorkReport::with('partner')
+        $reports = VideoWorkReport::with(['partner.user'])
             ->whereHas('partner', function ($query) use ($partner) {
                 $query->where('mitra_parent_id', $partner->id);
             })
