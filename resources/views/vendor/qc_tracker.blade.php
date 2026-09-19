@@ -4,6 +4,42 @@
             <h2 class="text-xl font-bold text-gray-900">QC Tracker (Laporan Tim)</h2>
         </div>
 
+        <div class="mb-4 rounded-[2rem] bg-white p-4 shadow-sm border border-gray-150 md:p-6">
+            <form action="{{ route('vendor.reports.index') }}" method="GET" class="flex flex-col items-end gap-4 md:flex-row">
+                <div class="w-full flex-1">
+                    <label for="search" class="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-gray-400">Cari Worker / ID</label>
+                    <div class="relative">
+                        <svg class="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                        <input type="text" name="search" id="search" value="{{ request('search') }}" placeholder="Ketik nama atau ID..." class="block w-full rounded-xl border border-gray-200 py-2.5 pl-10 pr-3 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                </div>
+                <div class="w-full md:w-48">
+                    <label for="status" class="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-gray-400">Status QC</label>
+                    <select name="status" id="status" class="block w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <option value="">Semua Status</option>
+                        <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
+                        <option value="on_review" {{ request('status') === 'on_review' ? 'selected' : '' }}>On Review</option>
+                        <option value="approved" {{ request('status') === 'approved' ? 'selected' : '' }}>Approved</option>
+                        <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>Rejected</option>
+                    </select>
+                </div>
+                <div class="w-full md:w-40">
+                    <label for="start_date" class="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-gray-400">Dari Tgl</label>
+                    <input type="date" name="start_date" id="start_date" value="{{ request('start_date') }}" class="block w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div class="w-full md:w-40">
+                    <label for="end_date" class="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-gray-400">Sampai Tgl</label>
+                    <input type="date" name="end_date" id="end_date" value="{{ request('end_date') }}" class="block w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div class="flex w-full gap-2 md:w-auto">
+                    <button type="submit" class="inline-flex flex-1 items-center justify-center rounded-xl bg-gray-900 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-gray-800 md:flex-none">Filter</button>
+                    <a href="{{ route('vendor.reports.index') }}" class="inline-flex flex-1 items-center justify-center rounded-xl border border-gray-200 bg-gray-100 px-5 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-200 md:flex-none">Reset</a>
+                </div>
+            </form>
+        </div>
+
         <div class="bg-white rounded-2xl p-4 sm:p-6 border border-gray-150 shadow-sm overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-100 text-sm">

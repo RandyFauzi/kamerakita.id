@@ -18,12 +18,34 @@ class VendorController extends Controller
             abort(403, 'Unauthorized access.');
         }
 
-        $reports = VideoWorkReport::with(['partner.user'])
-            ->whereHas('partner', function ($query) use ($partner) {
-                $query->where('mitra_parent_id', $partner->id);
-            })
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
+        $query = VideoWorkReport::with(['partner.user'])
+            ->whereHas('partner', function ($q) use ($partner) {
+                $q->where('mitra_parent_id', $partner->id);
+            });
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('partner', function ($q) use ($search) {
+                $q->where('full_name', 'like', "%{$search}%")
+                  ->orWhere('mitra_id', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('start_date')) {
+            $query->whereDate('submission_date', '>=', $request->start_date);
+        }
+
+        if ($request->filled('end_date')) {
+            $query->whereDate('submission_date', '<=', $request->end_date);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('qc_status', $request->status);
+        }
+
+        $reports = $query->orderBy('submission_date', 'desc')
+            ->paginate(20)
+            ->withQueryString();
 
         return view('vendor.qc_tracker', compact('reports'));
     }
