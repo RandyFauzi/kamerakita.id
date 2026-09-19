@@ -41,7 +41,7 @@
             isDenied: false,
             bannerTitle: 'Aktifkan Notifikasi Real-time',
             bannerMessage: 'Nyalakan notifikasi untuk selalu mendapat pengumuman terbaru dari Admin dan tidak ketinggalan informasi penutupan project!',
-            vapidPublicKey: '{{ env("VAPID_PUBLIC_KEY") }}',
+            vapidPublicKey: '{{ config("webpush.vapid.public_key") }}',
 
             init() {
                 if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
