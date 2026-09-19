@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>KameraKita AI - Kerja Rumah Jadi Cuan</title>
     <link rel="icon" href="{{ asset('images/Logo.webp') }}" type="image/webp">
     
@@ -10,6 +10,9 @@
     <link rel="manifest" href="{{ asset('manifest.json') }}">
     <meta name="theme-color" content="#4f46e5">
     <link rel="apple-touch-icon" href="{{ asset('images/onboarding/kamerakita.png') }}">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="KameraKita">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

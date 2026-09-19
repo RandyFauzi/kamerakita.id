@@ -15,7 +15,7 @@
         bottom: 0;
         left: 0;
         width: 100%;
-        height: 90px;
+        height: calc(90px + env(safe-area-inset-bottom, 0px));
         filter: drop-shadow(0 -10px 25px rgba(0,0,0,0.05));
         animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         font-family: 'Inter', sans-serif;
@@ -33,7 +33,7 @@
 
     .nav-content {
         position: absolute;
-        bottom: 0;
+        bottom: env(safe-area-inset-bottom, 0px);
         left: 0;
         width: 100%;
         height: 70px;
@@ -108,7 +108,7 @@
         position: absolute;
         left: 50%;
         transform: translateX(-50%);
-        bottom: 38px;
+        bottom: calc(38px + env(safe-area-inset-bottom, 0px));
         z-index: 20;
         display: flex;
         justify-content: center;
