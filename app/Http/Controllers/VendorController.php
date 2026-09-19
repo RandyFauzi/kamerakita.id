@@ -43,7 +43,7 @@ class VendorController extends Controller
             $query->where('qc_status', $request->status);
         }
 
-        $reports = $query->orderBy('submission_date', 'desc')
+        $reports = $query->orderBy('updated_at', 'desc')
             ->paginate(20)
             ->withQueryString();
 
