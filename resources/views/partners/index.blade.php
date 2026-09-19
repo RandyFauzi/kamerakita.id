@@ -300,7 +300,7 @@
                         <table class="min-w-full divide-y divide-gray-100">
                             <thead class="bg-gray-50/50">
                                 <tr>
-                                    <th scope="col" class="w-10 px-4 py-4 text-center">
+                                    <th scope="col" class="w-14 px-6 py-4 text-center">
                                         <input type="checkbox" @change="toggleSelectAll($event)" :checked="selectedIds.length === @js($partners->count()) && @js($partners->count()) > 0" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
                                     </th>
                                     <th scope="col" class="w-16 px-4 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('dashboard.partners.col_no') }}</th>
@@ -400,7 +400,7 @@
                                     <tr class="hover:bg-gray-50/50 transition-colors duration-150 {{ $hasChildren ? 'cursor-pointer' : '' }}" 
                                         @if($hasChildren) @click="if(!$event.target.closest('button') && !$event.target.closest('a') && !$event.target.closest('input')) expanded = !expanded" @endif>
                                         
-                                        <td class="w-10 px-4 py-4 text-center whitespace-nowrap">
+                                        <td class="w-14 px-6 py-4 text-center whitespace-nowrap">
                                             <input type="checkbox" :value="'{{ $partner->id }}'" x-model="selectedIds" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
                                         </td>
                                         <td class="w-16 px-4 py-4 whitespace-nowrap text-center text-sm font-semibold text-gray-500">
@@ -503,24 +503,35 @@
                                                         <table class="min-w-full divide-y divide-gray-100">
                                                             <thead class="bg-gray-50">
                                                                 <tr>
-                                                                    <th scope="col" class="px-4 py-2.5 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider">ID Vendor</th>
-                                                                    <th scope="col" class="px-4 py-2.5 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Nama Lengkap</th>
-                                                                    <th scope="col" class="px-4 py-2.5 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Tarif/Jam</th>
-                                                                    <th scope="col" class="px-4 py-2.5 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                                                                    <th scope="col" class="px-4 py-2.5 text-right text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Aksi</th>
+                                                                    <th scope="col" class="w-10 px-6 py-3.5 text-center">
+                                                                        <!-- Optional: Select All for this group could be added here, but keeping it empty for now to match main style -->
+                                                                    </th>
+                                                                    <th scope="col" class="px-6 py-3.5 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider">ID Vendor</th>
+                                                                    <th scope="col" class="px-6 py-3.5 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Nama Lengkap</th>
+                                                                    <th scope="col" class="px-6 py-3.5 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Tarif/Jam</th>
+                                                                    <th scope="col" class="px-6 py-3.5 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                                                                    <th scope="col" class="px-6 py-3.5 text-right text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Aksi</th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody class="divide-y divide-gray-100 bg-white">
                                                                 @foreach($children as $child)
-                                                                <tr class="hover:bg-gray-50/50">
-                                                                    <td class="px-4 py-2.5 whitespace-nowrap text-xs font-semibold text-indigo-650">{{ $child->mitra_id }}</td>
-                                                                    <td class="px-4 py-2.5 whitespace-nowrap text-xs font-medium text-gray-900">{{ $child->full_name }}</td>
-                                                                    <td class="px-4 py-2.5 whitespace-nowrap text-xs text-gray-700">Rp{{ number_format($child->base_hourly_rate ?? 0, 0, ',', '.') }}</td>
-                                                                    <td class="px-4 py-2.5 whitespace-nowrap">
+                                                                <tr class="hover:bg-gray-50/50 transition-colors">
+                                                                    <td class="w-10 px-6 py-3.5 text-center whitespace-nowrap">
+                                                                        <input type="checkbox" :value="'{{ $child->id }}'" x-model="selectedIds" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                                                    </td>
+                                                                    <td class="px-6 py-3.5 whitespace-nowrap text-xs font-semibold text-indigo-650">{{ $child->mitra_id }}</td>
+                                                                    <td class="px-6 py-3.5 whitespace-nowrap text-xs font-medium text-gray-900">
+                                                                        <div class="flex flex-col">
+                                                                            <span>{{ $child->full_name }}</span>
+                                                                            <span class="text-[10px] text-gray-400 font-normal">{{ $child->user?->email ?? 'Belum punya akun login' }}</span>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td class="px-6 py-3.5 whitespace-nowrap text-xs text-gray-700">Rp{{ number_format($child->base_hourly_rate ?? 0, 0, ',', '.') }}</td>
+                                                                    <td class="px-6 py-3.5 whitespace-nowrap">
                                                                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border {{ $child->statusBadgeClasses() }}">{{ $child->statusLabel() }}</span>
                                                                     </td>
-                                                                    <td class="px-4 py-2.5 whitespace-nowrap text-right text-xs">
-                                                                        <a href="{{ route('partners.edit', $child) }}" class="text-indigo-600 hover:text-indigo-900 font-semibold">Edit</a>
+                                                                    <td class="px-6 py-3.5 whitespace-nowrap text-right text-xs">
+                                                                        <a href="{{ route('partners.edit', $child) }}" class="text-indigo-600 hover:text-indigo-900 font-semibold px-2 py-1 rounded hover:bg-indigo-50 transition">Edit</a>
                                                                     </td>
                                                                 </tr>
                                                                 @endforeach
