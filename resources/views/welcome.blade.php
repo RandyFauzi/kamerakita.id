@@ -6,6 +6,11 @@
     <title>KameraKita AI - Kerja Rumah Jadi Cuan</title>
     <link rel="icon" href="{{ asset('images/Logo.webp') }}" type="image/webp">
     
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <meta name="theme-color" content="#4f46e5">
+    <link rel="apple-touch-icon" href="{{ asset('images/onboarding/kamerakita.png') }}">
+    
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -396,5 +401,16 @@
           });
       });
     </script>
+
+      <!-- PWA Service Worker Registration -->
+      <script>
+          if ('serviceWorker' in navigator) {
+              window.addEventListener('load', () => {
+                  navigator.serviceWorker.register('/sw.js').catch(err => {
+                      console.error('ServiceWorker registration failed: ', err);
+                  });
+              });
+          }
+      </script>
 </body>
 </html>
