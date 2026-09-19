@@ -29,7 +29,9 @@ class ManagePartnerDemographicsController extends Controller
         $headstrap = $request->input('headstrap');
         $whatsapp = $request->input('whatsapp');
         $mitraParent = $request->input('mitra_parent');
+        $recruiterParent = $request->input('recruiter_parent');
         $clientRegistered = $request->input('client_registered');
+        $workerType = $request->input('worker_type'); // new filter
 
         $todayDateString = now()->toDateString();
         
@@ -79,15 +81,23 @@ class ManagePartnerDemographicsController extends Controller
             ->when($role, function ($query, $role) {
                 $query->where('partner_role', $role);
             })
+            ->when($workerType, function ($query, $workerType) {
+                if ($workerType === 'langsung') {
+                    $query->whereNull('mitra_parent_id')
+                          ->whereNull('recruiter_partner_id');
+                } elseif ($workerType === 'mitra') {
+                    $query->whereNotNull('mitra_parent_id');
+                } elseif ($workerType === 'rekruter') {
+                    $query->whereNotNull('recruiter_partner_id');
+                }
+            })
             ->when($status, function ($query, $status) {
                 if ($status === 'active') {
                     // Pernah aktif = pernah kirim laporan (sepanjang waktu)
-                    $query->where('status', '!=', 'suspended')
-                        ->whereHas('videoWorkReports');
+                    $query->whereHas('videoWorkReports');
                 } elseif ($status === 'inactive') {
-                    // Belum pernah aktif = belum pernah kirim laporan sama sekali
-                    $query->where('status', '!=', 'suspended')
-                        ->whereDoesntHave('videoWorkReports');
+                    // Belum pernah aktif = belum pernah kirim laporan
+                    $query->whereDoesntHave('videoWorkReports');
                 } else {
                     $query->where('status', $status);
                 }
@@ -112,6 +122,9 @@ class ManagePartnerDemographicsController extends Controller
             })
             ->when($mitraParent, function ($query, $mitraParent) {
                 $query->where('mitra_parent_id', $mitraParent);
+            })
+            ->when($recruiterParent, function ($query, $recruiterParent) {
+                $query->where('recruiter_partner_id', $recruiterParent);
             })
             ->when($clientRegistered !== null && $clientRegistered !== '', function ($query) use ($clientRegistered) {
                 $query->where('is_client_registered', $clientRegistered === 'yes' ? 1 : 0);

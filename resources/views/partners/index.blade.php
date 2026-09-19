@@ -191,9 +191,53 @@
                 </div>
             </section>
 
+            <!-- Tabs Navigation -->
+            <div class="flex overflow-x-auto space-x-2 border-b border-gray-200 pb-px">
+                <a href="{{ route('partners.index', array_merge(request()->except(['role', 'worker_type', 'mitra_parent', 'recruiter_parent', 'page']))) }}" 
+                   class="whitespace-nowrap py-3 px-5 border-b-2 font-medium text-sm transition-colors
+                   {{ !request('role') && !request('worker_type') && !request('mitra_parent') && !request('recruiter_parent') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">
+                    Semua Data
+                </a>
+                
+                <a href="{{ route('partners.index', array_merge(request()->except(['role', 'worker_type', 'mitra_parent', 'recruiter_parent', 'page']), ['role' => 'mitra'])) }}" 
+                   class="whitespace-nowrap py-3 px-5 border-b-2 font-medium text-sm transition-colors
+                   {{ request('role') == 'mitra' && !request('mitra_parent') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">
+                    Mitra Kordinator
+                </a>
+                
+                <a href="{{ route('partners.index', array_merge(request()->except(['role', 'worker_type', 'mitra_parent', 'recruiter_parent', 'page']), ['role' => 'worker', 'worker_type' => 'langsung'])) }}" 
+                   class="whitespace-nowrap py-3 px-5 border-b-2 font-medium text-sm transition-colors
+                   {{ request('worker_type') == 'langsung' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">
+                    Worker Langsung
+                </a>
+                
+                <a href="{{ route('partners.index', array_merge(request()->except(['role', 'worker_type', 'mitra_parent', 'recruiter_parent', 'page']), ['role' => 'rekruter'])) }}" 
+                   class="whitespace-nowrap py-3 px-5 border-b-2 font-medium text-sm transition-colors
+                   {{ request('role') == 'rekruter' && !request('recruiter_parent') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">
+                    Rekruter
+                </a>
+
+                @if(request('mitra_parent'))
+                <a href="#" class="whitespace-nowrap py-3 px-5 border-b-2 font-medium text-sm transition-colors border-indigo-500 text-indigo-600">
+                    Bawahan Mitra
+                </a>
+                @endif
+                
+                @if(request('recruiter_parent'))
+                <a href="#" class="whitespace-nowrap py-3 px-5 border-b-2 font-medium text-sm transition-colors border-indigo-500 text-indigo-600">
+                    Bawahan Rekruter
+                </a>
+                @endif
+            </div>
+
             <!-- Form Filter & Table Wrapper -->
             <form action="{{ route('partners.index') }}" method="GET" class="space-y-6">
-                
+                <!-- Preserve existing hidden tabs filter logic -->
+                @if(request('role')) <input type="hidden" name="role" value="{{ request('role') }}"> @endif
+                @if(request('worker_type')) <input type="hidden" name="worker_type" value="{{ request('worker_type') }}"> @endif
+                @if(request('mitra_parent')) <input type="hidden" name="mitra_parent" value="{{ request('mitra_parent') }}"> @endif
+                @if(request('recruiter_parent')) <input type="hidden" name="recruiter_parent" value="{{ request('recruiter_parent') }}"> @endif
+
                 <!-- Search & Action Card (Header above table) -->
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-2xl border border-gray-150 p-6">
                     <div class="flex flex-col md:flex-row gap-4 items-end justify-between">
@@ -394,6 +438,15 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <div class="flex items-center justify-end gap-2">
+                                            @if($partner->partner_role === 'mitra')
+                                                <a href="{{ route('partners.index', array_merge(request()->except(['mitra_parent', 'recruiter_parent', 'role', 'worker_type', 'page']), ['mitra_parent' => $partner->id])) }}" class="p-1.5 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition" title="Lihat Worker Bawahan">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                                                </a>
+                                            @elseif($partner->partner_role === 'rekruter')
+                                                <a href="{{ route('partners.index', array_merge(request()->except(['mitra_parent', 'recruiter_parent', 'role', 'worker_type', 'page']), ['recruiter_parent' => $partner->id])) }}" class="p-1.5 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition" title="Lihat Rekrutan">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                                                </a>
+                                            @endif
                                             <a href="{{ route('partners.edit', $partner) }}" class="p-1.5 text-gray-500 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition" title="Edit">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
