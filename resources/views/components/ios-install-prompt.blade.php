@@ -7,7 +7,7 @@
     </button>
     <div class="flex items-start gap-3">
         <div class="shrink-0 pt-1">
-            <img src="{{ asset('images/onboarding/kamerakita.png') }}" alt="Logo" class="w-12 h-12 rounded-xl border border-gray-100 shadow-sm">
+            <img src="{{ asset('images/app-icon.png') }}" alt="Logo" class="w-12 h-12 rounded-xl border border-gray-100 shadow-sm">
         </div>
         <div>
             <h4 class="text-sm font-bold text-gray-900 mb-1">Instal KameraKita</h4>

@@ -2,7 +2,7 @@ const CACHE_NAME = "kamerakita-pwa-v2";
 const urlsToCache = [
     "/",
     "/vendor-assets/kamerakita/logo-mark.svg",
-    "/images/onboarding/kamerakita.png"
+    "/images/app-icon.png"
 ];
 
 self.addEventListener("install", event => {
