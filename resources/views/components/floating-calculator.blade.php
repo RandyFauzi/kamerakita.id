@@ -1,4 +1,4 @@
-@if(auth()->check() && in_array(auth()->user()->role, ['superadmin', 'admin']))
+@auth
 
     <!-- Pembungkus Utama (Fixed di kanan tengah layar) -->
     <div 
@@ -99,4 +99,4 @@
         
     </div>
 
-@endif
+@endauth
