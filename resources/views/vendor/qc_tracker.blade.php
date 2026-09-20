@@ -4,83 +4,99 @@
             <h2 class="text-xl font-bold text-gray-900">QC Tracker (Laporan Tim)</h2>
         </div>
 
-        <!-- Highlight Info / Stats -->
+                <!-- Highlight Info / Stats -->
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-2">
             <!-- Card 1: Total Laporan -->
-            <div class="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-indigo-500 to-indigo-600 p-6 shadow-sm border border-indigo-400">
-                <div class="absolute -right-4 -top-4 opacity-10 pointer-events-none">
-                    <svg class="h-24 w-24 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <div class="rounded-[2rem] bg-indigo-500 p-6 shadow-sm border border-indigo-400 flex flex-col justify-between">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-indigo-100 mb-1">Total Laporan</p>
+                        <p class="text-3xl font-black text-white">{{ number_format($stats['total_reports']) }}</p>
+                    </div>
+                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-400/30 text-white">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    </div>
                 </div>
-                <div class="relative z-10">
-                    <p class="font-mono text-[10px] font-bold uppercase tracking-widest text-indigo-100 mb-1">Total Laporan</p>
-                    <p class="text-3xl font-black text-white">{{ number_format($stats['total_reports']) }}</p>
-                    <p class="text-[10px] text-indigo-200 mt-2 font-medium bg-indigo-700/30 inline-block px-2 py-0.5 rounded-full border border-indigo-400/30">Sesuai filter aktif</p>
+                <div class="mt-4">
+                    <span class="text-[10px] text-indigo-100 font-medium bg-indigo-600/50 px-2.5 py-1 rounded-full border border-indigo-400/30">Sesuai filter aktif</span>
                 </div>
             </div>
             
             <!-- Card 2: Durasi Dikirim -->
-            <div class="relative overflow-hidden rounded-[2rem] bg-white p-6 shadow-sm border border-gray-150">
-                <div class="absolute -right-4 -top-4 opacity-[0.03] pointer-events-none">
-                    <svg class="h-24 w-24 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                </div>
-                <div class="relative z-10">
-                    <p class="font-mono text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Total Dikirim</p>
-                    <div class="flex items-baseline gap-1">
-                        @if($stats['total_submitted'] >= 60)
-                            <p class="text-3xl font-black text-gray-800">{{ floor($stats['total_submitted'] / 60) }}</p>
-                            <p class="text-lg font-bold text-gray-400">j</p>
-                            <p class="text-3xl font-black text-gray-800 ml-1">{{ $stats['total_submitted'] % 60 }}</p>
-                            <p class="text-lg font-bold text-gray-400">m</p>
-                        @else
-                            <p class="text-3xl font-black text-gray-800">{{ $stats['total_submitted'] }}</p>
-                            <p class="text-lg font-bold text-gray-400">m</p>
-                        @endif
+            <div class="rounded-[2rem] bg-white p-6 shadow-sm border border-gray-150 flex flex-col justify-between">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Total Dikirim</p>
+                        <div class="flex items-baseline gap-1">
+                            @if($stats['total_submitted'] >= 60)
+                                <p class="text-3xl font-black text-gray-800">{{ floor($stats['total_submitted'] / 60) }}</p>
+                                <p class="text-sm font-bold text-gray-400">j</p>
+                                <p class="text-3xl font-black text-gray-800 ml-1">{{ $stats['total_submitted'] % 60 }}</p>
+                                <p class="text-sm font-bold text-gray-400">m</p>
+                            @else
+                                <p class="text-3xl font-black text-gray-800">{{ $stats['total_submitted'] }}</p>
+                                <p class="text-sm font-bold text-gray-400">m</p>
+                            @endif
+                        </div>
                     </div>
-                    <p class="text-[10px] text-gray-400 mt-2 font-medium bg-gray-50 inline-block px-2 py-0.5 rounded-full border border-gray-200">Telah disubmit worker</p>
+                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-50 text-gray-400 border border-gray-100">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <span class="text-[10px] text-gray-500 font-medium bg-gray-50 px-2.5 py-1 rounded-full border border-gray-200">Telah disubmit worker</span>
                 </div>
             </div>
 
             <!-- Card 3: Durasi Approved -->
-            <div class="relative overflow-hidden rounded-[2rem] bg-white p-6 shadow-sm border border-gray-150">
-                <div class="absolute -right-4 -top-4 opacity-[0.03] pointer-events-none">
-                    <svg class="h-24 w-24 text-emerald-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                </div>
-                <div class="relative z-10">
-                    <p class="font-mono text-[10px] font-bold uppercase tracking-widest text-emerald-500 mb-1">Durasi Approved</p>
-                    <div class="flex items-baseline gap-1">
-                        @if($stats['total_approved'] >= 60)
-                            <p class="text-3xl font-black text-gray-800">{{ floor($stats['total_approved'] / 60) }}</p>
-                            <p class="text-lg font-bold text-gray-400">j</p>
-                            <p class="text-3xl font-black text-gray-800 ml-1">{{ $stats['total_approved'] % 60 }}</p>
-                            <p class="text-lg font-bold text-gray-400">m</p>
-                        @else
-                            <p class="text-3xl font-black text-gray-800">{{ $stats['total_approved'] }}</p>
-                            <p class="text-lg font-bold text-gray-400">m</p>
-                        @endif
+            <div class="rounded-[2rem] bg-white p-6 shadow-sm border border-gray-150 flex flex-col justify-between">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-emerald-500 mb-1">Durasi Approved</p>
+                        <div class="flex items-baseline gap-1">
+                            @if($stats['total_approved'] >= 60)
+                                <p class="text-3xl font-black text-gray-800">{{ floor($stats['total_approved'] / 60) }}</p>
+                                <p class="text-sm font-bold text-gray-400">j</p>
+                                <p class="text-3xl font-black text-gray-800 ml-1">{{ $stats['total_approved'] % 60 }}</p>
+                                <p class="text-sm font-bold text-gray-400">m</p>
+                            @else
+                                <p class="text-3xl font-black text-gray-800">{{ $stats['total_approved'] }}</p>
+                                <p class="text-sm font-bold text-gray-400">m</p>
+                            @endif
+                        </div>
                     </div>
-                    <p class="text-[10px] text-emerald-600 mt-2 font-medium bg-emerald-50 inline-block px-2 py-0.5 rounded-full border border-emerald-100">Disetujui Admin</p>
+                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-500 border border-emerald-100">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <span class="text-[10px] text-emerald-600 font-medium bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">Disetujui Admin</span>
                 </div>
             </div>
 
             <!-- Card 4: Durasi Pending -->
-            <div class="relative overflow-hidden rounded-[2rem] bg-white p-6 shadow-sm border border-gray-150">
-                <div class="absolute -right-4 -top-4 opacity-[0.03] pointer-events-none">
-                    <svg class="h-24 w-24 text-amber-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                </div>
-                <div class="relative z-10">
-                    <p class="font-mono text-[10px] font-bold uppercase tracking-widest text-amber-500 mb-1">Durasi Pending</p>
-                    <div class="flex items-baseline gap-1">
-                        @if($stats['total_pending'] >= 60)
-                            <p class="text-3xl font-black text-gray-800">{{ floor($stats['total_pending'] / 60) }}</p>
-                            <p class="text-lg font-bold text-gray-400">j</p>
-                            <p class="text-3xl font-black text-gray-800 ml-1">{{ $stats['total_pending'] % 60 }}</p>
-                            <p class="text-lg font-bold text-gray-400">m</p>
-                        @else
-                            <p class="text-3xl font-black text-gray-800">{{ $stats['total_pending'] }}</p>
-                            <p class="text-lg font-bold text-gray-400">m</p>
-                        @endif
+            <div class="rounded-[2rem] bg-white p-6 shadow-sm border border-gray-150 flex flex-col justify-between">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-amber-500 mb-1">Durasi Pending</p>
+                        <div class="flex items-baseline gap-1">
+                            @if($stats['total_pending'] >= 60)
+                                <p class="text-3xl font-black text-gray-800">{{ floor($stats['total_pending'] / 60) }}</p>
+                                <p class="text-sm font-bold text-gray-400">j</p>
+                                <p class="text-3xl font-black text-gray-800 ml-1">{{ $stats['total_pending'] % 60 }}</p>
+                                <p class="text-sm font-bold text-gray-400">m</p>
+                            @else
+                                <p class="text-3xl font-black text-gray-800">{{ $stats['total_pending'] }}</p>
+                                <p class="text-sm font-bold text-gray-400">m</p>
+                            @endif
+                        </div>
                     </div>
-                    <p class="text-[10px] text-amber-600 mt-2 font-medium bg-amber-50 inline-block px-2 py-0.5 rounded-full border border-amber-100">Menunggu QC</p>
+                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-50 text-amber-500 border border-amber-100">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <span class="text-[10px] text-amber-600 font-medium bg-amber-50 px-2.5 py-1 rounded-full border border-amber-100">Menunggu QC</span>
                 </div>
             </div>
         </div>
@@ -193,4 +209,5 @@
         </div>
     </div>
 </x-app-layout>
+
 
