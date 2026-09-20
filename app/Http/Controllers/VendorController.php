@@ -43,11 +43,19 @@ class VendorController extends Controller
             $query->where('qc_status', $request->status);
         }
 
+        $baseQuery = clone $query;
+        $stats = [
+            'total_reports' => $baseQuery->count(),
+            'total_submitted' => (clone $baseQuery)->sum('submitted_duration_minutes'),
+            'total_approved' => (clone $baseQuery)->where('qc_status', 'approved')->sum('approved_duration_minutes'),
+            'total_pending' => (clone $baseQuery)->whereIn('qc_status', ['pending', 'on_review'])->sum('submitted_duration_minutes'),
+        ];
+
         $reports = $query->orderBy('updated_at', 'desc')
             ->paginate(20)
             ->withQueryString();
 
-        return view('vendor.qc_tracker', compact('reports'));
+        return view('vendor.qc_tracker', compact('reports', 'stats'));
     }
 
     public function payments(Request $request)
