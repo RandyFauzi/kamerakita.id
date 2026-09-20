@@ -5,19 +5,22 @@
         </div>
 
         <div class="mb-4 rounded-[2rem] bg-white p-4 shadow-sm border border-gray-150 md:p-6">
-            <form action="{{ route('vendor.reports.index') }}" method="GET" class="flex flex-col items-end gap-4 md:flex-row">
-                <div class="w-full flex-1">
-                    <label for="search" class="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-gray-400">Cari Worker / ID</label>
+            <form action="{{ route('vendor.reports.index') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4 items-end">
+                <!-- Search -->
+                <div class="sm:col-span-2 lg:col-span-3">
+                    <label for="search" class="mb-2 block text-[10px] font-bold uppercase tracking-wider text-gray-500">Cari Worker / ID</label>
                     <div class="relative">
-                        <svg class="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <svg class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
-                        <input type="text" name="search" id="search" value="{{ request('search') }}" placeholder="Ketik nama atau ID..." class="block w-full rounded-xl border border-gray-200 py-2.5 pl-10 pr-3 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <input type="text" name="search" id="search" value="{{ request('search') }}" placeholder="Ketik nama / ID..." class="block w-full rounded-full border border-gray-200 bg-gray-50/50 py-2.5 pl-10 pr-4 text-sm transition focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     </div>
                 </div>
-                <div class="w-full md:w-48">
-                    <label for="status" class="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-gray-400">Status QC</label>
-                    <select name="status" id="status" class="block w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                
+                <!-- Status QC -->
+                <div class="sm:col-span-1 lg:col-span-2">
+                    <label for="status" class="mb-2 block text-[10px] font-bold uppercase tracking-wider text-gray-500">Status QC</label>
+                    <select name="status" id="status" class="block w-full rounded-full border border-gray-200 bg-gray-50/50 px-4 py-2.5 text-sm transition focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
                         <option value="">Semua Status</option>
                         <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
                         <option value="on_review" {{ request('status') === 'on_review' ? 'selected' : '' }}>On Review</option>
@@ -25,17 +28,23 @@
                         <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>Rejected</option>
                     </select>
                 </div>
-                <div class="w-full md:w-40">
-                    <label for="start_date" class="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-gray-400">Dari Tgl</label>
-                    <input type="date" name="start_date" id="start_date" value="{{ request('start_date') }}" class="block w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                
+                <!-- Dari Tgl -->
+                <div class="sm:col-span-1 lg:col-span-2">
+                    <label for="start_date" class="mb-2 block text-[10px] font-bold uppercase tracking-wider text-gray-500">Dari Tgl</label>
+                    <input type="date" name="start_date" id="start_date" value="{{ request('start_date') }}" class="block w-full rounded-full border border-gray-200 bg-gray-50/50 px-4 py-2.5 text-sm transition focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
-                <div class="w-full md:w-40">
-                    <label for="end_date" class="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-gray-400">Sampai Tgl</label>
-                    <input type="date" name="end_date" id="end_date" value="{{ request('end_date') }}" class="block w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                
+                <!-- Sampai Tgl -->
+                <div class="sm:col-span-1 lg:col-span-2">
+                    <label for="end_date" class="mb-2 block text-[10px] font-bold uppercase tracking-wider text-gray-500">Sampai Tgl</label>
+                    <input type="date" name="end_date" id="end_date" value="{{ request('end_date') }}" class="block w-full rounded-full border border-gray-200 bg-gray-50/50 px-4 py-2.5 text-sm transition focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
-                <div class="flex w-full gap-2 md:w-auto">
-                    <button type="submit" class="inline-flex flex-1 items-center justify-center rounded-xl bg-gray-900 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-gray-800 md:flex-none">Filter</button>
-                    <a href="{{ route('vendor.reports.index') }}" class="inline-flex flex-1 items-center justify-center rounded-xl border border-gray-200 bg-gray-100 px-5 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-200 md:flex-none">Reset</a>
+                
+                <!-- Buttons -->
+                <div class="sm:col-span-1 lg:col-span-3 flex w-full gap-2">
+                    <button type="submit" class="inline-flex flex-1 items-center justify-center rounded-full bg-gray-900 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-gray-800 shadow-sm">Filter</button>
+                    <a href="{{ route('vendor.reports.index') }}" class="inline-flex flex-1 items-center justify-center rounded-full border border-gray-200 bg-white px-5 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 shadow-sm">Reset</a>
                 </div>
             </form>
         </div>
