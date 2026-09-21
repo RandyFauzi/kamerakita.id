@@ -31,8 +31,8 @@ class InvoiceController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'client_id' => 'required|exists:clients,id',
-            'client_name' => 'nullable|string|max:255',
+            'client_id' => 'nullable|exists:clients,id',
+            'client_name' => 'required_without:client_id|string|max:255',
             'client_address' => 'nullable|string',
             'period_start' => 'required|date',
             'period_end' => 'required|date|after_or_equal:period_start',
@@ -41,12 +41,18 @@ class InvoiceController extends Controller
             'unit_rate' => 'required|numeric|min:0',
         ]);
 
-        $client = Client::findOrFail($validated['client_id']);
+        $client = null;
+        if (!empty($validated['client_id'])) {
+            $client = Client::find($validated['client_id']);
+        }
+        
         $amount = $validated['billable_hours'] * $validated['unit_rate'];
 
         // Use custom inputs if provided, otherwise fallback to template
-        $finalClientName = !empty($validated['client_name']) ? $validated['client_name'] : $client->name;
-        $finalClientAddress = !empty($validated['client_address']) ? $validated['client_address'] : $client->address;
+        $finalClientName = !empty($validated['client_name']) ? $validated['client_name'] : ($client ? $client->name : '');
+        $finalClientAddress = !empty($validated['client_address']) ? $validated['client_address'] : ($client ? $client->address : null);
+        $clientEmail = $client ? $client->email : null;
+        $clientTaxId = $client ? $client->tax_id : null;
 
         DB::beginTransaction();
         try {
@@ -62,13 +68,13 @@ class InvoiceController extends Controller
             $invoice = Invoice::create([
                 'invoice_no' => $invoiceNo,
                 'invoice_date' => $validated['invoice_date'],
-                'client_id' => $client->id,
+                'client_id' => $client ? $client->id : null,
                 'client_name' => $finalClientName,
-                'client_email' => $client->email,
+                'client_email' => $clientEmail,
                 'client_address' => $finalClientAddress,
-                'client_tax_id' => $client->tax_id,
+                'client_tax_id' => $clientTaxId,
                 'unit_rate' => $validated['unit_rate'],
-                'currency' => $client->default_currency,
+                'currency' => $client ? $client->default_currency : 'IDR',
                 'period_start' => $validated['period_start'],
                 'period_end' => $validated['period_end'],
                 'source_approved_hours' => $validated['billable_hours'],

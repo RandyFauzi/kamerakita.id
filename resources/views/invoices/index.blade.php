@@ -56,21 +56,21 @@
                                         <div>
                                             <label class="block text-sm font-semibold text-gray-700 mb-1">{{ __('dashboard.invoices.select_client') }}</label>
                                             <select name="client_id" x-model="selectedClient" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
-                                                <option value="">{{ __('dashboard.invoices.select_client_placeholder') }}</option>
+                                                <option value="">-- Tulis Manual / Pilih Template --</option>
                                                 @foreach($clients as $c)
                                                     <option value="{{ $c->id }}" data-rate="{{ $c->default_rate }}" data-currency="{{ $c->default_currency }}" data-name="{{ $c->name }}" data-address="{{ $c->address }}">{{ $c->name }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
 
-                                        <div x-show="selectedClient" x-cloak class="space-y-4 p-4 bg-gray-50 border border-gray-200 rounded-xl mt-2">
+                                        <div class="space-y-4 p-4 bg-gray-50 border border-gray-200 rounded-xl mt-2">
                                             <div>
                                                 <label class="block text-xs font-semibold text-gray-600 mb-1">{{ __('dashboard.invoices.client_name_invoice') }}</label>
-                                                <input type="text" name="client_name" x-model="clientName" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
+                                                <input type="text" name="client_name" x-model="clientName" required placeholder="Tulis nama klien atau pilih template..." class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
                                             </div>
                                             <div>
                                                 <label class="block text-xs font-semibold text-gray-600 mb-1">{{ __('dashboard.invoices.billing_address') }}</label>
-                                                <textarea name="client_address" x-model="clientAddress" rows="2" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"></textarea>
+                                                <textarea name="client_address" x-model="clientAddress" rows="2" placeholder="Alamat klien (opsional)..." class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"></textarea>
                                             </div>
                                         </div>
 
