@@ -22,7 +22,7 @@
                 return (parseInt(this.inputMinutes) / 60).toFixed(2);
             }
         }" 
-        class="fixed z-[999] right-0 top-1/2 -translate-y-1/2 flex items-center"
+        class="fixed z-[999] right-0 top-1/2 -translate-y-1/2 flex items-center print:hidden"
         @click.away="isOpen = false"
     >
         
