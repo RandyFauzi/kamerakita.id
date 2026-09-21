@@ -74,7 +74,7 @@ class InvoiceController extends Controller
                 'client_address' => $finalClientAddress,
                 'client_tax_id' => $clientTaxId,
                 'unit_rate' => $validated['unit_rate'],
-                'currency' => $client ? $client->default_currency : 'IDR',
+                'currency' => $client ? $client->default_currency : 'USD',
                 'period_start' => $validated['period_start'],
                 'period_end' => $validated['period_end'],
                 'source_approved_hours' => $validated['billable_hours'],
