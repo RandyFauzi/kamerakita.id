@@ -145,9 +145,9 @@
                     </div>
                     
                     <!-- Totals -->
-                    <div class="flex justify-end mb-16">
-                        <div class="w-1/2 lg:w-1/3">
-                            <div class="flex justify-between py-4 border-t-2 border-slate-800">
+                    <div class="mb-16">
+                        <div class="w-full max-w-xs sm:max-w-sm ml-auto">
+                            <div class="flex justify-between items-center py-4 border-t-2 border-slate-800">
                                 <span class="font-bold text-xl text-slate-800">TOTAL DUE</span>
                                 <span class="font-black text-2xl text-indigo-600">{{ $invoice->currency }} {{ number_format($invoice->total_amount, 2) }}</span>
                             </div>
@@ -167,10 +167,25 @@
     
     <style>
         @media print {
-            body { background-color: white !important; }
-            nav, header, .flex.space-x-2, .mb-6.flex { display: none !important; }
+            html, body, #app { 
+                background: white !important; 
+                background-color: white !important; 
+                background-image: none !important; 
+            }
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            nav, header, aside, .flex.space-x-2, .mb-6.flex, .bg-red-50 { display: none !important; }
             .py-12 { padding: 0 !important; }
-            #printable-invoice { box-shadow: none !important; border: none !important; padding: 2rem !important; }
+            .max-w-4xl { max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+            #printable-invoice { 
+                box-shadow: none !important; 
+                border: none !important; 
+                padding: 10mm !important; 
+                margin: 0 !important; 
+                min-height: auto !important; 
+            }
         }
     </style>
 </x-app-layout>
