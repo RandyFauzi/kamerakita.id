@@ -34,6 +34,13 @@ class SubmitVideoWorkReportController extends Controller
             return redirect()->route('dashboard')->with('error', 'Akses ditolak.');
         }
 
+        // Handle case where total upload size exceeds PHP's post_max_size.
+        // PHP drops the entire $_POST and $_FILES array, causing Laravel to see empty inputs.
+        // This triggers confusing validation errors for fields the user already filled.
+        if (empty($request->all()) && (int) $request->server('CONTENT_LENGTH') > 0) {
+            return back()->with('error', 'Gagal mengirim laporan: Total ukuran file yang diunggah terlalu besar. Harap perkecil/kompres ukuran screenshot Anda (Maks. 2MB per gambar) lalu coba lagi.');
+        }
+
         $validated = $request->validate([
             'project_name' => 'required|in:atlas,minutes_data',
             'submission_date' => 'required|date|before_or_equal:today',
@@ -116,6 +123,11 @@ class SubmitVideoWorkReportController extends Controller
             return back()
                 ->withInput()
                 ->with('error', 'Laporan gagal dikirim karena file bukti tidak berhasil disimpan. Cek permission folder storage/app/private lalu coba lagi.');
+        }
+
+        if ($request->wantsJson()) {
+            session()->flash('success', 'Laporan kerja video Anda berhasil dikirim dan sedang menunggu antrean QC!');
+            return response()->json(['redirect' => route('dashboard')]);
         }
 
         return redirect()->route('dashboard')->with('success', 'Laporan kerja video Anda berhasil dikirim dan sedang menunggu antrean QC!');

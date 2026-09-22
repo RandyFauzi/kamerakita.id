@@ -50,7 +50,7 @@
                     </div>
                 @endif
 
-                <form
+                <form id="submit-report-form"
                     action="{{ route('video-submissions.rejected.update', $report) }}"
                     method="POST"
                     enctype="multipart/form-data"
@@ -217,4 +217,163 @@
             </div>
         </div>
     </div>
+<script>
+    async function compressImage(file, maxWidth = 1200, quality = 0.7) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > maxWidth) {
+                        height = Math.round((height * maxWidth) / width);
+                        width = maxWidth;
+                    }
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    const mimeType = 'image/jpeg';
+                    canvas.toBlob((blob) => {
+                        // Create a new File object with the compressed blob
+                        const newFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
+                            type: mimeType,
+                            lastModified: Date.now()
+                        });
+                        resolve(newFile);
+                    }, mimeType, quality);
+                };
+            };
+        });
+    }
+
+    async function handleFileCompression(event) {
+        const input = event.target;
+        if (!input.files || input.files.length === 0) return;
+
+        // Visual feedback
+        const submitBtn = document.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="animate-pulse">Mengompres foto...</span>';
+
+        const dataTransfer = new DataTransfer();
+        
+        for (let i = 0; i < input.files.length; i++) {
+            const file = input.files[i];
+            
+            // Only compress images larger than 500KB
+            if (file.type.startsWith('image/') && file.size > 500 * 1024) {
+                try {
+                    const compressedFile = await compressImage(file, 1200, 0.7);
+                    dataTransfer.items.add(compressedFile);
+                } catch (e) {
+                    console.error("Gagal mengompres gambar:", e);
+                    dataTransfer.items.add(file); // Fallback to original
+                }
+            } else {
+                dataTransfer.items.add(file);
+            }
+        }
+
+        // Replace input files with the compressed ones
+        input.files = dataTransfer.files;
+
+        // Restore button state
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+    }
+
+    // Workaround for iOS Safari WebKit bug where assigning DataTransfer.files to input.files
+    // corrupts standard multipart form submissions. We use fetch() with FormData instead.
+    document.getElementById('submit-report-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const form = this;
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        
+        // Disable button to prevent double submission
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="animate-pulse">Menyimpan Laporan...</span>';
+        
+        // Remove old error messages
+        document.querySelectorAll('.js-form-error').forEach(el => el.remove());
+        
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST', // Blade has @method('PUT') inside, which will be included in FormData
+                body: new FormData(form),
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            
+            if (response.ok) {
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.indexOf("application/json") !== -1) {
+                    const data = await response.json();
+                    window.location.href = data.redirect || "{{ route('dashboard') }}";
+                } else if (response.redirected) {
+                    window.location.href = response.url;
+                } else {
+                    window.location.href = "{{ route('dashboard') }}";
+                }
+            } else if (response.status === 422) {
+                // Validation error
+                const data = await response.json();
+                
+                for (const [field, messages] of Object.entries(data.errors)) {
+                    let inputName = field;
+                    if (field.startsWith('evidence_submitted_image_paths.')) {
+                        inputName = 'evidence_submitted_image_paths[]';
+                    }
+                    
+                    const input = form.querySelector(`[name="${inputName}"]`);
+                    if (input) {
+                        const errorMsg = document.createElement('p');
+                        errorMsg.className = 'text-red-500 text-xs mt-1 js-form-error';
+                        errorMsg.innerText = messages[0];
+                        input.parentElement.appendChild(errorMsg);
+                        
+                        if (input.classList.contains('border-gray-200')) {
+                            input.classList.remove('border-gray-200', 'focus:ring-indigo-500', 'focus:border-indigo-500');
+                            input.classList.add('border-red-500', 'focus:ring-red-500', 'focus:border-red-500');
+                            
+                            input.addEventListener('input', function() {
+                                this.classList.remove('border-red-500', 'focus:ring-red-500', 'focus:border-red-500');
+                                this.classList.add('border-gray-200', 'focus:ring-indigo-500', 'focus:border-indigo-500');
+                                const err = this.parentElement.querySelector('.js-form-error');
+                                if (err) err.remove();
+                            }, { once: true });
+                        }
+                    }
+                }
+                
+                const firstError = form.querySelector('.js-form-error');
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            } else {
+                alert('Terjadi kesalahan pada server. Harap muat ulang halaman dan coba lagi.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+        } catch (error) {
+            alert('Gagal mengirim laporan. Pastikan koneksi internet Anda stabil.');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        }
+    });
+</script>
 </x-app-layout>

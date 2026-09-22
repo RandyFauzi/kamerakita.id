@@ -29,6 +29,11 @@ class EditRejectedVideoWorkReportController extends Controller
     {
         $this->authorizedWorkerFor($report);
 
+        // Handle case where total upload size exceeds PHP's post_max_size.
+        if (empty($request->all()) && (int) $request->server('CONTENT_LENGTH') > 0) {
+            return back()->with('error', 'Gagal mengirim laporan: Total ukuran file yang diunggah terlalu besar. Harap perkecil/kompres ukuran screenshot Anda (Maks. 2MB per gambar) lalu coba lagi.');
+        }
+
         $validated = $request->validate([
             'project_name' => 'required|in:atlas,minutes_data',
             'submission_date' => 'required|date|before_or_equal:today',
@@ -132,6 +137,11 @@ class EditRejectedVideoWorkReportController extends Controller
         }
 
         $this->deleteEvidenceFiles($oldPaths, true);
+
+        if ($request->wantsJson()) {
+            session()->flash('success', 'Laporan berhasil diperbaiki dan masuk kembali ke antrean QC.');
+            return response()->json(['redirect' => route('video-submissions.report-history')]);
+        }
 
         return redirect()
             ->route('video-submissions.report-history')

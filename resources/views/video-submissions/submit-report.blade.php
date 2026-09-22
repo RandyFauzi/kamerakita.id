@@ -31,7 +31,7 @@
                     </div>
                 @endif
 
-                <form x-data="{ project_name: '{{ old('project_name', 'atlas') }}' }" action="{{ route('video-submissions.submit-report.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+                <form id="submit-report-form" x-data="{ project_name: '{{ old('project_name', 'atlas') }}' }" action="{{ route('video-submissions.submit-report.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                     @csrf
 
                     <!-- App Selection Dropdown -->
@@ -83,7 +83,7 @@
                             </span>
                             <span class="text-xs text-gray-400">{{ __("dashboard.submit_report_page.format_info") }}</span>
                         </div>
-                        <input type="file" accept="image/jpeg,image/png,image/webp" name="evidence_email_image_path" id="evidence_email_image_path" required class="block w-full text-xs sm:text-sm text-gray-500 file:mr-3 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-55 file:text-indigo-700 hover:file:bg-indigo-100 file:transition-all">
+                        <input type="file" accept="image/jpeg,image/png,image/webp" name="evidence_email_image_path" id="evidence_email_image_path" required onchange="handleFileCompression(event)" class="block w-full text-xs sm:text-sm text-gray-500 file:mr-3 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-55 file:text-indigo-700 hover:file:bg-indigo-100 file:transition-all">
                         @error('evidence_email_image_path') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         <p class="text-xs text-gray-400 mt-1" x-show="project_name === 'atlas'">{{ __("dashboard.submit_report_page.evidence_1_desc_atlas") }}</p>
                         <p class="text-xs text-gray-400 mt-1" x-show="project_name === 'minutes_data'" style="display: none;">{{ __("dashboard.submit_report_page.evidence_1_desc_minutes") }}</p>
@@ -95,7 +95,7 @@
                             <span class="text-sm font-bold text-slate-800">2. {{ __("dashboard.submit_report_page.evidence_2_minutes") }} <span class="text-red-500">*</span></span>
                             <span class="text-xs text-gray-400">{{ __("dashboard.submit_report_page.format_info") }}</span>
                         </div>
-                        <input type="file" accept="image/jpeg,image/png,image/webp" name="evidence_app_quality_image_path" id="evidence_app_quality_image_path" :required="project_name === 'minutes_data'" class="block w-full text-xs sm:text-sm text-gray-500 file:mr-3 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-55 file:text-indigo-700 hover:file:bg-indigo-100 file:transition-all">
+                        <input type="file" accept="image/jpeg,image/png,image/webp" name="evidence_app_quality_image_path" id="evidence_app_quality_image_path" :required="project_name === 'minutes_data'" onchange="handleFileCompression(event)" class="block w-full text-xs sm:text-sm text-gray-500 file:mr-3 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-55 file:text-indigo-700 hover:file:bg-indigo-100 file:transition-all">
                         @error('evidence_app_quality_image_path') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         <p class="text-xs text-gray-400 mt-1">{{ __("dashboard.submit_report_page.evidence_2_desc_minutes") }}</p>
                     </div>
@@ -106,7 +106,7 @@
                             <span class="text-sm font-bold text-slate-800">2. {{ __("dashboard.submit_report_page.evidence_2_atlas") }} <span class="text-red-500">*</span></span>
                             <span class="text-xs text-gray-400">{{ __("dashboard.submit_report_page.format_info_multiple") }}</span>
                         </div>
-                        <input type="file" accept="image/jpeg,image/png,image/webp" name="evidence_submitted_image_paths[]" id="evidence_submitted_image_paths" multiple :required="project_name === 'atlas'" class="block w-full text-xs sm:text-sm text-gray-500 file:mr-3 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-55 file:text-indigo-700 hover:file:bg-indigo-100 file:transition-all">
+                        <input type="file" accept="image/jpeg,image/png,image/webp" name="evidence_submitted_image_paths[]" id="evidence_submitted_image_paths" multiple :required="project_name === 'atlas'" onchange="handleFileCompression(event)" class="block w-full text-xs sm:text-sm text-gray-500 file:mr-3 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-55 file:text-indigo-700 hover:file:bg-indigo-100 file:transition-all">
                         @error('evidence_submitted_image_paths') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         @error('evidence_submitted_image_paths.*') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         <p class="text-xs text-gray-400 mt-1">{{ __("dashboard.submit_report_page.evidence_2_desc_atlas") }}</p>
@@ -125,4 +125,171 @@
             </div>
         </div>
     </div>
+<script>
+    async function compressImage(file, maxWidth = 1200, quality = 0.7) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > maxWidth) {
+                        height = Math.round((height * maxWidth) / width);
+                        width = maxWidth;
+                    }
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    const mimeType = 'image/jpeg';
+                    canvas.toBlob((blob) => {
+                        // Create a new File object with the compressed blob
+                        const newFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
+                            type: mimeType,
+                            lastModified: Date.now()
+                        });
+                        resolve(newFile);
+                    }, mimeType, quality);
+                };
+            };
+        });
+    }
+
+    async function handleFileCompression(event) {
+        const input = event.target;
+        if (!input.files || input.files.length === 0) return;
+
+        // Visual feedback
+        const submitBtn = document.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="animate-pulse">Mengompres foto...</span>';
+
+        const dataTransfer = new DataTransfer();
+        
+        for (let i = 0; i < input.files.length; i++) {
+            const file = input.files[i];
+            
+            // Only compress images larger than 500KB
+            if (file.type.startsWith('image/') && file.size > 500 * 1024) {
+                try {
+                    const compressedFile = await compressImage(file, 1200, 0.7);
+                    dataTransfer.items.add(compressedFile);
+                } catch (e) {
+                    console.error("Gagal mengompres gambar:", e);
+                    dataTransfer.items.add(file); // Fallback to original
+                }
+            } else {
+                dataTransfer.items.add(file);
+            }
+        }
+
+        // Replace input files with the compressed ones
+        input.files = dataTransfer.files;
+
+        // Restore button state
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+    }
+
+    // Workaround for iOS Safari WebKit bug where assigning DataTransfer.files to input.files
+    // corrupts standard multipart form submissions. We use fetch() with FormData instead.
+    document.getElementById('submit-report-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const form = this;
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        
+        // Disable button to prevent double submission
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="animate-pulse">Mengirim Laporan...</span>';
+        
+        // Remove old error messages
+        document.querySelectorAll('.js-form-error').forEach(el => el.remove());
+        
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: new FormData(form),
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            
+            if (response.ok) {
+                // Success
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.indexOf("application/json") !== -1) {
+                    const data = await response.json();
+                    window.location.href = data.redirect || "{{ route('dashboard') }}";
+                } else if (response.redirected) {
+                    window.location.href = response.url;
+                } else {
+                    window.location.href = "{{ route('dashboard') }}";
+                }
+            } else if (response.status === 422) {
+                // Validation error
+                const data = await response.json();
+                
+                // Show a general error message at the top if desired, or just field errors
+                for (const [field, messages] of Object.entries(data.errors)) {
+                    // Map Laravel array notation to HTML input names
+                    let inputName = field;
+                    if (field.startsWith('evidence_submitted_image_paths.')) {
+                        inputName = 'evidence_submitted_image_paths[]';
+                    }
+                    
+                    const input = form.querySelector(`[name="${inputName}"]`);
+                    if (input) {
+                        const errorMsg = document.createElement('p');
+                        errorMsg.className = 'text-red-500 text-xs mt-1 js-form-error';
+                        errorMsg.innerText = messages[0];
+                        // Append after the input
+                        input.parentElement.appendChild(errorMsg);
+                        
+                        // Add error styling to input
+                        if (input.classList.contains('border-gray-200')) {
+                            input.classList.remove('border-gray-200', 'focus:ring-indigo-500', 'focus:border-indigo-500');
+                            input.classList.add('border-red-500', 'focus:ring-red-500', 'focus:border-red-500');
+                            
+                            // Remove styling on next input
+                            input.addEventListener('input', function() {
+                                this.classList.remove('border-red-500', 'focus:ring-red-500', 'focus:border-red-500');
+                                this.classList.add('border-gray-200', 'focus:ring-indigo-500', 'focus:border-indigo-500');
+                                const err = this.parentElement.querySelector('.js-form-error');
+                                if (err) err.remove();
+                            }, { once: true });
+                        }
+                    }
+                }
+                
+                // Scroll to the first error
+                const firstError = form.querySelector('.js-form-error');
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            } else {
+                // Other server errors (500, 419, etc.)
+                alert('Terjadi kesalahan pada server. Harap muat ulang halaman dan coba lagi.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+        } catch (error) {
+            alert('Gagal mengirim laporan. Pastikan koneksi internet Anda stabil.');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        }
+    });
+</script>
 </x-app-layout>
