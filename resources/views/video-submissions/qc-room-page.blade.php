@@ -54,6 +54,16 @@
                 </div>
             @endif
 
+            @if($errors->any())
+                <div class="p-4 bg-rose-50 border-l-4 border-rose-500 rounded-2xl text-sm text-rose-800 font-semibold shadow-sm animate-in fade-in duration-200">
+                    <ul class="list-disc pl-5">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <!-- Filters -->
             <div class="bg-white/50 border-2 border-white/60 p-4 md:p-6 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] mb-8 backdrop-blur-xl">
                 <form action="{{ route('video-submissions.qc-room') }}" method="GET" class="flex flex-col gap-5">

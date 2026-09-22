@@ -697,7 +697,7 @@ class VerifyVideoWorkReportController extends Controller
         }
 
         $validated = $request->validate([
-            'email' => 'required|email|exists:users,email',
+            'email' => 'required|email',
             'approved_hours' => 'required|numeric|min:0',
             'rejected_hours' => 'required|numeric|min:0',
         ]);
