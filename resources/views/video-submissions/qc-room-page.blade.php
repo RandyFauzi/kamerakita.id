@@ -1023,6 +1023,8 @@
                     </form>
                 </div>
             </div>
+        </div>
+
             <!-- Quick Reconcile Modal -->
             <div id="quickReconcileModal" 
                  class="fixed inset-0 z-[100] items-center justify-center p-4 sm:p-0"
