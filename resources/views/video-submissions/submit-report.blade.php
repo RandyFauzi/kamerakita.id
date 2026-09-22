@@ -162,9 +162,15 @@
         });
     }
 
+    // Store compressed files here instead of mutating input.files to avoid iOS Safari bugs
+    window.compressedFiles = window.compressedFiles || {};
+
     async function handleFileCompression(event) {
         const input = event.target;
-        if (!input.files || input.files.length === 0) return;
+        if (!input.files || input.files.length === 0) {
+            delete window.compressedFiles[input.id];
+            return;
+        }
 
         // Visual feedback
         const submitBtn = document.querySelector('button[type="submit"]');
@@ -172,7 +178,7 @@
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<span class="animate-pulse">Mengompres foto...</span>';
 
-        const dataTransfer = new DataTransfer();
+        const compressedArray = [];
         
         for (let i = 0; i < input.files.length; i++) {
             const file = input.files[i];
@@ -181,18 +187,18 @@
             if (file.type.startsWith('image/') && file.size > 500 * 1024) {
                 try {
                     const compressedFile = await compressImage(file, 1200, 0.7);
-                    dataTransfer.items.add(compressedFile);
+                    compressedArray.push(compressedFile);
                 } catch (e) {
                     console.error("Gagal mengompres gambar:", e);
-                    dataTransfer.items.add(file); // Fallback to original
+                    compressedArray.push(file); // Fallback to original
                 }
             } else {
-                dataTransfer.items.add(file);
+                compressedArray.push(file);
             }
         }
 
-        // Replace input files with the compressed ones
-        input.files = dataTransfer.files;
+        // Store in global object instead of mutating input.files
+        window.compressedFiles[input.id] = compressedArray;
 
         // Restore button state
         submitBtn.disabled = false;
@@ -215,9 +221,27 @@
         document.querySelectorAll('.js-form-error').forEach(el => el.remove());
         
         try {
+            const formData = new FormData(form);
+            
+            // Swap out the original files with our compressed ones
+            if (window.compressedFiles) {
+                for (const [inputId, files] of Object.entries(window.compressedFiles)) {
+                    const inputElement = document.getElementById(inputId);
+                    if (inputElement && files.length > 0) {
+                        const fieldName = inputElement.name;
+                        // Remove the original uncompressed files
+                        formData.delete(fieldName);
+                        // Append the compressed files
+                        for (const file of files) {
+                            formData.append(fieldName, file);
+                        }
+                    }
+                }
+            }
+
             const response = await fetch(form.action, {
                 method: 'POST',
-                body: new FormData(form),
+                body: formData,
                 headers: {
                     'Accept': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest'
