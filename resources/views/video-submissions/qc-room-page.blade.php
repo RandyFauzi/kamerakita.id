@@ -1034,25 +1034,87 @@
 
                 <div class="relative bg-white rounded-3xl overflow-hidden shadow-2xl sm:max-w-md w-full border border-gray-100 animate-in fade-in zoom-in-95 duration-200">
                     
-                    <div class="px-6 py-5 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
+                    <div class="px-6 py-4 bg-slate-950 text-white flex items-center justify-between shrink-0">
                         <div class="flex items-center gap-3">
-                            <div class="p-2 bg-emerald-100 text-emerald-600 rounded-xl">
+                            <div class="p-1.5 bg-emerald-500/20 text-emerald-400 rounded-lg">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                             </div>
-                            <h3 class="text-lg font-bold text-gray-900">Quick Reconcile by Email</h3>
+                            <div>
+                                <span class="text-[9px] uppercase font-bold text-emerald-400 tracking-widest font-mono">Fast Action</span>
+                                <h3 class="text-base font-black leading-tight">Quick Reconcile by Email</h3>
+                            </div>
                         </div>
-                        <button onclick="document.getElementById('quickReconcileModal').style.display='none'" type="button" class="text-gray-400 hover:text-gray-500 hover:bg-gray-100 p-2 rounded-xl transition-colors">
-                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        <button onclick="document.getElementById('quickReconcileModal').style.display='none'" type="button" class="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
                         </button>
                     </div>
 
                     <form action="{{ route('video-submissions.quick-reconcile') }}" method="POST" class="p-6 space-y-5">
                         @csrf
                         
-                        <div>
-                            <label for="email" class="block text-sm font-bold text-gray-700 mb-1.5">Email Partisipan <span class="text-red-500">*</span></label>
-                            <input type="email" name="email" id="email" required placeholder="email@kamerakita.id" class="block w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-emerald-500 focus:border-emerald-500 bg-white transition-colors" />
-                            <p class="mt-1.5 text-xs text-gray-500 font-medium">Email valid milik partisipan yang ada di sistem.</p>
+                        <div x-data="{
+                            open: false,
+                            search: '',
+                            selectedEmail: '',
+                            workers: [
+                                @foreach($allWorkers as $worker)
+                                    @if($worker->email)
+                                    { email: '{{ addslashes($worker->email) }}', name: '{{ addslashes($worker->full_name) }} ({{ addslashes($worker->email) }})' },
+                                    @endif
+                                @endforeach
+                            ],
+                            get filteredWorkers() {
+                                if (this.search === '') return this.workers;
+                                return this.workers.filter(w => w.name.toLowerCase().includes(this.search.toLowerCase()));
+                            },
+                            selectWorker(worker) {
+                                this.selectedEmail = worker.email;
+                                this.open = false;
+                                this.search = '';
+                            }
+                        }" class="relative">
+                            <label class="block text-sm font-bold text-gray-700 mb-1.5">Email Partisipan <span class="text-red-500">*</span></label>
+                            
+                            <input type="hidden" name="email" :value="selectedEmail" required>
+                            
+                            <button type="button" @click="open = !open" @click.away="open = false" class="relative w-full bg-white border border-gray-200 rounded-xl pl-4 pr-10 py-3 text-left cursor-default focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm shadow-sm transition-colors">
+                                <span class="block truncate" x-text="selectedEmail || '-- Pilih Email Mitra --'" :class="{ 'text-gray-400': !selectedEmail, 'text-gray-900': selectedEmail }"></span>
+                                <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                    <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+                                        <path d="M7 7l3-3 3 3m0 6l-3 3-3-3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </span>
+                            </button>
+
+                            <!-- Dropdown menu -->
+                            <div x-show="open" 
+                                 x-transition
+                                 class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-xl py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm" 
+                                 style="display: none;">
+                                
+                                <div class="sticky top-0 z-10 bg-white px-3 pb-2 pt-2 border-b border-gray-100">
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                        </div>
+                                        <input type="text" x-model="search" class="block w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500" placeholder="Cari email mitra..." @click.stop>
+                                    </div>
+                                </div>
+
+                                <ul class="pt-1">
+                                    <template x-for="worker in filteredWorkers" :key="worker.email">
+                                        <li @click="selectWorker(worker)" class="text-gray-900 cursor-pointer select-none relative py-2.5 pl-4 pr-9 hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
+                                            <span class="block truncate" x-text="worker.name" :class="{ 'font-semibold': selectedEmail === worker.email, 'font-normal': selectedEmail !== worker.email }"></span>
+                                            
+                                            <span x-show="selectedEmail === worker.email" class="text-emerald-600 absolute inset-y-0 right-0 flex items-center pr-4">
+                                                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                                </svg>
+                                            </span>
+                                        </li>
+                                    </template>
+                                </ul>
+                            </div>
                         </div>
 
                         <div class="grid grid-cols-2 gap-4">
