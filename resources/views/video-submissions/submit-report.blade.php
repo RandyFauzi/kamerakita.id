@@ -207,8 +207,12 @@
 
     // Workaround for iOS Safari WebKit bug where assigning DataTransfer.files to input.files
     // corrupts standard multipart form submissions. We use fetch() with FormData instead.
+    let isSubmittingReport = false;
     document.getElementById('submit-report-form').addEventListener('submit', async function(e) {
         e.preventDefault();
+        if (isSubmittingReport) return;
+        
+        isSubmittingReport = true;
         const form = this;
         const submitBtn = form.querySelector('button[type="submit"]');
         const originalText = submitBtn.innerHTML;
@@ -303,16 +307,19 @@
                 
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalText;
+                isSubmittingReport = false;
             } else {
                 // Other server errors (500, 419, etc.)
                 alert('Terjadi kesalahan pada server. Harap muat ulang halaman dan coba lagi.');
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalText;
+                isSubmittingReport = false;
             }
         } catch (error) {
             alert('Gagal mengirim laporan. Pastikan koneksi internet Anda stabil.');
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalText;
+            isSubmittingReport = false;
         }
     });
 </script>
