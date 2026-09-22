@@ -183,7 +183,7 @@
 
                         <!-- Right: Action Buttons -->
                         <div class="flex gap-2 w-full md:w-auto shrink-0">
-                            <button type="button" @click.prevent="openReconcile = true" class="flex-1 md:flex-none justify-center inline-flex items-center px-5 py-2.5 bg-emerald-600 border border-transparent rounded-xl font-semibold text-sm text-white hover:bg-emerald-700 transition-all shadow-sm gap-1.5 whitespace-nowrap">
+                            <button type="button" onclick="document.getElementById('quickReconcileModal').style.display='flex'" class="flex-1 md:flex-none justify-center inline-flex items-center px-5 py-2.5 bg-emerald-600 border border-transparent rounded-xl font-semibold text-sm text-white hover:bg-emerald-700 transition-all shadow-sm gap-1.5 whitespace-nowrap">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                                 Quick Reconcile
                             </button>
@@ -1024,25 +1024,13 @@
                 </div>
             </div>
             <!-- Quick Reconcile Modal -->
-            <div x-show="openReconcile" 
-                 x-cloak
-                 class="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-0"
-                 x-transition:enter="transition ease-out duration-300"
-                 x-transition:enter-start="opacity-0"
-                 x-transition:enter-end="opacity-100"
-                 x-transition:leave="transition ease-in duration-200"
-                 x-transition:leave-start="opacity-100"
-                 x-transition:leave-end="opacity-0">
+            <div id="quickReconcileModal" 
+                 class="fixed inset-0 z-[100] items-center justify-center p-4 sm:p-0"
+                 style="display: none;">
                 
-                <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" @click="openReconcile = false"></div>
+                <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="document.getElementById('quickReconcileModal').style.display='none'"></div>
 
-                <div class="relative bg-white rounded-3xl overflow-hidden shadow-2xl transform transition-all sm:max-w-md w-full border border-gray-100"
-                     x-transition:enter="transition ease-out duration-300"
-                     x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                     x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-                     x-transition:leave="transition ease-in duration-200"
-                     x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-                     x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+                <div class="relative bg-white rounded-3xl overflow-hidden shadow-2xl sm:max-w-md w-full border border-gray-100 animate-in fade-in zoom-in-95 duration-200">
                     
                     <div class="px-6 py-5 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
                         <div class="flex items-center gap-3">
@@ -1051,7 +1039,7 @@
                             </div>
                             <h3 class="text-lg font-bold text-gray-900">Quick Reconcile by Email</h3>
                         </div>
-                        <button @click="openReconcile = false" type="button" class="text-gray-400 hover:text-gray-500 hover:bg-gray-100 p-2 rounded-xl transition-colors">
+                        <button onclick="document.getElementById('quickReconcileModal').style.display='none'" type="button" class="text-gray-400 hover:text-gray-500 hover:bg-gray-100 p-2 rounded-xl transition-colors">
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                         </button>
                     </div>
@@ -1082,7 +1070,7 @@
                         </div>
 
                         <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-4 border-t border-gray-100">
-                            <button type="button" @click="openReconcile = false" class="w-full sm:w-auto min-h-12 inline-flex items-center justify-center px-6 py-3 bg-white border border-gray-200 rounded-xl font-semibold text-sm text-gray-700 hover:bg-gray-50 transition duration-150">
+                            <button type="button" onclick="document.getElementById('quickReconcileModal').style.display='none'" class="w-full sm:w-auto min-h-12 inline-flex items-center justify-center px-6 py-3 bg-white border border-gray-200 rounded-xl font-semibold text-sm text-gray-700 hover:bg-gray-50 transition duration-150">
                                 Batal
                             </button>
                             <button type="submit" class="w-full sm:w-auto min-h-12 inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-emerald-600 to-emerald-500 border border-transparent rounded-xl font-semibold text-sm text-white hover:from-emerald-700 hover:to-emerald-600 transition-all duration-300">
