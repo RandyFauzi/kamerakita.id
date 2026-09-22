@@ -10,6 +10,7 @@
         showImageModal: false,
         showDetailModal: false,
         showCreateModal: false,
+        showQuickReconcileModal: false,
         previewImageUrl: '',
         activeDailyReport: {},
         togglePartner(partnerId) {
@@ -172,6 +173,10 @@
 
                         <!-- Right: Action Buttons -->
                         <div class="flex gap-2 w-full md:w-auto shrink-0">
+                            <button type="button" @click.prevent="showQuickReconcileModal = true" class="flex-1 md:flex-none justify-center inline-flex items-center px-5 py-2.5 bg-emerald-600 border border-transparent rounded-xl font-semibold text-sm text-white hover:bg-emerald-700 transition-all shadow-sm gap-1.5 whitespace-nowrap">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                Quick Reconcile
+                            </button>
                             <button type="button" @click.prevent="showCreateModal = true" class="flex-1 md:flex-none justify-center inline-flex items-center px-5 py-2.5 bg-indigo-600 border border-transparent rounded-xl font-semibold text-sm text-white hover:bg-indigo-700 transition-all shadow-sm gap-1.5 whitespace-nowrap">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                                 Laporan Baru
@@ -1008,5 +1013,75 @@
                     </form>
                 </div>
             </div>
+            <!-- Quick Reconcile Modal -->
+            <div x-show="showQuickReconcileModal" 
+                 class="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-0"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 style="display: none;">
+                
+                <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" @click="showQuickReconcileModal = false"></div>
+
+                <div class="relative bg-white rounded-3xl overflow-hidden shadow-2xl transform transition-all sm:max-w-md w-full border border-gray-100"
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                     x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                     x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+                    
+                    <div class="px-6 py-5 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 bg-emerald-100 text-emerald-600 rounded-xl">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-900">Quick Reconcile by Email</h3>
+                        </div>
+                        <button @click="showQuickReconcileModal = false" type="button" class="text-gray-400 hover:text-gray-500 hover:bg-gray-100 p-2 rounded-xl transition-colors">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                    </div>
+
+                    <form action="{{ route('video-submissions.quick-reconcile') }}" method="POST" class="p-6 space-y-5">
+                        @csrf
+                        
+                        <div>
+                            <label for="email" class="block text-sm font-bold text-gray-700 mb-1.5">Email Partisipan <span class="text-red-500">*</span></label>
+                            <input type="email" name="email" id="email" required placeholder="email@kamerakita.id" class="block w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-emerald-500 focus:border-emerald-500 bg-white transition-colors" />
+                            <p class="mt-1.5 text-xs text-gray-500 font-medium">Email valid milik partisipan yang ada di sistem.</p>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="approved_hours" class="block text-sm font-bold text-emerald-700 mb-1.5">Approved (Jam) <span class="text-red-500">*</span></label>
+                                <input type="number" step="0.000001" name="approved_hours" id="approved_hours" required placeholder="Contoh: 10.5" class="block w-full px-4 py-3 border border-emerald-200 rounded-xl text-sm focus:ring-emerald-500 focus:border-emerald-500 bg-emerald-50 text-emerald-900 transition-colors" />
+                            </div>
+                            <div>
+                                <label for="rejected_hours" class="block text-sm font-bold text-rose-700 mb-1.5">Rejected (Jam) <span class="text-red-500">*</span></label>
+                                <input type="number" step="0.000001" name="rejected_hours" id="rejected_hours" required placeholder="Contoh: 2" class="block w-full px-4 py-3 border border-rose-200 rounded-xl text-sm focus:ring-rose-500 focus:border-rose-500 bg-rose-50 text-rose-900 transition-colors" />
+                            </div>
+                        </div>
+
+                        <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 flex gap-3 items-start">
+                            <svg class="w-5 h-5 text-blue-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <p class="text-xs text-blue-800 leading-relaxed">Sistem akan secara otomatis mengubah status laporan yang masih <span class="font-bold">Pending/On Review</span> berurutan dari yang paling lama. Sisa laporan akan tetap Pending.</p>
+                        </div>
+
+                        <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-4 border-t border-gray-100">
+                            <button type="button" @click="showQuickReconcileModal = false" class="w-full sm:w-auto min-h-12 inline-flex items-center justify-center px-6 py-3 bg-white border border-gray-200 rounded-xl font-semibold text-sm text-gray-700 hover:bg-gray-50 transition duration-150">
+                                Batal
+                            </button>
+                            <button type="submit" class="w-full sm:w-auto min-h-12 inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-emerald-600 to-emerald-500 border border-transparent rounded-xl font-semibold text-sm text-white hover:from-emerald-700 hover:to-emerald-600 transition-all duration-300">
+                                Proses Reconcile
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
     </div>
 </x-app-layout>

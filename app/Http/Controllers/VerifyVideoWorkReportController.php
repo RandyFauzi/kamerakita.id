@@ -689,4 +689,100 @@ class VerifyVideoWorkReportController extends Controller
 
         return redirect()->back()->with('success', 'Persetujuan periode berhasil dibatalkan dan status laporan harian dikembalikan ke antrean review.');
     }
+
+    public function quickReconcileByEmail(Request $request)
+    {
+        if (Auth::user()->role !== 'superadmin' && Auth::user()->role !== 'admin') {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'approved_hours' => 'required|numeric|min:0',
+            'rejected_hours' => 'required|numeric|min:0',
+        ]);
+
+        $approvedMinutes = (int) round($validated['approved_hours'] * 60);
+        $rejectedMinutes = (int) round($validated['rejected_hours'] * 60);
+
+        // Find partner by email (assuming partner is linked to user by email or user relation)
+        $partner = Partner::where('email', $validated['email'])
+            ->orWhereHas('user', function ($query) use ($validated) {
+                $query->where('email', $validated['email']);
+            })->first();
+
+        if (!$partner) {
+            return redirect()->back()->with('error', 'Mitra dengan email tersebut tidak ditemukan.');
+        }
+
+        // Fetch all pending or on_review reports sorted by submission date ascending (FIFO)
+        $reports = VideoWorkReport::where('partner_id', $partner->id)
+            ->whereIn('qc_status', ['pending', 'on_review'])
+            ->orderBy('submission_date', 'asc')
+            ->orderBy('id', 'asc')
+            ->get();
+
+        $remainingApproved = $approvedMinutes;
+        $remainingRejected = $rejectedMinutes;
+        $totalProcessed = 0;
+
+        DB::transaction(function () use ($reports, &$remainingApproved, &$remainingRejected, &$totalProcessed) {
+            foreach ($reports as $report) {
+                if ($remainingApproved <= 0 && $remainingRejected <= 0) {
+                    break;
+                }
+
+                $submitted = $report->submitted_duration_minutes;
+                $updated = false;
+                $newStatus = $report->qc_status;
+                $appDur = 0;
+                $rejDur = 0;
+
+                // Priority 1: Allocate to Approved
+                if ($remainingApproved > 0) {
+                    $appDur = min($submitted, $remainingApproved);
+                    $newStatus = 'approved';
+                    $remainingApproved -= $appDur;
+                    $updated = true;
+                }
+
+                // If still some duration left in the report, allocate to Rejected
+                $remainingInReport = $submitted - $appDur;
+                if ($remainingInReport > 0 && $remainingRejected > 0) {
+                    $rejDur = min($remainingInReport, $remainingRejected);
+                    $remainingRejected -= $rejDur;
+                    // If it wasn't approved at all, mark it as rejected
+                    if ($appDur == 0) {
+                        $newStatus = 'rejected';
+                    }
+                    $updated = true;
+                }
+
+                if ($updated) {
+                    $report->qc_status = $newStatus;
+                    $report->approved_duration_minutes = $appDur;
+                    $report->verified_by = Auth::id();
+                    $report->verified_at = now();
+                    
+                    if ($newStatus === 'rejected') {
+                        $report->verifier_notes = 'Reconciled rejection via Quick Reconcile';
+                    } else if ($rejDur > 0) {
+                        $report->verifier_notes = 'Partially rejected (' . $rejDur . 'm) via Quick Reconcile';
+                    } else {
+                        $report->verifier_notes = 'Approved via Quick Reconcile';
+                    }
+
+                    $report->save();
+                    $totalProcessed++;
+                }
+            }
+        });
+
+        $processedApprovedHours = round(($approvedMinutes - $remainingApproved) / 60, 2);
+        $processedRejectedHours = round(($rejectedMinutes - $remainingRejected) / 60, 2);
+
+        \App\Services\ActivityLogger::log('report.quick_reconcile', "Quick Reconcile untuk {$partner->full_name}. Approved: {$processedApprovedHours} jam, Rejected: {$processedRejectedHours} jam. Total laporan diperbarui: {$totalProcessed}");
+
+        return redirect()->back()->with('success', "Quick Reconcile berhasil! Diproses: {$processedApprovedHours}j Approved, {$processedRejectedHours}j Rejected untuk {$totalProcessed} laporan.");
+    }
 }
