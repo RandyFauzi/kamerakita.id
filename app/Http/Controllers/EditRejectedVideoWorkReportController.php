@@ -31,6 +31,11 @@ class EditRejectedVideoWorkReportController extends Controller
 
         // Handle case where total upload size exceeds PHP's post_max_size.
         if (empty($request->all()) && (int) $request->server('CONTENT_LENGTH') > 0) {
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'message' => 'Gagal mengirim laporan: Total ukuran file yang diunggah terlalu besar. Harap perkecil/kompres ukuran screenshot Anda (Maks. 2MB per gambar) lalu coba lagi.'
+                ], 413);
+            }
             return back()->with('error', 'Gagal mengirim laporan: Total ukuran file yang diunggah terlalu besar. Harap perkecil/kompres ukuran screenshot Anda (Maks. 2MB per gambar) lalu coba lagi.');
         }
 

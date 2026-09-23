@@ -38,6 +38,11 @@ class SubmitVideoWorkReportController extends Controller
         // PHP drops the entire $_POST and $_FILES array, causing Laravel to see empty inputs.
         // This triggers confusing validation errors for fields the user already filled.
         if (empty($request->all()) && (int) $request->server('CONTENT_LENGTH') > 0) {
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'message' => 'Gagal mengirim laporan: Total ukuran file yang diunggah terlalu besar. Harap perkecil/kompres ukuran screenshot Anda (Maks. 2MB per gambar) lalu coba lagi.'
+                ], 413);
+            }
             return back()->with('error', 'Gagal mengirim laporan: Total ukuran file yang diunggah terlalu besar. Harap perkecil/kompres ukuran screenshot Anda (Maks. 2MB per gambar) lalu coba lagi.');
         }
 

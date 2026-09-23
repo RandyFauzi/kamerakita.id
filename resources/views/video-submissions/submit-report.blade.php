@@ -7,27 +7,7 @@
 
     <div class="py-2 sm:py-8">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
-            <div class="py-6 sm:py-12">
-                <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="bg-white rounded-2xl shadow-sm sm:shadow-md border border-gray-100 p-8 sm:p-12 text-center">
-                        <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-amber-100 mb-6 text-amber-600">
-                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-4">Sedang Dalam Perbaikan</h3>
-                        <p class="text-gray-500 mb-8 max-w-md mx-auto">
-                            Mohon maaf, halaman pengiriman laporan sedang dalam proses perbaikan sistem (*maintenance*). Silakan kembali lagi nanti.
-                        </p>
-                        <a href="{{ route('dashboard') }}" class="inline-flex items-center justify-center px-6 py-3 bg-indigo-600 border border-transparent rounded-xl font-semibold text-sm text-white hover:bg-indigo-700 transition-all duration-300">
-                            Kembali ke Dashboard
-                        </a>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- ORIGINAL FORM CODE PRESERVED BELOW (HIDDEN) -->
-            <div style="display: none;">
+
             <div class="bg-white overflow-hidden shadow-sm rounded-2xl border border-gray-100 p-4 sm:p-6 space-y-5 sm:space-y-6">
                 
                 <div class="bg-indigo-50/50 border border-indigo-100 rounded-xl p-4 flex items-center gap-4">
@@ -284,6 +264,13 @@
                 } else {
                     window.location.href = "{{ route('dashboard') }}";
                 }
+            } else if (response.status === 413) {
+                // Payload too large
+                const data = await response.json();
+                alert(data.message || 'Gagal mengirim laporan: Total ukuran file terlalu besar.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+                isSubmittingReport = false;
             } else if (response.status === 422) {
                 // Validation error
                 const data = await response.json();
@@ -292,7 +279,7 @@
                 for (const [field, messages] of Object.entries(data.errors)) {
                     // Map Laravel array notation to HTML input names
                     let inputName = field;
-                    if (field.startsWith('evidence_submitted_image_paths.')) {
+                    if (field === 'evidence_submitted_image_paths' || field.startsWith('evidence_submitted_image_paths.')) {
                         inputName = 'evidence_submitted_image_paths[]';
                     }
                     
@@ -344,6 +331,5 @@
         }
     });
 </script>
-        </div>
     </div>
 </x-app-layout>
