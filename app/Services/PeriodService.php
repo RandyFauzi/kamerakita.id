@@ -55,7 +55,7 @@ class PeriodService
                 ]
             );
 
-            $start->addDays(7);
+            $start = $start->addDays(7);
             $counter++;
         }
     }

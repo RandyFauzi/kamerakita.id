@@ -59,7 +59,7 @@ class VerifyVideoWorkReportController extends Controller
             $day = $stripStart->copy();
             while ($day->lte($stripEnd)) {
                 $periodDays[] = $day->copy();
-                $day->addDay();
+                $day = $day->addDay();
             }
         }
 
