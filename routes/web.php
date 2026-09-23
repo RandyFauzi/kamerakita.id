@@ -43,11 +43,11 @@ Route::get('/leaderboard', [\App\Http\Controllers\LeaderboardController::class, 
     ->middleware(['auth', 'verified', 'onboarding'])
     ->name('leaderboard.index');
 
-Route::get('/video-work-reports/{report}/evidence/{type}', ShowVideoWorkReportEvidenceController::class)
-    ->middleware(['signed:relative'])
-    ->name('video-submissions.evidence.show');
-
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/video-work-reports/{report}/evidence/{type}', ShowVideoWorkReportEvidenceController::class)
+        ->middleware(['signed:relative'])
+        ->name('video-submissions.evidence.show');
+
     // Phase 1: Partner Demographics CRUD
     Route::get('/partners/export-contacts', [\App\Http\Controllers\ManagePartnerDemographicsController::class, 'exportContacts'])
         ->middleware('role:superadmin,admin')

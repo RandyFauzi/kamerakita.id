@@ -127,7 +127,7 @@
         </div>
     </div>
 <script>
-    async function compressImage(file, maxWidth = 1200, quality = 0.7) {
+    async function compressImage(file, maxWidth = 1920, quality = 0.85) {
         return new Promise((resolve) => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
@@ -187,7 +187,7 @@
             // Only compress images larger than 500KB
             if (file.type.startsWith('image/') && file.size > 500 * 1024) {
                 try {
-                    const compressedFile = await compressImage(file, 1200, 0.7);
+                    const compressedFile = await compressImage(file, 1920, 0.85);
                     compressedArray.push(compressedFile);
                 } catch (e) {
                     console.error("Gagal mengompres gambar:", e);

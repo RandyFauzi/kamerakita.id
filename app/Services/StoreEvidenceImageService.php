@@ -39,7 +39,7 @@ class StoreEvidenceImageService
 
     private function compressToJpeg(UploadedFile $file): ?string
     {
-        $mime = $file->getClientMimeType();
+        $mime = $file->getMimeType();
         $sourcePath = $file->getPathname();
 
         $image = match ($mime) {
@@ -55,7 +55,7 @@ class StoreEvidenceImageService
         }
 
         ob_start();
-        $compressed = imagejpeg($image, null, 75);
+        $compressed = imagejpeg($image, null, 85);
         $contents = ob_get_clean();
         imagedestroy($image);
 

@@ -43,9 +43,26 @@ class EditRejectedVideoWorkReportController extends Controller
             'project_name' => 'required|in:atlas,minutes_data',
             'submission_date' => 'required|date|before_or_equal:today',
             'submitted_duration_minutes' => 'required|integer|min:1|max:1440',
-            'evidence_email_image_path' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'evidence_app_quality_image_path' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'evidence_submitted_image_paths' => 'nullable|array',
+            'evidence_email_image_path' => [
+                \Illuminate\Validation\Rule::requiredIf(fn () => empty($report->evidence_email_image_path)),
+                'nullable',
+                'image',
+                'mimes:jpeg,png,jpg,gif,webp',
+                'max:2048'
+            ],
+            'evidence_app_quality_image_path' => [
+                \Illuminate\Validation\Rule::requiredIf(fn () => $request->project_name === 'minutes_data' && empty($report->evidence_app_quality_image_path)),
+                'nullable',
+                'image',
+                'mimes:jpeg,png,jpg,gif,webp',
+                'max:2048'
+            ],
+            'evidence_submitted_image_paths' => [
+                \Illuminate\Validation\Rule::requiredIf(fn () => $request->project_name === 'atlas' && empty($report->evidence_submitted_image_paths)),
+                'nullable',
+                'array',
+                'max:10'
+            ],
             'evidence_submitted_image_paths.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ], [
             'project_name.required' => 'Aplikasi wajib dipilih.',
@@ -60,10 +77,10 @@ class EditRejectedVideoWorkReportController extends Controller
             'evidence_submitted_image_paths.*.image' => 'Setiap file screenshot unggahan harus berupa gambar.',
         ]);
 
-        $oldPaths = array_filter(array_merge(
-            [$report->evidence_email_image_path, $report->evidence_app_quality_image_path],
-            (array) ($report->evidence_submitted_image_paths ?? [])
-        ));
+        $previousEmailPath = $report->evidence_email_image_path;
+        $previousQualityPath = $report->evidence_app_quality_image_path;
+        $previousSubmittedPaths = $report->evidence_submitted_image_paths ?? [];
+
         $newEmailPath = null;
         $newQualityPath = null;
         $newSubmittedPaths = null;
@@ -101,9 +118,14 @@ class EditRejectedVideoWorkReportController extends Controller
                 }
                 if ($newQualityPath) {
                     $updates['evidence_app_quality_image_path'] = $newQualityPath;
+                } else if ($validated['project_name'] === 'atlas') {
+                    $updates['evidence_app_quality_image_path'] = null;
                 }
+
                 if ($newSubmittedPaths !== null) {
                     $updates['evidence_submitted_image_paths'] = $newSubmittedPaths;
+                } else if ($validated['project_name'] === 'minutes_data') {
+                    $updates['evidence_submitted_image_paths'] = null;
                 }
 
                 $report->update($updates);
@@ -119,14 +141,14 @@ class EditRejectedVideoWorkReportController extends Controller
             });
 
             \App\Services\ActivityLogger::log('report.revise', "Merevisi laporan video ID {$report->id} tanggal {$validated['submission_date']} dengan durasi {$validated['submitted_duration_minutes']} menit.");
-        } catch (Throwable $exception) {
+        } catch (\Throwable $exception) {
             $pathsToDelete = array_filter(array_merge([$newEmailPath, $newQualityPath], (array)$newSubmittedPaths));
             foreach ($pathsToDelete as $path) {
                 try {
                     if ($path && Storage::disk('evidence')->exists($path)) {
                         Storage::disk('evidence')->delete($path);
                     }
-                } catch (Throwable) {
+                } catch (\Throwable) {
                     // The original upload failure is the actionable error.
                 }
             }
@@ -145,7 +167,18 @@ class EditRejectedVideoWorkReportController extends Controller
                 ->with('error', 'Laporan gagal dikirim ulang karena file bukti tidak berhasil disimpan. Cek permission storage lalu coba lagi.');
         }
 
-        $this->deleteEvidenceFiles($oldPaths, true);
+        $pathsToDelete = [];
+        if ($report->evidence_email_image_path !== $previousEmailPath && $previousEmailPath) {
+            $pathsToDelete[] = $previousEmailPath;
+        }
+        if ($report->evidence_app_quality_image_path !== $previousQualityPath && $previousQualityPath) {
+            $pathsToDelete[] = $previousQualityPath;
+        }
+        $currentSubmittedPaths = $report->evidence_submitted_image_paths ?? [];
+        $deletedSubmittedPaths = array_diff($previousSubmittedPaths, $currentSubmittedPaths);
+        $pathsToDelete = array_merge($pathsToDelete, $deletedSubmittedPaths);
+
+        $this->deleteEvidenceFiles(array_filter($pathsToDelete), true);
 
         if ($request->wantsJson()) {
             session()->flash('success', 'Laporan berhasil diperbaiki dan masuk kembali ke antrean QC.');
