@@ -43,8 +43,9 @@ class SubmitVideoWorkReportController extends Controller
         if (empty($request->all()) && (int) $request->server('CONTENT_LENGTH') > 0) {
             if ($request->expectsJson() || $request->has('_ajax')) {
                 return response()->json([
-                    'message' => 'Gagal mengirim laporan: Total ukuran file yang diunggah terlalu besar. Harap perkecil/kompres ukuran screenshot Anda (Otomatis dikompres) lalu coba lagi.'
-                'server_error' => true], 200);
+                    'message' => 'Gagal mengirim laporan: Total ukuran file yang diunggah terlalu besar. Harap perkecil/kompres ukuran screenshot Anda (Otomatis dikompres) lalu coba lagi.',
+                    'server_error' => true
+                ], 200);
             }
             return back()->with('error', 'Gagal mengirim laporan: Total ukuran file yang diunggah terlalu besar. Harap perkecil/kompres ukuran screenshot Anda (Otomatis dikompres) lalu coba lagi.');
         }
