@@ -301,33 +301,54 @@
         document.querySelectorAll('.js-form-error').forEach(el => el.remove());
         
         try {
-            const formData = new FormData(form);
+            // Create a fresh FormData to avoid WebKit mutation bugs (formData.delete corruption)
+            const finalFormData = new FormData();
+            const originalFormData = new FormData(form);
+            const projectName = originalFormData.get('project_name');
             
-            // Swap out the original files with our compressed ones
+            // Iterate original fields and only keep the ones we need
+            for (const [key, value] of originalFormData.entries()) {
+                // Skip hidden fields based on project_name
+                if (projectName === 'atlas' && key === 'evidence_app_quality_image_path') continue;
+                if (projectName === 'minutes_data' && (key === 'evidence_submitted_image_paths[]' || key === 'evidence_submitted_image_paths')) continue;
+                
+                // Skip file fields that have compressed versions (we will append them later)
+                let isReplaced = false;
+                if (window.compressedFiles) {
+                    for (const [inputId, files] of Object.entries(window.compressedFiles)) {
+                        const inputElement = document.getElementById(inputId);
+                        if (inputElement && inputElement.name === key && files.length > 0) {
+                            isReplaced = true;
+                            break;
+                        }
+                    }
+                }
+                
+                if (!isReplaced) {
+                    finalFormData.append(key, value);
+                }
+            }
+            
+            // Append the compressed files manually
             if (window.compressedFiles) {
                 for (const [inputId, files] of Object.entries(window.compressedFiles)) {
                     const inputElement = document.getElementById(inputId);
                     if (inputElement && files.length > 0) {
                         const fieldName = inputElement.name;
-                        // Remove the original uncompressed files
-                        formData.delete(fieldName);
-                        // Append the compressed files
+                        
+                        // Skip if it's for the other project
+                        if (projectName === 'atlas' && fieldName === 'evidence_app_quality_image_path') continue;
+                        if (projectName === 'minutes_data' && (fieldName === 'evidence_submitted_image_paths[]' || fieldName === 'evidence_submitted_image_paths')) continue;
+                        
                         for (const file of files) {
-                            formData.append(fieldName, file);
+                            finalFormData.append(fieldName, file, file.name || 'image.jpg');
                         }
                     }
                 }
             }
 
-            // Prevent hidden fields from being submitted (which causes invisible 422 errors)
-            const projectName = formData.get('project_name');
-            if (projectName === 'atlas') {
-                formData.delete('evidence_app_quality_image_path');
-            } else if (projectName === 'minutes_data') {
-                formData.delete('evidence_submitted_image_paths[]');
-                // Also delete potential uncompressed field name if it differs
-                formData.delete('evidence_submitted_image_paths');
-            }
+            // Set final reference so the rest of the script works
+            const formData = finalFormData;
 
             // Client-side payload size validation
             let hasOversized = false;
