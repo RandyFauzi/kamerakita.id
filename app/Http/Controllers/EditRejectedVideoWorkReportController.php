@@ -34,12 +34,12 @@ class EditRejectedVideoWorkReportController extends Controller
             if ($request->expectsJson()) {
                 return response()->json([
                     'message' => 'Gagal mengirim laporan: Total ukuran file yang diunggah terlalu besar. Harap perkecil/kompres ukuran screenshot Anda (Otomatis dikompres) lalu coba lagi.'
-                ], 413);
+                'server_error' => true], 200);
             }
             return back()->with('error', 'Gagal mengirim laporan: Total ukuran file yang diunggah terlalu besar. Harap perkecil/kompres ukuran screenshot Anda (Otomatis dikompres) lalu coba lagi.');
         }
 
-        $validated = $request->validate([
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
             'project_name' => 'required|in:atlas,minutes_data',
             'submission_date' => 'required|date|before_or_equal:today',
             'submitted_duration_minutes' => 'required|integer|min:1|max:1440',
@@ -76,6 +76,14 @@ class EditRejectedVideoWorkReportController extends Controller
             'evidence_submitted_image_paths.array' => 'Format screenshot bagian unggahan tidak valid.',
             'evidence_submitted_image_paths.*.image' => 'Setiap file screenshot unggahan harus berupa gambar.',
         ]);
+        
+        if ($validator->fails()) {
+            if ($request->expectsJson() || $request->has('_ajax')) {
+                return response()->json(['validation_failed' => true, 'errors' => $validator->errors()], 200);
+            }
+            return back()->withErrors($validator)->withInput();
+        }
+        $validated = $validator->validated();
 
         $previousEmailPath = $report->evidence_email_image_path;
         $previousQualityPath = $report->evidence_app_quality_image_path;
@@ -159,7 +167,7 @@ class EditRejectedVideoWorkReportController extends Controller
             ]);
 
             if ($request->expectsJson()) {
-                return response()->json(['message' => 'Laporan gagal dikirim ulang karena file bukti tidak berhasil disimpan. Cek permission storage lalu coba lagi.'], 500);
+                return response()->json(['message' => 'Laporan gagal dikirim ulang karena file bukti tidak berhasil disimpan. Cek permission storage lalu coba lagi.', 'server_error' => true], 200);
             }
 
             return back()

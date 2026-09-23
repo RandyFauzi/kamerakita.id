@@ -44,7 +44,7 @@ class SubmitVideoWorkReportController extends Controller
             if ($request->expectsJson() || $request->has('_ajax')) {
                 return response()->json([
                     'message' => 'Gagal mengirim laporan: Total ukuran file yang diunggah terlalu besar. Harap perkecil/kompres ukuran screenshot Anda (Otomatis dikompres) lalu coba lagi.'
-                ], 413);
+                'server_error' => true], 200);
             }
             return back()->with('error', 'Gagal mengirim laporan: Total ukuran file yang diunggah terlalu besar. Harap perkecil/kompres ukuran screenshot Anda (Otomatis dikompres) lalu coba lagi.');
         }
@@ -74,7 +74,7 @@ class SubmitVideoWorkReportController extends Controller
         
         if ($validator->fails()) {
             if ($request->expectsJson() || $request->has('_ajax')) {
-                return response()->json(['errors' => $validator->errors()], 422);
+                return response()->json(['validation_failed' => true, 'errors' => $validator->errors()], 200);
             }
             return back()->withErrors($validator)->withInput();
         }
@@ -137,7 +137,7 @@ class SubmitVideoWorkReportController extends Controller
             ]);
 
             if ($request->expectsJson() || $request->has('_ajax')) {
-                return response()->json(['message' => 'Laporan gagal dikirim karena file bukti tidak berhasil disimpan. Cek permission folder storage/app/private lalu coba lagi.'], 500);
+                return response()->json(['message' => 'Laporan gagal dikirim karena file bukti tidak berhasil disimpan. Cek permission folder storage/app/private lalu coba lagi.', 'server_error' => true], 200);
             }
 
             return back()
