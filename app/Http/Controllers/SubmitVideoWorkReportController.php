@@ -31,7 +31,7 @@ class SubmitVideoWorkReportController extends Controller
         $partner = Partner::where('user_id', Auth::id())->first();
 
         if (! $partner || !in_array(strtolower(trim($partner->partner_role)), ['worker', 'mitra', 'rekruter'])) {
-            if ($request->wantsJson()) {
+            if ($request->expectsJson()) {
                 return response()->json(['message' => 'Akses ditolak.'], 403);
             }
             return redirect()->route('dashboard')->with('error', 'Akses ditolak.');
@@ -41,7 +41,7 @@ class SubmitVideoWorkReportController extends Controller
         // PHP drops the entire $_POST and $_FILES array, causing Laravel to see empty inputs.
         // This triggers confusing validation errors for fields the user already filled.
         if (empty($request->all()) && (int) $request->server('CONTENT_LENGTH') > 0) {
-            if ($request->wantsJson()) {
+            if ($request->expectsJson()) {
                 return response()->json([
                     'message' => 'Gagal mengirim laporan: Total ukuran file yang diunggah terlalu besar. Harap perkecil/kompres ukuran screenshot Anda (Maks. 2MB per gambar) lalu coba lagi.'
                 ], 413);
@@ -128,7 +128,7 @@ class SubmitVideoWorkReportController extends Controller
                 'message' => $exception->getMessage(),
             ]);
 
-            if ($request->wantsJson()) {
+            if ($request->expectsJson()) {
                 return response()->json(['message' => 'Laporan gagal dikirim karena file bukti tidak berhasil disimpan. Cek permission folder storage/app/private lalu coba lagi.'], 500);
             }
 
@@ -137,7 +137,7 @@ class SubmitVideoWorkReportController extends Controller
                 ->with('error', 'Laporan gagal dikirim karena file bukti tidak berhasil disimpan. Cek permission folder storage/app/private lalu coba lagi.');
         }
 
-        if ($request->wantsJson()) {
+        if ($request->expectsJson()) {
             session()->flash('success', 'Laporan kerja video Anda berhasil dikirim dan sedang menunggu antrean QC!');
             return response()->json(['redirect' => route('dashboard')]);
         }

@@ -127,26 +127,7 @@
         </div>
     </div>
 <script>
-    function debugLog(step, data = null) {
-        let debugBox = document.getElementById('debug-box');
-        if (!debugBox) {
-            debugBox = document.createElement('div');
-            debugBox.id = 'debug-box';
-            debugBox.style = 'position:fixed;bottom:0;left:0;right:0;height:200px;overflow-y:auto;background:black;color:lime;z-index:9999;font-family:monospace;padding:10px;font-size:12px;opacity:0.9;';
-            document.body.appendChild(debugBox);
-        }
-        const line = document.createElement('div');
-        let dataStr = '';
-        try {
-            dataStr = data ? (typeof data === 'string' ? data : JSON.stringify(data)) : '';
-        } catch(e) {
-            dataStr = '[Unserializable Data]';
-        }
-        line.innerText = `[${new Date().toISOString()}] STEP ${step}: ${dataStr}`;
-        debugBox.appendChild(line);
-        debugBox.scrollTop = debugBox.scrollHeight;
-        console.log(`STEP ${step}:`, data);
-    }
+    
 
     async function compressImage(file, maxWidth = 1920, quality = 0.85) {
         return new Promise((resolve) => {
@@ -232,7 +213,6 @@
     let isSubmittingReport = false;
     document.getElementById('submit-report-form').addEventListener('submit', async function(e) {
         e.preventDefault();
-        debugLog('1. Submit event fired', { isSubmittingReport });
         if (isSubmittingReport) return;
         
         isSubmittingReport = true;
@@ -248,7 +228,6 @@
         document.querySelectorAll('.js-form-error').forEach(el => el.remove());
         
         try {
-            debugLog('2. Constructing FormData');
             const formData = new FormData(form);
             
             // Swap out the original files with our compressed ones
@@ -278,10 +257,9 @@
             }
 
             const formDataKeys = Array.from(formData.keys());
-            debugLog('3. Sending fetch request', { action: form.action, fields: formDataKeys });
 
             const response = await fetch(form.action, {
-                method: 'POST',
+                method: 'POST', // Blade has @method('PUT') inside, which will be included in FormData
                 body: formData,
                 headers: {
                     'Accept': 'application/json',
@@ -289,8 +267,15 @@
                 }
             });
             
-            debugLog('4. Received response', { status: response.status, ok: response.ok, redirected: response.redirected, url: response.url });
-            
+            // Check for loop redirects (Laravel back())
+            if (response.redirected && response.url === window.location.href) {
+                alert('Sistem menolak request (kemungkinan karena total ukuran gambar terlalu besar sehingga melebihi batas server). Harap perkecil ukuran file atau kurangi jumlah gambar, lalu muat ulang halaman.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+                isSubmittingReport = false;
+                return;
+            }
+
             if (response.ok) {
                 // Success
                 const contentType = response.headers.get("content-type");
@@ -311,7 +296,16 @@
                 isSubmittingReport = false;
             } else if (response.status === 422) {
                 // Validation error
-                const data = await response.json();
+                let data = { errors: {} };
+                try {
+                    data = await response.json();
+                } catch(e) {
+                    alert('Validasi gagal dan format error tidak dikenali.');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                    isSubmittingReport = false;
+                    return;
+                }
                 
                 // Show a general error message at the top if desired, or just field errors
                 for (const [field, messages] of Object.entries(data.errors)) {
@@ -351,7 +345,6 @@
                     firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     debugLog('5. Displayed 422 errors and scrolled', { errors: Object.keys(data.errors) });
                 } else {
-                    debugLog('5. Warning: Received 422 but found no inputs to display errors on', { errors: data.errors });
                     alert('Validasi gagal namun field tidak ditemukan di layar. ' + JSON.stringify(data.errors));
                 }
                 
@@ -359,7 +352,6 @@
                 submitBtn.innerHTML = originalText;
                 isSubmittingReport = false;
             } else {
-                debugLog('5. Received other error status', { status: response.status });
                 // Other server errors (500, 419, etc.)
                 alert('Terjadi kesalahan pada server. Harap muat ulang halaman dan coba lagi.');
                 submitBtn.disabled = false;
@@ -367,7 +359,6 @@
                 isSubmittingReport = false;
             }
         } catch (error) {
-            debugLog('5. Exception caught in submit handler', { name: error.name, message: error.message });
             alert('Gagal mengirim laporan. Pastikan koneksi internet Anda stabil.');
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalText;

@@ -31,7 +31,7 @@ class EditRejectedVideoWorkReportController extends Controller
 
         // Handle case where total upload size exceeds PHP's post_max_size.
         if (empty($request->all()) && (int) $request->server('CONTENT_LENGTH') > 0) {
-            if ($request->wantsJson()) {
+            if ($request->expectsJson()) {
                 return response()->json([
                     'message' => 'Gagal mengirim laporan: Total ukuran file yang diunggah terlalu besar. Harap perkecil/kompres ukuran screenshot Anda (Maks. 2MB per gambar) lalu coba lagi.'
                 ], 413);
@@ -158,7 +158,7 @@ class EditRejectedVideoWorkReportController extends Controller
                 'message' => $exception->getMessage(),
             ]);
 
-            if ($request->wantsJson()) {
+            if ($request->expectsJson()) {
                 return response()->json(['message' => 'Laporan gagal dikirim ulang karena file bukti tidak berhasil disimpan. Cek permission storage lalu coba lagi.'], 500);
             }
 
@@ -180,7 +180,7 @@ class EditRejectedVideoWorkReportController extends Controller
 
         $this->deleteEvidenceFiles(array_filter($pathsToDelete), true);
 
-        if ($request->wantsJson()) {
+        if ($request->expectsJson()) {
             session()->flash('success', 'Laporan berhasil diperbaiki dan masuk kembali ke antrean QC.');
             return response()->json(['redirect' => route('video-submissions.report-history')]);
         }
