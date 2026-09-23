@@ -36,7 +36,6 @@ class ManagePaymentsController extends Controller
                 $q->where('full_name', 'like', "%{$search}%")
                   ->orWhere('email', 'like', "%{$search}%")
                   ->orWhere('bank_account_number', 'like', "%{$search}%")
-                  ->orWhere('account_number', 'like', "%{$search}%")
                   ->orWhereHas('user', function ($uq) use ($search) {
                       $uq->where('email', 'like', "%{$search}%");
                   });
@@ -101,7 +100,6 @@ class ManagePaymentsController extends Controller
                 $q->where('full_name', 'like', "%{$search}%")
                   ->orWhere('email', 'like', "%{$search}%")
                   ->orWhere('bank_account_number', 'like', "%{$search}%")
-                  ->orWhere('account_number', 'like', "%{$search}%")
                   ->orWhereHas('user', function ($uq) use ($search) {
                       $uq->where('email', 'like', "%{$search}%");
                   });
