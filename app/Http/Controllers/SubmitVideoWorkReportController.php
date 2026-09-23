@@ -31,6 +31,9 @@ class SubmitVideoWorkReportController extends Controller
         $partner = Partner::where('user_id', Auth::id())->first();
 
         if (! $partner || !in_array(strtolower(trim($partner->partner_role)), ['worker', 'mitra', 'rekruter'])) {
+            if ($request->wantsJson()) {
+                return response()->json(['message' => 'Akses ditolak.'], 403);
+            }
             return redirect()->route('dashboard')->with('error', 'Akses ditolak.');
         }
 
@@ -124,6 +127,10 @@ class SubmitVideoWorkReportController extends Controller
                 'partner_id' => $partner->id,
                 'message' => $exception->getMessage(),
             ]);
+
+            if ($request->wantsJson()) {
+                return response()->json(['message' => 'Laporan gagal dikirim karena file bukti tidak berhasil disimpan. Cek permission folder storage/app/private lalu coba lagi.'], 500);
+            }
 
             return back()
                 ->withInput()

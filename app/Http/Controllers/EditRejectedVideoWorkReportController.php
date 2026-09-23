@@ -136,6 +136,10 @@ class EditRejectedVideoWorkReportController extends Controller
                 'message' => $exception->getMessage(),
             ]);
 
+            if ($request->wantsJson()) {
+                return response()->json(['message' => 'Laporan gagal dikirim ulang karena file bukti tidak berhasil disimpan. Cek permission storage lalu coba lagi.'], 500);
+            }
+
             return back()
                 ->withInput()
                 ->with('error', 'Laporan gagal dikirim ulang karena file bukti tidak berhasil disimpan. Cek permission storage lalu coba lagi.');
