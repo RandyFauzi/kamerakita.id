@@ -112,8 +112,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware('role:superadmin,admin');
 
     // Phase 2: Evidence-Based Submission Module
-    Route::get('/submit-report', [SubmitVideoWorkReportController::class, 'create'])->name('video-submissions.submit-report.create');
-    Route::post('/submit-report', [SubmitVideoWorkReportController::class, 'store'])->name('video-submissions.submit-report.store');
+    Route::get('/kirim-laporan', [SubmitVideoWorkReportController::class, 'create'])->name('video-submissions.submit-report.create');
+    Route::post('/kirim-laporan', [SubmitVideoWorkReportController::class, 'store'])->name('video-submissions.submit-report.store');
     Route::get('/report-history', ListPartnerReportHistoryController::class)->name('video-submissions.report-history');
     Route::get('/report-history/{report}/edit-rejected', [EditRejectedVideoWorkReportController::class, 'edit'])->name('video-submissions.rejected.edit');
     Route::patch('/report-history/{report}/edit-rejected', [EditRejectedVideoWorkReportController::class, 'update'])->name('video-submissions.rejected.update');
