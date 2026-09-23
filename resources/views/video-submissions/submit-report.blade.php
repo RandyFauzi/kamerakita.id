@@ -204,6 +204,7 @@
                             if (value.size > 500 * 1024) {
                                 const compressedFile = await compressFile(value, 1920, 1920, 0.8);
                                 finalFormData.append(key, compressedFile, value.name);
+                            finalFormData.append('_ajax', '1');
                             } else {
                                 finalFormData.append(key, value, value.name);
                             }

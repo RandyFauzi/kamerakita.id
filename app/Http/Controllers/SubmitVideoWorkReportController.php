@@ -41,7 +41,7 @@ class SubmitVideoWorkReportController extends Controller
         // PHP drops the entire $_POST and $_FILES array, causing Laravel to see empty inputs.
         // This triggers confusing validation errors for fields the user already filled.
         if (empty($request->all()) && (int) $request->server('CONTENT_LENGTH') > 0) {
-            if ($request->expectsJson()) {
+            if ($request->expectsJson() || $request->has('_ajax')) {
                 return response()->json([
                     'message' => 'Gagal mengirim laporan: Total ukuran file yang diunggah terlalu besar. Harap perkecil/kompres ukuran screenshot Anda (Otomatis dikompres) lalu coba lagi.'
                 ], 413);
@@ -49,7 +49,7 @@ class SubmitVideoWorkReportController extends Controller
             return back()->with('error', 'Gagal mengirim laporan: Total ukuran file yang diunggah terlalu besar. Harap perkecil/kompres ukuran screenshot Anda (Otomatis dikompres) lalu coba lagi.');
         }
 
-        $validated = $request->validate([
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
             'project_name' => 'required|in:atlas,minutes_data',
             'submission_date' => 'required|date|before_or_equal:today',
             'submitted_duration_minutes' => 'required|integer|min:1|max:1440',
@@ -71,6 +71,14 @@ class SubmitVideoWorkReportController extends Controller
             'evidence_submitted_image_paths.required_if' => 'Screenshot bagian unggahan wajib diunggah minimal 1 gambar untuk Atlas.',
             'evidence_submitted_image_paths.*.image' => 'Setiap file screenshot unggahan harus berupa gambar.',
         ]);
+        
+        if ($validator->fails()) {
+            if ($request->expectsJson() || $request->has('_ajax')) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
+            return back()->withErrors($validator)->withInput();
+        }
+        $validated = $validator->validated();
 
         $emailPath = null;
         $qualityPath = null;
@@ -128,7 +136,7 @@ class SubmitVideoWorkReportController extends Controller
                 'message' => $exception->getMessage(),
             ]);
 
-            if ($request->expectsJson()) {
+            if ($request->expectsJson() || $request->has('_ajax')) {
                 return response()->json(['message' => 'Laporan gagal dikirim karena file bukti tidak berhasil disimpan. Cek permission folder storage/app/private lalu coba lagi.'], 500);
             }
 
@@ -137,7 +145,7 @@ class SubmitVideoWorkReportController extends Controller
                 ->with('error', 'Laporan gagal dikirim karena file bukti tidak berhasil disimpan. Cek permission folder storage/app/private lalu coba lagi.');
         }
 
-        if ($request->expectsJson()) {
+        if ($request->expectsJson() || $request->has('_ajax')) {
             session()->flash('success', 'Laporan kerja video Anda berhasil dikirim dan sedang menunggu antrean QC!');
             return response()->json(['redirect' => route('dashboard')]);
         }
