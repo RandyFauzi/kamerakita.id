@@ -226,7 +226,7 @@
             const submitBtn = form.querySelector('button[type="submit"]');
             
             async function compressFile(file, maxWidth, maxHeight, quality) {
-                if (!file.type.startsWith('image/')) return file; // Only compress images
+                if (file.type !== '' && !file.type.startsWith('image/') && file.type !== 'application/octet-stream') return file;
                 
                 return new Promise((resolve) => {
                     const reader = new FileReader();
@@ -290,7 +290,7 @@
                         if (projectName === 'minutes_data' && (key === 'evidence_submitted_image_paths[]' || key === 'evidence_submitted_image_paths')) continue;
                         
                         // If it's a file, we compress it before appending
-                        if (value instanceof File && value.size > 0 && value.type.startsWith('image/')) {
+                        if (value instanceof File && value.size > 0 && (value.type === '' || value.type.startsWith('image/') || value.type === 'application/octet-stream')) {
                             // Compress images > 500KB
                             if (value.size > 500 * 1024) {
                                 const compressedFile = await compressFile(value, 1920, 1920, 0.8);
@@ -315,7 +315,13 @@
                             // Success or successful redirect
                             let redirectUrl = "{{ route('dashboard') }}";
                             try {
-                                const data = JSON.parse(xhr.responseText);
+                                let cleanText = xhr.responseText;
+                                  const jsonStart = cleanText.indexOf('{');
+                                  const jsonEnd = cleanText.lastIndexOf('}');
+                                  if (jsonStart !== -1 && jsonEnd !== -1) {
+                                      cleanText = cleanText.substring(jsonStart, jsonEnd + 1);
+                                  }
+                                  const data = JSON.parse(cleanText);
                                 if (data.redirect) redirectUrl = data.redirect;
                             } catch(e) {}
                             window.location.href = redirectUrl;
@@ -323,7 +329,13 @@
                             // Validation error
                             document.querySelectorAll('.js-error-msg').forEach(el => el.remove());
                             try {
-                                const data = JSON.parse(xhr.responseText);
+                                let cleanText = xhr.responseText;
+                                  const jsonStart = cleanText.indexOf('{');
+                                  const jsonEnd = cleanText.lastIndexOf('}');
+                                  if (jsonStart !== -1 && jsonEnd !== -1) {
+                                      cleanText = cleanText.substring(jsonStart, jsonEnd + 1);
+                                  }
+                                  const data = JSON.parse(cleanText);
                                 if (data.errors) {
                                     for (const [field, msgs] of Object.entries(data.errors)) {
                                         let inputName = field;
@@ -340,7 +352,7 @@
                                     }
                                 }
                             } catch(e) {
-                                alert('Gagal memvalidasi form.');
+                                alert('Koneksi terputus atau file terlalu besar. Harap muat ulang halaman. (Err: JSON parse)');
                             }
                             submitBtn.disabled = false;
                             submitBtn.innerHTML = originalText;
