@@ -352,7 +352,7 @@
                                     }
                                 }
                             } catch(e) {
-                                alert('Koneksi terputus atau file terlalu besar. Harap muat ulang halaman. (Err: JSON parse)');
+                                alert('JS Error: ' + e.message + ' | Data: ' + xhr.responseText.substring(0, 100));
                             }
                             submitBtn.disabled = false;
                             submitBtn.innerHTML = originalText;
@@ -372,7 +372,7 @@
                     xhr.send(finalFormData);
                     
                 } catch (err) {
-                    alert('Error saat kompresi: ' + err.message);
+                    alert('Kompresi Error: ' + err.message);
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = originalText;
                 }
