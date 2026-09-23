@@ -132,70 +132,52 @@
     async function compressImage(file, maxWidth = 1920, quality = 0.85) {
         return new Promise((resolve) => {
             const reader = new FileReader();
-            reader.readAsDataURL(file);
             reader.onload = function(event) {
                 const img = new Image();
-                img.src = event.target.result;
                 img.onload = function() {
-                    let width = img.width;
-                    let height = img.height;
-
-                    if (width > maxWidth) {
-                        height = Math.round((height * maxWidth) / width);
-                        width = maxWidth;
+                    try {
+                        let width = img.width;
+                        let height = img.height;
+                        if (width > maxWidth) {
+                            height = Math.round((height * maxWidth) / width);
+                            width = maxWidth;
+                        }
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        const mimeType = 'image/jpeg';
+                        canvas.toBlob((blob) => {
+                            if (!blob) {
+                                resolve(file);
+                                return;
+                            }
+                            try {
+                                const newFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
+                                    type: mimeType,
+                                    lastModified: Date.now()
+                                });
+                                resolve(newFile);
+                            } catch (e) {
+                                resolve(blob);
+                            }
+                        }, mimeType, quality);
+                    } catch (err) {
+                        resolve(file);
                     }
-
-                    const canvas = document.createElement('canvas');
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-
-                    const mimeType = 'image/jpeg';
-                    canvas.toBlob((blob) => {
-                        // Create a new File object with the compressed blob
-                        const newFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
-                            type: mimeType,
-                            lastModified: Date.now()
-                        });
-                        resolve(newFile);
-                    }, mimeType, quality);
                 };
+                img.onerror = function() {
+                    resolve(file);
+                };
+                img.src = event.target.result;
             };
+            reader.onerror = function() {
+                resolve(file);
+            };
+            reader.readAsDataURL(file);
         });
-    }
-
-    // Store compressed files here instead of mutating input.files to avoid iOS Safari bugs
-    window.compressedFiles = window.compressedFiles || {};
-
-    async function handleFileCompression(event) {
-        const input = event.target;
-        if (!input.files || input.files.length === 0) {
-            delete window.compressedFiles[input.id];
-            return;
-        }
-
-        // Visual feedback
-        const submitBtn = document.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span class="animate-pulse">Mengompres foto...</span>';
-
-        const compressedArray = [];
-        
-        for (let i = 0; i < input.files.length; i++) {
-            const file = input.files[i];
-            
-            // Only compress images larger than 500KB
-            if (file.type.startsWith('image/') && file.size > 500 * 1024) {
-                try {
-                    const compressedFile = await compressImage(file, 1920, 0.85);
-                    compressedArray.push(compressedFile);
-                } catch (e) {
-                    console.error("Gagal mengompres gambar:", e);
-                    compressedArray.push(file); // Fallback to original
-                }
-            } else {
+    } else {
                 compressedArray.push(file);
             }
         }
@@ -256,20 +238,67 @@
                 formData.delete('evidence_submitted_image_paths');
             }
 
-            const formDataKeys = Array.from(formData.keys());
-
-            const response = await fetch(form.action, {
-                method: 'POST', // Blade has @method('PUT') inside, which will be included in FormData
-                body: formData,
-                headers: {
-                    'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
+            // Client-side payload size validation
+            let hasOversized = false;
+            let isVideo = false;
+            if (window.compressedFiles) {
+                for (const [inputId, files] of Object.entries(window.compressedFiles)) {
+                    const inputElement = document.getElementById(inputId);
+                    if (inputElement && files.length > 0) {
+                        const fieldName = inputElement.name;
+                        // Skip fields we just deleted
+                        if (projectName === 'atlas' && fieldName === 'evidence_app_quality_image_path') continue;
+                        if (projectName === 'minutes_data' && (fieldName === 'evidence_submitted_image_paths[]' || fieldName === 'evidence_submitted_image_paths')) continue;
+                        
+                        for (const file of files) {
+                            if (file.type.startsWith('video/')) isVideo = true;
+                            if (file.size > 3.5 * 1024 * 1024) { // > 3.5MB per file
+                                hasOversized = true;
+                            }
+                        }
+                    }
                 }
+            }
+
+            if (isVideo || hasOversized) {
+                let errStr = isVideo ? 'Mohon HANYA unggah screenshot berupa Gambar (JPG/PNG), bukan file Video (layar rekam/MP4).' : 'Terdapat gambar yang gagal dikompresi dan ukurannya terlalu besar (> 3.5MB). Harap pilih gambar lain atau kurangi jumlah file.';
+                alert(errStr);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+                isSubmittingReport = false;
+                return;
+            }
+
+            const response = await new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', form.action, true);
+                xhr.setRequestHeader('Accept', 'application/json');
+                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                xhr.onload = function() {
+                    resolve({
+                        ok: xhr.status >= 200 && xhr.status < 300,
+                        status: xhr.status,
+                        redirected: xhr.responseURL && xhr.responseURL.indexOf(form.action) === -1,
+                        url: xhr.responseURL,
+                        json: async () => JSON.parse(xhr.responseText),
+                        headers: {
+                            get: (name) => {
+                                const headerStr = xhr.getAllResponseHeaders();
+                                const match = headerStr.match(new RegExp('^' + name + ':\s*(.*)$', 'im'));
+                                return match ? match[1] : null;
+                            }
+                        }
+                    });
+                };
+                xhr.onerror = function() {
+                    reject(new TypeError('Network request failed'));
+                };
+                xhr.send(formData);
             });
             
             // Check for loop redirects (Laravel back())
             if (response.redirected && response.url === window.location.href) {
-                alert('Sistem menolak request (kemungkinan karena total ukuran gambar terlalu besar sehingga melebihi batas server). Harap perkecil ukuran file atau kurangi jumlah gambar, lalu muat ulang halaman.');
+                alert('Sistem menolak request (kemungkinan karena form tidak lengkap atau ukuran gambar melebihi batas). Harap pastikan semua data terisi dan muat ulang halaman.');
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalText;
                 isSubmittingReport = false;
@@ -277,7 +306,6 @@
             }
 
             if (response.ok) {
-                // Success
                 const contentType = response.headers.get("content-type");
                 if (contentType && contentType.indexOf("application/json") !== -1) {
                     const data = await response.json();
@@ -288,9 +316,12 @@
                     window.location.href = "{{ route('dashboard') }}";
                 }
             } else if (response.status === 413) {
-                // Payload too large
-                const data = await response.json();
-                alert(data.message || 'Gagal mengirim laporan: Total ukuran file terlalu besar.');
+                let msg = 'Gagal mengirim laporan: Total ukuran file terlalu besar (Max server limit).';
+                try {
+                    const data = await response.json();
+                    msg = data.message || msg;
+                } catch(e) {}
+                alert(msg);
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalText;
                 isSubmittingReport = false;
