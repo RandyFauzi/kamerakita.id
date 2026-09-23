@@ -153,7 +153,7 @@
                             </div>
                         </div>
 
-                        <input x-ref="emailInput" @change="selectFile($event, 'emailFile')" type="file" accept="image/*" name="evidence_email_image_path" id="evidence_email_image_path" class="block w-full text-xs sm:text-sm text-gray-500 file:mr-3 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 file:transition-all">
+                        <input x-ref="emailInput" @change="selectFile($event, 'emailFile')" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" name="evidence_email_image_path" id="evidence_email_image_path" class="block w-full text-xs sm:text-sm text-gray-500 file:mr-3 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 file:transition-all">
                         <p x-show="emailFile" class="text-xs font-semibold text-emerald-700">
                             File dipilih: <span x-text="emailFile?.name"></span>
                         </p>
@@ -179,7 +179,7 @@
                             </div>
                         </div>
 
-                        <input x-ref="qualityInput" @change="selectFile($event, 'qualityFile')" type="file" accept="image/*" name="evidence_app_quality_image_path" id="evidence_app_quality_image_path" class="block w-full text-xs sm:text-sm text-gray-500 file:mr-3 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 file:transition-all">
+                        <input x-ref="qualityInput" @change="selectFile($event, 'qualityFile')" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" name="evidence_app_quality_image_path" id="evidence_app_quality_image_path" class="block w-full text-xs sm:text-sm text-gray-500 file:mr-3 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 file:transition-all">
                         <p x-show="qualityFile" class="text-xs font-semibold text-emerald-700">
                             File dipilih: <span x-text="qualityFile?.name"></span>
                         </p>
@@ -192,7 +192,7 @@
                             <span class="text-sm font-bold text-slate-800">2. Screenshot Bagian Unggahan/Submitted</span>
                             <span class="text-xs text-gray-500 leading-relaxed">Bisa pilih beberapa gambar. Biarkan kosong jika tidak ingin mengubah screenshot sebelumnya. Format: JPG, PNG, WEBP (Maks: 2MB/file)</span>
                         </div>
-                        <input x-ref="submittedInput" @change="submittedFiles = Array.from($event.target.files)" type="file" multiple accept="image/*" name="evidence_submitted_image_paths[]" id="evidence_submitted_image_paths" class="block w-full text-xs sm:text-sm text-gray-500 file:mr-3 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 file:transition-all">
+                        <input x-ref="submittedInput" @change="submittedFiles = Array.from($event.target.files)" type="file" multiple accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" name="evidence_submitted_image_paths[]" id="evidence_submitted_image_paths" class="block w-full text-xs sm:text-sm text-gray-500 file:mr-3 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 file:transition-all">
                         @error('evidence_submitted_image_paths') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         @error('evidence_submitted_image_paths.*') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         

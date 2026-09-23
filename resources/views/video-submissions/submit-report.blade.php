@@ -84,7 +84,7 @@
                             </span>
                             <span class="text-xs text-gray-400">{{ __("dashboard.submit_report_page.format_info") }}</span>
                         </div>
-                        <input type="file" accept="image/*" name="evidence_email_image_path" id="evidence_email_image_path" required  class="block w-full text-xs sm:text-sm text-gray-500 file:mr-3 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-55 file:text-indigo-700 hover:file:bg-indigo-100 file:transition-all">
+                        <input type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" name="evidence_email_image_path" id="evidence_email_image_path" required  class="block w-full text-xs sm:text-sm text-gray-500 file:mr-3 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-55 file:text-indigo-700 hover:file:bg-indigo-100 file:transition-all">
                         @error('evidence_email_image_path') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         <p class="text-xs text-gray-400 mt-1" x-show="project_name === 'atlas'">{{ __("dashboard.submit_report_page.evidence_1_desc_atlas") }}</p>
                         <p class="text-xs text-gray-400 mt-1" x-show="project_name === 'minutes_data'" style="display: none;">{{ __("dashboard.submit_report_page.evidence_1_desc_minutes") }}</p>
@@ -96,7 +96,7 @@
                             <span class="text-sm font-bold text-slate-800">2. {{ __("dashboard.submit_report_page.evidence_2_minutes") }} <span class="text-red-500">*</span></span>
                             <span class="text-xs text-gray-400">{{ __("dashboard.submit_report_page.format_info") }}</span>
                         </div>
-                        <input type="file" accept="image/*" name="evidence_app_quality_image_path" id="evidence_app_quality_image_path" :required="project_name === 'minutes_data'"  class="block w-full text-xs sm:text-sm text-gray-500 file:mr-3 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-55 file:text-indigo-700 hover:file:bg-indigo-100 file:transition-all">
+                        <input type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" name="evidence_app_quality_image_path" id="evidence_app_quality_image_path" :required="project_name === 'minutes_data'"  class="block w-full text-xs sm:text-sm text-gray-500 file:mr-3 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-55 file:text-indigo-700 hover:file:bg-indigo-100 file:transition-all">
                         @error('evidence_app_quality_image_path') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         <p class="text-xs text-gray-400 mt-1">{{ __("dashboard.submit_report_page.evidence_2_desc_minutes") }}</p>
                     </div>
@@ -107,7 +107,7 @@
                             <span class="text-sm font-bold text-slate-800">2. {{ __("dashboard.submit_report_page.evidence_2_atlas") }} <span class="text-red-500">*</span></span>
                             <span class="text-xs text-gray-400">{{ __("dashboard.submit_report_page.format_info_multiple") }}</span>
                         </div>
-                        <input type="file" accept="image/*" name="evidence_submitted_image_paths[]" id="evidence_submitted_image_paths" multiple :required="project_name === 'atlas'"  class="block w-full text-xs sm:text-sm text-gray-500 file:mr-3 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-55 file:text-indigo-700 hover:file:bg-indigo-100 file:transition-all">
+                        <input type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" name="evidence_submitted_image_paths[]" id="evidence_submitted_image_paths" multiple :required="project_name === 'atlas'"  class="block w-full text-xs sm:text-sm text-gray-500 file:mr-3 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-55 file:text-indigo-700 hover:file:bg-indigo-100 file:transition-all">
                         @error('evidence_submitted_image_paths') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         @error('evidence_submitted_image_paths.*') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         <p class="text-xs text-gray-400 mt-1">{{ __("dashboard.submit_report_page.evidence_2_desc_atlas") }}</p>
