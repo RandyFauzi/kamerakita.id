@@ -17,7 +17,8 @@ class SubmitVideoWorkReportController extends Controller
 {
     public function create()
     {
-        $partner = Partner::where('user_id', Auth::id())->first();
+        $partner        \Illuminate\Support\Facades\Log::info('DIAGNOSTIC STORE', ['all' => ->all(), 'files' => ->allFiles(), 'content_len' => ->server('CONTENT_LENGTH')]);
+         = Partner::where('user_id', Auth::id())->first();
 
         if (! $partner || !in_array(strtolower(trim($partner->partner_role)), ['worker', 'mitra', 'rekruter'])) {
             return redirect()->route('dashboard')->with('error', 'Hanya akun dengan profil Kontributor, Mitra, atau Rekruter yang dapat mengakses halaman ini.');
