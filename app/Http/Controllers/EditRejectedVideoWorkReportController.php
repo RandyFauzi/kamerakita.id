@@ -33,10 +33,10 @@ class EditRejectedVideoWorkReportController extends Controller
         if (empty($request->all()) && (int) $request->server('CONTENT_LENGTH') > 0) {
             if ($request->expectsJson()) {
                 return response()->json([
-                    'message' => 'Gagal mengirim laporan: Total ukuran file yang diunggah terlalu besar. Harap perkecil/kompres ukuran screenshot Anda (Maks. 2MB per gambar) lalu coba lagi.'
+                    'message' => 'Gagal mengirim laporan: Total ukuran file yang diunggah terlalu besar. Harap perkecil/kompres ukuran screenshot Anda (Otomatis dikompres) lalu coba lagi.'
                 ], 413);
             }
-            return back()->with('error', 'Gagal mengirim laporan: Total ukuran file yang diunggah terlalu besar. Harap perkecil/kompres ukuran screenshot Anda (Maks. 2MB per gambar) lalu coba lagi.');
+            return back()->with('error', 'Gagal mengirim laporan: Total ukuran file yang diunggah terlalu besar. Harap perkecil/kompres ukuran screenshot Anda (Otomatis dikompres) lalu coba lagi.');
         }
 
         $validated = $request->validate([
@@ -48,14 +48,14 @@ class EditRejectedVideoWorkReportController extends Controller
                 'nullable',
                 'image',
                 'mimes:jpeg,png,jpg,gif,webp',
-                'max:2048'
+                'max:30720'
             ],
             'evidence_app_quality_image_path' => [
                 \Illuminate\Validation\Rule::requiredIf(fn () => $request->project_name === 'minutes_data' && empty($report->evidence_app_quality_image_path)),
                 'nullable',
                 'image',
                 'mimes:jpeg,png,jpg,gif,webp',
-                'max:2048'
+                'max:30720'
             ],
             'evidence_submitted_image_paths' => [
                 \Illuminate\Validation\Rule::requiredIf(fn () => $request->project_name === 'atlas' && empty($report->evidence_submitted_image_paths)),
@@ -63,7 +63,7 @@ class EditRejectedVideoWorkReportController extends Controller
                 'array',
                 'max:10'
             ],
-            'evidence_submitted_image_paths.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'evidence_submitted_image_paths.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:30720',
         ], [
             'project_name.required' => 'Aplikasi wajib dipilih.',
             'project_name.in' => 'Pilihan aplikasi tidak valid.',
