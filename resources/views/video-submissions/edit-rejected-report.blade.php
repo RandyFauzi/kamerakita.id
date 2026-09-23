@@ -217,6 +217,7 @@
             </div>
         </div>
     </div>
+    </div>
     
     <!-- Bulletproof Client-Side Compression -->
     <script>
@@ -252,11 +253,7 @@
                             canvas.toBlob((blob) => {
                                 if (blob) {
                                     // Create a new File from the blob
-                                    const newFile = new File([blob], file.name, {
-                                        type: 'image/jpeg',
-                                        lastModified: Date.now()
-                                    });
-                                    resolve(newFile);
+                                    resolve(blob);
                                 } else {
                                     resolve(file); // Fallback to original
                                 }
