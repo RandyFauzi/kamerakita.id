@@ -22,9 +22,6 @@ class PartnerFactory extends Factory
             'mitra_parent_id' => null, // will be linked in Seeder
             'full_name' => $fullName = $this->faker->name(),
             'whatsapp_number' => '08' . $this->faker->numerify('##########'),
-            'bank_name' => $this->faker->randomElement(['BCA', 'Mandiri', 'BRI', 'BNI', 'GoPay']),
-            'account_number' => $this->faker->numerify('###########'),
-            'account_owner_name' => $fullName,
             'has_headstrap' => $this->faker->boolean(35),
             'status' => $this->faker->randomElement(['active', 'active', 'active', 'suspended']),
             'base_hourly_rate' => 54000,

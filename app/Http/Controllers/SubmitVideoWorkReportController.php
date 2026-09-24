@@ -37,17 +37,22 @@ class SubmitVideoWorkReportController extends Controller
             return redirect()->route('dashboard')->with('error', 'Akses ditolak.');
         }
 
-        // Handle case where total upload size exceeds PHP's post_max_size.
-        // PHP drops the entire $_POST and $_FILES array, causing Laravel to see empty inputs.
-        // This triggers confusing validation errors for fields the user already filled.
+        $requestId = \Illuminate\Support\Str::uuid()->toString();
+
         if (empty($request->all()) && (int) $request->server('CONTENT_LENGTH') > 0) {
+            Log::warning('Payload dropped due to server limits', [
+                'diagnostic_id' => $requestId,
+                'partner_id' => $partner->id,
+                'content_length' => $request->server('CONTENT_LENGTH')
+            ]);
+            
             if ($request->expectsJson() || $request->has('_ajax')) {
                 return response()->json([
-                    'message' => 'Gagal mengirim laporan: Total ukuran file yang diunggah terlalu besar. Harap perkecil/kompres ukuran screenshot Anda (Otomatis dikompres) lalu coba lagi.',
-                    'server_error' => true
-                ], 200);
+                    'success' => false,
+                    'message' => 'Gagal mengirim laporan: Total ukuran file yang diunggah terlalu besar. Harap perkecil/kompres ukuran screenshot Anda (Otomatis dikompres) lalu coba lagi.'
+                ], 413);
             }
-            return back()->with('error', 'Gagal mengirim laporan: Total ukuran file yang diunggah terlalu besar. Harap perkecil/kompres ukuran screenshot Anda (Otomatis dikompres) lalu coba lagi.');
+            return back()->with('error', 'Gagal mengirim laporan: Total ukuran file terlalu besar.');
         }
 
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
@@ -74,8 +79,19 @@ class SubmitVideoWorkReportController extends Controller
         ]);
         
         if ($validator->fails()) {
+            Log::info('Report submission validation failed', [
+                'diagnostic_id' => $requestId,
+                'partner_id' => $partner->id,
+                'errors' => $validator->errors()->toArray(),
+                'content_length' => $request->server('CONTENT_LENGTH')
+            ]);
+            
             if ($request->expectsJson() || $request->has('_ajax')) {
-                return response()->json(['validation_failed' => true, 'errors' => $validator->errors()], 200);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Terdapat kesalahan pada isian form Anda.',
+                    'errors' => $validator->errors()
+                ], 422);
             }
             return back()->withErrors($validator)->withInput();
         }
@@ -114,7 +130,7 @@ class SubmitVideoWorkReportController extends Controller
                 ]);
 
                 // Background Processing Queue
-                \App\Jobs\ProcessSubmittedReport::dispatch($report);
+                \App\Jobs\ProcessSubmittedReport::dispatch($report)->afterCommit();
 
                 app(PartnerActivityStatusService::class)->markActiveAfterReport($partner);
             });
@@ -128,27 +144,36 @@ class SubmitVideoWorkReportController extends Controller
                         Storage::disk('evidence')->delete($path);
                     }
                 } catch (Throwable) {
-                    // The original upload failure is the actionable error.
+                    // Ignore cleanup errors
                 }
             }
 
             Log::error('Failed to store video work report evidence.', [
+                'diagnostic_id' => $requestId,
                 'partner_id' => $partner->id,
                 'message' => $exception->getMessage(),
+                'class' => get_class($exception)
             ]);
 
             if ($request->expectsJson() || $request->has('_ajax')) {
-                return response()->json(['message' => 'Laporan gagal dikirim karena file bukti tidak berhasil disimpan. Cek permission folder storage/app/private lalu coba lagi.', 'server_error' => true], 200);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Laporan gagal dikirim karena kesalahan sistem internal. Silakan coba lagi.'
+                ], 500);
             }
 
             return back()
                 ->withInput()
-                ->with('error', 'Laporan gagal dikirim karena file bukti tidak berhasil disimpan. Cek permission folder storage/app/private lalu coba lagi.');
+                ->with('error', 'Laporan gagal dikirim karena kesalahan sistem internal. Silakan coba lagi.');
         }
 
         if ($request->expectsJson() || $request->has('_ajax')) {
             session()->flash('success', 'Laporan kerja video Anda berhasil dikirim dan sedang menunggu antrean QC!');
-            return response()->json(['redirect' => route('dashboard')]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Laporan kerja video Anda berhasil dikirim dan sedang menunggu antrean QC!',
+                'redirect' => route('dashboard')
+            ], 200);
         }
 
         return redirect()->route('dashboard')->with('success', 'Laporan kerja video Anda berhasil dikirim dan sedang menunggu antrean QC!');

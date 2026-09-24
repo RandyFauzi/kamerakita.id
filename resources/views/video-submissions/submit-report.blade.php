@@ -186,32 +186,50 @@
                 submitBtn.innerHTML = '<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...';
                 
                 try {
-                    // Create fresh FormData to bypass iOS WebKit mutation bugs
-                    const originalFormData = new FormData(form);
-                    const finalFormData = new FormData();
+                    // Bypass iOS WebKit FormData.entries() iterator bugs by modifying FormData in-place
+                    const finalFormData = new FormData(form);
+                    const projectName = finalFormData.get('project_name');
                     
-                    const projectName = originalFormData.get('project_name');
+                    // Remove hidden fields based on project_name
+                    if (projectName === 'atlas') {
+                        finalFormData.delete('evidence_app_quality_image_path');
+                    } else if (projectName === 'minutes_data') {
+                        finalFormData.delete('evidence_submitted_image_paths[]');
+                        finalFormData.delete('evidence_submitted_image_paths');
+                    }
                     
-                    // Iterate and selectively append original data
-                    for (const [key, value] of originalFormData.entries()) {
-                        // Skip hidden fields logic
-                        if (projectName === 'atlas' && key === 'evidence_app_quality_image_path') continue;
-                        if (projectName === 'minutes_data' && (key === 'evidence_submitted_image_paths[]' || key === 'evidence_submitted_image_paths')) continue;
-                        
-                        // If it's a file, we compress it before appending
-                        if (value instanceof File && value.size > 0 && (value.type === '' || value.type.startsWith('image/') || value.type === 'application/octet-stream')) {
-                            // Compress images > 500KB
-                            if (value.size > 500 * 1024) {
-                                const compressedFile = await compressFile(value, 1920, 1920, 0.8);
-                                finalFormData.append(key, compressedFile, value.name);
-                            finalFormData.append('_ajax', '1');
-                            } else {
-                                finalFormData.append(key, value, value.name);
+                    // Helper to compress a specific field if it exists
+                    async function compressField(fieldName) {
+                        const file = finalFormData.get(fieldName);
+                        if (file && file instanceof File && file.size > 500 * 1024) {
+                            if (file.type === '' || file.type.startsWith('image/') || file.type === 'application/octet-stream') {
+                                const compressedFile = await compressFile(file, 1920, 1920, 0.8);
+                                finalFormData.set(fieldName, compressedFile, file.name || 'image.jpg');
                             }
-                        } else {
-                            finalFormData.append(key, value);
                         }
                     }
+                    
+                    await compressField('evidence_email_image_path');
+                    if (projectName === 'minutes_data') {
+                        await compressField('evidence_app_quality_image_path');
+                    }
+                    
+                    if (projectName === 'atlas') {
+                        const submittedFiles = finalFormData.getAll('evidence_submitted_image_paths[]');
+                        if (submittedFiles && submittedFiles.length > 0) {
+                            finalFormData.delete('evidence_submitted_image_paths[]'); // clear to re-append
+                            for (let i = 0; i < submittedFiles.length; i++) {
+                                let f = submittedFiles[i];
+                                if (f && f instanceof File && f.size > 500 * 1024) {
+                                    if (f.type === '' || f.type.startsWith('image/') || f.type === 'application/octet-stream') {
+                                        f = await compressFile(f, 1920, 1920, 0.8);
+                                    }
+                                }
+                                finalFormData.append('evidence_submitted_image_paths[]', f, f.name || 'image.jpg');
+                            }
+                        }
+                    }
+                    finalFormData.append('_ajax', '1');
                     
                     // Submit via XMLHttpRequest (more reliable than fetch for large payloads on iOS)
                     const xhr = new XMLHttpRequest();
@@ -220,63 +238,28 @@
                     xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
                     
                     xhr.onload = function() {
-                        if (xhr.status >= 200 && xhr.status < 300) {
-                            // Success or successful redirect
-                            let redirectUrl = "{{ route('dashboard') }}";
-                            try {
-                                let cleanText = xhr.responseText;
-                                  const jsonStart = cleanText.indexOf('{');
-                                  const jsonEnd = cleanText.lastIndexOf('}');
-                                  if (jsonStart !== -1 && jsonEnd !== -1) {
-                                      cleanText = cleanText.substring(jsonStart, jsonEnd + 1);
-                                  }
-                                  const data = JSON.parse(cleanText);
-                                    if (data.server_error) {
-                                        alert(data.message || 'Terjadi kesalahan sistem dari server.');
-                                        submitBtn.disabled = false;
-                                        if (submitBtn.innerHTML.includes('svg')) submitBtn.innerHTML = originalText;
-                                        return;
-                                    }
-                                    if (data.validation_failed) {
-                                        document.querySelectorAll('.js-error-msg').forEach(el => el.remove());
-                                        for (const [field, msgs] of Object.entries(data.errors)) {
-                                            let inputName = field;
-                                            if (field.startsWith('evidence_submitted_image_paths')) {
-                                                inputName = 'evidence_submitted_image_paths[]';
-                                            }
-                                            const input = form.querySelector(`[name="${inputName}"]`);
-                                            if (input) {
-                                                const p = document.createElement('p');
-                                                p.className = 'text-red-500 text-xs mt-1 js-error-msg';
-                                                p.innerText = msgs[0];
-                                                input.parentElement.appendChild(p);
-                                            }
-                                        }
-                                        submitBtn.disabled = false;
-                                        if (submitBtn.innerHTML.includes('svg')) submitBtn.innerHTML = originalText;
-                                        return;
-                                    }
-                                    if (data.redirect) redirectUrl = data.redirect;
-                                } catch(e) {}
-                                window.location.href = redirectUrl;
-                        } else if (xhr.status === 422) {
-                            // Validation error
-                            document.querySelectorAll('.js-error-msg').forEach(el => el.remove());
-                            try {
-                                let cleanText = xhr.responseText;
-                                  const jsonStart = cleanText.indexOf('{');
-                                  const jsonEnd = cleanText.lastIndexOf('}');
-                                  if (jsonStart !== -1 && jsonEnd !== -1) {
-                                      cleanText = cleanText.substring(jsonStart, jsonEnd + 1);
-                                  }
-                                  const data = JSON.parse(cleanText);
+                        try {
+                            const data = JSON.parse(xhr.responseText);
+                            
+                            if (xhr.status >= 200 && xhr.status < 300) {
+                                if (data.success && data.redirect) {
+                                    window.location.href = data.redirect;
+                                    return;
+                                }
+                                alert(data.message || 'Berhasil terkirim.');
+                                window.location.href = "{{ route('dashboard') }}";
+                                return;
+                            }
+                            
+                            if (xhr.status === 422) {
+                                document.querySelectorAll('.js-error-msg').forEach(el => el.remove());
                                 if (data.errors) {
                                     for (const [field, msgs] of Object.entries(data.errors)) {
                                         let inputName = field;
                                         if (field.startsWith('evidence_submitted_image_paths')) {
                                             inputName = 'evidence_submitted_image_paths[]';
                                         }
-                                        const input = form.querySelector([name=""]);
+                                        const input = form.querySelector(`[name="${inputName}"]`);
                                         if (input) {
                                             const p = document.createElement('p');
                                             p.className = 'text-red-500 text-xs mt-1 js-error-msg';
@@ -284,21 +267,25 @@
                                             input.parentElement.appendChild(p);
                                         }
                                     }
+                                } else {
+                                    alert(data.message || 'Terdapat kesalahan validasi.');
                                 }
-                            } catch(e) {
-                                alert('JS Error: ' + e.message + ' | Data: ' + xhr.responseText.substring(0, 100));
+                            } else if (xhr.status === 413) {
+                                alert(data.message || 'Ukuran file terlalu besar. Gagal mengirim laporan.');
+                            } else if (xhr.status === 419) {
+                                alert('Sesi Anda telah berakhir. Silakan muat ulang halaman ini.');
+                            } else {
+                                alert(data.message || 'Terjadi kesalahan sistem (Kode: ' + xhr.status + '). Silakan coba lagi nanti.');
                             }
-                            submitBtn.disabled = false;
-                            submitBtn.innerHTML = originalText;
-                        } else {
-                            alert('Terjadi kesalahan sistem (Kode: ' + xhr.status + '). Coba lagi nanti.');
-                            submitBtn.disabled = false;
-                            submitBtn.innerHTML = originalText;
+                        } catch (e) {
+                            alert('Terjadi kesalahan yang tidak terduga saat memproses respons dari server. (Kode: ' + xhr.status + ')');
                         }
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalText;
                     };
                     
                     xhr.onerror = function() {
-                        alert('Koneksi terputus. Pastikan internet stabil.');
+                        alert('Koneksi terputus. Pastikan internet Anda stabil lalu coba lagi.');
                         submitBtn.disabled = false;
                         submitBtn.innerHTML = originalText;
                     };

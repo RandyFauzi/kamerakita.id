@@ -12,8 +12,16 @@ class StoreEvidenceImageService
     public function store(UploadedFile $file, string $folder): string
     {
         $folder = trim($folder, '/');
+        
+        $shouldCompress = false;
+        $mime = $file->getMimeType();
+        $size = $file->getSize();
+        
+        if (!in_array($mime, ['image/jpeg', 'image/jpg']) || $size > 1024 * 1024) {
+            $shouldCompress = true;
+        }
 
-        if (function_exists('imagejpeg')) {
+        if ($shouldCompress && function_exists('imagejpeg')) {
             $compressed = $this->compressToJpeg($file);
 
             if ($compressed !== null) {
