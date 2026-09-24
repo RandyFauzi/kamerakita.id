@@ -39,20 +39,6 @@ class SubmitVideoWorkReportController extends Controller
 
         $requestId = \Illuminate\Support\Str::uuid()->toString();
 
-        Log::info('DIAGNOSTIC_PHASE_10', [
-            'diagnostic_id' => $requestId,
-            'partner_id' => $partner->id ?? null,
-            'CONTENT_LENGTH' => $request->server('CONTENT_LENGTH'),
-            'post_keys' => array_keys($request->all()),
-            'file_keys' => array_keys($request->allFiles()),
-            'has_project_name' => $request->has('project_name'),
-            'has_submission_date' => $request->has('submission_date'),
-            'has_duration' => $request->has('submitted_duration_minutes'),
-            'has_email_file' => $request->hasFile('evidence_email_image_path'),
-            'atlas_files_count' => count($request->file('evidence_submitted_image_paths', [])),
-            'raw_post_size' => strlen(file_get_contents('php://input')),
-        ]);
-
         if (empty($request->all()) && (int) $request->server('CONTENT_LENGTH') > 0) {
             Log::warning('Payload dropped due to server limits', [
                 'diagnostic_id' => $requestId,
