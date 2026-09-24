@@ -36,7 +36,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('reports.store') }}" method="POST" enctype="multipart/form-data" class="bg-white shadow-xl shadow-gray-200/50 rounded-3xl overflow-hidden border border-gray-100" x-data="{ app: 'atlas', isSubmitting: false }" @submit="if(isSubmitting) { $event.preventDefault(); } else { isSubmitting = true; }">
+            <form action="{{ route('reports.store') }}" method="POST" enctype="multipart/form-data" class="bg-white shadow-xl shadow-gray-200/50 rounded-3xl overflow-hidden border border-gray-100" onsubmit="document.getElementById('loading-overlay').classList.remove('hidden');" x-data="{ app: 'atlas' }">
                 @csrf
 
                 <div class="p-6 sm:p-8 space-y-6">
@@ -88,11 +88,18 @@
                 </div>
 
                 <div class="bg-gray-50 px-6 py-4 border-t border-gray-100 flex items-center justify-end">
-                    <button type="submit" :class="isSubmitting ? 'bg-gray-400 cursor-wait' : 'bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-600/30'" class="w-full md:w-auto text-white font-bold py-3 px-8 rounded-xl transition-colors">
-                        <span x-text="isSubmitting ? 'Sedang Mengupload...' : 'Kirim Laporan Sekarang'"></span>
+                    <button type="submit" class="w-full md:w-auto bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-600/30 text-white font-bold py-3 px-8 rounded-xl transition-colors">
+                        Kirim Laporan Sekarang
                     </button>
                 </div>
             </form>
         </div>
+    </div>
+
+    <!-- Full Screen Loading Overlay -->
+    <div id="loading-overlay" class="hidden fixed inset-0 z-[9999] bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center">
+        <div class="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
+        <h3 class="text-xl font-bold text-gray-800 mb-1">Sedang Mengirim Laporan</h3>
+        <p class="text-sm text-gray-500 font-medium animate-pulse">Mohon tunggu, sedang memproses file foto Anda...</p>
     </div>
 </x-app-layout>
