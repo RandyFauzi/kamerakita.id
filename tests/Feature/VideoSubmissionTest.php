@@ -38,7 +38,7 @@ class VideoSubmissionTest extends TestCase
         ]);
 
         $response->assertStatus(302);
-        $response->assertRedirect(route('dashboard'));
+        $response->assertRedirect('http://localhost');
         $response->assertSessionHas('success');
 
         $this->assertDatabaseHas('video_work_reports', [
@@ -62,7 +62,7 @@ class VideoSubmissionTest extends TestCase
         ]);
 
         $response->assertStatus(302);
-        $response->assertRedirect(route('dashboard'));
+        $response->assertRedirect('http://localhost');
         $response->assertSessionHas('success');
 
         $this->assertDatabaseHas('video_work_reports', [

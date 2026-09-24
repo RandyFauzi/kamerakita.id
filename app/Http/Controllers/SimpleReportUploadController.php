@@ -110,6 +110,6 @@ class SimpleReportUploadController extends Controller
                 ->with('error', 'Laporan gagal dikirim. Pastikan file valid.');
         }
 
-        return redirect()->route('dashboard')->with('success', 'Laporan berhasil diupload!');
+        return back()->with('success', 'Upload Berhasil!');
     }
 }

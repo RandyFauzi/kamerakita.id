@@ -26,10 +26,20 @@
                 </div>
             @endif
 
-            <form action="{{ route('reports.store') }}" method="POST" enctype="multipart/form-data" class="bg-white shadow-xl shadow-gray-200/50 rounded-3xl overflow-hidden border border-gray-100" onsubmit="this.querySelector('button[type=submit]').disabled = true; this.querySelector('button[type=submit]').innerText = 'Sedang Mengupload...';">
+            @if(session('success'))
+                <div class="mb-6 p-4 rounded-xl bg-green-100 border border-green-200 text-green-800 font-bold text-base flex items-start gap-3">
+                    <svg class="w-6 h-6 mt-0.5 shrink-0 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <div>
+                        {{ session('success') }}
+                        <div class="mt-2 text-sm font-normal text-green-700">Laporan Anda telah berhasil masuk ke sistem dan sedang mengantre untuk di-QC.</div>
+                    </div>
+                </div>
+            @endif
+
+            <form action="{{ route('reports.store') }}" method="POST" enctype="multipart/form-data" class="bg-white shadow-xl shadow-gray-200/50 rounded-3xl overflow-hidden border border-gray-100" x-data="{ app: 'atlas', isSubmitting: false }" @submit="if(isSubmitting) { $event.preventDefault(); } else { isSubmitting = true; }">
                 @csrf
 
-                <div class="p-6 sm:p-8 space-y-6" x-data="{ app: 'atlas' }">
+                <div class="p-6 sm:p-8 space-y-6">
                     
                     <!-- App Selection -->
                     <div>
@@ -78,8 +88,8 @@
                 </div>
 
                 <div class="bg-gray-50 px-6 py-4 border-t border-gray-100 flex items-center justify-end">
-                    <button type="submit" class="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl transition-colors shadow-lg shadow-blue-600/30">
-                        Kirim Laporan Sekarang
+                    <button type="submit" :class="isSubmitting ? 'bg-gray-400 cursor-wait' : 'bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-600/30'" class="w-full md:w-auto text-white font-bold py-3 px-8 rounded-xl transition-colors">
+                        <span x-text="isSubmitting ? 'Sedang Mengupload...' : 'Kirim Laporan Sekarang'"></span>
                     </button>
                 </div>
             </form>
