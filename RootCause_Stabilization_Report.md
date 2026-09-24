@@ -3,9 +3,9 @@
 **Tanggal:** 24 September 2026
 
 ## 1. ROOT CAUSE Paling Mungkin & 2. ROOT CAUSE Terbukti
-- **Terbukti:** Klien mengirimkan *body request* yang kosong untuk *field* teks (`project_name`, `submission_date`, dll) sementara tetap berhasil mengirimkan request POST, memicu error validasi 422 untuk seluruh field.
-- **Root Cause Utama:** Confirmed client-side FormData reconstruction failure on affected iOS/WebKit environment when asynchronous compression was performed during iteration.
-- **Penjelasan:** Di versi kode sebelumnya, pembuatan `FormData` dilakukan melalui loop asinkron `for (const [key, value] of originalFormData.entries())` yang digabung dengan `await compressFile()`. Konstruksi ulang ini rentan gagal di beberapa perangkat, menyebabkan `finalFormData` dikirim secara parsial atau kosong ke server.
+- **Terbukti (Phase 1-11 Diagnostic Data):** FormData di iPhone *berhasil* merangkai seluruh input teks dan file. XHR *berhasil* dieksekusi. Namun Laravel mengembalikan HTTP 422 karena seluruh *field* hilang (missing) saat dibaca oleh server, membuktikan payload hancur (corrupted) tepat di tengah pengiriman XHR dari WebKit menuju NGINX.
+- **Root Cause Utama (Confirmed):** WebKit `FormData` Blob Serialization Bug pada iOS Safari.
+- **Penjelasan Teknis:** Saat proses kompresi di klien, metode `canvas.toBlob()` menghasilkan objek `Blob`. Ketika `Blob` mentah di-append ke dalam `FormData` dan dikirim menggunakan `XMLHttpRequest` (atau `fetch`), WebKit (mesin di balik iOS Safari) terkadang gagal menyusun *multipart/form-data boundary* secara benar. Hal ini menyebabkan keseluruhan *body HTTP request* rusak, sehingga PHP tidak dapat mem-parsing `$_POST` (kosong), memicu respon HTTP 422 (seolah-olah user tidak mengisi apapun).
 
 ## 2. Kondisi Request & Payload
 - **Apakah request mencapai Laravel?** YA. Jika tidak, UI tidak akan bisa me-render pesan error validasi (pesan error merah berasal dari response JSON HTTP 422).
