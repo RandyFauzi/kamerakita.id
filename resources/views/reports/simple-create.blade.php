@@ -36,7 +36,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('reports.store') }}" method="POST" enctype="multipart/form-data" class="bg-white shadow-xl shadow-gray-200/50 rounded-3xl overflow-hidden border border-gray-100" onsubmit="document.getElementById('loading-overlay').classList.remove('hidden');" x-data="{ app: 'atlas' }">
+            <form action="{{ route('reports.store') }}" method="POST" enctype="multipart/form-data" class="bg-white shadow-xl shadow-gray-200/50 rounded-3xl overflow-hidden border border-gray-100" onsubmit="document.getElementById('loading-overlay').classList.remove('hidden');" x-data="{ app: '{{ old('project_name', 'atlas') }}' }">
                 @csrf
 
                 <div class="p-6 sm:p-8 space-y-6">
@@ -54,13 +54,13 @@
                         <!-- Date -->
                         <div>
                             <label class="block text-sm font-bold text-gray-800 mb-2">Tanggal</label>
-                            <input type="date" name="submission_date" value="{{ date('Y-m-d') }}" max="{{ date('Y-m-d') }}" required class="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block p-3">
+                            <input type="date" name="submission_date" value="{{ old('submission_date', date('Y-m-d')) }}" max="{{ date('Y-m-d') }}" required class="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block p-3">
                         </div>
                         
                         <!-- Duration -->
                         <div>
                             <label class="block text-sm font-bold text-gray-800 mb-2">Total Durasi (Menit)</label>
-                            <input type="number" name="submitted_duration_minutes" placeholder="Misal: 120" min="1" required class="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block p-3">
+                            <input type="number" name="submitted_duration_minutes" value="{{ old('submitted_duration_minutes') }}" placeholder="Misal: 120" min="1" required class="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block p-3">
                         </div>
                     </div>
 

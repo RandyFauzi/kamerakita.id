@@ -34,6 +34,19 @@ class SimpleReportUploadController extends Controller
             return redirect()->route('dashboard')->with('error', 'Akses ditolak.');
         }
 
+        // --- DIAGNOSTIC LOGGING ---
+        Log::info('ReportUpload attempt', [
+            'method' => $request->method(),
+            'content_type' => $request->header('Content-Type'),
+            'content_length' => $request->header('Content-Length'),
+            'user_agent' => $request->header('User-Agent'),
+            'post_keys' => array_keys($_POST),
+            'files_keys' => array_keys($_FILES),
+            'input_all' => $request->except(['_token', 'password']),
+            'raw_content_start' => substr(file_get_contents('php://input'), 0, 500)
+        ]);
+        // --------------------------
+
         if (empty($request->all()) && (int) $request->server('CONTENT_LENGTH') > 0) {
             return back()->with('error', 'Gagal mengirim laporan: Total ukuran file melampaui batas server.');
         }
