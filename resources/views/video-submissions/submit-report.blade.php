@@ -136,10 +136,16 @@
             
             // Setup diagnostic log panel
             const diagPanel = document.createElement('div');
-            diagPanel.className = 'mt-8 p-4 bg-gray-900 text-green-400 font-mono text-xs rounded-xl overflow-x-auto whitespace-pre-wrap';
+            diagPanel.className = 'p-4 bg-gray-900 text-green-400 font-mono text-xs overflow-y-auto whitespace-pre-wrap';
             diagPanel.style.display = 'none';
+            diagPanel.style.position = 'fixed';
+            diagPanel.style.top = '0';
+            diagPanel.style.left = '0';
+            diagPanel.style.width = '100vw';
+            diagPanel.style.height = '100vh';
+            diagPanel.style.zIndex = '999999';
             diagPanel.id = 'diagnostic-log';
-            form.parentNode.appendChild(diagPanel);
+            document.body.appendChild(diagPanel);
             
             function logDiag(phase, data) {
                 diagPanel.style.display = 'block';
