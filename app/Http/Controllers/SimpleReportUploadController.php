@@ -13,20 +13,9 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
 
-class ReportUploadController extends Controller
+class SimpleReportUploadController extends Controller
 {
     public function create()
-    {
-        $partner = Partner::where('user_id', Auth::id())->first();
-
-        if (!$partner || !in_array(strtolower(trim($partner->partner_role)), ['worker', 'mitra', 'rekruter'])) {
-            return redirect()->route('dashboard')->with('error', 'Hanya akun dengan profil Kontributor, Mitra, atau Rekruter yang dapat mengakses halaman ini.');
-        }
-
-        return view('reports.create', compact('partner'));
-    }
-
-    public function store(Request $request)
     {
         $partner = Partner::where('user_id', Auth::id())->first();
 
@@ -34,31 +23,34 @@ class ReportUploadController extends Controller
             return redirect()->route('dashboard')->with('error', 'Akses ditolak.');
         }
 
-        if (empty($request->all()) && (int) $request->server('CONTENT_LENGTH') > 0) {
-            return back()->with('error', 'Gagal mengirim laporan: Total ukuran file terlalu besar.');
+        return view('reports.simple-create', compact('partner'));
+    }
+
+    public function store(Request $request)
+    {
+        $partner = Partner::where('user_id', Auth::id())->first();
+
+        if (!$partner) {
+            return redirect()->route('dashboard')->with('error', 'Akses ditolak.');
         }
 
+        if (empty($request->all()) && (int) $request->server('CONTENT_LENGTH') > 0) {
+            return back()->with('error', 'Gagal mengirim laporan: Total ukuran file melampaui batas server.');
+        }
+
+        // Extremely simple rules as requested
         $validated = $request->validate([
             'project_name' => 'required|in:atlas,minutes_data',
-            'submission_date' => 'required|date|before_or_equal:today',
-            'submitted_duration_minutes' => 'required|integer|min:1|max:1440',
-            'evidence_email_image_path' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:30720',
-            'evidence_app_quality_image_path' => 'required_if:project_name,minutes_data|image|mimes:jpeg,png,jpg,gif,webp|max:30720',
-            'evidence_submitted_image_paths' => 'required_if:project_name,atlas|array|min:1',
-            'evidence_submitted_image_paths.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:30720',
+            'submission_date' => 'required|date',
+            'submitted_duration_minutes' => 'required|integer|min:1',
+            'evidence_email_image_path' => 'required|file|max:10240', // Any file, max 10MB
+            'evidence_app_quality_image_path' => 'nullable|file|max:10240',
+            'evidence_submitted_image_paths' => 'nullable|array',
+            'evidence_submitted_image_paths.*' => 'nullable|file|max:10240',
         ], [
-            'project_name.required' => 'Aplikasi wajib dipilih.',
-            'project_name.in' => 'Pilihan aplikasi tidak valid.',
-            'submission_date.required' => 'Tanggal pengiriman wajib diisi.',
-            'submission_date.before_or_equal' => 'Tanggal pengiriman tidak boleh melebihi hari ini.',
-            'submitted_duration_minutes.required' => 'Durasi menit wajib diisi.',
-            'submitted_duration_minutes.min' => 'Durasi menit minimal adalah 1 menit.',
-            'evidence_email_image_path.required' => 'Screenshot total durasi di aplikasi wajib diunggah.',
-            'evidence_email_image_path.image' => 'File screenshot total durasi harus berupa gambar.',
-            'evidence_app_quality_image_path.required_if' => 'Screenshot bagian kualitas wajib diunggah untuk Minutes Data.',
-            'evidence_app_quality_image_path.image' => 'File screenshot kualitas harus berupa gambar.',
-            'evidence_submitted_image_paths.required_if' => 'Screenshot bagian unggahan wajib diunggah minimal 1 gambar untuk Atlas.',
-            'evidence_submitted_image_paths.*.image' => 'Setiap file screenshot unggahan harus berupa gambar.',
+            'required' => 'Kolom :attribute wajib diisi.',
+            'max' => 'Ukuran file :attribute maksimal 10MB.',
+            'file' => 'File :attribute tidak valid.',
         ]);
 
         $emailPath = null;
@@ -75,7 +67,9 @@ class ReportUploadController extends Controller
 
             if ($request->hasFile('evidence_submitted_image_paths')) {
                 foreach ($request->file('evidence_submitted_image_paths') as $file) {
-                    $submittedPaths[] = $imageStorage->store($file, 'evidences/submitted');
+                    if ($file) {
+                        $submittedPaths[] = $imageStorage->store($file, 'evidences/submitted');
+                    }
                 }
             }
 
@@ -113,9 +107,9 @@ class ReportUploadController extends Controller
 
             return back()
                 ->withInput()
-                ->with('error', 'Laporan gagal dikirim karena kesalahan sistem internal. Silakan coba lagi.');
+                ->with('error', 'Laporan gagal dikirim. Pastikan file valid.');
         }
 
-        return redirect()->route('dashboard')->with('success', 'Laporan kerja video Anda berhasil dikirim dan sedang menunggu antrean QC!');
+        return redirect()->route('dashboard')->with('success', 'Laporan berhasil diupload!');
     }
 }

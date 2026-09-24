@@ -100,6 +100,6 @@ class VideoSubmissionTest extends TestCase
         ]);
 
         $response->assertStatus(302);
-        $response->assertSessionHas('error', 'Gagal mengirim laporan: Total ukuran file terlalu besar.');
+        $response->assertSessionHas('error', 'Gagal mengirim laporan: Total ukuran file melampaui batas server.');
     }
 }
