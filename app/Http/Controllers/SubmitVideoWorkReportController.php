@@ -31,9 +31,6 @@ class SubmitVideoWorkReportController extends Controller
         $partner = Partner::where('user_id', Auth::id())->first();
 
         if (! $partner || !in_array(strtolower(trim($partner->partner_role)), ['worker', 'mitra', 'rekruter'])) {
-            if ($request->expectsJson()) {
-                return response()->json(['message' => 'Akses ditolak.'], 403);
-            }
             return redirect()->route('dashboard')->with('error', 'Akses ditolak.');
         }
 
@@ -46,12 +43,6 @@ class SubmitVideoWorkReportController extends Controller
                 'content_length' => $request->server('CONTENT_LENGTH')
             ]);
             
-            if ($request->expectsJson() || $request->has('_ajax')) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Gagal mengirim laporan: Total ukuran file yang diunggah terlalu besar. Harap perkecil/kompres ukuran screenshot Anda (Otomatis dikompres) lalu coba lagi.'
-                ], 413);
-            }
             return back()->with('error', 'Gagal mengirim laporan: Total ukuran file terlalu besar.');
         }
 
@@ -79,20 +70,6 @@ class SubmitVideoWorkReportController extends Controller
         ]);
         
         if ($validator->fails()) {
-            Log::info('Report submission validation failed', [
-                'diagnostic_id' => $requestId,
-                'partner_id' => $partner->id,
-                'errors' => $validator->errors()->toArray(),
-                'content_length' => $request->server('CONTENT_LENGTH')
-            ]);
-            
-            if ($request->expectsJson() || $request->has('_ajax')) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Terdapat kesalahan pada isian form Anda.',
-                    'errors' => $validator->errors()
-                ], 422);
-            }
             return back()->withErrors($validator)->withInput();
         }
         $validated = $validator->validated();
@@ -155,25 +132,9 @@ class SubmitVideoWorkReportController extends Controller
                 'class' => get_class($exception)
             ]);
 
-            if ($request->expectsJson() || $request->has('_ajax')) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Laporan gagal dikirim karena kesalahan sistem internal. Silakan coba lagi.'
-                ], 500);
-            }
-
             return back()
                 ->withInput()
                 ->with('error', 'Laporan gagal dikirim karena kesalahan sistem internal. Silakan coba lagi.');
-        }
-
-        if ($request->expectsJson() || $request->has('_ajax')) {
-            session()->flash('success', 'Laporan kerja video Anda berhasil dikirim dan sedang menunggu antrean QC!');
-            return response()->json([
-                'success' => true,
-                'message' => 'Laporan kerja video Anda berhasil dikirim dan sedang menunggu antrean QC!',
-                'redirect' => route('dashboard')
-            ], 200);
         }
 
         return redirect()->route('dashboard')->with('success', 'Laporan kerja video Anda berhasil dikirim dan sedang menunggu antrean QC!');

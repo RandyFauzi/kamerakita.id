@@ -128,176 +128,22 @@
     </div>
     </div>
     
-    <!-- Bulletproof Client-Side Compression & Submission -->
+    <!-- Standard HTML5 Native Form Submission (No XHR/AJAX) -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('submit-report-form');
             const submitBtn = form.querySelector('button[type="submit"]');
 
-            async function compressFile(file, maxWidth, maxHeight, quality) {
-                if (!file || typeof file !== 'object' || !(file instanceof File || file instanceof Blob)) return file;
-                if (file.type !== '' && !file.type.startsWith('image/') && file.type !== 'application/octet-stream') return file;
+            form.addEventListener('submit', function(e) {
+                if (submitBtn.disabled) {
+                    e.preventDefault();
+                    return;
+                }
                 
-                return new Promise((resolve) => {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const img = new Image();
-                        img.onload = function() {
-                            let width = img.width;
-                            let height = img.height;
-                            if (width > maxWidth || height > maxHeight) {
-                                const ratio = Math.min(maxWidth / width, maxHeight / height);
-                                width = Math.round(width * ratio);
-                                height = Math.round(height * ratio);
-                            }
-                            const canvas = document.createElement('canvas');
-                            canvas.width = width;
-                            canvas.height = height;
-                            const ctx = canvas.getContext('2d');
-                            ctx.drawImage(img, 0, 0, width, height);
-                            canvas.toBlob((blob) => {
-                                if (blob) {
-                                    try {
-                                        // Fix WebKit FormData bug: convert Blob to File
-                                        const newFile = new File([blob], file.name ? file.name.replace(/\.[^/.]+$/, ".jpg") : 'image.jpg', { type: 'image/jpeg' });
-                                        resolve(newFile);
-                                    } catch (e) {
-                                        // Fallback for extremely old browsers
-                                        blob.name = file.name ? file.name.replace(/\.[^/.]+$/, ".jpg") : 'image.jpg';
-                                        resolve(blob);
-                                    }
-                                } else {
-                                    resolve(file); 
-                                }
-                            }, 'image/jpeg', quality);
-                        };
-                        img.onerror = () => resolve(file);
-                        img.src = e.target.result;
-                    };
-                    reader.onerror = () => resolve(file);
-                    try {
-                        reader.readAsDataURL(file);
-                    } catch(e) {
-                        resolve(file);
-                    }
-                });
-            }
-
-            form.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                if (submitBtn.disabled) return;
-                
+                // Allow the form to submit natively, just show loading state
                 const originalText = submitBtn.innerHTML;
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = '<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...';
-
-                try {
-                    const projectInput = document.getElementById('project_name');
-                    const dateInput = document.getElementById('submission_date');
-                    const durationInput = document.querySelector('[name="submitted_duration_minutes"]');
-                    const emailInput = document.getElementById('evidence_email_image_path');
-                    const atlasInput = document.getElementById('evidence_submitted_image_paths');
-                    const qualityInput = document.getElementById('evidence_app_quality_image_path');
-
-                    const finalFormData = new FormData();
-                    
-                    const pName = projectInput ? projectInput.value : '';
-                    finalFormData.append('project_name', pName);
-                    finalFormData.append('submission_date', dateInput ? dateInput.value : '');
-                    finalFormData.append('submitted_duration_minutes', durationInput ? durationInput.value : '');
-                    finalFormData.append('_token', document.querySelector('input[name="_token"]').value);
-                    finalFormData.append('_ajax', '1');
-
-                    async function handleFileAppend(fieldName, filesArray, isMultiple = false) {
-                        if (!filesArray || filesArray.length === 0) return;
-                        for (let i = 0; i < filesArray.length; i++) {
-                            let file = filesArray[i];
-                            if (file && file.size > 500 * 1024) {
-                                if (file.type === '' || file.type.startsWith('image/') || file.type === 'application/octet-stream') {
-                                    file = await compressFile(file, 1920, 1920, 0.8);
-                                }
-                            }
-                            finalFormData.append(isMultiple ? fieldName + '[]' : fieldName, file, file.name || 'image.jpg');
-                        }
-                    }
-
-                    if (emailInput && emailInput.files) {
-                        await handleFileAppend('evidence_email_image_path', emailInput.files, false);
-                    }
-
-                    if (pName === 'minutes_data' && qualityInput && qualityInput.files) {
-                        await handleFileAppend('evidence_app_quality_image_path', qualityInput.files, false);
-                    }
-
-                    if (pName === 'atlas' && atlasInput && atlasInput.files) {
-                        await handleFileAppend('evidence_submitted_image_paths', atlasInput.files, true);
-                    }
-
-                    const xhr = new XMLHttpRequest();
-                    xhr.open('POST', form.action, true);
-                    xhr.setRequestHeader('Accept', 'application/json');
-                    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-                    
-                    xhr.onload = function() {
-                        try {
-                            const data = JSON.parse(xhr.responseText);
-                            
-                            if (xhr.status >= 200 && xhr.status < 300) {
-                                if (data.success && data.redirect) {
-                                    window.location.href = data.redirect;
-                                    return;
-                                }
-                                alert(data.message || 'Berhasil terkirim.');
-                                window.location.href = "{{ route('dashboard') }}";
-                                return;
-                            }
-                            
-                            if (xhr.status === 422) {
-                                document.querySelectorAll('.js-error-msg').forEach(el => el.remove());
-                                if (data.errors) {
-                                    for (const [field, msgs] of Object.entries(data.errors)) {
-                                        let inputName = field;
-                                        if (field.startsWith('evidence_submitted_image_paths')) {
-                                            inputName = 'evidence_submitted_image_paths[]';
-                                        }
-                                        const input = form.querySelector(`[name="${inputName}"]`);
-                                        if (input) {
-                                            const p = document.createElement('p');
-                                            p.className = 'text-red-500 text-xs mt-1 js-error-msg';
-                                            p.innerText = msgs[0];
-                                            input.parentElement.appendChild(p);
-                                        }
-                                    }
-                                } else {
-                                    alert(data.message || 'Terdapat kesalahan validasi.');
-                                }
-                            } else if (xhr.status === 413) {
-                                alert(data.message || 'Ukuran file terlalu besar. Gagal mengirim laporan.');
-                            } else if (xhr.status === 419) {
-                                alert('Sesi Anda telah berakhir. Silakan muat ulang halaman ini.');
-                            } else {
-                                alert(data.message || 'Terjadi kesalahan sistem (Kode: ' + xhr.status + ').');
-                            }
-                        } catch (e) {
-                            alert('Terjadi kesalahan yang tidak terduga saat memproses respons dari server. (Kode: ' + xhr.status + ')');
-                        }
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = originalText;
-                    };
-                    
-                    xhr.onerror = function() {
-                        alert('Koneksi terputus. Pastikan internet Anda stabil lalu coba lagi.');
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = originalText;
-                    };
-                    
-                    xhr.send(finalFormData);
-                    
-                } catch (err) {
-                    alert('Terjadi kesalahan kompresi atau logika: ' + err.message);
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalText;
-                }
             });
         });
     </script>
