@@ -13,40 +13,32 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
 
-class SubmitVideoWorkReportController extends Controller
+class ReportUploadController extends Controller
 {
     public function create()
     {
         $partner = Partner::where('user_id', Auth::id())->first();
 
-        if (! $partner || !in_array(strtolower(trim($partner->partner_role)), ['worker', 'mitra', 'rekruter'])) {
+        if (!$partner || !in_array(strtolower(trim($partner->partner_role)), ['worker', 'mitra', 'rekruter'])) {
             return redirect()->route('dashboard')->with('error', 'Hanya akun dengan profil Kontributor, Mitra, atau Rekruter yang dapat mengakses halaman ini.');
         }
 
-        return view('video-submissions.submit-report', compact('partner'));
+        return view('reports.create', compact('partner'));
     }
 
     public function store(Request $request)
     {
         $partner = Partner::where('user_id', Auth::id())->first();
 
-        if (! $partner || !in_array(strtolower(trim($partner->partner_role)), ['worker', 'mitra', 'rekruter'])) {
+        if (!$partner || !in_array(strtolower(trim($partner->partner_role)), ['worker', 'mitra', 'rekruter'])) {
             return redirect()->route('dashboard')->with('error', 'Akses ditolak.');
         }
 
-        $requestId = \Illuminate\Support\Str::uuid()->toString();
-
         if (empty($request->all()) && (int) $request->server('CONTENT_LENGTH') > 0) {
-            Log::warning('Payload dropped due to server limits', [
-                'diagnostic_id' => $requestId,
-                'partner_id' => $partner->id,
-                'content_length' => $request->server('CONTENT_LENGTH')
-            ]);
-            
             return back()->with('error', 'Gagal mengirim laporan: Total ukuran file terlalu besar.');
         }
 
-        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+        $validated = $request->validate([
             'project_name' => 'required|in:atlas,minutes_data',
             'submission_date' => 'required|date|before_or_equal:today',
             'submitted_duration_minutes' => 'required|integer|min:1|max:1440',
@@ -68,11 +60,6 @@ class SubmitVideoWorkReportController extends Controller
             'evidence_submitted_image_paths.required_if' => 'Screenshot bagian unggahan wajib diunggah minimal 1 gambar untuk Atlas.',
             'evidence_submitted_image_paths.*.image' => 'Setiap file screenshot unggahan harus berupa gambar.',
         ]);
-        
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
-        }
-        $validated = $validator->validated();
 
         $emailPath = null;
         $qualityPath = null;
@@ -106,31 +93,23 @@ class SubmitVideoWorkReportController extends Controller
                     'payment_status' => 'unpaid',
                 ]);
 
-                // Background Processing Queue
                 \App\Jobs\ProcessSubmittedReport::dispatch($report)->afterCommit();
-
                 app(PartnerActivityStatusService::class)->markActiveAfterReport($partner);
             });
 
             \App\Services\ActivityLogger::log('report.submit', "Mengirimkan laporan harian baru untuk tanggal {$validated['submission_date']} dengan durasi {$validated['submitted_duration_minutes']} menit.");
         } catch (Throwable $exception) {
+            // Rollback files
             $pathsToDelete = array_filter(array_merge([$emailPath, $qualityPath], $submittedPaths));
             foreach ($pathsToDelete as $path) {
                 try {
                     if ($path && Storage::disk('evidence')->exists($path)) {
                         Storage::disk('evidence')->delete($path);
                     }
-                } catch (Throwable) {
-                    // Ignore cleanup errors
-                }
+                } catch (Throwable $e) {}
             }
 
-            Log::error('Failed to store video work report evidence.', [
-                'diagnostic_id' => $requestId,
-                'partner_id' => $partner->id,
-                'message' => $exception->getMessage(),
-                'class' => get_class($exception)
-            ]);
+            Log::error('Upload failed.', ['message' => $exception->getMessage()]);
 
             return back()
                 ->withInput()
@@ -140,4 +119,3 @@ class SubmitVideoWorkReportController extends Controller
         return redirect()->route('dashboard')->with('success', 'Laporan kerja video Anda berhasil dikirim dan sedang menunggu antrean QC!');
     }
 }
-

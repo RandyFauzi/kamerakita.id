@@ -26,7 +26,7 @@ class VideoSubmissionTest extends TestCase
         Partner::factory()->create(['user_id' => $user->id, 'partner_role' => 'worker']);
         $this->actingAs($user);
 
-        $response = $this->post(route('video-submissions.submit-report.store'), [
+        $response = $this->post(route('reports.store'), [
             'project_name' => 'atlas',
             'submission_date' => now()->format('Y-m-d'),
             'submitted_duration_minutes' => 120,
@@ -53,7 +53,7 @@ class VideoSubmissionTest extends TestCase
         Partner::factory()->create(['user_id' => $user->id, 'partner_role' => 'worker']);
         $this->actingAs($user);
 
-        $response = $this->post(route('video-submissions.submit-report.store'), [
+        $response = $this->post(route('reports.store'), [
             'project_name' => 'minutes_data',
             'submission_date' => now()->format('Y-m-d'),
             'submitted_duration_minutes' => 60,
@@ -77,7 +77,7 @@ class VideoSubmissionTest extends TestCase
         Partner::factory()->create(['user_id' => $user->id, 'partner_role' => 'worker']);
         $this->actingAs($user);
 
-        $response = $this->post(route('video-submissions.submit-report.store'), []);
+        $response = $this->post(route('reports.store'), []);
 
         $response->assertStatus(302);
         $response->assertSessionHasErrors([
@@ -95,7 +95,7 @@ class VideoSubmissionTest extends TestCase
         $this->actingAs($user);
 
         // Simulate an empty $_POST but a positive CONTENT_LENGTH (PHP Drops Payload)
-        $response = $this->call('POST', route('video-submissions.submit-report.store'), [], [], [], [
+        $response = $this->call('POST', route('reports.store'), [], [], [], [
             'CONTENT_LENGTH' => 50000000,
         ]);
 

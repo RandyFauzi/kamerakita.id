@@ -20,7 +20,7 @@
                 </div>
                 <div class="flex items-center gap-3 w-full md:w-auto mt-4 md:mt-0">
                     <span class="hidden md:inline-block bg-emerald-50 text-emerald-800 text-[10px] font-black px-3 py-1.5 rounded-full uppercase border border-emerald-100">Aktif</span>
-                    <a href="{{ route('video-submissions.submit-report.create') }}" class="w-full md:w-auto min-h-9 inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-lg text-xs font-bold text-white shadow-md shadow-blue-500/30 transition-all duration-300">
+                    <a href="{{ route('reports.create') }}" class="w-full md:w-auto min-h-9 inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-lg text-xs font-bold text-white shadow-md shadow-blue-500/30 transition-all duration-300">
                         {{ __('dashboard.general.submit_new_report') }}
                     </a>
                     <button type="button" aria-label="{{ __('dashboard.general.close_notification') }}" @click="showBanner = false" class="absolute top-4 right-4 w-9 h-9 inline-flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-lg">

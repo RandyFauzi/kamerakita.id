@@ -5,7 +5,6 @@ use App\Http\Controllers\EditRejectedVideoWorkReportController;
 use App\Http\Controllers\ListPartnerReportHistoryController;
 use App\Http\Controllers\ListPartnerPaymentHistoryController;
 use App\Http\Controllers\ShowVideoWorkReportEvidenceController;
-use App\Http\Controllers\SubmitVideoWorkReportController;
 use App\Http\Controllers\VerifyVideoWorkReportController;
 use App\Http\Controllers\RenderDashboardOverviewController;
 use App\Http\Controllers\ExportPayrollDataController;
@@ -112,8 +111,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware('role:superadmin,admin');
 
     // Phase 2: Evidence-Based Submission Module
-    Route::get('/kirim-laporan', [SubmitVideoWorkReportController::class, 'create'])->name('video-submissions.submit-report.create');
-    Route::post('/kirim-laporan', [SubmitVideoWorkReportController::class, 'store'])->name('video-submissions.submit-report.store');
+    Route::get('/kirim-laporan', [\App\Http\Controllers\ReportUploadController::class, 'create'])->name('reports.create');
+    Route::post('/kirim-laporan', [\App\Http\Controllers\ReportUploadController::class, 'store'])->name('reports.store');
     Route::get('/report-history', ListPartnerReportHistoryController::class)->name('video-submissions.report-history');
     Route::get('/report-history/{report}/edit-rejected', [EditRejectedVideoWorkReportController::class, 'edit'])->name('video-submissions.rejected.edit');
     Route::patch('/report-history/{report}/edit-rejected', [EditRejectedVideoWorkReportController::class, 'update'])->name('video-submissions.rejected.update');

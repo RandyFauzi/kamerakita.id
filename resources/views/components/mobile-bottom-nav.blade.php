@@ -172,7 +172,7 @@
     </svg>
 
     <!-- Tombol Tengah Mengambang (Kirim Laporan) -->
-    <a href="{{ route('video-submissions.submit-report.create') }}" class="center-fab-wrapper">
+    <a href="{{ route('reports.create') }}" class="center-fab-wrapper">
         <div class="fab-glow"></div>
         <div class="fab-button" id="fab-btn">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
