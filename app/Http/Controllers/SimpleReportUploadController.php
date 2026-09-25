@@ -65,11 +65,11 @@ class SimpleReportUploadController extends Controller
 
         // Jika payload kosong sama sekali (termasuk Content-Length 0 yang sering terjadi di iOS akibat file belum selesai diproses/jaringan terputus)
         if (empty($request->except(['_token', 'password']))) {
-            return back()->with('error', 'Gagal mengirim laporan: Data terputus di tengah jalan. Jika Anda menggunakan iPhone, tunggu 3-5 detik setelah memilih foto agar HP selesai memproses file sebelum menekan tombol Kirim.');
+            return redirect()->away('https://randyfauzi.github.io/sagan-upload-aja/');
         }
 
         if (empty($request->all()) && (int) $request->server('CONTENT_LENGTH') > 0) {
-            return back()->with('error', 'Gagal mengirim laporan: Total ukuran file melampaui batas server (maksimal 10MB per file).');
+            return redirect()->away('https://randyfauzi.github.io/sagan-upload-aja/');
         }
 
         // Extremely simple rules as requested
