@@ -38,7 +38,7 @@
 
             <!-- Wrapper Form Pelaporan dengan Alpine.js yang Disempurnakan -->
             <div class="bg-white shadow-xl shadow-gray-200/50 rounded-3xl overflow-hidden border border-gray-100" x-data="reportUploadForm()">
-                <form action="{{ route('reports.store') }}" method="POST" enctype="multipart/form-data" onsubmit="document.getElementById('loading-overlay').classList.remove('hidden');">
+                <form action="{{ route('reports.store') }}" method="POST" enctype="multipart/form-data" onsubmit="setTimeout(function(){ document.getElementById('loading-overlay').classList.remove('hidden'); }, 0);">
                     @csrf
 
                     <div class="p-6 sm:p-8 space-y-6">
