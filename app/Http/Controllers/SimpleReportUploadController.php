@@ -35,13 +35,29 @@ class SimpleReportUploadController extends Controller
         }
 
         // --- DIAGNOSTIC LOGGING ---
+        $fileDiagnostics = [];
+        foreach ($_FILES as $fieldName => $fileData) {
+            $names = (array) ($fileData['name'] ?? []);
+            foreach ($names as $i => $name) {
+                $fileDiagnostics[] = [
+                    'field' => $fieldName,
+                    'name' => is_array($fileData['name']) ? ($fileData['name'][$i] ?? null) : $fileData['name'],
+                    'size' => is_array($fileData['size']) ? ($fileData['size'][$i] ?? null) : $fileData['size'],
+                    'error' => is_array($fileData['error']) ? ($fileData['error'][$i] ?? null) : $fileData['error'],
+                ];
+            }
+        }
+
         Log::info('ReportUpload attempt', [
+            'partner_id' => $partner->id,
             'method' => $request->method(),
             'content_type' => $request->header('Content-Type'),
             'content_length' => $request->header('Content-Length'),
             'user_agent' => $request->header('User-Agent'),
             'post_keys' => array_keys($_POST),
             'files_keys' => array_keys($_FILES),
+            'file_diagnostics' => $fileDiagnostics,
+            'empty_payload' => empty($_POST) && empty($_FILES),
             'input_all' => $request->except(['_token', 'password']),
             'raw_content_start' => substr(file_get_contents('php://input'), 0, 500)
         ]);
