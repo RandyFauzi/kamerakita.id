@@ -144,14 +144,18 @@
                 server: {
                     process: {
                         url: '/kirim-laporan/temp',
+                        withCredentials: true,
                         headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
                         }
                     },
                     revert: {
                         url: '/kirim-laporan/temp',
+                        withCredentials: true,
                         headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
                         }
                     }
                 },
