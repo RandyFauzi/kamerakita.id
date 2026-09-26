@@ -167,7 +167,8 @@
                 labelTapToCancel: 'ketuk untuk membatalkan',
                 labelTapToRetry: 'ketuk untuk mengulang',
                 labelTapToUndo: 'ketuk untuk hapus',
-                maxFileSize: '10MB'
+                maxFileSize: '10MB',
+                maxParallelUploads: 1, // Penting untuk iOS: membatasi upload 1 per 1 secara antrean agar browser tidak timeout
             });
 
             // Turn all file input elements into ponds
