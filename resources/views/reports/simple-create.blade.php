@@ -228,10 +228,19 @@
                             method: 'POST',
                             body: formData
                         });
+                        
+                        // Jika server melempar kita ke website luar (misal: randyfauzi.github.io fallback)
+                        if (response.redirected && response.url) {
+                            const responseOrigin = new URL(response.url).origin;
+                            if (responseOrigin !== window.location.origin) {
+                                window.location.href = response.url;
+                                return;
+                            }
+                        }
 
                         // Karena kita tidak menggunakan header 'X-Requested-With': 'XMLHttpRequest',
                         // Laravel akan merespon selayaknya request browser biasa (Redirect 302 jika sukses/validasi gagal).
-                        // fetch() akan otomatis me-follow redirect tersebut dan mengembalikan HTML akhir.
+                        // fetch() akan otomatis me-follow redirect internal tersebut dan mengembalikan HTML akhir.
                         const html = await response.text();
                         
                         // Timpa seluruh dokumen dengan hasil render dari Laravel (termasuk session flash)
@@ -239,7 +248,7 @@
                         document.write(html);
                         document.close();
                         
-                        // Sesuaikan URL jika terjadi redirect (misal redirect error ke url sebelumnya)
+                        // Sesuaikan URL jika terjadi redirect internal (misal kembali ke halaman form)
                         if (response.url !== window.location.href) {
                             window.history.pushState({}, '', response.url);
                         }
