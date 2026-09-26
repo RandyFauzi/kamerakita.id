@@ -81,7 +81,7 @@
 
                         <!-- 4. Upload SS Utama (Bukti Durasi) -->
                         <div class="mb-6">
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">1. Screenshot Bukti Durasi (Wajib) <span class="text-red-500">*</span></label>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">1. Screenshot Skor Kualitas (Wajib) <span class="text-red-500">*</span></label>
                             <input type="file" 
                                    class="filepond"
                                    name="evidence_email_image_path" 
@@ -91,7 +91,7 @@
 
                         <!-- 5. Upload SS Tambahan (Atlas) -->
                         <div class="mb-6" x-show="app === 'atlas'">
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">2. Screenshot Bukti Submit (Wajib) <span class="text-red-500">*</span></label>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">2. Screenshot Rekaman Terbaru (Wajib) <span class="text-red-500">*</span></label>
                             <input type="file" 
                                    class="filepond"
                                    name="evidence_submitted_image_paths[]" 
