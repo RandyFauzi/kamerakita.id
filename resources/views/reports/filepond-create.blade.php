@@ -127,6 +127,8 @@
     <script src="https://unpkg.com/filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.js"></script>
     <script src="https://unpkg.com/filepond-plugin-image-exif-orientation/dist/filepond-plugin-image-exif-orientation.js"></script>
     <script src="https://unpkg.com/filepond-plugin-file-validate-size/dist/filepond-plugin-file-validate-size.js"></script>
+    <script src="https://unpkg.com/filepond-plugin-image-resize/dist/filepond-plugin-image-resize.js"></script>
+    <script src="https://unpkg.com/filepond-plugin-image-transform/dist/filepond-plugin-image-transform.js"></script>
     <script src="https://unpkg.com/filepond/dist/filepond.js"></script>
 
     <script>
@@ -136,7 +138,9 @@
                 FilePondPluginImagePreview,
                 FilePondPluginFileValidateType,
                 FilePondPluginImageExifOrientation,
-                FilePondPluginFileValidateSize
+                FilePondPluginFileValidateSize,
+                FilePondPluginImageResize,
+                FilePondPluginImageTransform
             );
 
             // Set global options for FilePond
@@ -169,6 +173,13 @@
                 labelTapToUndo: 'ketuk untuk hapus',
                 maxFileSize: '10MB',
                 maxParallelUploads: 1, // Penting untuk iOS: membatasi upload 1 per 1 secara antrean agar browser tidak timeout
+                // Rahasia menaklukkan iOS Safari: Paksa FilePond memproses ulang file menjadi Blob baru di RAM
+                imageResizeTargetWidth: 1920,
+                imageResizeTargetHeight: 1920,
+                imageResizeMode: 'contain',
+                imageResizeUpscale: false,
+                imageTransformOutputQuality: 85,
+                imageTransformOutputMimeType: 'image/jpeg'
             });
 
             // Turn all file input elements into ponds
