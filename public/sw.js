@@ -1,4 +1,4 @@
-const CACHE_NAME = "kamerakita-pwa-v2";
+const CACHE_NAME = "kamerakita-pwa-v3";
 const urlsToCache = [
     "/",
     "/vendor-assets/kamerakita/logo-mark.svg",
@@ -44,6 +44,43 @@ self.addEventListener("fetch", event => {
         event.respondWith(
             caches.match(event.request).then(response => {
                 return response || fetch(event.request);
+            })
+        );
+    }
+});
+
+// --- Push Notification Handlers ---
+
+self.addEventListener('push', function (e) {
+    if (!(self.Notification && self.Notification.permission === 'granted')) {
+        return;
+    }
+
+    if (e.data) {
+        var msg = e.data.json();
+        e.waitUntil(self.registration.showNotification(msg.title, {
+            body: msg.body,
+            icon: msg.icon || '/images/app-icon.png',
+            badge: msg.badge || '/vendor-assets/kamerakita/logo-mark.svg',
+            data: msg.data || {},
+            actions: msg.actions || []
+        }));
+    }
+});
+
+self.addEventListener('notificationclick', function (e) {
+    e.notification.close();
+
+    if (e.notification.data && e.notification.data.url) {
+        e.waitUntil(
+            clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (clientList) {
+                for (var i = 0; i < clientList.length; i++) {
+                    var client = clientList[i];
+                    if (client.url == e.notification.data.url && 'focus' in client)
+                        return client.focus();
+                }
+                if (clients.openWindow)
+                    return clients.openWindow(e.notification.data.url);
             })
         );
     }
