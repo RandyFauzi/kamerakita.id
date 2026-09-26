@@ -32,10 +32,16 @@ class FilePondReportUploadController extends Controller
      */
     public function processTemp(Request $request)
     {
-        // Parameter name could be 'evidence_email_image_path', 'evidence_submitted_image_paths[]'
-        // FilePond sends files one by one
+        Log::info('FilePond Temp Upload attempt', [
+            'method' => $request->method(),
+            'content_length' => $request->header('Content-Length'),
+            'files_keys' => array_keys($_FILES),
+            'post_keys' => array_keys($_POST),
+        ]);
+
         $fileKeys = array_keys($_FILES);
         if (empty($fileKeys)) {
+            Log::error('FilePond temp upload failed: No file found in $_FILES');
             return response()->json(['error' => 'No file found'], 400);
         }
 

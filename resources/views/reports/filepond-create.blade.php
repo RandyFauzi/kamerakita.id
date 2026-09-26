@@ -143,13 +143,13 @@
             FilePond.setOptions({
                 server: {
                     process: {
-                        url: '{{ route('reports.temp.process') }}',
+                        url: '/kirim-laporan/temp',
                         headers: {
                             'X-CSRF-TOKEN': '{{ csrf_token() }}'
                         }
                     },
                     revert: {
-                        url: '{{ route('reports.temp.revert') }}',
+                        url: '/kirim-laporan/temp',
                         headers: {
                             'X-CSRF-TOKEN': '{{ csrf_token() }}'
                         }
