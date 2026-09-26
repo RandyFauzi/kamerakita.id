@@ -38,7 +38,13 @@
 
             <!-- Wrapper Form Pelaporan dengan Alpine.js yang Disempurnakan -->
             <div class="bg-white shadow-xl shadow-gray-200/50 rounded-3xl overflow-hidden border border-gray-100" x-data="reportUploadForm()">
-                <form action="{{ route('reports.store') }}" method="POST" enctype="multipart/form-data" onsubmit="setTimeout(function(){ document.getElementById('loading-overlay').classList.remove('hidden'); }, 0);">
+                <!-- Error & Success Message Overlays dari AJAX -->
+                <div x-show="ajaxError" x-cloak class="m-6 p-4 rounded-xl bg-red-100 border border-red-200 text-red-700 font-medium text-sm flex items-start gap-3">
+                    <svg class="w-5 h-5 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    <span x-html="ajaxError"></span>
+                </div>
+
+                <form action="{{ route('reports.store') }}" method="POST" enctype="multipart/form-data" @submit.prevent="submitAjax">
                     @csrf
 
                     <div class="p-6 sm:p-8 space-y-6">
@@ -156,8 +162,9 @@
 
                     <!-- Submit Button -->
                     <div class="bg-gray-50 px-6 py-4 border-t border-gray-100 flex items-center justify-end">
-                        <button type="submit" class="w-full py-3.5 px-4 border border-transparent rounded-xl shadow-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 font-bold text-lg transition-all">
-                            Kirim Laporan Sekarang
+                        <button type="submit" :disabled="isSubmitting" class="w-full py-3.5 px-4 border border-transparent rounded-xl shadow-md text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 font-bold text-lg transition-all">
+                            <span x-show="!isSubmitting">Kirim Laporan Sekarang</span>
+                            <span x-show="isSubmitting">Mengirim...</span>
                         </button>
                     </div>
                 </form>
@@ -169,7 +176,7 @@
     <div id="loading-overlay" class="hidden fixed inset-0 z-[9999] bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center">
         <div class="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4 shadow-lg"></div>
         <h3 class="text-xl font-bold text-gray-800 mb-1 drop-shadow-sm">Sedang Mengirim Laporan</h3>
-        <p class="text-sm text-gray-600 font-medium animate-pulse">Mohon tunggu, sedang memproses dan mengompres foto Anda...</p>
+        <p class="text-sm text-gray-600 font-medium animate-pulse" id="loading-text">Mohon tunggu, sedang mengirim via AJAX secara aman...</p>
     </div>
 
     <script>
@@ -179,6 +186,8 @@
                 mainPreview: null,
                 batchPreviews: [],
                 minutesDataPreview: null,
+                isSubmitting: false,
+                ajaxError: null,
 
                 previewMain(event) {
                     const file = event.target.files[0];
@@ -202,6 +211,46 @@
                     const file = event.target.files[0];
                     if (file) {
                         this.minutesDataPreview = URL.createObjectURL(file);
+                    }
+                },
+
+                async submitAjax(event) {
+                    if (this.isSubmitting) return;
+                    this.isSubmitting = true;
+                    this.ajaxError = null;
+                    document.getElementById('loading-overlay').classList.remove('hidden');
+                    
+                    const form = event.target;
+                    const formData = new FormData(form);
+
+                    try {
+                        const response = await fetch(form.action, {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        // Karena kita tidak menggunakan header 'X-Requested-With': 'XMLHttpRequest',
+                        // Laravel akan merespon selayaknya request browser biasa (Redirect 302 jika sukses/validasi gagal).
+                        // fetch() akan otomatis me-follow redirect tersebut dan mengembalikan HTML akhir.
+                        const html = await response.text();
+                        
+                        // Timpa seluruh dokumen dengan hasil render dari Laravel (termasuk session flash)
+                        document.open();
+                        document.write(html);
+                        document.close();
+                        
+                        // Sesuaikan URL jika terjadi redirect (misal redirect error ke url sebelumnya)
+                        if (response.url !== window.location.href) {
+                            window.history.pushState({}, '', response.url);
+                        }
+
+                    } catch (error) {
+                        console.error('AJAX Upload Error:', error);
+                        this.ajaxError = "Koneksi terputus saat mengupload foto. Safari Anda aman karena sistem menggunakan AJAX, tetapi sinyal Anda sepertinya tidak stabil. Silakan coba lagi.";
+                        document.getElementById('loading-overlay').classList.add('hidden');
+                        window.scrollTo(0, 0);
+                    } finally {
+                        this.isSubmitting = false;
                     }
                 }
             }))
