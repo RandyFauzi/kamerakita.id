@@ -179,7 +179,13 @@
                         console.error('Server returned error:', response.status, errorData);
                         if (!isSilent) {
                             this.bannerTitle = 'Gagal Menyimpan (Error ' + response.status + ')';
-                            this.bannerMessageHtml = 'Gagal menyimpan data notifikasi ke server. Tim kami akan segera memperbaikinya. Silakan klik Nanti Saja.';
+                            let parsedError = errorData;
+                            try {
+                                const j = JSON.parse(errorData);
+                                parsedError = j.message ? j.message : errorData;
+                            } catch (e) {}
+                            
+                            this.bannerMessageHtml = 'Server Error: <b>' + parsedError + '</b><br><br>Silakan screenshot pesan ini dan berikan ke developer.';
                         } else {
                             // Even if silent, if it fails, maybe we show something?
                             // Actually just log it.

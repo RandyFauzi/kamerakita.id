@@ -16,17 +16,25 @@ class PushSubscriptionController extends Controller
             'keys.auth'   => 'required',
             'keys.p256dh' => 'required'
         ]);
+        try {
+            $endpoint = $request->endpoint;
+            $token = $request->keys['auth'];
+            $key = $request->keys['p256dh'];
+            $contentEncoding = $request->contentEncoding;
 
-        $endpoint = $request->endpoint;
-        $token = $request->keys['auth'];
-        $key = $request->keys['p256dh'];
-        $contentEncoding = $request->contentEncoding;
+            $user = $request->user();
+            
+            $user->updatePushSubscription($endpoint, $key, $token, $contentEncoding);
 
-        $user = $request->user();
-        
-        $user->updatePushSubscription($endpoint, $key, $token, $contentEncoding);
-
-        return response()->json(['success' => true], 200);
+            return response()->json(['success' => true], 200);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile()
+            ], 500);
+        }
     }
 
     /**
