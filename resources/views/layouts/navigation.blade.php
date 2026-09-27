@@ -39,6 +39,9 @@
                     <x-nav-link :href="route('rekruter.index')" :active="request()->routeIs('rekruter.*')">
                         {{ __('Rekruter') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('push-notifications.broadcast.index')" :active="request()->routeIs('push-notifications.broadcast.*')">
+                        {{ __('Broadcast') }}
+                    </x-nav-link>
                     @endif
                 </div>
             </div>
@@ -128,6 +131,9 @@
             @if(in_array(Auth::user()->role ?? '', ['superadmin', 'admin']))
             <x-responsive-nav-link :href="route('rekruter.index')" :active="request()->routeIs('rekruter.*')">
                 {{ __('Rekruter') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('push-notifications.broadcast.index')" :active="request()->routeIs('push-notifications.broadcast.*')">
+                {{ __('Broadcast') }}
             </x-responsive-nav-link>
             @endif
         </div>

@@ -188,6 +188,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/push-subscriptions', [\App\Http\Controllers\PushSubscriptionController::class, 'destroy'])
         ->name('push-subscriptions.destroy');
 
+    // Push Notification Broadcaster
+    Route::get('/push-notifications/broadcast', [\App\Http\Controllers\Admin\PushNotificationController::class, 'index'])
+        ->middleware('role:superadmin,admin')
+        ->name('push-notifications.broadcast.index');
+    Route::post('/push-notifications/broadcast', [\App\Http\Controllers\Admin\PushNotificationController::class, 'send'])
+        ->middleware('role:superadmin,admin')
+        ->name('admin.push-notifications.send');
+
     // AI Admin Command Center Endpoint
     Route::post('/admin-assistant', [\App\Http\Controllers\Api\AdminAssistantController::class, 'handle'])
         ->middleware('role:superadmin,admin')
