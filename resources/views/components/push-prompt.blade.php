@@ -106,9 +106,20 @@
 
             subscribeUser(isSilent = false) {
                 navigator.serviceWorker.ready.then(registration => {
-                    return registration.pushManager.subscribe({
-                        userVisibleOnly: true,
-                        applicationServerKey: this.urlBase64ToUint8Array(this.vapidPublicKey)
+                    return registration.pushManager.getSubscription().then(existingSub => {
+                        if (existingSub) {
+                            return existingSub.unsubscribe().then(() => {
+                                return registration.pushManager.subscribe({
+                                    userVisibleOnly: true,
+                                    applicationServerKey: this.urlBase64ToUint8Array(this.vapidPublicKey)
+                                });
+                            });
+                        } else {
+                            return registration.pushManager.subscribe({
+                                userVisibleOnly: true,
+                                applicationServerKey: this.urlBase64ToUint8Array(this.vapidPublicKey)
+                            });
+                        }
                     });
                 }).then(pushSubscription => {
                     this.storeSubscription(pushSubscription, isSilent);
@@ -122,11 +133,25 @@
             },
 
             storeSubscription(pushSubscription, isSilent) {
-                const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                // Better serialization across browsers
+                let key = pushSubscription.getKey('p256dh');
+                let token = pushSubscription.getKey('auth');
+                let contentEncoding = (window.PushManager && PushManager.supportedContentEncodings) ? PushManager.supportedContentEncodings[0] : 'aesgcm';
+
+                let data = {
+                    endpoint: pushSubscription.endpoint,
+                    keys: {
+                        p256dh: key ? btoa(String.fromCharCode.apply(null, new Uint8Array(key))) : null,
+                        auth: token ? btoa(String.fromCharCode.apply(null, new Uint8Array(token))) : null
+                    },
+                    contentEncoding: contentEncoding
+                };
+
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
                 fetch('/push-subscriptions', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': token },
-                    body: JSON.stringify(pushSubscription)
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+                    body: JSON.stringify(data)
                 }).then(async response => {
                     if (response.ok) {
                         this.showBanner = false;
