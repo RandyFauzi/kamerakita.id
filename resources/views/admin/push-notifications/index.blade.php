@@ -25,7 +25,7 @@
         </div>
     @endif
 
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden" x-data="{ tab: 'direct' }">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden" x-data="{ tab: 'direct', target: 'all' }">
         
         <!-- Tabs -->
         <div class="flex border-b border-gray-100 bg-gray-50/50">
@@ -45,44 +45,44 @@
             <div class="mb-6">
                 <label class="block text-sm font-semibold text-gray-700 mb-2">Penerima (Target) <span class="text-red-500">*</span></label>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <label class="relative flex cursor-pointer rounded-lg border bg-white p-4 shadow-sm focus:outline-none hover:border-blue-200 transition-colors">
-                        <input type="radio" name="target" value="all" class="peer sr-only" checked>
-                        <span class="pointer-events-none absolute -inset-px rounded-lg border-2 border-transparent peer-checked:border-blue-500" aria-hidden="true"></span>
+                    <label class="relative flex cursor-pointer rounded-lg border p-4 shadow-sm focus:outline-none transition-all"
+                           :class="target === 'all' ? 'border-blue-500 bg-blue-50 ring-1 ring-blue-500' : 'border-gray-200 bg-white hover:border-blue-300'">
+                        <input type="radio" name="target" value="all" class="sr-only" x-model="target">
                         <span class="flex flex-1">
                             <span class="flex flex-col">
-                                <span class="block text-sm font-medium text-gray-900">Semua Pengguna</span>
-                                <span class="mt-1 flex items-center text-sm text-gray-500">Admin & Pekerja</span>
+                                <span class="block text-sm font-medium" :class="target === 'all' ? 'text-blue-900' : 'text-gray-900'">Semua Pengguna</span>
+                                <span class="mt-1 flex items-center text-sm" :class="target === 'all' ? 'text-blue-700' : 'text-gray-500'">Admin & Pekerja</span>
                             </span>
                         </span>
-                        <svg class="h-5 w-5 text-blue-600 opacity-0 peer-checked:opacity-100" viewBox="0 0 20 20" fill="currentColor">
+                        <svg class="h-5 w-5 text-blue-600 transition-opacity" :class="target === 'all' ? 'opacity-100' : 'opacity-0'" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
                         </svg>
                     </label>
 
-                    <label class="relative flex cursor-pointer rounded-lg border bg-white p-4 shadow-sm focus:outline-none hover:border-blue-200 transition-colors">
-                        <input type="radio" name="target" value="workers" class="peer sr-only">
-                        <span class="pointer-events-none absolute -inset-px rounded-lg border-2 border-transparent peer-checked:border-blue-500" aria-hidden="true"></span>
+                    <label class="relative flex cursor-pointer rounded-lg border p-4 shadow-sm focus:outline-none transition-all"
+                           :class="target === 'workers' ? 'border-blue-500 bg-blue-50 ring-1 ring-blue-500' : 'border-gray-200 bg-white hover:border-blue-300'">
+                        <input type="radio" name="target" value="workers" class="sr-only" x-model="target">
                         <span class="flex flex-1">
                             <span class="flex flex-col">
-                                <span class="block text-sm font-medium text-gray-900">Pekerja Saja</span>
-                                <span class="mt-1 flex items-center text-sm text-gray-500">Notifikasi massal</span>
+                                <span class="block text-sm font-medium" :class="target === 'workers' ? 'text-blue-900' : 'text-gray-900'">Pekerja Saja</span>
+                                <span class="mt-1 flex items-center text-sm" :class="target === 'workers' ? 'text-blue-700' : 'text-gray-500'">Notifikasi massal</span>
                             </span>
                         </span>
-                        <svg class="h-5 w-5 text-blue-600 opacity-0 peer-checked:opacity-100" viewBox="0 0 20 20" fill="currentColor">
+                        <svg class="h-5 w-5 text-blue-600 transition-opacity" :class="target === 'workers' ? 'opacity-100' : 'opacity-0'" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
                         </svg>
                     </label>
 
-                    <label class="relative flex cursor-pointer rounded-lg border bg-white p-4 shadow-sm focus:outline-none hover:border-blue-200 transition-colors">
-                        <input type="radio" name="target" value="admins" class="peer sr-only">
-                        <span class="pointer-events-none absolute -inset-px rounded-lg border-2 border-transparent peer-checked:border-blue-500" aria-hidden="true"></span>
+                    <label class="relative flex cursor-pointer rounded-lg border p-4 shadow-sm focus:outline-none transition-all"
+                           :class="target === 'admins' ? 'border-blue-500 bg-blue-50 ring-1 ring-blue-500' : 'border-gray-200 bg-white hover:border-blue-300'">
+                        <input type="radio" name="target" value="admins" class="sr-only" x-model="target">
                         <span class="flex flex-1">
                             <span class="flex flex-col">
-                                <span class="block text-sm font-medium text-gray-900">Admin Saja</span>
-                                <span class="mt-1 flex items-center text-sm text-gray-500">Internal info</span>
+                                <span class="block text-sm font-medium" :class="target === 'admins' ? 'text-blue-900' : 'text-gray-900'">Admin Saja</span>
+                                <span class="mt-1 flex items-center text-sm" :class="target === 'admins' ? 'text-blue-700' : 'text-gray-500'">Internal info</span>
                             </span>
                         </span>
-                        <svg class="h-5 w-5 text-blue-600 opacity-0 peer-checked:opacity-100" viewBox="0 0 20 20" fill="currentColor">
+                        <svg class="h-5 w-5 text-blue-600 transition-opacity" :class="target === 'admins' ? 'opacity-100' : 'opacity-0'" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
                         </svg>
                     </label>
