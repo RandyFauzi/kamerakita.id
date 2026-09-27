@@ -55,6 +55,14 @@
                     return;
                 }
 
+                if (!this.vapidPublicKey || this.vapidPublicKey.trim() === '') {
+                    this.isSupported = false;
+                    this.bannerTitle = 'Konfigurasi Server Belum Lengkap';
+                    this.bannerMessageHtml = 'VAPID_PUBLIC_KEY belum dikonfigurasi di file .env server. Silakan hubungi administrator sistem.';
+                    this.showBanner = true;
+                    return;
+                }
+
                 this.registerServiceWorker();
 
                 if (Notification.permission === 'default' && !localStorage.getItem('push_prompt_dismissed')) {
@@ -155,12 +163,26 @@
                 }).then(async response => {
                     if (response.ok) {
                         this.showBanner = false;
+                    } else if (response.status === 419) {
+                        // CSRF token expired, reload the page to get a new one
+                        if (!sessionStorage.getItem('push_csrf_reloaded')) {
+                            sessionStorage.setItem('push_csrf_reloaded', 'true');
+                            window.location.reload();
+                        } else {
+                            if (!isSilent) {
+                                this.bannerTitle = 'Sesi Kedaluwarsa (419)';
+                                this.bannerMessageHtml = 'Gagal menyimpan notifikasi karena sesi habis. Silakan login kembali.';
+                            }
+                        }
                     } else {
                         const errorData = await response.text();
                         console.error('Server returned error:', response.status, errorData);
                         if (!isSilent) {
                             this.bannerTitle = 'Gagal Menyimpan (Error ' + response.status + ')';
                             this.bannerMessageHtml = 'Gagal menyimpan data notifikasi ke server. Tim kami akan segera memperbaikinya. Silakan klik Nanti Saja.';
+                        } else {
+                            // Even if silent, if it fails, maybe we show something?
+                            // Actually just log it.
                         }
                     }
                 }).catch(err => {
