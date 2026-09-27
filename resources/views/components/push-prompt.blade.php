@@ -1,8 +1,15 @@
 <div x-data="pushNotificationPrompt()" x-show="showBanner" x-transition.opacity
-     class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[100] flex items-center justify-center p-4" style="display: none;">
+     class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4" style="display: none;">
     
-    <div class="bg-white rounded-2xl shadow-2xl p-6 md:p-8 w-full max-w-md flex flex-col items-center text-center gap-4 relative" @click.away="!isForced">
+    <div class="bg-white rounded-2xl shadow-2xl p-6 md:p-8 w-full max-w-md flex flex-col items-center text-center gap-4 relative" @click.away="dismissBanner()">
         
+        <!-- Close Button -->
+        <button @click="dismissBanner()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-2 rounded-full hover:bg-gray-100 transition-colors">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+
         <div class="flex-shrink-0 bg-blue-50 p-4 rounded-full mb-2">
             <svg class="w-10 h-10 text-blue-600 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -10,18 +17,21 @@
         </div>
         
         <div class="flex-1 w-full">
-            <h3 class="text-xl font-bold text-gray-900 mb-2" x-text="bannerTitle">Wajib Aktifkan Notifikasi</h3>
+            <h3 class="text-xl font-bold text-gray-900 mb-2" x-text="bannerTitle">Aktifkan Notifikasi Real-time</h3>
             <p class="text-sm text-gray-500 leading-relaxed" x-text="bannerMessage" x-html="bannerMessageHtml">
-                Sistem KameraKita mewajibkan seluruh pekerja dan admin untuk menyalakan notifikasi agar tidak tertinggal informasi penting.
+                Nyalakan notifikasi untuk selalu mendapat pengumuman terbaru dari Admin dan tidak ketinggalan informasi penting!
             </p>
         </div>
 
-        <div class="w-full mt-4 flex flex-col gap-3">
+        <div class="w-full mt-4 flex flex-col gap-2">
             <button @click="requestPermission()" x-show="!isDenied && isSupported" class="w-full px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl shadow-md transition-all transform hover:scale-[1.02]">
                 Nyalakan Sekarang
             </button>
-            <p x-show="isDenied || !isSupported" class="text-xs text-red-500 font-medium">
-                Sistem terkunci hingga notifikasi diaktifkan.
+            <button @click="dismissBanner()" x-show="!isDenied && isSupported" class="w-full px-5 py-3 bg-gray-50 hover:bg-gray-100 text-gray-700 text-sm font-semibold rounded-xl transition-all">
+                Nanti Saja
+            </button>
+            <p x-show="isDenied || !isSupported" class="text-xs text-red-500 font-medium mt-2">
+                Peringatan: Notifikasi saat ini dimatikan oleh sistem perangkat Anda.
             </p>
         </div>
     </div>
@@ -33,29 +43,25 @@
             showBanner: false,
             isDenied: false,
             isSupported: true,
-            isForced: true,
-            bannerTitle: 'Wajib Aktifkan Notifikasi',
-            bannerMessageHtml: 'Sistem KameraKita mewajibkan seluruh pekerja dan admin untuk menyalakan notifikasi.<br><br><b>Silakan klik tombol di bawah dan pilih "Allow/Izinkan".</b>',
+            bannerTitle: 'Aktifkan Notifikasi Real-time',
+            bannerMessageHtml: 'Sistem KameraKita menyarankan Anda untuk menyalakan notifikasi agar tidak tertinggal info penting.<br><br><b>Silakan klik tombol di bawah dan pilih "Allow/Izinkan".</b>',
             vapidPublicKey: '{{ config("webpush.vapid.public_key") }}',
 
             init() {
                 if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
                     this.isSupported = false;
-                    this.bannerTitle = 'Perangkat Tidak Didukung';
-                    this.bannerMessageHtml = 'Browser Anda tidak mendukung Notifikasi Web.<br><br><b>Pengguna iPhone (iOS):</b> Anda wajib menekan ikon <b>Share (Bagikan)</b> lalu pilih <b>"Add to Home Screen (Tambah ke Layar Utama)"</b>. Setelah itu, buka aplikasi dari layar utama HP Anda.';
-                    this.showBanner = true;
+                    this.bannerTitle = 'Perangkat Tidak Mendukung Notifikasi';
+                    this.bannerMessageHtml = 'Browser Anda tidak mendukung Web Push.<br><br><b>Pengguna iPhone (iOS):</b> Anda wajib menekan ikon <b>Share (Bagikan)</b> lalu pilih <b>"Add to Home Screen"</b>. Setelah itu, buka aplikasi dari layar utama HP Anda.';
                     return;
                 }
 
                 this.registerServiceWorker();
 
-                if (Notification.permission === 'default') {
-                    this.showBanner = true;
+                if (Notification.permission === 'default' && !localStorage.getItem('push_prompt_dismissed')) {
+                    setTimeout(() => { this.showBanner = true; }, 1500);
                 } else if (Notification.permission === 'denied') {
+                    // Silently ignore if denied, don't harass user.
                     this.isDenied = true;
-                    this.bannerTitle = 'Akses Notifikasi Diblokir';
-                    this.bannerMessageHtml = 'Anda telah memblokir notifikasi (Block).<br><br><b>Cara Membuka:</b> Klik ikon gembok di sebelah alamat web browser Anda, lalu ubah izin Notifikasi menjadi <b>"Allow/Izinkan"</b>. Setelah itu refresh (muat ulang) halaman ini.';
-                    this.showBanner = true;
                 } else if (Notification.permission === 'granted') {
                     // Silently resubscribe to ensure backend is in sync
                     this.subscribeUser(true);
@@ -68,6 +74,11 @@
                 }).catch(error => {
                     console.error('ServiceWorker registration failed:', error);
                 });
+            },
+
+            dismissBanner() {
+                this.showBanner = false;
+                localStorage.setItem('push_prompt_dismissed', 'true');
             },
 
             urlBase64ToUint8Array(base64String) {
@@ -111,17 +122,20 @@
             },
 
             storeSubscription(pushSubscription, isSilent) {
-                const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
                 fetch('/push-subscriptions', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': token },
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                     body: JSON.stringify(pushSubscription)
-                }).then(response => {
+                }).then(async response => {
                     if (response.ok) {
                         this.showBanner = false;
-                    } else if (!isSilent) {
-                        this.bannerTitle = 'Gagal Menyimpan';
-                        this.bannerMessageHtml = 'Gagal menyimpan data notifikasi ke server. Silakan refresh halaman.';
+                    } else {
+                        const errorData = await response.text();
+                        console.error('Server returned error:', response.status, errorData);
+                        if (!isSilent) {
+                            this.bannerTitle = 'Gagal Menyimpan (Error ' + response.status + ')';
+                            this.bannerMessageHtml = 'Gagal menyimpan data notifikasi ke server. Tim kami akan segera memperbaikinya. Silakan klik Nanti Saja.';
+                        }
                     }
                 }).catch(err => {
                     console.error('Store error:', err);

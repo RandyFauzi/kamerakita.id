@@ -21,6 +21,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \App\Http\Middleware\RoleMiddleware::class,
             'onboarding' => \App\Http\Middleware\EnsureOnboardingCompleted::class,
         ]);
+
+        $middleware->validateCsrfTokens(except: [
+            'push-subscriptions',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
