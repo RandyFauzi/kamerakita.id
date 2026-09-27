@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>KameraKita AI - Kerja Rumah Jadi Cuan</title>
+    <meta name="description" content="KameraKita AI membantu Anda menghasilkan pendapatan tambahan hanya dengan menyelesaikan tugas-tugas ringan dan merekam video langsung dari rumah.">
     <link rel="icon" href="{{ asset('images/Logo.webp') }}" type="image/webp">
     
     <!-- PWA Meta Tags -->
