@@ -28,6 +28,7 @@ class PushNotificationController extends Controller
             'body' => 'required|string',
             'url' => 'nullable|url',
             'target' => 'required|in:all,workers,admins',
+            'scheduled_at' => 'nullable|date|after:now',
         ]);
 
         $query = User::query();
@@ -45,11 +46,19 @@ class PushNotificationController extends Controller
             return back()->with('error', 'Tidak ada pengguna dengan langganan notifikasi aktif di grup ini.');
         }
 
-        Notification::send($users, new CustomWebPushNotification(
+        $notification = new CustomWebPushNotification(
             $request->title,
             $request->body,
             $request->url ?? url('/')
-        ));
+        );
+
+        if ($request->filled('scheduled_at')) {
+            $scheduledTime = \Carbon\Carbon::parse($request->scheduled_at);
+            Notification::send($users, $notification->delay($scheduledTime));
+            return back()->with('success', 'Notifikasi berhasil dijadwalkan untuk dikirim pada ' . $scheduledTime->format('d M Y H:i') . ' (Waktu Server)!');
+        }
+
+        Notification::send($users, $notification);
 
         return back()->with('success', 'Notifikasi berhasil dikirim ke ' . $users->count() . ' pengguna!');
     }
