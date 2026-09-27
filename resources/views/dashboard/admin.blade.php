@@ -1,4 +1,7 @@
 <x-app-layout>
+    <x-slot:title>Dashboard Admin</x-slot:title>
+    <x-slot:metaDescription>Pusat kontrol dan metrik global untuk administrator dan tim finance Kamerakita.</x-slot:metaDescription>
+    
     <x-slot name="header">
         <div class="w-full flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3">
             <h2 class="font-bold text-xl sm:text-2xl text-gray-800 leading-tight">

@@ -1,4 +1,7 @@
 <x-app-layout>
+    <x-slot:title>Dashboard Rekruter</x-slot:title>
+    <x-slot:metaDescription>Pantau metrik rekrutmen, komisi, dan referral Mitra Anda sebagai Rekruter Kamerakita.</x-slot:metaDescription>
+
     <div class="space-y-4 sm:space-y-6" x-data="{ showBanner: true }">
 
         {{-- Top Banner --}}
