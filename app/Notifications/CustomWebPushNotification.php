@@ -15,15 +15,22 @@ class CustomWebPushNotification extends Notification implements ShouldQueue
     public $title;
     public $body;
     public $url;
+    public $campaignId;
+
+    // Queue properties for reliability
+    public $tries = 3;
+    public $timeout = 30; // 30 seconds for the external network call
+    public $backoff = [10, 60, 300]; // 10s, 1m, 5m
 
     /**
      * Create a new notification instance.
      */
-    public function __construct($title, $body, $url)
+    public function __construct($title, $body, $url, $campaignId = null)
     {
         $this->title = $title;
         $this->body = $body;
         $this->url = $url;
+        $this->campaignId = $campaignId;
     }
 
     /**
@@ -41,10 +48,19 @@ class CustomWebPushNotification extends Notification implements ShouldQueue
      */
     public function toWebPush($notifiable, $notification)
     {
+        if ($this->campaignId) {
+            \App\Models\NotificationDelivery::where('campaign_id', $this->campaignId)
+                ->where('user_id', $notifiable->id)
+                ->update(['status' => 'processing', 'attempts' => \Illuminate\Support\Facades\DB::raw('attempts + 1')]);
+        }
+
         return (new WebPushMessage)
             ->title($this->title)
             ->body($this->body)
             ->icon('/images/app-icon.png')
-            ->data(['url' => $this->url]);
+            ->data([
+                'url' => $this->url,
+                'campaign_id' => $this->campaignId,
+            ]);
     }
 }

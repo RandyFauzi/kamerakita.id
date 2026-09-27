@@ -41,16 +41,18 @@ class WhatsAppNotificationService
      * @param string $message
      * @return bool
      */
-    public function sendMessage(string $phone, string $message): bool
+    public function sendMessage(string $phone, string $message): array
     {
         $phone = \App\Helpers\PhoneHelper::formatForGateway($phone);
 
         if (empty($phone)) {
-            return false;
+            return ['status' => 'permanent_error', 'message' => 'Invalid phone format'];
         }
 
+        $maskedPhone = '***' . substr($phone, -4);
+
         try {
-            $response = Http::withHeaders([
+            $response = Http::timeout(20)->withHeaders([
                 'Authorization' => 'Bearer ' . $this->apiKey,
                 'Content-Type' => 'application/json',
             ])->post($this->apiUrl, [
@@ -61,15 +63,24 @@ class WhatsAppNotificationService
             ]);
 
             if ($response->successful()) {
-                Log::info("WhatsApp message successfully sent to {$phone}.");
-                return true;
+                Log::info("WhatsApp message successfully sent to {$maskedPhone}.");
+                return ['status' => 'success', 'message' => 'Delivered'];
             }
 
-            Log::error("Failed to send WhatsApp message to {$phone}. Status: {$response->status()}, Response: {$response->body()}");
-            return false;
+            $status = $response->status();
+            Log::warning("Failed to send WhatsApp message to {$maskedPhone}. HTTP Status: {$status}");
+
+            if (in_array($status, [400, 401, 403, 404, 422])) {
+                return ['status' => 'permanent_error', 'message' => "HTTP {$status}"];
+            }
+
+            return ['status' => 'temporary_error', 'message' => "HTTP {$status}"];
+        } catch (\Illuminate\Http\Client\ConnectionException $e) {
+            Log::warning("WhatsApp connection timeout/error to {$maskedPhone}");
+            return ['status' => 'temporary_error', 'message' => 'Connection Exception'];
         } catch (\Throwable $e) {
-            Log::error("Exception occurred while sending WhatsApp message to {$phone}: {$e->getMessage()}");
-            return false;
+            Log::error("WhatsApp unexpected error to {$maskedPhone}: " . substr($e->getMessage(), 0, 200));
+            return ['status' => 'temporary_error', 'message' => 'Unexpected Exception'];
         }
     }
 }

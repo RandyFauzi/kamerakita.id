@@ -16,6 +16,9 @@ class SendWhatsAppMessageJob implements ShouldQueue
     protected $phone;
     protected $message;
 
+    public $tries = 5;
+    public $backoff = [10, 60, 300, 900]; // 10s, 1m, 5m, 15m
+
     /**
      * Create a new job instance.
      */
@@ -30,6 +33,14 @@ class SendWhatsAppMessageJob implements ShouldQueue
      */
     public function handle(WhatsAppNotificationService $waService): void
     {
-        $waService->sendMessage($this->phone, $this->message);
+        $result = $waService->sendMessage($this->phone, $this->message);
+
+        if ($result['status'] === 'temporary_error') {
+            throw new \Exception("WhatsApp temporary failure: " . $result['message']);
+        }
+
+        if ($result['status'] === 'permanent_error') {
+            $this->fail(new \Exception("WhatsApp permanent failure: " . $result['message']));
+        }
     }
 }

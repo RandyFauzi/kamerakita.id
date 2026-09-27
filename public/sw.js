@@ -56,32 +56,54 @@ self.addEventListener('push', function (e) {
         return;
     }
 
+    let msg = {
+        title: 'KameraKita',
+        body: 'Anda mendapat notifikasi baru.',
+        icon: '/images/app-icon.png',
+        badge: '/vendor-assets/kamerakita/logo-mark.svg',
+        data: { url: '/' },
+        actions: []
+    };
+
     if (e.data) {
-        var msg = e.data.json();
-        e.waitUntil(self.registration.showNotification(msg.title, {
-            body: msg.body,
-            icon: msg.icon || '/images/app-icon.png',
-            badge: msg.badge || '/vendor-assets/kamerakita/logo-mark.svg',
-            data: msg.data || {},
-            actions: msg.actions || []
-        }));
+        try {
+            const parsed = e.data.json();
+            msg.title = parsed.title || msg.title;
+            msg.body = parsed.body || msg.body;
+            msg.icon = parsed.icon || msg.icon;
+            msg.badge = parsed.badge || msg.badge;
+            msg.data = parsed.data || msg.data;
+            msg.actions = parsed.actions || msg.actions;
+        } catch (err) {
+            console.error('Push payload invalid JSON:', err);
+            // Fallback to text if possible
+            msg.body = e.data.text() || msg.body;
+        }
     }
+
+    e.waitUntil(self.registration.showNotification(msg.title, msg));
 });
 
 self.addEventListener('notificationclick', function (e) {
     e.notification.close();
 
-    if (e.notification.data && e.notification.data.url) {
-        e.waitUntil(
-            clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (clientList) {
-                for (var i = 0; i < clientList.length; i++) {
-                    var client = clientList[i];
-                    if (client.url == e.notification.data.url && 'focus' in client)
-                        return client.focus();
+    const targetUrl = (e.notification.data && e.notification.data.url) ? e.notification.data.url : '/';
+    
+    e.waitUntil(
+        clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (clientList) {
+            let target = new URL(targetUrl, self.location.origin).href;
+            
+            for (var i = 0; i < clientList.length; i++) {
+                var client = clientList[i];
+                let clientUrl = new URL(client.url, self.location.origin).href;
+                
+                if (clientUrl === target && 'focus' in client) {
+                    return client.focus();
                 }
-                if (clients.openWindow)
-                    return clients.openWindow(e.notification.data.url);
-            })
-        );
-    }
+            }
+            if (clients.openWindow) {
+                return clients.openWindow(targetUrl);
+            }
+        })
+    );
 });
