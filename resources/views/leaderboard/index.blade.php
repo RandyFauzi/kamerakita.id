@@ -70,6 +70,65 @@
 
                 const isLight = theme === 'light';
 
+                const top3 = players.slice(0, 3);
+                const others = players.slice(3);
+                
+                let podiumHtml = '';
+                if (top3.length > 0) {
+                    const p1 = top3[0];
+                    const p2 = top3[1];
+                    const p3 = top3[2];
+
+                    const formatScore = (score) => {
+                        const h = Math.floor(score / 60);
+                        return `${score} Menit <br><span style="opacity:0.7; font-size:11px;">(${h} Jam)</span>`;
+                    };
+
+                    podiumHtml = `
+                    <div style="display: flex; justify-content: center; align-items: flex-end; gap: 10px; margin: 40px 0 50px;">
+                        <!-- Rank 2 -->
+                        ${p2 ? `
+                        <div class="animate-entrance delay-200" style="display: flex; flex-direction: column; align-items: center; width: 30%;">
+                            <img src="${p2.avatar}" style="width: 60px; height: 60px; border-radius: 50%; border: 3px solid #cbd5e1; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                            <span style="font-weight: 700; margin-top: 8px; font-size: 14px; text-align: center; color: ${isLight ? '#334155' : '#e2e8f0'}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">${p2.name}</span>
+                            <span style="font-size: 12px; color: ${isLight ? '#64748b' : '#94a3b8'}; margin-bottom: 12px; text-align: center; line-height: 1.2;">${formatScore(p2.score)}</span>
+                            <div style="width: 100%; max-width: 90px; height: 90px; background: linear-gradient(to bottom, #94a3b8, #cbd5e1); border-top-left-radius: 12px; border-top-right-radius: 12px; display: flex; justify-content: center; align-items: flex-start; padding-top: 15px; box-shadow: inset 0 2px 5px rgba(255,255,255,0.5);">
+                                <div style="background: rgba(255,255,255,0.4); border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; font-size: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">2</div>
+                            </div>
+                        </div>
+                        ` : `<div style="width: 30%;"></div>`}
+
+                        <!-- Rank 1 -->
+                        ${p1 ? `
+                        <div class="animate-entrance delay-100" style="display: flex; flex-direction: column; align-items: center; width: 35%; z-index: 10;">
+                            <div style="position: relative;">
+                                <div style="position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 28px; filter: drop-shadow(0 2px 4px rgba(245,158,11,0.4)); z-index: 20;">👑</div>
+                                <img src="${p1.avatar}" style="width: 76px; height: 76px; border-radius: 50%; border: 4px solid #fbbf24; object-fit: cover; box-shadow: 0 8px 16px rgba(245, 158, 11, 0.3);">
+                            </div>
+                            <span style="font-weight: 800; margin-top: 8px; font-size: 16px; text-align: center; color: ${isLight ? '#1e293b' : '#f8fafc'}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">${p1.name}</span>
+                            <span style="font-size: 13px; color: #f59e0b; font-weight: 700; margin-bottom: 12px; text-align: center; line-height: 1.2;">${formatScore(p1.score)}</span>
+                            <div style="width: 100%; max-width: 110px; height: 130px; background: linear-gradient(to bottom, #f59e0b, #fcd34d); border-top-left-radius: 12px; border-top-right-radius: 12px; display: flex; justify-content: center; align-items: flex-start; padding-top: 15px; box-shadow: 0 -5px 15px rgba(245, 158, 11, 0.3), inset 0 2px 5px rgba(255,255,255,0.5);">
+                                <div style="background: rgba(255,255,255,0.4); border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">1</div>
+                            </div>
+                        </div>
+                        ` : `<div style="width: 35%;"></div>`}
+
+                        <!-- Rank 3 -->
+                        ${p3 ? `
+                        <div class="animate-entrance delay-300" style="display: flex; flex-direction: column; align-items: center; width: 30%;">
+                            <img src="${p3.avatar}" style="width: 60px; height: 60px; border-radius: 50%; border: 3px solid #fcd34d; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                            <span style="font-weight: 700; margin-top: 8px; font-size: 14px; text-align: center; color: ${isLight ? '#334155' : '#e2e8f0'}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">${p3.name}</span>
+                            <span style="font-size: 12px; color: ${isLight ? '#64748b' : '#94a3b8'}; margin-bottom: 12px; text-align: center; line-height: 1.2;">${formatScore(p3.score)}</span>
+                            <div style="width: 100%; max-width: 90px; height: 75px; background: linear-gradient(to bottom, #d97706, #fde68a); border-top-left-radius: 12px; border-top-right-radius: 12px; display: flex; justify-content: center; align-items: flex-start; padding-top: 15px; box-shadow: inset 0 2px 5px rgba(255,255,255,0.5);">
+                                <div style="background: rgba(255,255,255,0.4); border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; font-size: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">3</div>
+                            </div>
+                        </div>
+                        ` : `<div style="width: 30%;"></div>`}
+                    </div>
+                    ${others.length > 0 ? `<div style="text-align: center; font-weight: bold; margin-bottom: 20px; color: ${isLight ? '#64748b' : '#94a3b8'}; font-size: 14px; letter-spacing: 0.5px; text-transform: uppercase;">Other Participants</div>` : ''}
+                    `;
+                }
+
                 this.innerHTML = `
                     <style>
                         .lb-container-${theme} {
@@ -186,32 +245,33 @@
                     </style>
 
                     <div class="lb-container-${theme} theme-${theme}">
+                        ${podiumHtml}
                         <div class="leaderboard-wrapper w-full">
-                            ${players.map((player, index) => this.generatePlayerCard(player, index, isLight)).join('')}
+                            ${others.map((player, index) => this.generatePlayerCard(player, index + 3, isLight)).join('')}
                         </div>
                     </div>
                 `;
             }
 
             generatePlayerCard(player, index, isLight) {
-                const rank = index + 1;
+                const rank = index + 1; // since index passed is 3 for rank 4
+                // We no longer have rank 1 in this list, but we'll keep the logic generic just in case
                 const isFirst = rank === 1;
-                const delayClass = `delay-${Math.min((index + 1) * 100, 1000)}`;
+                const delayClass = `delay-${Math.min((index + 1) * 50, 1000)}`;
                 
-                // Colors for Rank 1
-                let textColor = isFirst ? '#111827' : (isLight ? '#1f2937' : '#f3f4f6');
-                let scoreColor = isFirst ? '#111827' : (isLight ? '#0369a1' : '#38bdf8');
-                let badgeBg = isFirst ? 'rgba(255,255,255,0.2)' : (isLight ? '#f1f5f9' : 'rgba(255,255,255,0.05)');
-                let badgeBorder = isFirst ? 'rgba(255,255,255,0.3)' : (isLight ? '#e2e8f0' : 'rgba(255,255,255,0.1)');
-                let badgeText = isFirst ? '#ffffff' : (isLight ? '#64748b' : '#9ca3af');
-                let scoreBg = isFirst ? 'rgba(255,255,255,0.2)' : 'transparent';
-                let scoreBorder = isFirst ? '1px solid rgba(255,255,255,0.3)' : 'none';
+                let textColor = isLight ? '#1f2937' : '#f3f4f6';
+                let scoreColor = isLight ? '#0369a1' : '#38bdf8';
+                let badgeBg = isLight ? '#f1f5f9' : 'rgba(255,255,255,0.05)';
+                let badgeBorder = isLight ? '#e2e8f0' : 'rgba(255,255,255,0.1)';
+                let badgeText = isLight ? '#64748b' : '#9ca3af';
+                let scoreBg = 'transparent';
+                let scoreBorder = 'none';
 
-                // Decreasing opacity for lower ranks
-                let cardOpacity = isFirst ? '1' : (rank === 2 ? '1' : (rank === 3 ? '0.9' : (rank === 4 ? '0.7' : '0.5')));
+                let cardOpacity = rank <= 10 ? '1' : (rank <= 20 ? '0.8' : '0.6');
+                const h = Math.floor(player.score / 60);
 
                 return `
-                    <div class="rank-card ${isFirst ? 'rank-1' : 'rank-other'} animate-entrance ${delayClass}" style="opacity: ${cardOpacity}">
+                    <div class="rank-card rank-other animate-entrance ${delayClass}" style="opacity: ${cardOpacity}">
                         <div class="flex-center" style="gap: 16px; position: relative; z-index: 10;">
                             <!-- Rank Badge -->
                             <div style="width: 32px; height: 32px; border-radius: 50%; background: ${badgeBg}; border: 1px solid ${badgeBorder}; color: ${badgeText}; font-size: 14px; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);">
@@ -219,7 +279,7 @@
                             </div>
                             
                             <!-- Avatar -->
-                            <img src="${player.avatar}" alt="${player.name}" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid ${isFirst ? 'rgba(255,255,255,0.3)' : (isLight ? '#e2e8f0' : 'rgba(255,255,255,0.1)')}; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                            <img src="${player.avatar}" alt="${player.name}" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid ${isLight ? '#e2e8f0' : 'rgba(255,255,255,0.1)'}; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
                             
                             <!-- Name -->
                             <span style="font-weight: 700; font-size: 18px; letter-spacing: -0.02em; color: ${textColor};">${player.name}</span>
@@ -227,11 +287,7 @@
                         
                         <!-- Score -->
                         <div class="flex-center" style="gap: 6px; position: relative; z-index: 10; background: ${scoreBg}; border: ${scoreBorder}; padding: 6px 12px; border-radius: 999px; backdrop-filter: blur(4px);">
-                            <span style="font-weight: 700; font-size: 14px; color: ${scoreColor};">${player.score}</span>
-                            <!-- Sparkle SVG (adapted for video/minutes) -->
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color: ${scoreColor}">
-                                <path d="M12 0l2.5 9.5L24 12l-9.5 2.5L12 24l-2.5-9.5L0 12l9.5-2.5z"/>
-                            </svg>
+                            <span style="font-weight: 700; font-size: 14px; color: ${scoreColor};">${player.score} Menit <span style="opacity:0.6; font-size:12px;">(${h} Jam)</span></span>
                         </div>
                     </div>
                 `;
