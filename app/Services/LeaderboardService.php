@@ -87,12 +87,7 @@ class LeaderboardService
         }
         
         foreach ($topPartners as $index => $topPartner) {
-            $pId = null;
-            if (is_object($topPartner) && isset($topPartner->partner_id)) {
-                $pId = $topPartner->partner_id;
-            } elseif (is_array($topPartner) && isset($topPartner['partner_id'])) {
-                $pId = $topPartner['partner_id'];
-            }
+            $pId = data_get($topPartner, 'partner_id');
             
             if ($pId && (string)$pId === $partnerId) {
                 return $index + 1; // 1-indexed rank

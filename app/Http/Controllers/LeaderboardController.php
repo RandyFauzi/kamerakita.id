@@ -17,32 +17,31 @@ class LeaderboardController extends Controller
 
     public function index(Request $request)
     {
-        // 1. All Time Leaderboard
         $allTimeScores = $this->leaderboardService->getAllTimeLeaderboard(10);
-
-        // 2. Weekly Leaderboard
         $weeklyScores = $this->leaderboardService->getWeeklyLeaderboard(10);
 
-        // Helper to format data for the UI
-        $formatData = function ($scores) {
-            return collect($scores)->map(function ($score) {
-                $name = data_get($score, 'partner.full_name', 'Mitra KameraKita');
-                if (!$name) $name = 'Mitra KameraKita'; // in case it is null
-                
-                // Fallback avatar using ui-avatars since there's no avatar column
-                $avatar = 'https://ui-avatars.com/api/?name=' . urlencode($name) . '&background=3b82f6&color=fff&bold=true';
-                
-                return [
-                    'name' => $name,
-                    'score' => number_format((float)data_get($score, 'total_score', 0)) . ' ' . __('dashboard.leaderboard.minutes_unit'),
-                    'avatar' => $avatar,
-                ];
-            });
-        };
-
         return view('leaderboard.index', [
-            'allTimeData' => $formatData($allTimeScores)->toJson(),
-            'weeklyData' => $formatData($weeklyScores)->toJson(),
+            'allTimeData' => $this->formatScoresForUI($allTimeScores),
+            'weeklyData'  => $this->formatScoresForUI($weeklyScores),
         ]);
+    }
+
+    /**
+     * Format leaderboard scores for the interactive UI component.
+     *
+     * @param array $scores
+     * @return string JSON representation of the scores
+     */
+    private function formatScoresForUI(array $scores): string
+    {
+        return collect($scores)->map(function ($score) {
+            $name = data_get($score, 'partner.full_name') ?: 'Mitra KameraKita';
+            
+            return [
+                'name'   => $name,
+                'score'  => number_format((float) data_get($score, 'total_score', 0)) . ' ' . __('dashboard.leaderboard.minutes_unit'),
+                'avatar' => 'https://ui-avatars.com/api/?name=' . urlencode($name) . '&background=3b82f6&color=fff&bold=true',
+            ];
+        })->toJson();
     }
 }
