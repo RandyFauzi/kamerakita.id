@@ -203,9 +203,9 @@ class CalculatePartnerMetricsService
         $weeklyPeriodEnd = $currentPeriod['end']->copy()->endOfDay();
 
         $weeklyApprovedMinutes = VideoWorkReport::where('qc_status', 'approved')
-            ->whereBetween('submission_date', [
-                $weeklyPeriodStart->toDateString(),
-                $weeklyPeriodEnd->toDateString(),
+            ->whereBetween('verified_at', [
+                $weeklyPeriodStart->toDateTimeString(),
+                $weeklyPeriodEnd->toDateTimeString(),
             ])
             ->sum('approved_duration_minutes');
 
@@ -228,9 +228,9 @@ class CalculatePartnerMetricsService
         $monthlyEnd = now()->copy()->endOfMonth();
 
         $monthlyApprovedMinutes = VideoWorkReport::where('qc_status', 'approved')
-            ->whereBetween('submission_date', [
-                $monthlyStart->toDateString(),
-                $monthlyEnd->toDateString(),
+            ->whereBetween('verified_at', [
+                $monthlyStart->toDateTimeString(),
+                $monthlyEnd->toDateTimeString(),
             ])
             ->sum('approved_duration_minutes');
 
