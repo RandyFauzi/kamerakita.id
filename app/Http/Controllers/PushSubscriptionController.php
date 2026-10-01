@@ -11,7 +11,7 @@ class PushSubscriptionController extends Controller
      */
     public function update(Request $request)
     {
-        $this->validate($request, [
+        $request->validate([
             'endpoint'    => 'required',
             'keys.auth'   => 'required',
             'keys.p256dh' => 'required'
@@ -42,7 +42,7 @@ class PushSubscriptionController extends Controller
      */
     public function destroy(Request $request)
     {
-        $this->validate($request, ['endpoint' => 'required']);
+        $request->validate(['endpoint' => 'required']);
 
         $request->user()->deletePushSubscription($request->endpoint);
 
