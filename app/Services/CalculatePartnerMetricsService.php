@@ -185,17 +185,16 @@ class CalculatePartnerMetricsService
      */
     public function getGlobalMetrics(): array
     {
-        return \Illuminate\Support\Facades\Cache::remember('global_metrics', 600, function() {
-            $totalWorkersCount = Partner::where('partner_role', 'worker')->count();
-            $totalMitraCount = Partner::where('partner_role', 'mitra')->count();
+        $totalWorkersCount = Partner::where('partner_role', 'worker')->count();
+        $totalMitraCount = Partner::where('partner_role', 'mitra')->count();
 
-            $allTime = (int) VideoWorkReport::where('qc_status', 'approved')->sum('approved_duration_minutes');
-            $paid = (int) VideoWorkReport::where('qc_status', 'approved')->where('payment_status', 'paid')->sum('approved_duration_minutes');
-            $pending = (int) VideoWorkReport::where('qc_status', 'approved')->where('payment_status', 'unpaid')->sum('approved_duration_minutes');
+        $allTime = (int) VideoWorkReport::where('qc_status', 'approved')->sum('approved_duration_minutes');
+        $paid = (int) VideoWorkReport::where('qc_status', 'approved')->where('payment_status', 'paid')->sum('approved_duration_minutes');
+        $pending = (int) VideoWorkReport::where('qc_status', 'approved')->where('payment_status', 'unpaid')->sum('approved_duration_minutes');
 
-            $pendingMinutesSum = (int) VideoWorkReport::where('qc_status', 'pending')->sum('submitted_duration_minutes');
-            $onReviewMinutesSum = (int) VideoWorkReport::where('qc_status', 'on_review')->sum('submitted_duration_minutes');
-            $rejectedMinutesSum = (int) VideoWorkReport::where('qc_status', 'rejected')->sum('submitted_duration_minutes');
+        $pendingMinutesSum = (int) VideoWorkReport::where('qc_status', 'pending')->sum('submitted_duration_minutes');
+        $onReviewMinutesSum = (int) VideoWorkReport::where('qc_status', 'on_review')->sum('submitted_duration_minutes');
+        $rejectedMinutesSum = (int) VideoWorkReport::where('qc_status', 'rejected')->sum('submitted_duration_minutes');
 
         // 1. Target Mingguan (100 Jam Video Approved)
         $currentPeriod = PeriodService::getPeriodRange(now());
@@ -209,9 +208,9 @@ class CalculatePartnerMetricsService
             ])
             ->sum('approved_duration_minutes');
 
-        $weeklySubmittedMinutes = VideoWorkReport::whereBetween('submission_date', [
-                $weeklyPeriodStart->toDateString(),
-                $weeklyPeriodEnd->toDateString(),
+        $weeklySubmittedMinutes = VideoWorkReport::whereBetween('created_at', [
+                $weeklyPeriodStart->toDateTimeString(),
+                $weeklyPeriodEnd->toDateTimeString(),
             ])
             ->sum('submitted_duration_minutes');
 
@@ -234,9 +233,9 @@ class CalculatePartnerMetricsService
             ])
             ->sum('approved_duration_minutes');
 
-        $monthlySubmittedMinutes = VideoWorkReport::whereBetween('submission_date', [
-                $monthlyStart->toDateString(),
-                $monthlyEnd->toDateString(),
+        $monthlySubmittedMinutes = VideoWorkReport::whereBetween('created_at', [
+                $monthlyStart->toDateTimeString(),
+                $monthlyEnd->toDateTimeString(),
             ])
             ->sum('submitted_duration_minutes');
 
@@ -280,7 +279,6 @@ class CalculatePartnerMetricsService
             'monthly_submitted_percent' => $monthlySubmittedPercent,
             'monthly_period_label' => $monthlyPeriodLabel,
         ];
-        });
     }
 
     /**
