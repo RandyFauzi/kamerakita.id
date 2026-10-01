@@ -3,143 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 HALAMAN TIDAK DITEMUKAN - KameraKita</title>
+    <title>Halaman Tidak Ditemukan - KameraKita</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-
-        body, html {
+        body {
             margin: 0;
             padding: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #050505;
-            color: #00ccff;
-            font-family: 'Share Tech Mono', monospace;
-            overflow: hidden;
+            font-family: 'Nunito', sans-serif;
+            background-color: #f3f6fd;
             display: flex;
             justify-content: center;
             align-items: center;
-        }
-
-        .container {
+            height: 100vh;
+            color: #334155;
             text-align: center;
+        }
+        .container {
+            max-width: 600px;
+            padding: 50px 40px;
+            background: white;
+            border-radius: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
             position: relative;
-            z-index: 10;
-            width: 90%;
-            max-width: 800px;
-            padding: 40px;
-            border: 1px solid #00ccff;
-            background: rgba(0, 10, 20, 0.85);
-            box-shadow: 0 0 20px rgba(0, 204, 255, 0.4), inset 0 0 30px rgba(0, 204, 255, 0.2);
-            animation: glitch-border 4s infinite;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .animation-container {
+            width: 200px;
+            height: 180px;
+            margin: 0 auto 30px;
+            position: relative;
         }
 
-        @keyframes glitch-border {
-            0% { border-color: #00ccff; box-shadow: 0 0 20px rgba(0, 204, 255, 0.4); }
-            45% { border-color: #00ccff; box-shadow: 0 0 20px rgba(0, 204, 255, 0.4); }
-            50% { border-color: #ffffff; box-shadow: 0 0 40px rgba(255, 255, 255, 0.8); }
-            55% { border-color: #00ccff; box-shadow: 0 0 20px rgba(0, 204, 255, 0.4); }
-            100% { border-color: #00ccff; box-shadow: 0 0 20px rgba(0, 204, 255, 0.4); }
+        .ghost {
+            position: absolute;
+            left: 50%;
+            top: 40%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 90px;
+            background: #3b82f6;
+            border-radius: 40px 40px 0 0;
+            animation: float-ghost 3s ease-in-out infinite;
+        }
+        
+        .ghost::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 0;
+            width: 100%;
+            height: 15px;
+            background: repeating-linear-gradient(
+                -45deg,
+                #3b82f6 0,
+                #3b82f6 10px,
+                transparent 10px,
+                transparent 20px
+            );
+        }
+
+        .eye {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+            top: 30px;
+        }
+        .eye.left { left: 20px; }
+        .eye.right { right: 20px; }
+        
+        .mouth {
+            position: absolute;
+            width: 20px;
+            height: 10px;
+            border-radius: 0 0 20px 20px;
+            background: white;
+            top: 50px;
+            left: 30px;
+        }
+        
+        @keyframes float-ghost {
+            0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+            50% { transform: translate(-50%, -50%) translateY(-15px); }
         }
 
         h1 {
-            font-size: 6rem;
-            margin: 0;
-            line-height: 1;
-            text-shadow: 0 0 10px #00ccff;
-            letter-spacing: 5px;
+            font-size: 2.2rem;
+            color: #1e293b;
+            margin: 0 0 15px 0;
+            font-weight: 800;
         }
-
-        h2 {
-            font-size: 2rem;
-            margin: 10px 0 20px;
-            color: #ffffff;
-            text-shadow: 0 0 8px #ffffff;
-        }
-
         p {
             font-size: 1.1rem;
+            color: #64748b;
+            margin-bottom: 35px;
             line-height: 1.6;
-            margin-bottom: 20px;
         }
-
-        .scanlines {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: linear-gradient(
-                to bottom,
-                rgba(255,255,255,0),
-                rgba(255,255,255,0) 50%,
-                rgba(0,0,0,0.2) 50%,
-                rgba(0,0,0,0.2)
-            );
-            background-size: 100% 4px;
-            pointer-events: none;
-            z-index: 50;
-        }
-
-        a.btn {
+        .btn {
             display: inline-block;
-            margin-top: 20px;
-            padding: 12px 30px;
-            background-color: transparent;
-            color: #00ccff;
-            border: 2px solid #00ccff;
+            background: #3b82f6;
+            color: white;
+            padding: 14px 36px;
+            border-radius: 50px;
             text-decoration: none;
-            font-size: 1.2rem;
-            font-weight: bold;
-            transition: all 0.2s;
-            cursor: pointer;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
         }
-
-        a.btn:hover {
-            background-color: #00ccff;
-            color: #000;
-            box-shadow: 0 0 15px #00ccff;
-        }
-        
-        .radar {
-            width: 100px;
-            height: 100px;
-            border: 2px solid #00ccff;
-            border-radius: 50%;
-            margin: 20px auto;
-            position: relative;
-            overflow: hidden;
+        .btn:hover {
+            background: #2563eb;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px rgba(59, 130, 246, 0.4);
         }
         
-        .radar::before {
-            content: '';
+        .error-code {
             position: absolute;
-            top: 0; left: 50%;
-            width: 50%; height: 50%;
-            background: linear-gradient(45deg, transparent, rgba(0,204,255,0.5));
-            transform-origin: bottom left;
-            animation: scan 2s linear infinite;
+            top: -30px;
+            left: 20px;
+            font-size: 12rem;
+            font-weight: 800;
+            color: #f1f5f9;
+            z-index: -1;
+            line-height: 1;
+            user-select: none;
         }
         
-        @keyframes scan {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .shadow {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 15px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 50%;
+            animation: shrink 3s ease-in-out infinite;
+        }
+        
+        @keyframes shrink {
+            0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.5; }
+            50% { transform: translateX(-50%) scale(0.6); opacity: 0.2; }
         }
     </style>
 </head>
 <body>
-    <div class="scanlines"></div>
-
     <div class="container">
-        <h1>404</h1>
-        <h2>SEKTOR TIDAK DITEMUKAN</h2>
+        <div class="error-code">404</div>
         
-        <div class="radar"></div>
+        <div class="animation-container">
+            <div class="ghost">
+                <div class="eye left"></div>
+                <div class="eye right"></div>
+                <div class="mouth"></div>
+            </div>
+            <div class="shadow"></div>
+        </div>
 
-        <p style="color: #fff;">>> Memindai koordinat server...</p>
-        <p>Halaman yang Anda tuju telah dihapus, pindah dimensi, atau memang tidak pernah ada. <br>Navigasi sistem gagal menemukan target: <strong style="color: #ff3333;">{{ request()->path() }}</strong></p>
-
-        <a href="{{ url('/') }}" class="btn">KEMBALI KE BASE (BERANDA)</a>
+        <h1>Ups! Halaman Tidak Ditemukan</h1>
+        <p>Maaf, halaman yang Anda cari sepertinya sudah dihapus,<br>pindah URL, atau memang tidak pernah ada.</p>
+        
+        <a href="{{ url('/') }}" class="btn">Kembali ke Beranda</a>
     </div>
 </body>
 </html>

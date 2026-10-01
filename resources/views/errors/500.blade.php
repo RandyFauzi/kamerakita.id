@@ -3,132 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>500 KESALAHAN SERVER - KameraKita</title>
+    <title>Sistem Sedang Sibuk - KameraKita</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-
-        body, html {
+        body {
             margin: 0;
             padding: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #050505;
-            color: #ff9900;
-            font-family: 'Share Tech Mono', monospace;
+            font-family: 'Nunito', sans-serif;
+            background-color: #f3f6fd;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #334155;
+            text-align: center;
+        }
+        .container {
+            max-width: 600px;
+            padding: 50px 40px;
+            background: white;
+            border-radius: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+            position: relative;
             overflow: hidden;
+            z-index: 1;
+        }
+        .animation-container {
+            width: 200px;
+            height: 180px;
+            margin: 0 auto 30px;
+            position: relative;
+        }
+        
+        /* Modern Gear Animation CSS */
+        .gear-wrapper {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .gear {
+            position: absolute;
+            background: #3b82f6;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
         }
-
-        .container {
-            text-align: center;
-            position: relative;
-            z-index: 10;
-            width: 90%;
-            max-width: 800px;
-            padding: 40px;
-            border: 1px solid #ff9900;
-            background: rgba(20, 10, 0, 0.85);
-            box-shadow: 0 0 20px rgba(255, 153, 0, 0.4), inset 0 0 30px rgba(255, 153, 0, 0.2);
-            animation: glitch-border 2s infinite;
+        .gear::before {
+            content: "";
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border: 12px dashed #3b82f6;
+            border-radius: 50%;
+            box-sizing: border-box;
         }
-
-        @keyframes glitch-border {
-            0% { border-color: #ff9900; box-shadow: 0 0 20px rgba(255, 153, 0, 0.4); }
-            45% { border-color: #ff9900; box-shadow: 0 0 20px rgba(255, 153, 0, 0.4); }
-            50% { border-color: #ffffff; box-shadow: 0 0 40px rgba(255, 255, 255, 0.8); }
-            55% { border-color: #ff3333; box-shadow: 0 0 20px rgba(255, 51, 51, 0.4); }
-            100% { border-color: #ff9900; box-shadow: 0 0 20px rgba(255, 153, 0, 0.4); }
+        .gear::after {
+            content: "";
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: white;
+            border-radius: 50%;
+        }
+        .gear-1 {
+            top: 20px;
+            left: 30px;
+            animation: spin 6s linear infinite;
+        }
+        .gear-2 {
+            bottom: 20px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: #f59e0b;
+            animation: spin-reverse 4s linear infinite;
+        }
+        .gear-2::before {
+            width: 76px;
+            height: 76px;
+            border-color: #f59e0b;
+            border-width: 10px;
+        }
+        .gear-2::after {
+            width: 24px;
+            height: 24px;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes spin-reverse { 100% { transform: rotate(-360deg); } }
+        
+        .floating {
+            animation: float 4s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
 
         h1 {
-            font-size: 6rem;
-            margin: 0;
-            line-height: 1;
-            text-shadow: 0 0 10px #ff9900;
-            letter-spacing: 5px;
+            font-size: 2.2rem;
+            color: #1e293b;
+            margin: 0 0 15px 0;
+            font-weight: 800;
         }
-
-        h2 {
-            font-size: 2rem;
-            margin: 10px 0 20px;
-            color: #ffffff;
-            text-shadow: 0 0 8px #ffffff;
-        }
-
         p {
             font-size: 1.1rem;
+            color: #64748b;
+            margin-bottom: 35px;
             line-height: 1.6;
-            margin-bottom: 20px;
         }
-
-        .scanlines {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: linear-gradient(
-                to bottom,
-                rgba(255,255,255,0),
-                rgba(255,255,255,0) 50%,
-                rgba(0,0,0,0.2) 50%,
-                rgba(0,0,0,0.2)
-            );
-            background-size: 100% 4px;
-            pointer-events: none;
-            z-index: 50;
-        }
-
-        a.btn {
+        .btn {
             display: inline-block;
-            margin-top: 20px;
-            padding: 12px 30px;
-            background-color: transparent;
-            color: #ff9900;
-            border: 2px solid #ff9900;
+            background: #3b82f6;
+            color: white;
+            padding: 14px 36px;
+            border-radius: 50px;
             text-decoration: none;
-            font-size: 1.2rem;
-            font-weight: bold;
-            transition: all 0.2s;
-            cursor: pointer;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
         }
-
-        a.btn:hover {
-            background-color: #ff9900;
-            color: #000;
-            box-shadow: 0 0 15px #ff9900;
+        .btn:hover {
+            background: #2563eb;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px rgba(59, 130, 246, 0.4);
         }
         
-        .error-log {
-            text-align: left;
-            background: #000;
-            border: 1px dashed #ff3333;
-            padding: 15px;
-            color: #ff3333;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
+        /* Big background text */
+        .error-code {
+            position: absolute;
+            top: -30px;
+            left: 20px;
+            font-size: 12rem;
+            font-weight: 800;
+            color: #f1f5f9;
+            z-index: -1;
+            line-height: 1;
+            user-select: none;
+        }
+        
+        .sparks {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #f59e0b;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            opacity: 0;
+            animation: pop 2s ease-out infinite;
+        }
+        .spark-1 { transform: translate(-80px, -60px); animation-delay: 0.2s; }
+        .spark-2 { transform: translate(70px, -40px); animation-delay: 0.9s; background: #3b82f6;}
+        .spark-3 { transform: translate(-40px, 70px); animation-delay: 1.5s; }
+        
+        @keyframes pop {
+            0% { opacity: 1; transform: scale(1) translate(var(--tx), var(--ty)); }
+            100% { opacity: 0; transform: scale(0) translate(var(--tx), var(--ty)); }
         }
     </style>
 </head>
 <body>
-    <div class="scanlines"></div>
-
-    <div class="container">
-        <h1>500</h1>
-        <h2>SISTEM MENGALAMI KESALAHAN FATAL</h2>
+    <div class="container floating">
+        <div class="error-code">500</div>
         
-        <div class="error-log">
-            > KERNEL PANIC: Unhandled Exception<br>
-            > MEMORY DUMP: Completed<br>
-            > STATUS: Menunggu perbaikan teknisi
+        <div class="animation-container">
+            <div class="gear gear-1"></div>
+            <div class="gear gear-2"></div>
+            
+            <div class="sparks spark-1" style="--tx: -50px; --ty: -50px;"></div>
+            <div class="sparks spark-2" style="--tx: 50px; --ty: -20px;"></div>
+            <div class="sparks spark-3" style="--tx: -20px; --ty: 50px;"></div>
         </div>
 
-        <p style="color: #fff;">>> Server kami mengalami malfungsi teknis.</p>
-        <p>Jangan panik, tim engineer kami (atau log sistem) sedang mencatat kejadian ini untuk segera diperbaiki. Silakan coba kembali dalam beberapa menit.</p>
-
-        <a href="{{ url('/') }}" class="btn">REBOOT KONEKSI (BERANDA)</a>
+        <h1>Ups! Server Sedang Berbenah</h1>
+        <p>Maaf, sepertinya ada sedikit kendala teknis di sistem kami.<br>Tim engineer terbaik kami sedang memperbaikinya sekarang juga!</p>
+        
+        <a href="{{ url('/') }}" class="btn">Kembali ke Beranda</a>
     </div>
 </body>
 </html>
