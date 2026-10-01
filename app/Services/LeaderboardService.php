@@ -61,12 +61,12 @@ class LeaderboardService
      * Check if a specific partner is in the top ranks for the current week.
      * Returns their rank (1, 2, 3...) or null if they are not in the top.
      */
-    public function getPartnerWeeklyRank(int $partnerId, int $topLimit = 3): ?int
+    public function getPartnerWeeklyRank(string $partnerId, int $topLimit = 3): ?int
     {
         $topPartners = $this->getWeeklyLeaderboard($topLimit);
         
         foreach ($topPartners as $index => $topPartner) {
-            if ($topPartner->partner_id === $partnerId) {
+            if ((string)$topPartner->partner_id === $partnerId) {
                 return $index + 1; // 1-indexed rank
             }
         }
