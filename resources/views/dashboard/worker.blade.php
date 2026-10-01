@@ -4,26 +4,68 @@
 
     <div class="space-y-4 sm:space-y-6" x-data="{ showBanner: true }">
         
-        @if(isset($isRankOneThisWeek) && $isRankOneThisWeek)
-        <!-- Top 1 Banner -->
-        <div class="bg-gradient-to-r from-yellow-500 via-amber-400 to-yellow-500 rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-yellow-300 shadow-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative animate-in fade-in slide-in-from-top-4 duration-500">
-            <div class="flex gap-3 sm:gap-4 items-start pr-8 md:pr-0">
-                <div class="p-2.5 sm:p-3 bg-white/20 text-white rounded-xl sm:rounded-2xl shrink-0 backdrop-blur-sm">
-                    <svg class="w-8 h-8 drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
-                    </svg>
+        @if(isset($userRank))
+            @if($userRank === 1)
+            <!-- Top 1 Banner -->
+            <div class="bg-gradient-to-r from-yellow-500 via-amber-400 to-yellow-500 rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-yellow-300 shadow-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative animate-in fade-in slide-in-from-top-4 duration-500">
+                <div class="flex gap-3 sm:gap-4 items-start pr-8 md:pr-0">
+                    <div class="p-2.5 sm:p-3 bg-white/20 text-white rounded-xl sm:rounded-2xl shrink-0 backdrop-blur-sm">
+                        <svg class="w-8 h-8 drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                        </svg>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="block text-xs font-black tracking-widest text-yellow-900 uppercase">Selamat, Peringkat 1 Minggu Ini! 🏆</span>
+                        <p class="text-sm font-medium leading-5 text-yellow-900 max-w-xl">Luar biasa! Saat ini Anda menempati peringkat ke-1 di leaderboard KameraKita. Pertahankan kinerja Anda dan terus semangat merekam video!</p>
+                    </div>
                 </div>
-                <div class="space-y-1">
-                    <span class="block text-xs font-black tracking-widest text-yellow-900 uppercase">Selamat, Peringkat 1 Minggu Ini! 🏆</span>
-                    <p class="text-sm font-medium leading-5 text-yellow-900 max-w-xl">Luar biasa! Saat ini Anda menempati peringkat ke-1 di leaderboard KameraKita. Pertahankan kinerja Anda dan terus semangat merekam video!</p>
+                <div class="flex items-center gap-3 w-full md:w-auto">
+                    <a href="{{ url('/leaderboard') }}" class="w-full md:w-auto min-h-11 inline-flex items-center justify-center px-6 py-2.5 bg-yellow-900 hover:bg-yellow-950 rounded-xl text-xs font-bold text-yellow-300 shadow-md transition-all duration-300 transform hover:-translate-y-0.5 whitespace-nowrap">
+                        Lihat Papan Peringkat
+                    </a>
                 </div>
             </div>
-            <div class="flex items-center gap-3 w-full md:w-auto">
-                <a href="{{ url('/leaderboard') }}" class="w-full md:w-auto min-h-11 inline-flex items-center justify-center px-6 py-2.5 bg-yellow-900 hover:bg-yellow-950 rounded-xl text-xs font-bold text-yellow-300 shadow-md transition-all duration-300 transform hover:-translate-y-0.5 whitespace-nowrap">
-                    Lihat Papan Peringkat
-                </a>
+            @elseif($userRank === 2)
+            <!-- Top 2 Banner (Silver) -->
+            <div class="bg-gradient-to-r from-slate-300 via-gray-200 to-slate-300 rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-300 shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative animate-in fade-in slide-in-from-top-4 duration-500">
+                <div class="flex gap-3 sm:gap-4 items-start pr-8 md:pr-0">
+                    <div class="p-2.5 sm:p-3 bg-white/40 text-slate-700 rounded-xl sm:rounded-2xl shrink-0 backdrop-blur-sm">
+                        <svg class="w-8 h-8 drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                        </svg>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="block text-xs font-black tracking-widest text-slate-800 uppercase">Keren, Peringkat 2 Minggu Ini! 🥈</span>
+                        <p class="text-sm font-medium leading-5 text-slate-700 max-w-xl">Hebat! Anda berada di peringkat 2 saat ini. Dikit lagi juara 1, terus tingkatkan rekamanmuuu semangattt!</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 w-full md:w-auto">
+                    <a href="{{ url('/leaderboard') }}" class="w-full md:w-auto min-h-11 inline-flex items-center justify-center px-6 py-2.5 bg-slate-700 hover:bg-slate-800 rounded-xl text-xs font-bold text-white shadow-md transition-all duration-300 transform hover:-translate-y-0.5 whitespace-nowrap">
+                        Lihat Papan Peringkat
+                    </a>
+                </div>
             </div>
-        </div>
+            @elseif($userRank === 3)
+            <!-- Top 3 Banner (Bronze) -->
+            <div class="bg-gradient-to-r from-orange-300 via-orange-200 to-orange-300 rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-orange-300 shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative animate-in fade-in slide-in-from-top-4 duration-500">
+                <div class="flex gap-3 sm:gap-4 items-start pr-8 md:pr-0">
+                    <div class="p-2.5 sm:p-3 bg-white/40 text-orange-800 rounded-xl sm:rounded-2xl shrink-0 backdrop-blur-sm">
+                        <svg class="w-8 h-8 drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="block text-xs font-black tracking-widest text-orange-900 uppercase">Mantap, Peringkat 3 Minggu Ini! 🥉</span>
+                        <p class="text-sm font-medium leading-5 text-orange-900 max-w-xl">Wow! Anda masuk 3 besar leaderboard. Ayo terus tingkatkan rekamanmuuu semangattt!</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 w-full md:w-auto">
+                    <a href="{{ url('/leaderboard') }}" class="w-full md:w-auto min-h-11 inline-flex items-center justify-center px-6 py-2.5 bg-orange-800 hover:bg-orange-900 rounded-xl text-xs font-bold text-white shadow-md transition-all duration-300 transform hover:-translate-y-0.5 whitespace-nowrap">
+                        Lihat Papan Peringkat
+                    </a>
+                </div>
+            </div>
+            @endif
         @endif
         <!-- Top Banner: YOUR ACCOUNT IS ACTIVE -->
         <template x-if="showBanner">
