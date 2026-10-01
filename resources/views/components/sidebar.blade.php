@@ -14,8 +14,9 @@
     <div class="flex flex-col h-full overflow-hidden">
         <!-- Logo Header -->
         <div class="h-16 flex items-center justify-between px-5 border-b border-gray-100 shrink-0">
-            <a href="{{ route('dashboard') }}" class="flex items-center min-w-0">
-                <img src="{{ asset('images/Logo.webp') }}" alt="Kamerakita.ai" class="h-8 w-auto object-contain">
+            <a href="{{ route('dashboard') }}" class="flex items-center gap-2.5 min-w-0">
+                <img src="{{ asset('images/Logo.webp') }}" alt="Logo" class="h-8 w-auto object-contain">
+                <span class="font-black text-slate-800 tracking-tight text-lg truncate">KameraKita<span class="text-indigo-600">.ai</span></span>
             </a>
             <!-- Mobile Close Button (X) -->
             <button type="button" aria-label="Tutup menu navigasi" class="w-10 h-10 shrink-0 inline-flex items-center justify-center rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-50 md:hidden focus:outline-none" onclick="
