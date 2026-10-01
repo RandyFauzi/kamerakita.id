@@ -26,7 +26,7 @@ class LeaderboardService
      */
     public function getWeeklyLeaderboard(int $limit = 10)
     {
-        return Cache::remember("weekly_leaderboard_v4_{$limit}", 900, function () use ($limit) {
+        return Cache::remember("weekly_leaderboard_v5_{$limit}", 900, function () use ($limit) {
             $range = $this->getCurrentWeekRange();
             
             $results = VideoWorkReport::selectRaw('partner_id, sum(submitted_duration_minutes) as total_score')
@@ -40,10 +40,10 @@ class LeaderboardService
 
             // Convert to simple array to prevent cache unserialization issues
             return $results->map(function ($item) {
-                return (object)[
+                return [
                     'partner_id' => $item->partner_id,
                     'total_score' => $item->total_score,
-                    'partner' => $item->partner ? (object)['full_name' => $item->partner->full_name] : null,
+                    'partner' => $item->partner ? ['full_name' => $item->partner->full_name] : null,
                 ];
             })->all();
         });
@@ -55,7 +55,7 @@ class LeaderboardService
      */
     public function getAllTimeLeaderboard(int $limit = 10)
     {
-        return Cache::remember("alltime_leaderboard_v4_{$limit}", 1800, function () use ($limit) {
+        return Cache::remember("alltime_leaderboard_v5_{$limit}", 1800, function () use ($limit) {
             $results = VideoWorkReport::selectRaw('partner_id, sum(approved_duration_minutes) as total_score')
                 ->groupBy('partner_id')
                 ->having('total_score', '>', 0)
@@ -65,10 +65,10 @@ class LeaderboardService
                 ->get();
                 
             return $results->map(function ($item) {
-                return (object)[
+                return [
                     'partner_id' => $item->partner_id,
                     'total_score' => $item->total_score,
-                    'partner' => $item->partner ? (object)['full_name' => $item->partner->full_name] : null,
+                    'partner' => $item->partner ? ['full_name' => $item->partner->full_name] : null,
                 ];
             })->all();
         });

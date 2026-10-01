@@ -26,13 +26,15 @@ class LeaderboardController extends Controller
         // Helper to format data for the UI
         $formatData = function ($scores) {
             return collect($scores)->map(function ($score) {
-                $name = $score->partner->full_name ?? 'Mitra KameraKita';
+                $name = data_get($score, 'partner.full_name', 'Mitra KameraKita');
+                if (!$name) $name = 'Mitra KameraKita'; // in case it is null
+                
                 // Fallback avatar using ui-avatars since there's no avatar column
                 $avatar = 'https://ui-avatars.com/api/?name=' . urlencode($name) . '&background=3b82f6&color=fff&bold=true';
                 
                 return [
                     'name' => $name,
-                    'score' => number_format($score->total_score) . ' ' . __('dashboard.leaderboard.minutes_unit'),
+                    'score' => number_format((float)data_get($score, 'total_score', 0)) . ' ' . __('dashboard.leaderboard.minutes_unit'),
                     'avatar' => $avatar,
                 ];
             });
