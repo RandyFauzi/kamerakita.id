@@ -214,7 +214,7 @@ class CalculatePartnerMetricsService
             ])
             ->sum('submitted_duration_minutes');
 
-        $weeklyTargetHours = 1250;
+        $weeklyTargetHours = 625;
         $weeklyTargetMinutes = $weeklyTargetHours * 60;
         $weeklyApprovedHours = round($weeklyApprovedMinutes / 60, 1);
         $weeklySubmittedHours = round($weeklySubmittedMinutes / 60, 1);
@@ -239,7 +239,7 @@ class CalculatePartnerMetricsService
             ])
             ->sum('submitted_duration_minutes');
 
-        $monthlyTargetHours = 5000;
+        $monthlyTargetHours = 2500;
         $monthlyTargetMinutes = $monthlyTargetHours * 60;
         $monthlyApprovedHours = round($monthlyApprovedMinutes / 60, 1);
         $monthlySubmittedHours = round($monthlySubmittedMinutes / 60, 1);
