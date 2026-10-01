@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id" class="scroll-smooth">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>KAMERAKITA AI — Platform Rekam Video & Datasets Terpercaya</title>
+    <title>KAMERAKITA AI â€” Platform Rekam Video & Datasets Terpercaya</title>
     
     <!-- Meta Description -->
     <meta name="description" content="Gabung jadi mitra kontributor di KAMERAKITA AI! Dapatkan penghasilan tambahan rutin lewat rekam video. Tanpa modal, rekap transparan, transfer mingguan!">
@@ -156,10 +156,10 @@
             <!-- Navigation Links -->
             <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-700">
                 <a href="/#keunggulan" class="hover:text-sky-600 transition flex items-center gap-1">
-                    {{ __('vendor_landing.nav.benefits') }} <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    {{ __('vendor_landing.nav.benefits') }}
                 </a>
                 <a href="/#kalkulator" class="hover:text-sky-600 transition flex items-center gap-1">
-                    {{ __('vendor_landing.nav.calculator') }} <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    {{ __('vendor_landing.nav.calculator') }}
                 </a>
                 <a href="/#cara-kerja" class="hover:text-sky-600 transition">{{ __('vendor_landing.nav.how_it_works') }}</a>
                 <a href="/#mitra" class="hover:text-sky-600 transition">{{ __('vendor_landing.nav.testimony') }}</a>
@@ -174,7 +174,7 @@
                 </a>
                 @auth
                     <a href="{{ route('dashboard') }}" class="btn-brand-navy px-6 py-2.5 text-sm">
-                        Dashboard →
+                        Dashboard â†’
                     </a>
                 @else
                     <a href="{{ route('login') }}" class="btn-brand-navy px-6 py-2.5 text-sm">
@@ -206,7 +206,7 @@
           <div class="pov-image">
             <img src="{{ asset('vendor-assets/') }}/kamerakita/hero-pov.png" alt="Perekaman aktivitas melipat pakaian dari sudut pandang orang pertama">
             <div class="pov-scanner"></div>
-            <div class="rec-badge"><span class="rec-dot"></span>REC • LIVE</div>
+            <div class="rec-badge"><span class="rec-dot"></span>REC â€¢ LIVE</div>
             <span class="feed-label">CAMERA_FEED_03 // SPATIAL</span>
             <span class="depth-label"><small>DEPTH MAP</small><b>LIDAR_POINTCLOUD_ALIGN</b></span>
           </div>

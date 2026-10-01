@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -29,7 +29,7 @@
     <!-- Navbar -->
     <header class="navbar" id="top">
       <div class="nav-shell">
-        <a class="brand" href="#top" aria-label="KameraKita AI — kembali ke atas">
+        <a class="brand" href="#top" aria-label="KameraKita AI â€” kembali ke atas">
           <span class="brand__mark"><img src="{{ asset('vendor-assets/kamerakita/logo-mark.svg') }}" alt=""></span>
           <span>KameraKita<span class="brand__ai">AI</span></span>
         </a>
@@ -38,8 +38,8 @@
         </button>
         <div class="nav-panel" id="nav-panel">
           <nav aria-label="Navigasi utama">
-            <a href="#keunggulan" class="nav-link">{{ __('landing.nav.benefits') }}<span class="nav-chevron" aria-hidden="true">⌄</span></a>
-            <a href="#kalkulator" class="nav-link">{{ __('landing.nav.earnings') }}<span class="nav-chevron" aria-hidden="true">⌄</span></a>
+            <a href="#keunggulan" class="nav-link">{{ __('landing.nav.benefits') }}</a>
+            <a href="#kalkulator" class="nav-link">{{ __('landing.nav.earnings') }}</a>
             <a href="#cara-kerja" class="nav-link">{{ __('landing.nav.how_it_works') }}</a>
             <a href="#mitra" class="nav-link">{{ __('landing.nav.testimonials') }}</a>
             <a href="#faq" class="nav-link">{{ __('landing.nav.faq') }}</a>
@@ -270,7 +270,7 @@
     <footer class="footer">
       <div class="footer-grid">
         <div>
-          <a class="brand brand--footer" href="#top" aria-label="KameraKita AI — kembali ke atas">
+          <a class="brand brand--footer" href="#top" aria-label="KameraKita AI â€” kembali ke atas">
             <span class="brand__mark"><img src="{{ asset('vendor-assets/kamerakita/logo-mark.svg') }}" alt=""></span>
             <span>KameraKita<span class="brand__ai">AI</span></span>
           </a>
@@ -280,7 +280,7 @@
         <div><h2>{{ __('landing.footer_acc') }}</h2><a href="{{ route('login') }}">{{ __('landing.nav.login') }}</a><a href="{{ route('onboarding.form') }}">Daftar Kontributor Baru</a><a href="{{ route('dashboard') }}">Dashboard Admin QC</a></div>
         <div><h2>{{ __('landing.footer_corp') }}</h2><p>Domain Resmi: <a href="{{ url('/') }}">{{ parse_url(url('/'), PHP_URL_HOST) ?? 'kamerakitaid.site' }}</a></p><p>{{ __('landing.footer_pt') }}</p></div>
       </div>
-      <div class="footer-bottom"><span>© {{ date('Y') }} KAMERAKITA AI. All rights reserved.</span><div><span>Kebijakan Privasi</span><span>Syarat & Ketentuan</span></div></div>
+      <div class="footer-bottom"><span>Â© {{ date('Y') }} KAMERAKITA AI. All rights reserved.</span><div><span>Kebijakan Privasi</span><span>Syarat & Ketentuan</span></div></div>
     </footer>
 
     <!-- Scripts -->
