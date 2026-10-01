@@ -30,8 +30,7 @@
     <header class="navbar" id="top">
       <div class="nav-shell">
         <a class="brand" href="#top" aria-label="KameraKita AI â€” kembali ke atas">
-          <span class="brand__mark"><img src="{{ asset('vendor-assets/kamerakita/logo-mark.svg') }}" alt=""></span>
-          <span>KameraKita<span class="brand__ai">AI</span></span>
+          <img src="{{ asset('images/Logo.webp') }}" alt="KameraKita AI" style="height: 32px; width: auto; object-fit: contain;">
         </a>
         <button class="menu-toggle" type="button" aria-label="Buka menu navigasi" id="menu-toggle-btn">
           <span></span><span></span><span></span>
@@ -271,8 +270,7 @@
       <div class="footer-grid">
         <div>
           <a class="brand brand--footer" href="#top" aria-label="KameraKita AI â€” kembali ke atas">
-            <span class="brand__mark"><img src="{{ asset('vendor-assets/kamerakita/logo-mark.svg') }}" alt=""></span>
-            <span>KameraKita<span class="brand__ai">AI</span></span>
+            <img src="{{ asset('images/Logo.webp') }}" alt="KameraKita AI" style="height: 32px; width: auto; object-fit: contain;">
           </a>
           <p>{{ __('landing.footer_desc') }}</p>
         </div>
@@ -420,4 +418,5 @@
       </script>
 </body>
 </html>
+
 
