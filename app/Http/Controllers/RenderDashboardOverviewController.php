@@ -36,8 +36,17 @@ class RenderDashboardOverviewController extends Controller
                     ->orderBy('submission_date', 'desc')
                     ->limit(10)
                     ->get();
+                
+                // Check if user is rank 1 this week
+                $topPartner = VideoWorkReport::selectRaw('partner_id, sum(submitted_duration_minutes) as total_score')
+                    ->whereBetween('submission_date', [\Carbon\Carbon::now()->startOfWeek(\Carbon\Carbon::WEDNESDAY), \Carbon\Carbon::now()->endOfWeek(\Carbon\Carbon::TUESDAY)])
+                    ->groupBy('partner_id')
+                    ->having('total_score', '>', 0)
+                    ->orderByDesc('total_score')
+                    ->first();
+                $isRankOneThisWeek = $topPartner && $topPartner->partner_id === $partner->id;
 
-                return view('dashboard.worker', compact('partner', 'metrics', 'reports'));
+                return view('dashboard.worker', compact('partner', 'metrics', 'reports', 'isRankOneThisWeek'));
             }
 
             if ($partner->partner_role === 'mitra') {
