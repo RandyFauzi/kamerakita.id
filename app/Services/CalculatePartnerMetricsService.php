@@ -209,10 +209,18 @@ class CalculatePartnerMetricsService
             ])
             ->sum('approved_duration_minutes');
 
+        $weeklySubmittedMinutes = VideoWorkReport::whereBetween('submission_date', [
+                $weeklyPeriodStart->toDateString(),
+                $weeklyPeriodEnd->toDateString(),
+            ])
+            ->sum('submitted_duration_minutes');
+
         $weeklyTargetHours = 1250;
         $weeklyTargetMinutes = $weeklyTargetHours * 60;
         $weeklyApprovedHours = round($weeklyApprovedMinutes / 60, 1);
+        $weeklySubmittedHours = round($weeklySubmittedMinutes / 60, 1);
         $weeklyProgressPercent = $weeklyTargetMinutes > 0 ? round(($weeklyApprovedMinutes / $weeklyTargetMinutes) * 100, 1) : 0;
+        $weeklySubmittedPercent = $weeklyTargetMinutes > 0 ? round(($weeklySubmittedMinutes / $weeklyTargetMinutes) * 100, 1) : 0;
         $weeklyPeriodLabel = $weeklyPeriodStart->format('d M') . ' - ' . $weeklyPeriodEnd->format('d M Y');
 
         // 2. Target Bulanan (400 Jam Video Approved)
@@ -226,10 +234,18 @@ class CalculatePartnerMetricsService
             ])
             ->sum('approved_duration_minutes');
 
+        $monthlySubmittedMinutes = VideoWorkReport::whereBetween('submission_date', [
+                $monthlyStart->toDateString(),
+                $monthlyEnd->toDateString(),
+            ])
+            ->sum('submitted_duration_minutes');
+
         $monthlyTargetHours = 5000;
         $monthlyTargetMinutes = $monthlyTargetHours * 60;
         $monthlyApprovedHours = round($monthlyApprovedMinutes / 60, 1);
+        $monthlySubmittedHours = round($monthlySubmittedMinutes / 60, 1);
         $monthlyProgressPercent = $monthlyTargetMinutes > 0 ? round(($monthlyApprovedMinutes / $monthlyTargetMinutes) * 100, 1) : 0;
+        $monthlySubmittedPercent = $monthlyTargetMinutes > 0 ? round(($monthlySubmittedMinutes / $monthlyTargetMinutes) * 100, 1) : 0;
         $monthlyPeriodLabel = now()->translatedFormat('F Y');
 
         return [
@@ -249,15 +265,19 @@ class CalculatePartnerMetricsService
             'weekly_target_hours' => $weeklyTargetHours,
             'weekly_approved_minutes' => $weeklyApprovedMinutes,
             'weekly_approved_hours' => $weeklyApprovedHours,
+            'weekly_submitted_hours' => $weeklySubmittedHours,
             'weekly_approved_hours_formatted' => $this->formatMinutes($weeklyApprovedMinutes),
             'weekly_progress_percent' => $weeklyProgressPercent,
+            'weekly_submitted_percent' => $weeklySubmittedPercent,
             'weekly_period_label' => $weeklyPeriodLabel,
 
             'monthly_target_hours' => $monthlyTargetHours,
             'monthly_approved_minutes' => $monthlyApprovedMinutes,
             'monthly_approved_hours' => $monthlyApprovedHours,
+            'monthly_submitted_hours' => $monthlySubmittedHours,
             'monthly_approved_hours_formatted' => $this->formatMinutes($monthlyApprovedMinutes),
             'monthly_progress_percent' => $monthlyProgressPercent,
+            'monthly_submitted_percent' => $monthlySubmittedPercent,
             'monthly_period_label' => $monthlyPeriodLabel,
         ];
         });

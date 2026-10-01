@@ -140,8 +140,11 @@
                             </div>
                         </div>
                         <!-- Progress Bar Mingguan -->
-                        <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
-                            <div class="h-full rounded-full transition-all duration-500 {{ $metrics['weekly_progress_percent'] >= 100 ? 'bg-gradient-to-r from-emerald-500 to-teal-400' : 'bg-gradient-to-r from-indigo-500 to-blue-500' }}" style="width: {{ min(100, $metrics['weekly_progress_percent']) }}%"></div>
+                        <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden relative">
+                            <!-- Layer 1: Submitted (Gray) -->
+                            <div class="absolute top-0 left-0 h-full rounded-full transition-all duration-500 bg-slate-300" style="width: {{ min(100, $metrics['weekly_submitted_percent']) }}%"></div>
+                            <!-- Layer 2: Approved (Green) -->
+                            <div class="absolute top-0 left-0 h-full rounded-full transition-all duration-500 {{ $metrics['weekly_progress_percent'] >= 100 ? 'bg-gradient-to-r from-emerald-500 to-teal-400' : 'bg-gradient-to-r from-emerald-400 to-emerald-500' }}" style="width: {{ min(100, $metrics['weekly_progress_percent']) }}%"></div>
                         </div>
                     </div>
 
@@ -154,12 +157,15 @@
                             </div>
                             <div class="text-right">
                                 <span class="text-sm font-black text-slate-900">{{ $metrics['monthly_approved_hours'] }} <span class="text-xs text-slate-400 font-normal">/ {{ number_format($metrics['monthly_target_hours'], 0, ',', '.') }} Jam</span></span>
-                                <span class="text-[10px] font-bold block {{ $metrics['monthly_progress_percent'] >= 100 ? 'text-emerald-600' : 'text-purple-600' }} font-mono">{{ $metrics['monthly_progress_percent'] }}%</span>
+                                <span class="text-[10px] font-bold block {{ $metrics['monthly_progress_percent'] >= 100 ? 'text-emerald-600' : 'text-emerald-600' }} font-mono">{{ $metrics['monthly_progress_percent'] }}%</span>
                             </div>
                         </div>
                         <!-- Progress Bar Bulanan -->
-                        <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
-                            <div class="h-full rounded-full transition-all duration-500 {{ $metrics['monthly_progress_percent'] >= 100 ? 'bg-gradient-to-r from-emerald-500 to-teal-400' : 'bg-gradient-to-r from-purple-500 to-indigo-500' }}" style="width: {{ min(100, $metrics['monthly_progress_percent']) }}%"></div>
+                        <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden relative">
+                            <!-- Layer 1: Submitted (Gray) -->
+                            <div class="absolute top-0 left-0 h-full rounded-full transition-all duration-500 bg-slate-300" style="width: {{ min(100, $metrics['monthly_submitted_percent']) }}%"></div>
+                            <!-- Layer 2: Approved (Green) -->
+                            <div class="absolute top-0 left-0 h-full rounded-full transition-all duration-500 {{ $metrics['monthly_progress_percent'] >= 100 ? 'bg-gradient-to-r from-emerald-500 to-teal-400' : 'bg-gradient-to-r from-emerald-400 to-emerald-500' }}" style="width: {{ min(100, $metrics['monthly_progress_percent']) }}%"></div>
                         </div>
                     </div>
                 </div>
