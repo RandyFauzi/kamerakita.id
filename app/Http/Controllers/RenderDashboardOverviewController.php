@@ -81,14 +81,14 @@ class RenderDashboardOverviewController extends Controller
                 ->limit(5)
                 ->get();
 
-            $monthlyData = collect(\Illuminate\Support\Facades\Cache::remember('admin_monthly_data', 600, function () {
+            $monthlyData = collect(\Illuminate\Support\Facades\Cache::remember('admin_monthly_data_v2', 600, function () {
                 $isMysql = \Illuminate\Support\Facades\DB::getDriverName() === 'mysql';
                 $groupByRaw = $isMysql ? "DATE_FORMAT(submission_date, '%Y-%m')" : "strftime('%Y-%m', submission_date)";
                 return VideoWorkReport::select(
                         \Illuminate\Support\Facades\DB::raw("$groupByRaw as month"),
-                        \Illuminate\Support\Facades\DB::raw("SUM(approved_duration_minutes) as total_minutes")
+                        \Illuminate\Support\Facades\DB::raw("SUM(CASE WHEN qc_status = 'approved' THEN approved_duration_minutes ELSE 0 END) as approved_minutes"),
+                        \Illuminate\Support\Facades\DB::raw("SUM(submitted_duration_minutes) as submitted_minutes")
                     )
-                    ->where('qc_status', 'approved')
                     ->where('submission_date', '>=', now()->subMonths(6)->startOfMonth())
                     ->groupBy('month')
                     ->orderBy('month', 'asc')

@@ -193,8 +193,11 @@
             $monthlyMonths = $monthlyData->pluck('month')->map(function($m) {
                 return \Carbon\Carbon::parse($m . '-01')->format('M Y');
             })->toArray();
-            $monthlyMinutes = $monthlyData->pluck('total_minutes')->map(function($m) {
-                return round($m / 60, 2); // Convert to hours
+            $monthlyApprovedHours = $monthlyData->pluck('approved_minutes')->map(function($m) {
+                return round(($m ?? 0) / 60, 2); // Convert to hours
+            })->toArray();
+            $monthlySubmittedHours = $monthlyData->pluck('submitted_minutes')->map(function($m) {
+                return round(($m ?? 0) / 60, 2); // Convert to hours
             })->toArray();
 
             $dailyDates = $dailyAverageData->pluck('submission_date')->map(function($d) {
@@ -213,8 +216,8 @@
                 <div class="bg-white rounded-2xl sm:rounded-[32px] p-5 sm:p-6 border border-gray-150 shadow-sm">
                     <div class="flex items-center justify-between mb-4">
                         <div>
-                            <h4 class="text-sm font-bold text-gray-800">{{ __('dashboard.general.total_verified_work_hours') }}</h4>
-                            <p class="text-[10px] text-gray-400 mt-0.5">{{ __('dashboard.general.accumulated_approved_duration_per_month') }}</p>
+                            <h4 class="text-sm font-bold text-gray-800">Perbandingan Jam Kerja (Kirim vs Verifikasi)</h4>
+                            <p class="text-[10px] text-gray-400 mt-0.5">Durasi terlapor dibandingkan yang disetujui per bulan</p>
                         </div>
                         <span class="bg-blue-50 text-blue-700 text-[10px] font-black px-2 py-0.5 rounded-md font-mono">Bulanan</span>
                     </div>
@@ -246,11 +249,33 @@
                         toolbar: { show: false },
                         parentHeightOffset: 0
                     },
-                    colors: ['#3b82f6'],
-                    series: [{
-                        name: 'Total Jam',
-                        data: @js($monthlyMinutes)
-                    }],
+                    colors: ['#93c5fd', '#10b981'],
+                    plotOptions: {
+                        bar: {
+                            borderRadius: 4,
+                            horizontal: false,
+                            columnWidth: '55%',
+                            endingShape: 'rounded'
+                        },
+                    },
+                    dataLabels: {
+                        enabled: false
+                    },
+                    stroke: {
+                        show: true,
+                        width: 2,
+                        colors: ['transparent']
+                    },
+                    series: [
+                        {
+                            name: 'Total Terkirim (Jam)',
+                            data: @js($monthlySubmittedHours)
+                        },
+                        {
+                            name: 'Total Terverifikasi (Jam)',
+                            data: @js($monthlyApprovedHours)
+                        }
+                    ],
                     xaxis: {
                         categories: @js($monthlyMonths),
                         labels: {
