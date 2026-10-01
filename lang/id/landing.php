@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 return array (
   'nav' => 
@@ -135,10 +135,10 @@ return array (
   'calc_potensi' => 'POTENSI MINGGUAN',
   'calc_btn' => 'Mulai Daftar Sekarang',
   'calc_note' => '*Angka di atas adalah simulasi kotor belum termasuk bonus performa mingguan.',
-  'testi_1' => 'Awalnya iseng daftar, eh taunya beneran cair. Lumayan banget buat nambah uang jajan kuliah cuma dari rekam video di sekitar kosan. - Budi S.',
-  'testi_2' => 'Kerjanya gampang banget, panduannya jelas. Kalau bingung bisa langsung nanya CS. Pencairannya juga selalu on-time tiap minggu. - Rina M.',
-  'testi_3' => 'Sambil momong anak bisa dapet penghasilan. Modalnya cuma HP doang. Top banget KameraKita! - Siti F.',
-  'testi_4' => 'Baru gabung 2 minggu udah ngerasain 2 kali gajian. Tim QC nya juga ngebantu banget kalau ada yang kurang pas. - Agung T.',
+  'testi_1' => 'Awalnya iseng daftar, eh taunya beneran cair. Lumayan banget buat nambah uang jajan kuliah cuma dari rekam video di sekitar kosan.',
+  'testi_2' => 'Kerjanya gampang banget, panduannya jelas. Kalau bingung bisa langsung nanya CS. Pencairannya juga selalu on-time tiap minggu.',
+  'testi_3' => 'Sambil momong anak bisa dapet penghasilan. Modalnya cuma HP doang. Top banget KameraKita!',
+  'testi_4' => 'Baru gabung 2 minggu udah ngerasain 2 kali gajian. Tim QC nya juga ngebantu banget kalau ada yang kurang pas.',
   'faq_1_ans' => '100% GRATIS. Kami tidak pernah memungut biaya apapun dari kontributor. Segala bentuk pungutan mengatasnamakan KameraKita adalah penipuan.',
   'footer_desc' => 'Platform Rekam Video & Datasets Terpercaya No. 1 di Indonesia untuk Mitra & Enterprise Computer Vision.',
   'footer_services' => 'LAYANAN MITRA',

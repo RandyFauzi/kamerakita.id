@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 return array (
   'nav' => 
@@ -135,10 +135,10 @@ return array (
   'calc_potensi' => 'WEEKLY POTENTIAL',
   'calc_btn' => 'Register Now',
   'calc_note' => '*Figures above are gross simulation not including weekly performance bonuses.',
-  'testi_1' => 'I signed up for fun, but got paid! Great for extra college allowance just by recording around my dorm. - Budi S.',
-  'testi_2' => 'Super easy work, clear guides. Payouts always on time. - Rina M.',
-  'testi_3' => 'Earning while babysitting. Just need a phone. KameraKita is top! - Siti F.',
-  'testi_4' => 'Joined 2 weeks, got paid twice. QC team is very helpful. - Agung T.',
+  'testi_1' => 'I signed up for fun, but got paid! Great for extra college allowance just by recording around my dorm.',
+  'testi_2' => 'Super easy work, clear guides. Payouts always on time.',
+  'testi_3' => 'Earning while babysitting. Just need a phone. KameraKita is top!',
+  'testi_4' => 'Joined 2 weeks, got paid twice. QC team is very helpful.',
   'faq_1_ans' => '100% FREE. We never charge any fees to contributors. Any form of collection on behalf of KameraKita is a scam.',
   'footer_desc' => 'The #1 Trusted Video Recording & Dataset Platform in Indonesia for Partners & Enterprise Computer Vision.',
   'footer_services' => 'PARTNER SERVICES',
