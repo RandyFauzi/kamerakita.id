@@ -12,10 +12,14 @@ use Illuminate\Support\Facades\Auth;
 class RenderDashboardOverviewController extends Controller
 {
     protected $metricsService;
+    protected $leaderboardService;
 
-    public function __construct(CalculatePartnerMetricsService $metricsService)
-    {
+    public function __construct(
+        CalculatePartnerMetricsService $metricsService,
+        \App\Services\LeaderboardService $leaderboardService
+    ) {
         $this->metricsService = $metricsService;
+        $this->leaderboardService = $leaderboardService;
     }
 
     public function __invoke(Request $request)
@@ -37,16 +41,11 @@ class RenderDashboardOverviewController extends Controller
                     ->limit(10)
                     ->get();
                 
-                // Check if user is rank 1 this week
-                $topPartner = VideoWorkReport::selectRaw('partner_id, sum(submitted_duration_minutes) as total_score')
-                    ->whereBetween('submission_date', [\Carbon\Carbon::now()->startOfWeek(\Carbon\Carbon::WEDNESDAY), \Carbon\Carbon::now()->endOfWeek(\Carbon\Carbon::TUESDAY)])
-                    ->groupBy('partner_id')
-                    ->having('total_score', '>', 0)
-                    ->orderByDesc('total_score')
-                    ->first();
-                $isRankOneThisWeek = $topPartner && $topPartner->partner_id === $partner->id;
+                // Check if user is rank 1, 2, or 3 this week using centralized service
+                $userRank = $this->leaderboardService->getPartnerWeeklyRank($partner->id, 3);
+                $isRankOneThisWeek = $userRank === 1;
 
-                return view('dashboard.worker', compact('partner', 'metrics', 'reports', 'isRankOneThisWeek'));
+                return view('dashboard.worker', compact('partner', 'metrics', 'reports', 'isRankOneThisWeek', 'userRank'));
             }
 
             if ($partner->partner_role === 'mitra') {

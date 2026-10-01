@@ -8,26 +8,20 @@ use Illuminate\Http\Request;
 
 class LeaderboardController extends Controller
 {
+    protected $leaderboardService;
+
+    public function __construct(\App\Services\LeaderboardService $leaderboardService)
+    {
+        $this->leaderboardService = $leaderboardService;
+    }
+
     public function index(Request $request)
     {
         // 1. All Time Leaderboard
-        $allTimeScores = VideoWorkReport::selectRaw('partner_id, sum(approved_duration_minutes) as total_score')
-            ->groupBy('partner_id')
-            ->having('total_score', '>', 0)
-            ->orderByDesc('total_score')
-            ->limit(10)
-            ->with('partner')
-            ->get();
+        $allTimeScores = $this->leaderboardService->getAllTimeLeaderboard(10);
 
-        // 2. Weekly Leaderboard (Rabu - Selasa)
-        $weeklyScores = VideoWorkReport::selectRaw('partner_id, sum(submitted_duration_minutes) as total_score')
-            ->whereBetween('submission_date', [Carbon::now()->startOfWeek(Carbon::WEDNESDAY), Carbon::now()->endOfWeek(Carbon::TUESDAY)])
-            ->groupBy('partner_id')
-            ->having('total_score', '>', 0)
-            ->orderByDesc('total_score')
-            ->limit(10)
-            ->with('partner')
-            ->get();
+        // 2. Weekly Leaderboard
+        $weeklyScores = $this->leaderboardService->getWeeklyLeaderboard(10);
 
         // Helper to format data for the UI
         $formatData = function ($scores) {
