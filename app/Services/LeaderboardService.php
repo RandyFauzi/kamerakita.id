@@ -26,7 +26,7 @@ class LeaderboardService
      */
     public function getWeeklyLeaderboard(int $limit = 10)
     {
-        return Cache::remember("weekly_leaderboard_{$limit}", 900, function () use ($limit) {
+        return Cache::remember("weekly_leaderboard_v2_{$limit}", 900, function () use ($limit) {
             $range = $this->getCurrentWeekRange();
             
             return VideoWorkReport::selectRaw('partner_id, sum(submitted_duration_minutes) as total_score')
@@ -46,7 +46,7 @@ class LeaderboardService
      */
     public function getAllTimeLeaderboard(int $limit = 10)
     {
-        return Cache::remember("alltime_leaderboard_{$limit}", 1800, function () use ($limit) {
+        return Cache::remember("alltime_leaderboard_v2_{$limit}", 1800, function () use ($limit) {
             return VideoWorkReport::selectRaw('partner_id, sum(approved_duration_minutes) as total_score')
                 ->groupBy('partner_id')
                 ->having('total_score', '>', 0)
