@@ -20,14 +20,8 @@
             <div class="flex flex-col min-h-0 flex-1">
                 <!-- Header / Logo -->
                 <div class="h-20 flex items-center px-8 border-b border-slate-100 shrink-0">
-                    <div class="flex items-center gap-3">
-                        <span class="w-10 h-10 rounded-xl overflow-hidden shrink-0 flex items-center justify-center bg-white shadow-sm border border-slate-100">
-                            <img src="{{ asset('images/Logo.webp') }}" alt="Kamerakita.ai" class="max-h-6 max-w-6 object-contain">
-                        </span>
-                        <div class="flex flex-col">
-                            <span class="font-bold text-[15px] tracking-tight leading-snug text-slate-800">Mailbox</span>
-                            <span class="font-bold text-[15px] tracking-tight leading-snug text-slate-800">KameraKita AI</span>
-                        </div>
+                    <div class="flex items-center">
+                        <img src="{{ asset('images/Logo.webp') }}" alt="Kamerakita.ai" class="h-8 w-auto object-contain">
                     </div>
                 </div>
 

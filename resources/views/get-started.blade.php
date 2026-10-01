@@ -162,13 +162,8 @@
         </div>
 
         <header class="relative z-10 mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-            <a href="{{ url('/') }}" class="flex items-center gap-3">
-                <span class="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl bg-sky-700 shadow-sm">
-                    <img src="{{ asset('images/Logo.webp') }}" alt="KAMERAKITA AI" class="h-full w-full object-contain">
-                </span>
-                <span class="leading-none tracking-[-0.03em]">
-                    <span class="text-base font-black text-slate-950 sm:text-lg">KameraKita</span><span class="ml-0.5 bg-gradient-to-r from-sky-500 to-indigo-600 bg-clip-text text-base font-black text-transparent sm:text-lg">AI</span>
-                </span>
+            <a href="{{ url('/') }}" class="flex items-center">
+                <img src="{{ asset('images/Logo.webp') }}" alt="KAMERAKITA AI" class="h-10 w-auto object-contain">
             </a>
             <div class="flex items-center gap-2">
                 <a href="{{ route('login') }}" class="rounded-full bg-white px-4 py-2 text-xs font-black text-slate-700 shadow-sm transition hover:bg-slate-50">Masuk</a>
