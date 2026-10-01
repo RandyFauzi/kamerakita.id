@@ -266,22 +266,7 @@
         </section>
     </main>
 
-    <!-- Footer -->
-    <footer class="footer">
-      <div class="footer-grid">
-        <div>
-          <a class="brand brand--footer" href="#top" aria-label="KameraKita AI â€” kembali ke atas">
-            <span class="brand__mark"><img src="{{ asset('images/Logo.webp') }}" alt=""></span>
-            <span>KameraKita<span class="brand__ai">AI</span></span>
-          </a>
-          <p>{{ __('landing.footer_desc') }}</p>
-        </div>
-        <div><h2>{{ __('landing.footer_services') }}</h2><a href="#keunggulan">Keunggulan Mitra</a><a href="#kalkulator">Kalkulator Komisi</a><a href="#cara-kerja">{{ __('landing.nav.how_it_works') }}</a></div>
-        <div><h2>{{ __('landing.footer_acc') }}</h2><a href="{{ route('login') }}">{{ __('landing.nav.login') }}</a><a href="{{ route('onboarding.form') }}">Daftar Kontributor Baru</a><a href="{{ route('dashboard') }}">Dashboard Admin QC</a></div>
-        <div><h2>{{ __('landing.footer_corp') }}</h2><p>Domain Resmi: <a href="{{ url('/') }}">{{ parse_url(url('/'), PHP_URL_HOST) ?? 'kamerakitaid.site' }}</a></p><p>{{ __('landing.footer_pt') }}</p></div>
-      </div>
-      <div class="footer-bottom"><span>Â© {{ date('Y') }} KAMERAKITA AI. All rights reserved.</span><div><span>Kebijakan Privasi</span><span>Syarat & Ketentuan</span></div></div>
-    </footer>
+    <x-footer-landing />
 
     <!-- Scripts -->
     <script>
@@ -420,6 +405,7 @@
       </script>
 </body>
 </html>
+
 
 
 
