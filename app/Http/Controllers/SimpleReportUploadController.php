@@ -77,6 +77,7 @@ class SimpleReportUploadController extends Controller
             'project_name' => 'required|in:atlas,minutes_data',
             'submission_date' => 'required|date',
             'submitted_duration_minutes' => 'required|integer|min:1',
+            'worker_notes' => 'nullable|string|max:1000',
             'evidence_email_image_path' => 'required|file|max:10240', // Any file, max 10MB
             'evidence_app_quality_image_path' => 'nullable|file|max:10240',
             'evidence_submitted_image_paths' => 'nullable|array',
@@ -112,6 +113,7 @@ class SimpleReportUploadController extends Controller
                     'partner_id' => $partner->id,
                     'project_name' => $validated['project_name'],
                     'submission_date' => $validated['submission_date'],
+                    'worker_notes' => $validated['worker_notes'] ?? null,
                     'evidence_email_image_path' => $emailPath,
                     'evidence_app_quality_image_path' => $qualityPath,
                     'evidence_submitted_image_paths' => $submittedPaths,
