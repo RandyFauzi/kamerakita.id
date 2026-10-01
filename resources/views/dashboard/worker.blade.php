@@ -7,63 +7,51 @@
         @if(isset($userRank))
             @if($userRank === 1)
             <!-- Top 1 Banner (Gold) -->
-            <div class="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative animate-in fade-in slide-in-from-top-4 duration-500" style="border-color: #fef08a; box-shadow: 0 4px 20px -2px rgba(234, 179, 8, 0.15);">
-                <div class="flex gap-3 sm:gap-4 items-start pr-8 md:pr-0">
-                    <div class="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl shrink-0" style="background-color: #fef08a; color: #ca8a04;">
-                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
-                        </svg>
+            <div class="rounded-2xl p-4 sm:p-5 shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-4 animate-in fade-in slide-in-from-top-4 duration-500" style="background: linear-gradient(135deg, #f59e0b, #fbbf24); color: #ffffff; border: 1px solid #fcd34d;">
+                <div class="flex gap-3 sm:gap-4 items-center">
+                    <div class="flex items-center justify-center shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full shadow-sm" style="background-color: rgba(255, 255, 255, 0.25);">
+                        <span style="font-size: 1.25rem;">🏆</span>
                     </div>
-                    <div class="space-y-1">
-                        <span class="block text-xs font-black tracking-widest uppercase" style="color: #ca8a04;">Selamat, Peringkat 1 Minggu Ini! 🏆</span>
-                        <p class="text-sm leading-5 text-gray-500 max-w-xl">Luar biasa! Saat ini Anda menempati peringkat ke-1 di leaderboard KameraKita. Pertahankan kinerja Anda dan terus semangat merekam video!</p>
+                    <div>
+                        <span class="block text-sm sm:text-base font-extrabold tracking-wide uppercase drop-shadow-sm">Peringkat 1 Minggu Ini!</span>
+                        <p class="text-xs sm:text-sm font-medium opacity-95">Luar biasa! Pertahankan terus kinerja hebat Anda!</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-3 w-full md:w-auto">
-                    <a href="{{ url('/leaderboard') }}" class="w-full md:w-auto min-h-11 inline-flex items-center justify-center px-6 py-2.5 rounded-xl text-xs font-bold text-white shadow-md transition-all duration-300 transform hover:-translate-y-0.5 whitespace-nowrap" style="background: linear-gradient(to right, #eab308, #ca8a04);">
-                        Lihat Papan Peringkat
-                    </a>
-                </div>
+                <a href="{{ url('/leaderboard') }}" class="w-full md:w-auto px-5 py-2 sm:py-2.5 rounded-xl text-xs font-bold shadow-sm transition-transform hover:-translate-y-0.5 text-center whitespace-nowrap" style="background-color: #ffffff; color: #b45309;">
+                    Cek Leaderboard
+                </a>
             </div>
             @elseif($userRank === 2)
             <!-- Top 2 Banner (Silver) -->
-            <div class="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative animate-in fade-in slide-in-from-top-4 duration-500" style="border-color: #e2e8f0; box-shadow: 0 4px 20px -2px rgba(148, 163, 184, 0.15);">
-                <div class="flex gap-3 sm:gap-4 items-start pr-8 md:pr-0">
-                    <div class="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl shrink-0" style="background-color: #f1f5f9; color: #475569;">
-                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
-                        </svg>
+            <div class="rounded-2xl p-4 sm:p-5 shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-4 animate-in fade-in slide-in-from-top-4 duration-500" style="background: linear-gradient(135deg, #94a3b8, #cbd5e1); color: #ffffff; border: 1px solid #e2e8f0;">
+                <div class="flex gap-3 sm:gap-4 items-center">
+                    <div class="flex items-center justify-center shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full shadow-sm" style="background-color: rgba(255, 255, 255, 0.25);">
+                        <span style="font-size: 1.25rem;">🥈</span>
                     </div>
-                    <div class="space-y-1">
-                        <span class="block text-xs font-black tracking-widest uppercase" style="color: #475569;">Keren, Peringkat 2 Minggu Ini! 🥈</span>
-                        <p class="text-sm leading-5 text-gray-500 max-w-xl">Hebat! Anda berada di peringkat 2 saat ini. Dikit lagi juara 1, terus tingkatkan rekamanmuuu semangattt!</p>
+                    <div>
+                        <span class="block text-sm sm:text-base font-extrabold tracking-wide uppercase drop-shadow-sm">Peringkat 2 Minggu Ini!</span>
+                        <p class="text-xs sm:text-sm font-medium opacity-95">Sedikit lagi juara 1, terus semangat merekam!</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-3 w-full md:w-auto">
-                    <a href="{{ url('/leaderboard') }}" class="w-full md:w-auto min-h-11 inline-flex items-center justify-center px-6 py-2.5 rounded-xl text-xs font-bold text-white shadow-md transition-all duration-300 transform hover:-translate-y-0.5 whitespace-nowrap" style="background: linear-gradient(to right, #94a3b8, #64748b);">
-                        Lihat Papan Peringkat
-                    </a>
-                </div>
+                <a href="{{ url('/leaderboard') }}" class="w-full md:w-auto px-5 py-2 sm:py-2.5 rounded-xl text-xs font-bold shadow-sm transition-transform hover:-translate-y-0.5 text-center whitespace-nowrap" style="background-color: #ffffff; color: #475569;">
+                    Cek Leaderboard
+                </a>
             </div>
             @elseif($userRank === 3)
             <!-- Top 3 Banner (Bronze) -->
-            <div class="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative animate-in fade-in slide-in-from-top-4 duration-500" style="border-color: #fed7aa; box-shadow: 0 4px 20px -2px rgba(217, 119, 6, 0.15);">
-                <div class="flex gap-3 sm:gap-4 items-start pr-8 md:pr-0">
-                    <div class="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl shrink-0" style="background-color: #ffedd5; color: #b45309;">
-                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
+            <div class="rounded-2xl p-4 sm:p-5 shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-4 animate-in fade-in slide-in-from-top-4 duration-500" style="background: linear-gradient(135deg, #d97706, #fcd34d); color: #ffffff; border: 1px solid #fde68a;">
+                <div class="flex gap-3 sm:gap-4 items-center">
+                    <div class="flex items-center justify-center shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full shadow-sm" style="background-color: rgba(255, 255, 255, 0.25);">
+                        <span style="font-size: 1.25rem;">🥉</span>
                     </div>
-                    <div class="space-y-1">
-                        <span class="block text-xs font-black tracking-widest uppercase" style="color: #b45309;">Mantap, Peringkat 3 Minggu Ini! 🥉</span>
-                        <p class="text-sm leading-5 text-gray-500 max-w-xl">Wow! Anda masuk 3 besar leaderboard. Ayo terus tingkatkan rekamanmuuu semangattt!</p>
+                    <div>
+                        <span class="block text-sm sm:text-base font-extrabold tracking-wide uppercase drop-shadow-sm">Peringkat 3 Minggu Ini!</span>
+                        <p class="text-xs sm:text-sm font-medium opacity-95">Anda masuk 3 besar! Ayo tingkatkan rekamanmu!</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-3 w-full md:w-auto">
-                    <a href="{{ url('/leaderboard') }}" class="w-full md:w-auto min-h-11 inline-flex items-center justify-center px-6 py-2.5 rounded-xl text-xs font-bold text-white shadow-md transition-all duration-300 transform hover:-translate-y-0.5 whitespace-nowrap" style="background: linear-gradient(to right, #f59e0b, #d97706);">
-                        Lihat Papan Peringkat
-                    </a>
-                </div>
+                <a href="{{ url('/leaderboard') }}" class="w-full md:w-auto px-5 py-2 sm:py-2.5 rounded-xl text-xs font-bold shadow-sm transition-transform hover:-translate-y-0.5 text-center whitespace-nowrap" style="background-color: #ffffff; color: #92400e;">
+                    Cek Leaderboard
+                </a>
             </div>
             @endif
         @endif
