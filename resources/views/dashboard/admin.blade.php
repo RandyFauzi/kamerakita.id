@@ -143,11 +143,14 @@
                             </div>
                         </div>
                         <!-- Progress Bar Mingguan -->
-                        <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden relative">
+                        <div class="w-full bg-slate-200/60 rounded-full h-3 overflow-hidden relative shadow-inner">
                             <!-- Layer 1: Submitted (Light Blue) -->
-                            <div class="absolute top-0 left-0 h-full rounded-full transition-all duration-500 bg-blue-300" style="width: {{ min(100, $metrics['weekly_submitted_percent']) }}%"></div>
+                            <div class="absolute top-0 left-0 h-full rounded-full transition-all duration-1000 ease-out" 
+                                 style="width: {{ min(100, $metrics['weekly_submitted_percent']) }}%; background: linear-gradient(90deg, #93c5fd 0%, #3b82f6 100%); box-shadow: 0 0 10px rgba(59,130,246,0.5);"></div>
+                            
                             <!-- Layer 2: Approved (Green) -->
-                            <div class="absolute top-0 left-0 h-full rounded-full transition-all duration-500 {{ $metrics['weekly_progress_percent'] >= 100 ? 'bg-gradient-to-r from-emerald-500 to-teal-400' : 'bg-gradient-to-r from-emerald-400 to-emerald-500' }}" style="width: {{ min(100, $metrics['weekly_progress_percent']) }}%"></div>
+                            <div class="absolute top-0 left-0 h-full rounded-full transition-all duration-1000 ease-out delay-150" 
+                                 style="width: {{ min(100, $metrics['weekly_progress_percent']) }}%; background: linear-gradient(90deg, #34d399 0%, #059669 100%); box-shadow: 0 0 10px rgba(16,185,129,0.5);"></div>
                         </div>
                     </div>
 
@@ -167,11 +170,14 @@
                             </div>
                         </div>
                         <!-- Progress Bar Bulanan -->
-                        <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden relative">
+                        <div class="w-full bg-slate-200/60 rounded-full h-3 overflow-hidden relative shadow-inner">
                             <!-- Layer 1: Submitted (Light Blue) -->
-                            <div class="absolute top-0 left-0 h-full rounded-full transition-all duration-500 bg-blue-300" style="width: {{ min(100, $metrics['monthly_submitted_percent']) }}%"></div>
+                            <div class="absolute top-0 left-0 h-full rounded-full transition-all duration-1000 ease-out" 
+                                 style="width: {{ min(100, $metrics['monthly_submitted_percent']) }}%; background: linear-gradient(90deg, #93c5fd 0%, #3b82f6 100%); box-shadow: 0 0 10px rgba(59,130,246,0.5);"></div>
+                            
                             <!-- Layer 2: Approved (Green) -->
-                            <div class="absolute top-0 left-0 h-full rounded-full transition-all duration-500 {{ $metrics['monthly_progress_percent'] >= 100 ? 'bg-gradient-to-r from-emerald-500 to-teal-400' : 'bg-gradient-to-r from-emerald-400 to-emerald-500' }}" style="width: {{ min(100, $metrics['monthly_progress_percent']) }}%"></div>
+                            <div class="absolute top-0 left-0 h-full rounded-full transition-all duration-1000 ease-out delay-150" 
+                                 style="width: {{ min(100, $metrics['monthly_progress_percent']) }}%; background: linear-gradient(90deg, #34d399 0%, #059669 100%); box-shadow: 0 0 10px rgba(16,185,129,0.5);"></div>
                         </div>
                     </div>
                 </div>
