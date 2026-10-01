@@ -1,4 +1,4 @@
-:root {
+﻿:root {
   --blue: #0284c7;
   --blue-dark: #0369a1;
   --blue-soft: #e0f2fe;
@@ -175,7 +175,7 @@ legend { margin-bottom: 12px; color: var(--slate-900); font-size: 14px; font-wei
 
 .footer { min-height: 284px; padding: 48px max(32px, calc((100% - 1280px) / 2)) 32px; color: #64748b; background: var(--slate-900); font-size: 12px; }
 .footer-grid { display: grid; grid-template-columns: 1.05fr 1fr 1fr 1.1fr; gap: 64px; }
-.footer .brand { color: #fff; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; }
+.footer-grid a.brand { display: inline-flex; } .footer .brand { color: #fff; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; }
 .footer .brand { width: auto; max-width: 190px; }
 .footer .brand__mark { flex: 0 0 29px; width: 29px; max-width: 29px; height: 29px; padding: 3px; border-radius: 8px; }
 .footer .brand__mark img { width: 21px; height: 21px; }
