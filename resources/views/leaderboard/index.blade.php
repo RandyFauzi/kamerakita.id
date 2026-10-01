@@ -79,9 +79,11 @@
                     const p2 = top3[1];
                     const p3 = top3[2];
 
-                    const formatScore = (score) => {
-                        const h = Math.floor(score / 60);
-                        return `${score} Menit <br><span style="opacity:0.7; font-size:11px;">(${h} Jam)</span>`;
+                    const formatScore = (scoreStr) => {
+                        const raw = parseInt(String(scoreStr).replace(/[^0-9]/g, '')) || 0;
+                        const h = Math.floor(raw / 60);
+                        const m = raw % 60;
+                        return `${h} Jam ${m} Menit`;
                     };
 
                     podiumHtml = `
@@ -268,7 +270,11 @@
                 let scoreBorder = 'none';
 
                 let cardOpacity = rank <= 10 ? '1' : (rank <= 20 ? '0.8' : '0.6');
-                const h = Math.floor(player.score / 60);
+                
+                const rawScore = parseInt(String(player.score).replace(/[^0-9]/g, '')) || 0;
+                const h = Math.floor(rawScore / 60);
+                const m = rawScore % 60;
+                const displayScore = `${h} Jam ${m} Menit`;
 
                 return `
                     <div class="rank-card rank-other animate-entrance ${delayClass}" style="opacity: ${cardOpacity}">
@@ -287,7 +293,7 @@
                         
                         <!-- Score -->
                         <div class="flex-center" style="gap: 6px; position: relative; z-index: 10; background: ${scoreBg}; border: ${scoreBorder}; padding: 6px 12px; border-radius: 999px; backdrop-filter: blur(4px);">
-                            <span style="font-weight: 700; font-size: 14px; color: ${scoreColor};">${player.score} Menit <span style="opacity:0.6; font-size:12px;">(${h} Jam)</span></span>
+                            <span style="font-weight: 700; font-size: 14px; color: ${scoreColor};">${displayScore}</span>
                         </div>
                     </div>
                 `;
