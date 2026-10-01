@@ -26,7 +26,7 @@ class LeaderboardService
      */
     public function getWeeklyLeaderboard(int $limit = 10)
     {
-        return Cache::remember("weekly_leaderboard_v2_{$limit}", 900, function () use ($limit) {
+        return Cache::remember("weekly_leaderboard_v3_{$limit}", 900, function () use ($limit) {
             $range = $this->getCurrentWeekRange();
             
             return VideoWorkReport::selectRaw('partner_id, sum(submitted_duration_minutes) as total_score')
@@ -46,7 +46,7 @@ class LeaderboardService
      */
     public function getAllTimeLeaderboard(int $limit = 10)
     {
-        return Cache::remember("alltime_leaderboard_v2_{$limit}", 1800, function () use ($limit) {
+        return Cache::remember("alltime_leaderboard_v3_{$limit}", 1800, function () use ($limit) {
             return VideoWorkReport::selectRaw('partner_id, sum(approved_duration_minutes) as total_score')
                 ->groupBy('partner_id')
                 ->having('total_score', '>', 0)
@@ -65,8 +65,19 @@ class LeaderboardService
     {
         $topPartners = $this->getWeeklyLeaderboard($topLimit);
         
+        if (!is_iterable($topPartners)) {
+            return null;
+        }
+        
         foreach ($topPartners as $index => $topPartner) {
-            if ((string)$topPartner->partner_id === $partnerId) {
+            $pId = null;
+            if (is_object($topPartner) && isset($topPartner->partner_id)) {
+                $pId = $topPartner->partner_id;
+            } elseif (is_array($topPartner) && isset($topPartner['partner_id'])) {
+                $pId = $topPartner['partner_id'];
+            }
+            
+            if ($pId && (string)$pId === $partnerId) {
                 return $index + 1; // 1-indexed rank
             }
         }
