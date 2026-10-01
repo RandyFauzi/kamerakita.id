@@ -24,6 +24,7 @@ class VideoWorkReport extends Model
         'rate_applied',
         'qc_status',
         'payment_status',
+        'worker_notes',
         'payment_reference_proof_path',
         'paid_at',
         'verifier_notes',

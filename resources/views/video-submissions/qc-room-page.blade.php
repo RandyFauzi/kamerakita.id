@@ -437,7 +437,14 @@
                                                                     </td>
                                                                     <td class="px-4 py-2 whitespace-nowrap text-xs font-mono text-gray-500">
                                                                         <div class="flex flex-col gap-0.5">
-                                                                            <span>{{ substr($report->id, 0, 8) }}...</span>
+                                                                            <span class="flex items-center gap-1">
+                                                                                {{ substr($report->id, 0, 8) }}...
+                                                                                @if($report->worker_notes)
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-blue-500" viewBox="0 0 20 20" fill="currentColor" title="Ada Catatan">
+                                                                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                                                                    </svg>
+                                                                                @endif
+                                                                            </span>
                                                                             <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[8px] font-bold {{ $report->project_name === 'atlas' ? 'bg-indigo-50 text-indigo-700' : 'bg-gray-100 text-gray-600' }} uppercase w-fit">
                                                                                 {{ str_replace('_', ' ', $report->project_name ?? 'minutes data') }}
                                                                             </span>
@@ -467,6 +474,7 @@
                                                                                         'project_name' => $report->project_name,
                                                                                         'date' => $report->submission_date->translatedFormat('d F Y'),
                                                                                         'duration' => $report->submitted_duration_formatted,
+                                                                                        'worker_notes' => $report->worker_notes,
                                                                                         'status' => $partner->approval_status === 'paid' ? __('dashboard.qc_room.status_paid') : ($partner->approval_status === 'approved' ? __('dashboard.qc_room.status_approved') : ($partner->approval_status === 'draft' ? __('dashboard.qc_room.status_draft') : __('dashboard.qc_room.status_unreviewed'))),
                                                                                         'approved_min' => $report->approved_duration_minutes,
                                                                                         'email_img' => $report->evidence_email_image_url,
@@ -610,6 +618,12 @@
                             <span class="block text-[9px] text-gray-400 font-normal uppercase font-mono">{{ __('dashboard.qc_room.col_status') }}</span>
                             <span class="block font-bold text-slate-800" x-text="activeDailyReport.status"></span>
                         </div>
+                    </div>
+
+                    <!-- Worker Notes -->
+                    <div class="bg-blue-50/50 border border-blue-100 rounded-xl p-3 mb-4" x-show="activeDailyReport.worker_notes">
+                        <span class="block text-[10px] font-black text-blue-400 uppercase tracking-wider font-mono mb-1">Catatan Mitra</span>
+                        <p class="text-xs text-blue-900 font-medium" x-text="activeDailyReport.worker_notes"></p>
                     </div>
 
                     <!-- Proof/Evidence Image Grid -->

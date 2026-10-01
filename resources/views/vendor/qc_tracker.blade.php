@@ -1,4 +1,4 @@
-﻿<x-app-layout>
+<x-app-layout>
     <div class="space-y-4 sm:space-y-6">
                 <div class="flex items-center justify-between">
             <h2 class="text-xl font-bold text-gray-900">QC Tracker (Laporan Tim)</h2>
@@ -168,7 +168,14 @@
                                 <td class="py-3 font-bold text-indigo-650">{{ $report->partner->mitra_id }}</td>
                                 <td class="py-3 whitespace-nowrap">
                                     <div class="font-medium text-gray-900">{{ $report->partner->full_name }}</div>
-                                    <div class="text-xs text-gray-400 font-normal">{{ $report->partner->user->email ?? $report->partner->email ?? '' }}</div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="text-xs text-gray-400 font-normal">{{ $report->partner->user->email ?? $report->partner->email ?? '' }}</div>
+                                        @if($report->worker_notes)
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-blue-500" viewBox="0 0 20 20" fill="currentColor" title="Catatan Mitra: {{ $report->worker_notes }}">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                            </svg>
+                                        @endif
+                                    </div>
                                 </td>
                                 <td class="py-3 whitespace-nowrap">
                                     <span class="font-bold text-slate-800">{{ $report->submitted_duration_minutes ?? 0 }} min</span>

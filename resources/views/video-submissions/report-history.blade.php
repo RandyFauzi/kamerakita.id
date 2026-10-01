@@ -120,7 +120,14 @@
                             @forelse($reports as $report)
                                 <tr class="transition-colors hover:bg-gray-50/50">
                                     <td class="whitespace-nowrap px-6 py-4">
-                                        <span class="block max-w-32 truncate text-sm font-semibold text-indigo-600" title="{{ $report->id }}">{{ substr($report->id, 0, 8) }}...</span>
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="block max-w-32 truncate text-sm font-semibold text-indigo-600" title="{{ $report->id }}">{{ substr($report->id, 0, 8) }}...</span>
+                                            @if($report->worker_notes)
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-500" viewBox="0 0 20 20" fill="currentColor" title="Catatan: {{ $report->worker_notes }}">
+                                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                                </svg>
+                                            @endif
+                                        </div>
                                         <span class="mt-1 block text-[10px] text-gray-400">{{ $report->created_at->format('d M Y H:i') }}</span>
                                     </td>
                                     <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-600">{{ $report->submission_date->translatedFormat('d F Y') }}</td>

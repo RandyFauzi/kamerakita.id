@@ -103,6 +103,7 @@ class FilePondReportUploadController extends Controller
             'project_name' => 'required|in:atlas,minutes_data',
             'submission_date' => 'required|date',
             'submitted_duration_minutes' => 'required|integer|min:1',
+            'worker_notes' => 'nullable|string|max:1000',
             // FilePond fields are strings (the folder name) instead of files
             'evidence_email_image_path' => 'required|string',
             'evidence_app_quality_image_path' => 'nullable|string',
@@ -167,6 +168,7 @@ class FilePondReportUploadController extends Controller
                     'partner_id' => $partner->id,
                     'project_name' => $validated['project_name'],
                     'submission_date' => $validated['submission_date'],
+                    'worker_notes' => $validated['worker_notes'] ?? null,
                     'evidence_email_image_path' => $emailPath,
                     'evidence_app_quality_image_path' => $qualityPath,
                     'evidence_submitted_image_paths' => $submittedPaths,
