@@ -208,9 +208,9 @@ class CalculatePartnerMetricsService
             ])
             ->sum('approved_duration_minutes');
 
-        $weeklySubmittedMinutes = VideoWorkReport::whereBetween('created_at', [
-                $weeklyPeriodStart->toDateTimeString(),
-                $weeklyPeriodEnd->toDateTimeString(),
+        $weeklySubmittedMinutes = VideoWorkReport::whereBetween('submission_date', [
+                $weeklyPeriodStart->toDateString(),
+                $weeklyPeriodEnd->toDateString(),
             ])
             ->sum('submitted_duration_minutes');
 
@@ -233,9 +233,9 @@ class CalculatePartnerMetricsService
             ])
             ->sum('approved_duration_minutes');
 
-        $monthlySubmittedMinutes = VideoWorkReport::whereBetween('created_at', [
-                $monthlyStart->toDateTimeString(),
-                $monthlyEnd->toDateTimeString(),
+        $monthlySubmittedMinutes = VideoWorkReport::whereBetween('submission_date', [
+                $monthlyStart->toDateString(),
+                $monthlyEnd->toDateString(),
             ])
             ->sum('submitted_duration_minutes');
 

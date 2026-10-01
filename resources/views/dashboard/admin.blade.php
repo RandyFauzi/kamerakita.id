@@ -136,7 +136,10 @@
                             </div>
                             <div class="text-right">
                                 <span class="text-sm font-black text-slate-900">{{ $metrics['weekly_approved_hours'] }} <span class="text-xs text-slate-400 font-normal">/ {{ number_format($metrics['weekly_target_hours'], 0, ',', '.') }} Jam</span></span>
-                                <span class="text-[10px] font-bold block {{ $metrics['weekly_progress_percent'] >= 100 ? 'text-emerald-600' : 'text-indigo-600' }} font-mono">{{ $metrics['weekly_progress_percent'] }}%</span>
+                                <div class="flex items-center justify-end gap-2 mt-0.5">
+                                    <span class="text-[10px] text-slate-500 font-medium">Submitted: {{ $metrics['weekly_submitted_hours'] }} Jam</span>
+                                    <span class="text-[10px] font-bold {{ $metrics['weekly_progress_percent'] >= 100 ? 'text-emerald-600' : 'text-indigo-600' }} font-mono">{{ $metrics['weekly_progress_percent'] }}%</span>
+                                </div>
                             </div>
                         </div>
                         <!-- Progress Bar Mingguan -->
@@ -157,7 +160,10 @@
                             </div>
                             <div class="text-right">
                                 <span class="text-sm font-black text-slate-900">{{ $metrics['monthly_approved_hours'] }} <span class="text-xs text-slate-400 font-normal">/ {{ number_format($metrics['monthly_target_hours'], 0, ',', '.') }} Jam</span></span>
-                                <span class="text-[10px] font-bold block {{ $metrics['monthly_progress_percent'] >= 100 ? 'text-emerald-600' : 'text-emerald-600' }} font-mono">{{ $metrics['monthly_progress_percent'] }}%</span>
+                                <div class="flex items-center justify-end gap-2 mt-0.5">
+                                    <span class="text-[10px] text-slate-500 font-medium">Submitted: {{ $metrics['monthly_submitted_hours'] }} Jam</span>
+                                    <span class="text-[10px] font-bold {{ $metrics['monthly_progress_percent'] >= 100 ? 'text-emerald-600' : 'text-emerald-600' }} font-mono">{{ $metrics['monthly_progress_percent'] }}%</span>
+                                </div>
                             </div>
                         </div>
                         <!-- Progress Bar Bulanan -->
