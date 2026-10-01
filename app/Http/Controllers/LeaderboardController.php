@@ -25,7 +25,7 @@ class LeaderboardController extends Controller
 
         // Helper to format data for the UI
         $formatData = function ($scores) {
-            return $scores->map(function ($score) {
+            return collect($scores)->map(function ($score) {
                 $name = $score->partner->full_name ?? 'Mitra KameraKita';
                 // Fallback avatar using ui-avatars since there's no avatar column
                 $avatar = 'https://ui-avatars.com/api/?name=' . urlencode($name) . '&background=3b82f6&color=fff&bold=true';
