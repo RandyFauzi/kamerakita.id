@@ -139,6 +139,6 @@ class VideoWorkReport extends Model
             $params['index'] = $index;
         }
 
-        return \Illuminate\Support\Facades\URL::temporarySignedRoute('video-submissions.evidence.show', now()->addMinutes(15), $params, false); // Generate relative temporary signed URL
+        return \Illuminate\Support\Facades\URL::temporarySignedRoute('video-submissions.evidence.show', now()->addHours(12), $params, false); // Generate relative temporary signed URL
     }
 }
