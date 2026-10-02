@@ -78,10 +78,11 @@
                         </div>
 
                         <!-- Catatan Opsional -->
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">Catatan Laporan <span class="text-gray-400 font-normal">(Opsional)</span></label>
+                        <div class="mb-6">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Catatan Laporan <span class="text-gray-400 font-normal" style="font-weight: 400; color: #9ca3af;">(Opsional)</span></label>
                             <textarea name="worker_notes" rows="2"
-                                      class="w-full px-4 py-3 text-sm text-gray-900 border border-gray-200 bg-gray-50 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all placeholder-gray-400"
+                                      class="w-full text-gray-900 border border-gray-200 bg-gray-50 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block p-3"
+                                      style="background-color: #f9fafb; border: 1px solid #e5e7eb; border-radius: 0.75rem; width: 100%; padding: 0.75rem; font-size: 0.875rem;"
                                       placeholder="Tambahkan catatan khusus untuk tim QC jika ada... (Maks 1000 karakter)">{{ old('worker_notes') }}</textarea>
                             @error('worker_notes')
                                 <p class="mt-1.5 text-sm text-red-600 font-medium">{{ $message }}</p>
