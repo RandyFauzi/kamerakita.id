@@ -188,7 +188,7 @@ class FilePondReportUploadController extends Controller
 
             return back()
                 ->withInput()
-                ->with('error', 'Laporan gagal dikirim. Terjadi kesalahan saat memproses gambar.');
+                ->with('error', 'Laporan gagal dikirim. Terjadi kesalahan saat memproses gambar. Detail: ' . $exception->getMessage() . ' di baris ' . $exception->getLine());
         }
 
         return back()->with('success', 'Upload Berhasil!');
