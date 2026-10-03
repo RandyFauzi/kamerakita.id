@@ -88,6 +88,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/admin/password-recoveries/{recoveryRequest}/block', [\App\Http\Controllers\Admin\PasswordRecoveryController::class, 'block'])
         ->middleware('role:superadmin,admin')
         ->name('admin.password-recoveries.block');
+    Route::post('/admin/password-recoveries/{recoveryRequest}/send-wa', [\App\Http\Controllers\Admin\PasswordRecoveryController::class, 'sendWhatsApp'])
+        ->middleware('role:superadmin,admin')
+        ->name('admin.password-recoveries.send-wa');
 
     Route::post('/leaderboard/reset', [\App\Http\Controllers\LeaderboardController::class, 'reset'])
         ->middleware('role:superadmin,admin')

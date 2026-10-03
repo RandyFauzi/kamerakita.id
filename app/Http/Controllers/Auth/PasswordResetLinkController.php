@@ -27,10 +27,14 @@ class PasswordResetLinkController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'email' => ['required', 'email'],
+            'email' => ['required', 'string'],
         ]);
 
-        $email = $request->email;
+        $email = strtolower(trim($request->email));
+        if (!str_contains($email, '@')) {
+            $email .= '@kamerakitaid.site';
+        }
+
         $user = \App\Models\User::where('email', $email)->first();
 
         // Check if there's already a pending request to prevent spam
@@ -52,7 +56,17 @@ class PasswordResetLinkController extends Controller
             // Optional: send notification to admin here
         }
 
-        // Always return the exact same generic response to prevent enumeration
-        return back()->with('status', __('Jika akun tersebut terdaftar, kami akan memproses permintaan pemulihan akun Anda segera.'));
+        $adminWa = '0895366583095';
+        $adminWaGateway = \App\Helpers\PhoneHelper::formatForGateway($adminWa);
+        $waMessage = "Halo Admin KameraKita, saya sudah mengajukan permohonan reset password untuk akun email: {$email}. Mohon bantuannya untuk disetujui. Terima kasih!";
+        $adminWaLink = "https://wa.me/{$adminWaGateway}?text=" . rawurlencode($waMessage);
+
+        return back()->with([
+            'status' => __('Permintaan pemulihan akun berhasil diajukan. Silakan hubungi Admin melalui WhatsApp untuk verifikasi.'),
+            'recovery_submitted' => true,
+            'submitted_email' => $email,
+            'admin_wa' => $adminWa,
+            'admin_wa_link' => $adminWaLink,
+        ]);
     }
 }

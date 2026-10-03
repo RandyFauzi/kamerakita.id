@@ -66,6 +66,10 @@ class NewPasswordController extends Controller
             'used_at' => now()
         ]);
 
+        if ($validTokenRecord->recovery_request_id) {
+            \Illuminate\Support\Facades\Cache::forget("pwd_reset_link_{$validTokenRecord->recovery_request_id}");
+        }
+
         event(new PasswordReset($user));
 
         return redirect()->route('login')->with('status', __('Your password has been reset!'));
