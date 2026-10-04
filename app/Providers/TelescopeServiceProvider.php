@@ -58,7 +58,7 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
     {
         Gate::define('viewTelescope', function (User $user) {
             return $user->id === 1 || in_array($user->email, [
-                // 'admin@kamerakita.id', // Tambahkan email admin di sini
+                'randyfauzi24@gmail.com',
             ]);
         });
     }
