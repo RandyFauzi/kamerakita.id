@@ -71,7 +71,7 @@
                     <!-- Top Row: Periode & Grup -->
                     <div class="flex flex-col md:flex-row gap-4 items-end">
                         <!-- Dropdown Periode -->
-                        <div class="w-full md:w-80 relative" x-data="{ 
+                        <div class="w-full md:w-80 relative z-50" x-data="{ 
                             openPeriod: false,
                             customStart: '{{ $startDate ? $startDate->format('Y-m-d') : '' }}',
                             customEnd: '{{ $endDate ? $endDate->format('Y-m-d') : '' }}'
