@@ -37,3 +37,8 @@ Route::prefix('mobile')->group(function () {
         Route::post('/recordings/upload', [MobileRecordingController::class, 'upload']);
     });
 });
+
+// ==========================================
+// ATLAS BOT WEBHOOK
+// ==========================================
+Route::post('/bot/atlas/sync', [\App\Http\Controllers\Api\AtlasBotController::class, 'sync']);
