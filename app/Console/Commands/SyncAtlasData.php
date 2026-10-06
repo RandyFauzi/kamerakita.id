@@ -2,14 +2,24 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Attributes\Description;
-use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
-#[Signature('atlas:sync')]
-#[Description('Sinkronisasi otomatis data task dari Atlas Dashboard setiap 3 jam')]
 class SyncAtlasData extends Command
 {
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'atlas:sync';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Sinkronisasi otomatis data task dari Atlas Dashboard setiap 3 jam';
+
     /**
      * Execute the console command.
      */
