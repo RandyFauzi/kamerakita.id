@@ -75,12 +75,12 @@
                             openPeriod: false,
                             customStart: '{{ $startDate ? $startDate->format('Y-m-d') : '' }}',
                             customEnd: '{{ $endDate ? $endDate->format('Y-m-d') : '' }}'
-                        }">
+                        }" @click.away="openPeriod = false">
                             <label for="period" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 font-mono">{{ __('dashboard.qc_room.choose_period') }}</label>
                             
                             <input type="hidden" name="period" id="period" value="{{ $selectedPeriodKey }}">
                             
-                            <button type="button" @click="openPeriod = !openPeriod" @click.away="openPeriod = false" class="flex items-center justify-between w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition bg-white text-gray-700 font-medium">
+                            <button type="button" @click="openPeriod = !openPeriod" class="flex items-center justify-between w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition bg-white text-gray-700 font-medium">
                                 <span class="truncate">
                                     @php
                                         $currentLabel = __('dashboard.qc_room.all_periods');
