@@ -19,3 +19,6 @@ Schedule::command('app:pull-mailbox-emails')
 
 Schedule::command('app:clean-expired-emails')->daily();
 Schedule::command('mailbox:prune-quarantine')->daily();
+
+// Sinkronisasi otomatis data task dari Atlas Dashboard setiap 3 jam
+Schedule::command('atlas:sync')->cron('0 */3 * * *');

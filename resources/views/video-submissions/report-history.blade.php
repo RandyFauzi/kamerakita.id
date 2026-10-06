@@ -56,6 +56,11 @@
                 </div>
             </div>
 
+            <!-- Atlas Sync Section -->
+            @if(isset($atlasData))
+                <x-atlas-history-section :atlasData="$atlasData" />
+            @endif
+
             <div class="flex flex-wrap gap-2">
                 <a href="{{ route('video-submissions.report-history', array_merge(request()->except('page'), ['status' => 'all'])) }}" class="rounded-xl px-4 py-2 text-xs font-bold uppercase transition {{ $status === 'all' ? 'bg-gray-900 text-white shadow-sm' : 'border border-gray-200 bg-white text-gray-500 hover:bg-gray-50' }}">
                     {{ __("dashboard.report_history.all_reports") }}

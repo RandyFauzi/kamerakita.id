@@ -70,6 +70,14 @@ class ListPartnerReportHistoryController extends Controller
             ->paginate(20)
             ->withQueryString();
 
+        $atlasData = null;
+        if (strtolower($partner->group ?? '') === 'astro') {
+            $atlasData = \App\Models\AtlasTask::where('email', Auth::user()->email)
+                ->orderBy('task_date', 'desc')
+                ->get()
+                ->groupBy('task_date');
+        }
+
         return view('video-submissions.report-history', [
             'partner' => $partner,
             'reports' => $reports,
@@ -77,6 +85,7 @@ class ListPartnerReportHistoryController extends Controller
             'status' => $status,
             'startDate' => $startDate,
             'endDate' => $endDate,
+            'atlasData' => $atlasData,
         ]);
     }
 }
