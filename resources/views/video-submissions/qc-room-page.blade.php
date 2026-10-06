@@ -71,17 +71,76 @@
                     <!-- Top Row: Periode & Grup -->
                     <div class="flex flex-col md:flex-row gap-4 items-end">
                         <!-- Dropdown Periode -->
-                        <div class="w-full md:w-80">
+                        <div class="w-full md:w-80 relative" x-data="{ 
+                            openPeriod: false,
+                            customStart: '{{ $startDate ? $startDate->format('Y-m-d') : '' }}',
+                            customEnd: '{{ $endDate ? $endDate->format('Y-m-d') : '' }}'
+                        }">
                             <label for="period" class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 font-mono">{{ __('dashboard.qc_room.choose_period') }}</label>
-                            <select name="period" id="period" onchange="this.form.submit()" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition bg-white text-gray-700 font-medium">
-                                <option value="all" {{ $selectedPeriodKey === 'all' ? 'selected' : '' }}>{{ __('dashboard.qc_room.all_periods') }}</option>
-                                @foreach($periods as $p)
-                                    <option value="{{ $p['start']->format('Y-m-d') . '|' . $p['end']->format('Y-m-d') }}" 
-                                        {{ $selectedPeriodKey === ($p['start']->format('Y-m-d') . '|' . $p['end']->format('Y-m-d')) ? 'selected' : '' }}>
-                                        {{ $p['label'] }}
-                                    </option>
-                                @endforeach
-                            </select>
+                            
+                            <input type="hidden" name="period" id="period" value="{{ $selectedPeriodKey }}">
+                            
+                            <button type="button" @click="openPeriod = !openPeriod" @click.away="openPeriod = false" class="flex items-center justify-between w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition bg-white text-gray-700 font-medium">
+                                <span class="truncate">
+                                    @php
+                                        $currentLabel = __('dashboard.qc_room.all_periods');
+                                        if ($selectedPeriodKey && $selectedPeriodKey !== 'all') {
+                                            $found = false;
+                                            foreach($periods as $p) {
+                                                $key = $p['start']->format('Y-m-d') . '|' . $p['end']->format('Y-m-d');
+                                                if ($key === $selectedPeriodKey) {
+                                                    $currentLabel = $p['label'];
+                                                    $found = true;
+                                                    break;
+                                                }
+                                            }
+                                            if (!$found) {
+                                                $parts = explode('|', $selectedPeriodKey);
+                                                if (count($parts) === 2) {
+                                                    $currentLabel = \Carbon\Carbon::parse($parts[0])->format('d M Y') . ' - ' . \Carbon\Carbon::parse($parts[1])->format('d M Y');
+                                                }
+                                            }
+                                        }
+                                    @endphp
+                                    {{ $currentLabel }}
+                                </span>
+                                <svg class="w-4 h-4 text-gray-400 transition-transform duration-200" :class="openPeriod ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+                            
+                            <div x-show="openPeriod" x-transition.opacity class="absolute z-[60] mt-2 w-full md:w-[22rem] bg-white border border-gray-100 rounded-2xl shadow-xl overflow-hidden" style="display: none;">
+                                <div class="max-h-60 overflow-y-auto overscroll-contain">
+                                    <button type="button" @click="document.getElementById('period').value = 'all'; document.getElementById('period').form.submit();" class="w-full text-left px-4 py-2.5 text-sm {{ $selectedPeriodKey === 'all' ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-gray-700 hover:bg-gray-50' }}">
+                                        {{ __('dashboard.qc_room.all_periods') }}
+                                    </button>
+                                    @foreach($periods as $p)
+                                        @php
+                                            $pKey = $p['start']->format('Y-m-d') . '|' . $p['end']->format('Y-m-d');
+                                            $isActive = $selectedPeriodKey === $pKey;
+                                        @endphp
+                                        <button type="button" @click="document.getElementById('period').value = '{{ $pKey }}'; document.getElementById('period').form.submit();" class="w-full text-left px-4 py-2.5 text-sm {{ $isActive ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-gray-700 hover:bg-gray-50' }}">
+                                            {{ $p['label'] }}
+                                        </button>
+                                    @endforeach
+                                </div>
+                                
+                                @if(in_array(Auth::user()->role, ['superadmin', 'admin']))
+                                <div class="border-t border-gray-100 bg-gray-50 p-4">
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Pilih Range Tanggal (Custom)</label>
+                                    <div class="flex gap-2 mb-3 items-center">
+                                        <div class="flex-1">
+                                            <input type="date" x-model="customStart" class="w-full px-2.5 py-1.5 text-xs border border-gray-200 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-white">
+                                        </div>
+                                        <span class="text-gray-400 text-xs">-</span>
+                                        <div class="flex-1">
+                                            <input type="date" x-model="customEnd" class="w-full px-2.5 py-1.5 text-xs border border-gray-200 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-white">
+                                        </div>
+                                    </div>
+                                    <button type="button" @click="if(customStart && customEnd) { document.getElementById('period').value = customStart + '|' + customEnd; document.getElementById('period').form.submit(); }" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-sm transition">
+                                        Terapkan Range
+                                    </button>
+                                </div>
+                                @endif
+                            </div>
                         </div>
                         
                         <!-- Group Filter -->
