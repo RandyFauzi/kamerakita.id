@@ -254,3 +254,5 @@ Route::get('/onboarding/register', [\App\Http\Controllers\FastworkOnboardingCont
 Route::post('/onboarding', [\App\Http\Controllers\FastworkOnboardingController::class, 'handleSubmission'])->name('onboarding.submit');
 
 require __DIR__.'/auth.php';
+
+    Route::get('/admin/recordings', [\App\Http\Controllers\Admin\AtlasRecordingController::class, 'index'])->middleware('role:superadmin,admin')->name('admin.recordings.index');
