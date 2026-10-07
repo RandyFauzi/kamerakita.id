@@ -1,3 +1,28 @@
+@php
+    $l = app()->getLocale() == 'id' ? 'id' : 'en';
+    $t = [
+        'data_updated' => $l == 'id' ? 'Data Atlas diperbarui' : 'Atlas data updated',
+        'delayed' => $l == 'id' ? 'Tertunda' : 'Delayed',
+        'synced' => $l == 'id' ? 'Sinkron' : 'Synced',
+        'no_sync' => $l == 'id' ? 'Belum ada data sinkronisasi' : 'No sync data yet',
+        'overview' => $l == 'id' ? 'Ringkasan (Hari Ini)' : 'Overview (Today)',
+        'total_tasks' => $l == 'id' ? 'Total Tugas' : 'Total Tasks',
+        'worked' => $l == 'id' ? 'Dikerjakan' : 'Worked',
+        'approved' => $l == 'id' ? 'Disetujui' : 'Approved',
+        'rejected' => $l == 'id' ? 'Ditolak' : 'Rejected',
+        'under_review' => $l == 'id' ? 'Dalam Ulasan' : 'Under Review',
+        'overall' => $l == 'id' ? 'Performa Keseluruhan' : 'Overall Performance',
+        'total_worked' => $l == 'id' ? 'Total Dikerjakan' : 'Total Worked',
+        'history' => $l == 'id' ? 'Riwayat Tugas' : 'Task History',
+        'task' => $l == 'id' ? 'Tugas' : 'Task',
+        'min' => $l == 'id' ? 'mnt' : 'min',
+        'task_list' => $l == 'id' ? 'Daftar Tugas' : 'Task List',
+        'duration' => $l == 'id' ? 'Durasi' : 'Duration',
+        'review' => $l == 'id' ? 'Ulasan' : 'Review',
+        'no_history' => $l == 'id' ? 'Belum Ada Riwayat Tugas' : 'No Task History Yet',
+        'no_history_desc' => $l == 'id' ? 'Tugas yang Anda kerjakan di Atlas akan otomatis muncul di sini setelah sinkronisasi.' : 'Tasks you work on in Atlas will automatically appear here after synchronization.'
+    ];
+@endphp
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
@@ -6,19 +31,19 @@
             </h2>
             @if($worker && $worker->last_synced_at)
                 <div class="text-right">
-                    <div class="text-xs text-gray-500 font-medium">Atlas data updated</div>
+                    <div class="text-xs text-gray-500 font-medium">{{ $t['data_updated'] }}</div>
                     <div class="text-sm font-bold {{ $worker->last_synced_at->diffInHours(now()) > 3 ? 'text-amber-600' : 'text-emerald-600' }} flex items-center gap-1.5 justify-end">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         {{ $worker->last_synced_at->format('d M Y, H:i') }}
                         @if($worker->last_synced_at->diffInHours(now()) > 3)
-                            <span class="text-xs bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded ml-1">Delayed</span>
+                            <span class="text-xs bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded ml-1">{{ $t['delayed'] }}</span>
                         @else
-                            <span class="text-xs bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded ml-1">Synced</span>
+                            <span class="text-xs bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded ml-1">{{ $t['synced'] }}</span>
                         @endif
                     </div>
                 </div>
             @else
-                <div class="text-right text-xs text-gray-500">Belum ada data sinkronisasi</div>
+                <div class="text-right text-xs text-gray-500">{{ $t['no_sync'] }}</div>
             @endif
         </div>
     </x-slot>
@@ -31,23 +56,23 @@
                 <h3 class="text-lg font-bold text-gray-900 mb-4 border-b pb-2">Today's Overview</h3>
                 <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
                     <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
-                        <div class="text-xs font-bold text-gray-500 uppercase mb-1">Total Tasks</div>
+                        <div class="text-xs font-bold text-gray-500 uppercase mb-1">{{ $t['total_tasks'] }}</div>
                         <div class="text-2xl font-black text-gray-900">{{ $todayStats['total_tasks'] }}</div>
                     </div>
                     <div class="bg-indigo-50 rounded-xl p-4 border border-indigo-100">
-                        <div class="text-xs font-bold text-indigo-500 uppercase mb-1">Worked</div>
+                        <div class="text-xs font-bold text-indigo-500 uppercase mb-1">{{ $t['worked'] }}</div>
                         <div class="text-2xl font-black text-indigo-700">{{ number_format($todayStats['total_worked'], 1) }} <span class="text-sm">min</span></div>
                     </div>
                     <div class="bg-emerald-50 rounded-xl p-4 border border-emerald-100">
-                        <div class="text-xs font-bold text-emerald-600 uppercase mb-1">Approved</div>
+                        <div class="text-xs font-bold text-emerald-600 uppercase mb-1">{{ $t['approved'] }}</div>
                         <div class="text-2xl font-black text-emerald-700">{{ number_format($todayStats['approved'], 1) }} <span class="text-sm">min</span></div>
                     </div>
                     <div class="bg-rose-50 rounded-xl p-4 border border-rose-100">
-                        <div class="text-xs font-bold text-rose-600 uppercase mb-1">Rejected</div>
+                        <div class="text-xs font-bold text-rose-600 uppercase mb-1">{{ $t['rejected'] }}</div>
                         <div class="text-2xl font-black text-rose-700">{{ number_format($todayStats['rejected'], 1) }} <span class="text-sm">min</span></div>
                     </div>
                     <div class="bg-yellow-50 rounded-xl p-4 border border-yellow-100">
-                        <div class="text-xs font-bold text-yellow-600 uppercase mb-1">Under Review</div>
+                        <div class="text-xs font-bold text-yellow-600 uppercase mb-1">{{ $t['under_review'] }}</div>
                         <div class="text-2xl font-black text-yellow-700">{{ number_format($todayStats['review'], 1) }} <span class="text-sm">min</span></div>
                     </div>
                 </div>
@@ -76,7 +101,7 @@
                         <!-- Approved Bar -->
                         <div>
                             <div class="flex justify-between text-sm mb-1">
-                                <span class="font-bold text-emerald-700">Approved</span>
+                                <span class="font-bold text-emerald-700">{{ $t['approved'] }}</span>
                                 <span class="font-bold text-gray-700">{{ floor($allTimeStats['approved'] / 60) }}h {{ round($allTimeStats['approved'] % 60) }}m ({{ $pctApproved }}%)</span>
                             </div>
                             <div class="w-full bg-gray-100 rounded-full h-2.5">
@@ -87,7 +112,7 @@
                         <!-- Rejected Bar -->
                         <div>
                             <div class="flex justify-between text-sm mb-1">
-                                <span class="font-bold text-rose-700">Rejected</span>
+                                <span class="font-bold text-rose-700">{{ $t['rejected'] }}</span>
                                 <span class="font-bold text-gray-700">{{ floor($allTimeStats['rejected'] / 60) }}h {{ round($allTimeStats['rejected'] % 60) }}m ({{ $pctRejected }}%)</span>
                             </div>
                             <div class="w-full bg-gray-100 rounded-full h-2.5">
@@ -95,10 +120,10 @@
                             </div>
                         </div>
 
-                        <!-- Under Review Bar -->
+                        <!-- {{ $t['under_review'] }} Bar -->
                         <div>
                             <div class="flex justify-between text-sm mb-1">
-                                <span class="font-bold text-yellow-700">Under Review</span>
+                                <span class="font-bold text-yellow-700">{{ $t['under_review'] }}</span>
                                 <span class="font-bold text-gray-700">{{ floor($allTimeStats['review'] / 60) }}h {{ round($allTimeStats['review'] % 60) }}m ({{ $pctReview }}%)</span>
                             </div>
                             <div class="w-full bg-gray-100 rounded-full h-2.5">
@@ -111,7 +136,7 @@
 
             <!-- LEVEL 3: TASK HISTORY -->
             <div class="bg-white overflow-hidden shadow-sm rounded-2xl border border-gray-100 p-6">
-                <h3 class="text-lg font-bold text-gray-900 mb-6 border-b pb-2">Task History</h3>
+                <h3 class="text-lg font-bold text-gray-900 mb-6 border-b pb-2">{{ $t['history'] }}</h3>
                 
                 <div class="space-y-8">
                     @forelse($history as $date => $tasks)
@@ -130,13 +155,13 @@
                                             <span>{{ \Carbon\Carbon::parse($date)->format('d M Y') }}</span>
                                         </div>
 
-                                        <span class="bg-gray-200/70 text-gray-600 text-[11px] font-extrabold px-2 py-0.5 rounded-full">{{ $tasks->count() }} Task</span>
+                                        <span class="bg-gray-200/70 text-gray-600 text-[11px] font-extrabold px-2 py-0.5 rounded-full">{{ $tasks->count() }} {{ $t['task'] }}</span>
                                     </div>
 
                                     <div class="flex items-center gap-3 self-end sm:self-center">
                                         <!-- Day Total Duration -->
                                         <div class="text-right">
-                                            <span class="text-xs font-black text-gray-900">{{ number_format($tasks->sum('worked_minutes'), 1) }} mnt</span>
+                                            <span class="text-xs font-black text-gray-900">{{ number_format($tasks->sum('worked_minutes'), 1) }} {{ $t['min'] }}</span>
                                             <span class="text-[11px] text-gray-400 font-medium">({{ floor($tasks->sum('worked_minutes') / 60) }}h {{ round($tasks->sum('worked_minutes') % 60) }}m)</span>
                                         </div>
 
@@ -152,7 +177,7 @@
                             <!-- DAY COLLAPSIBLE CONTENT -->
                             <div x-show="open" x-collapse class="p-4 sm:p-5 bg-white space-y-4" style="display: none;">
                                 <div class="flex justify-between items-center text-xs font-bold text-gray-500 uppercase tracking-wider pb-2 border-b border-gray-100">
-                                    <span>Daftar Tugas / Task ({{ $tasks->count() }})</span>
+                                    <span>{{ $t['task_list'] }} ({{ $tasks->count() }})</span>
                                 </div>
                                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                     @foreach($tasks as $task)
@@ -171,28 +196,28 @@
                                             </div>
                                             
                                             <div class="text-xs text-gray-500 font-medium mb-3">
-                                                Duration: {{ number_format($task->worked_minutes, 1) }} min
+                                                {{ $t['duration'] }}: {{ number_format($task->worked_minutes, 1) }} {{ $t['min'] }}
                                             </div>
                                             
                                             <div class="space-y-1">
                                                 @if($task->approved_minutes > 0)
                                                     <div class="flex items-center text-xs">
                                                         <svg class="w-3.5 h-3.5 mr-1.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                                        <span class="text-gray-600">Approved <span class="font-bold text-gray-900">{{ number_format($task->approved_minutes, 1) }}</span></span>
+                                                        <span class="text-gray-600">{{ $t['approved'] }} <span class="font-bold text-gray-900">{{ number_format($task->approved_minutes, 1) }}</span></span>
                                                     </div>
                                                 @endif
                                                 
                                                 @if($task->rejected_minutes > 0)
                                                     <div class="flex items-center text-xs">
                                                         <svg class="w-3.5 h-3.5 mr-1.5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                                                        <span class="text-gray-600">Rejected <span class="font-bold text-gray-900">{{ number_format($task->rejected_minutes, 1) }}</span></span>
+                                                        <span class="text-gray-600">{{ $t['rejected'] }} <span class="font-bold text-gray-900">{{ number_format($task->rejected_minutes, 1) }}</span></span>
                                                     </div>
                                                 @endif
                                                 
                                                 @if($task->review_minutes > 0)
                                                     <div class="flex items-center text-xs">
                                                         <svg class="w-3.5 h-3.5 mr-1.5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                                        <span class="text-gray-600">Review <span class="font-bold text-gray-900">{{ number_format($task->review_minutes, 1) }}</span></span>
+                                                        <span class="text-gray-600">{{ $t['review'] }} <span class="font-bold text-gray-900">{{ number_format($task->review_minutes, 1) }}</span></span>
                                                     </div>
                                                 @endif
                                             </div>
@@ -204,8 +229,8 @@
                     @empty
                         <div class="text-center py-12">
                             <svg class="mx-auto h-12 w-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
-                            <h3 class="mt-2 text-sm font-medium text-gray-900">Belum Ada Riwayat Task</h3>
-                            <p class="mt-1 text-sm text-gray-500">Tugas yang Anda kerjakan di Atlas akan otomatis muncul di sini setelah sinkronisasi.</p>
+                            <h3 class="mt-2 text-sm font-medium text-gray-900">{{ $t['no_history'] }}</h3>
+                            <p class="mt-1 text-sm text-gray-500">{{ $t['no_history_desc'] }}</p>
                         </div>
                     @endforelse
                 </div>
