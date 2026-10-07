@@ -166,12 +166,21 @@
                         </div>
                         
                         <!-- Badge at bottom -->
-                        <div class="mt-6 flex justify-start">
-                            <div class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 border border-indigo-100 rounded-full text-[11px] font-bold text-indigo-700 shadow-sm">
+                        <!-- Badge at bottom -->
+                        @php
+                            $lastSyncUser = \App\Models\AtlasTask::where('atlas_worker_id', $atlasWorker->id ?? 0)->max('updated_at');
+                            $syncTextUser = $lastSyncUser ? \Carbon\Carbon::parse($lastSyncUser)->timezone('Asia/Makassar')->format('d M Y, H:i') . ' WITA' : '-';
+                        @endphp
+                        <div class="mt-6 flex flex-col sm:flex-row sm:items-center justify-start gap-3">
+                            <div class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 border border-indigo-100 rounded-full text-[11px] font-bold text-indigo-700 shadow-sm w-fit">
                                 <svg class="w-3.5 h-3.5 text-indigo-500" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M13 10V3L4 14h7v7l9-11h-7z" />
                                 </svg>
                                 Sinkronisasi otomatis dari Atlas
+                            </div>
+                            <div class="text-[11px] text-gray-500 font-medium flex items-center gap-1.5">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                Update terakhir: <span class="font-bold text-gray-700">{{ $syncTextUser }}</span>
                             </div>
                         </div>
                     </div>
