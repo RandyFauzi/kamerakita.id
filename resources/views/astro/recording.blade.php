@@ -179,45 +179,60 @@
                                 <div class="flex justify-between items-center text-xs font-bold text-gray-500 uppercase tracking-wider pb-2 border-b border-gray-100">
                                     <span>{{ $t['task_list'] }} ({{ $tasks->count() }})</span>
                                 </div>
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                <div class="flex flex-col space-y-3">
                                     @foreach($tasks as $task)
-                                        <div class="border rounded-xl p-4 hover:shadow-md transition-shadow bg-white">
-                                            <div class="flex justify-between items-start mb-2">
-                                                <h5 class="font-bold text-sm text-gray-900 line-clamp-2" title="{{ $task->task_name }}">{{ $task->task_name }}</h5>
-                                                @if($task->status === 'APPROVED')
-                                                    <span class="inline-flex items-center rounded-full bg-emerald-50 px-2 py-1 text-[10px] font-bold text-emerald-700 ring-1 ring-inset ring-emerald-600/20">APPROVED</span>
-                                                @elseif($task->status === 'REJECTED')
-                                                    <span class="inline-flex items-center rounded-full bg-rose-50 px-2 py-1 text-[10px] font-bold text-rose-700 ring-1 ring-inset ring-rose-600/20">REJECTED</span>
-                                                @elseif($task->status === 'PARTIALLY_APPROVED')
-                                                    <span class="inline-flex items-center rounded-full bg-amber-50 px-2 py-1 text-[10px] font-bold text-amber-700 ring-1 ring-inset ring-amber-600/20">PARTIAL</span>
-                                                @else
-                                                    <span class="inline-flex items-center rounded-full bg-yellow-50 px-2 py-1 text-[10px] font-bold text-yellow-800 ring-1 ring-inset ring-yellow-600/20">REVIEW</span>
+                                        @php
+                                            $total = $task->worked_minutes > 0 ? $task->worked_minutes : 1;
+                                            $pctApproved = ($task->approved_minutes / $total) * 100;
+                                            $pctRejected = ($task->rejected_minutes / $total) * 100;
+                                            $pctReview = ($task->review_minutes / $total) * 100;
+                                        @endphp
+                                        <div class="border border-gray-200 rounded-xl p-4 bg-gray-50/30 hover:bg-gray-50 transition-colors">
+                                            <!-- Top Line: Task Name & Total Duration -->
+                                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 gap-2">
+                                                <div class="flex items-center gap-2">
+                                                    <span class="bg-gray-200 text-gray-500 font-bold text-[10px] w-5 h-5 flex items-center justify-center rounded-full shrink-0">{{ $loop->iteration }}</span>
+                                                    <h5 class="font-bold text-sm text-gray-900" title="{{ $task->task_name }}">{{ $task->task_name }}</h5>
+                                                </div>
+                                                <div class="text-right">
+                                                    <span class="text-xs font-black text-gray-900">{{ number_format($task->worked_minutes, 1) }} {{ $t['min'] }}</span>
+                                                    <span class="text-[11px] text-gray-400 font-medium">({{ round($task->worked_minutes / 60, 2) }}h)</span>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Progress Bar -->
+                                            <div class="h-1.5 w-full bg-gray-200 rounded-full overflow-hidden flex mb-2.5">
+                                                @if($task->approved_minutes > 0)
+                                                    <div class="bg-emerald-500 h-full" style="width: {{ $pctApproved }}%"></div>
+                                                @endif
+                                                @if($task->review_minutes > 0)
+                                                    <div class="bg-amber-400 h-full" style="width: {{ $pctReview }}%"></div>
+                                                @endif
+                                                @if($task->rejected_minutes > 0)
+                                                    <div class="bg-rose-500 h-full" style="width: {{ $pctRejected }}%"></div>
                                                 @endif
                                             </div>
                                             
-                                            <div class="text-xs text-gray-500 font-medium mb-3">
-                                                {{ $t['duration'] }}: {{ number_format($task->worked_minutes, 1) }} {{ $t['min'] }}
-                                            </div>
-                                            
-                                            <div class="space-y-1">
+                                            <!-- Details Line -->
+                                            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] font-medium">
                                                 @if($task->approved_minutes > 0)
-                                                    <div class="flex items-center text-xs">
-                                                        <svg class="w-3.5 h-3.5 mr-1.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                                        <span class="text-gray-600">{{ $t['approved'] }} <span class="font-bold text-gray-900">{{ number_format($task->approved_minutes, 1) }}</span></span>
+                                                    <div class="text-emerald-700 flex items-center gap-1">
+                                                        <div class="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+                                                        {{ number_format($task->approved_minutes, 1) }} {{ $t['min'] }} {{ strtolower($t['approved']) }} ({{ round($task->approved_minutes / 60, 2) }}h)
                                                     </div>
                                                 @endif
                                                 
                                                 @if($task->rejected_minutes > 0)
-                                                    <div class="flex items-center text-xs">
-                                                        <svg class="w-3.5 h-3.5 mr-1.5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                                                        <span class="text-gray-600">{{ $t['rejected'] }} <span class="font-bold text-gray-900">{{ number_format($task->rejected_minutes, 1) }}</span></span>
+                                                    <div class="text-rose-700 flex items-center gap-1">
+                                                        <div class="w-1.5 h-1.5 rounded-full bg-rose-500"></div>
+                                                        {{ number_format($task->rejected_minutes, 1) }} {{ $t['min'] }} {{ strtolower($t['rejected']) }} ({{ round($task->rejected_minutes / 60, 2) }}h)
                                                     </div>
                                                 @endif
                                                 
                                                 @if($task->review_minutes > 0)
-                                                    <div class="flex items-center text-xs">
-                                                        <svg class="w-3.5 h-3.5 mr-1.5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                                        <span class="text-gray-600">{{ $t['review'] }} <span class="font-bold text-gray-900">{{ number_format($task->review_minutes, 1) }}</span></span>
+                                                    <div class="text-amber-700 flex items-center gap-1">
+                                                        <div class="w-1.5 h-1.5 rounded-full bg-amber-400"></div>
+                                                        {{ number_format($task->review_minutes, 1) }} {{ $t['min'] }} {{ strtolower($t['review']) }} ({{ round($task->review_minutes / 60, 2) }}h)
                                                     </div>
                                                 @endif
                                             </div>
