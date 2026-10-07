@@ -102,21 +102,9 @@
                     @endphp
                     
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
-                        <!-- Graphic Chart -->
-                        <div class="flex justify-center lg:justify-start lg:col-span-1">
-                            <div class="relative w-48 h-48 rounded-full shadow-sm flex items-center justify-center transition-transform hover:scale-105 duration-500"
-                                 style="background: conic-gradient(
-                                    #10b981 0% {{ $pctApproved }}%, 
-                                    #fbbf24 {{ $pctApproved }}% {{ $pctApproved + $pctReview }}%, 
-                                    #f43f5e {{ $pctApproved + $pctReview }}% {{ $pctApproved + $pctReview + $pctRejected }}%, 
-                                    #f3f4f6 {{ $pctApproved + $pctReview + $pctRejected }}% 100%
-                                 );">
-                                <!-- Inner Circle -->
-                                <div class="absolute inset-[12px] bg-white rounded-full flex flex-col items-center justify-center shadow-inner">
-                                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">{{ $t['approved'] }}</span>
-                                    <span class="text-4xl font-black text-gray-900 tracking-tighter">{{ round($pctApproved) }}%</span>
-                                </div>
-                            </div>
+                        <!-- Graphic Chart (ApexCharts) -->
+                        <div class="flex justify-center lg:col-span-1 w-full py-4">
+                            <div id="performance-chart" class="w-full max-w-[280px] drop-shadow-md transition-transform hover:scale-105 duration-500"></div>
                         </div>
 
                         <!-- Details & Bars -->
@@ -306,4 +294,79 @@
             
         </div>
     </div>
+
+    <!-- ApexCharts Library & Init -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            if (document.querySelector("#performance-chart")) {
+                var options = {
+                    series: [{{ isset($pctApproved) ? $pctApproved : 0 }}, {{ isset($pctReview) ? $pctReview : 0 }}, {{ isset($pctRejected) ? $pctRejected : 0 }}],
+                    chart: {
+                        type: 'donut',
+                        height: 280,
+                        animations: {
+                            enabled: true,
+                            easing: 'easeinout',
+                            speed: 800,
+                            animateGradually: { enabled: true, delay: 150 },
+                            dynamicAnimation: { enabled: true, speed: 350 }
+                        },
+                        sparkline: { enabled: true }
+                    },
+                    labels: ['{{ $t["approved"] ?? "Disetujui" }}', '{{ $t["under_review"] ?? "Dalam Ulasan" }}', '{{ $t["rejected"] ?? "Ditolak" }}'],
+                    colors: ['#10b981', '#fbbf24', '#f43f5e'],
+                    plotOptions: {
+                        pie: {
+                            donut: {
+                                size: '78%',
+                                labels: {
+                                    show: true,
+                                    name: {
+                                        show: true,
+                                        fontSize: '11px',
+                                        fontFamily: 'inherit',
+                                        fontWeight: 800,
+                                        color: '#9ca3af',
+                                        offsetY: -15
+                                    },
+                                    value: {
+                                        show: true,
+                                        fontSize: '36px',
+                                        fontFamily: 'inherit',
+                                        fontWeight: 900,
+                                        color: '#111827',
+                                        offsetY: 5,
+                                        formatter: function (val) { return val + "%" }
+                                    },
+                                    total: {
+                                        show: true,
+                                        showAlways: true,
+                                        label: 'APPROVAL RATE',
+                                        fontSize: '11px',
+                                        fontFamily: 'inherit',
+                                        fontWeight: 800,
+                                        color: '#9ca3af',
+                                        formatter: function (w) {
+                                            return "{{ isset($pctApproved) ? round($pctApproved) : 0 }}%"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    dataLabels: { enabled: false },
+                    stroke: { width: 0 },
+                    legend: { show: false },
+                    tooltip: {
+                        theme: 'light',
+                        y: { formatter: function(value) { return value + "%" } }
+                    }
+                };
+
+                var chart = new ApexCharts(document.querySelector("#performance-chart"), options);
+                chart.render();
+            }
+        });
+    </script>
 </x-app-layout>
