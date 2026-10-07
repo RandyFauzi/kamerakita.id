@@ -11,7 +11,7 @@
                 <!-- Total Jam Kerja (Main Highlight) -->
                 <div class="rounded-[24px] p-7 relative overflow-hidden transition-all duration-300 hover:-translate-y-1" style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); box-shadow: 0 12px 30px -10px rgba(37, 99, 235, 0.4);">
                     <!-- Decorative minimal rings -->
-                    <svg class="absolute -right-6 -top-6 w-32 h-32 text-white opacity-10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle></svg>
+                    <svg style="position: absolute; right: -24px; top: -24px; width: 128px; height: 128px;" class="text-white opacity-10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle></svg>
                     
                     <div class="flex justify-between items-start mb-6 relative z-10">
                         <div>
@@ -280,8 +280,8 @@
                     grid: { borderColor: '#f1f5f9', strokeDashArray: 4, yaxis: { lines: { show: true } }, xaxis: { lines: { show: false } } },
                     legend: { show: false },
                     fill: {
-                        type: ['gradient', 'solid'],
-                        gradient: { shade: 'light', type: 'vertical', shadeIntensity: 0.5, gradientToColors: ['#2563eb'], inverseColors: true, opacityFrom: 1, opacityTo: 1, stops: [0, 100] }
+                        type: 'solid',
+                        opacity: 1
                     },
                     tooltip: {
                         shared: true,
