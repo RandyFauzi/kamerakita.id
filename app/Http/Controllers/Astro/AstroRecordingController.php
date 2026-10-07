@@ -44,15 +44,18 @@ class AstroRecordingController extends Controller
         $history = collect();
 
         if ($worker) {
-            // Calculate Today Stats
-            $today = Carbon::today()->toDateString();
-            $todayTasks = $worker->atlasTasks()->where('task_date', $today)->get();
+            // Calculate Latest Active Day Stats instead of strict 'today'
+            $latestTask = $worker->atlasTasks()->orderBy('task_date', 'desc')->first();
+            $latestDate = $latestTask ? $latestTask->task_date : Carbon::today()->toDateString();
+            
+            $todayTasks = $worker->atlasTasks()->where('task_date', $latestDate)->get();
             
             $todayStats['total_tasks'] = $todayTasks->count();
             $todayStats['total_worked'] = $todayTasks->sum('worked_minutes');
             $todayStats['approved'] = $todayTasks->sum('approved_minutes');
             $todayStats['rejected'] = $todayTasks->sum('rejected_minutes');
             $todayStats['review'] = $todayTasks->sum('review_minutes');
+            $todayStats['date'] = $latestDate;
 
             // Calculate All Time Stats
             $allTimeStats['total_worked'] = $worker->atlasTasks()->sum('worked_minutes');

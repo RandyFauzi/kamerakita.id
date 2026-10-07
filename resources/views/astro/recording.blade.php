@@ -5,7 +5,7 @@
         'delayed' => $l == 'id' ? 'Tertunda' : 'Delayed',
         'synced' => $l == 'id' ? 'Sinkron' : 'Synced',
         'no_sync' => $l == 'id' ? 'Belum ada data sinkronisasi' : 'No sync data yet',
-        'overview' => $l == 'id' ? 'Ringkasan (Hari Ini)' : 'Overview (Today)',
+        'overview' => $l == 'id' ? 'Aktivitas Terakhir' : 'Latest Activity',
         'total_tasks' => $l == 'id' ? 'Total Tugas' : 'Total Tasks',
         'worked' => $l == 'id' ? 'Dikerjakan' : 'Worked',
         'approved' => $l == 'id' ? 'Disetujui' : 'Approved',
@@ -55,7 +55,12 @@
 
             <!-- LEVEL 1: OVERVIEW (TODAY) -->
             <div class="bg-white overflow-hidden shadow-sm rounded-2xl border border-gray-100 p-5 sm:p-6">
-                <h3 class="text-base font-extrabold text-gray-900 mb-4">{{ $t['overview'] }}</h3>
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-base font-extrabold text-gray-900">{{ $t['overview'] }}</h3>
+                    @if(isset($todayStats['date']))
+                        <span class="text-xs font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded-md">{{ \Carbon\Carbon::parse($todayStats['date'])->format('d M Y') }}</span>
+                    @endif
+                </div>
                 <div class="flex flex-wrap gap-3 sm:gap-4">
                     <div class="flex-1 min-w-[130px] bg-gray-50 rounded-xl p-4 border border-gray-100">
                         <div class="text-[11px] font-bold text-gray-500 uppercase tracking-wide mb-1">{{ $t['total_tasks'] }}</div>
