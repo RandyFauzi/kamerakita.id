@@ -238,6 +238,9 @@
                                     @foreach($tasks as $task)
                                         @php
                                             $total = $task->worked_minutes > 0 ? $task->worked_minutes : 1;
+                                            $pctApproved = ($task->approved_minutes / $total) * 100;
+                                            $pctRejected = ($task->rejected_minutes / $total) * 100;
+                                            $pctReview = ($task->review_minutes / $total) * 100;
                                             
                                             // Determine timeline node color
                                             $nodeColor = 'bg-indigo-400';
@@ -261,7 +264,7 @@
                                             
                                             <!-- Task Content Card -->
                                             <div class="bg-gray-50/50 hover:bg-gray-50 border border-gray-100 rounded-xl p-4 transition-colors">
-                                                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 gap-2">
+                                                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 gap-2">
                                                     <h5 class="font-bold text-sm text-gray-900 leading-tight" title="{{ $task->task_name }}">{{ $task->task_name }}</h5>
                                                     <div class="flex items-center gap-2 mt-1 sm:mt-0">
                                                         @if($task->recorded_at)
@@ -269,6 +272,19 @@
                                                         @endif
                                                         <span class="text-xs font-black text-gray-800 bg-white border border-gray-200 px-2.5 py-1 rounded-md shadow-sm">{{ number_format($task->worked_minutes, 1) }} Min</span>
                                                     </div>
+                                                </div>
+                                                
+                                                <!-- Progress Bar -->
+                                                <div class="h-1.5 w-full bg-gray-200 rounded-full overflow-hidden flex mb-2.5">
+                                                    @if($task->approved_minutes > 0)
+                                                        <div class="h-full" style="width: {{ $pctApproved }}%; background-color: #10b981;"></div>
+                                                    @endif
+                                                    @if($task->review_minutes > 0)
+                                                        <div class="h-full" style="width: {{ $pctReview }}%; background-color: #fbbf24;"></div>
+                                                    @endif
+                                                    @if($task->rejected_minutes > 0)
+                                                        <div class="h-full" style="width: {{ $pctRejected }}%; background-color: #f43f5e;"></div>
+                                                    @endif
                                                 </div>
                                                 
                                                 <!-- Breakdown -->
