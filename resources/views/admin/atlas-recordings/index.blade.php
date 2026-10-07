@@ -301,6 +301,7 @@
                     legend: { show: true, position: 'top', horizontalAlign: 'right' },
                     tooltip: {
                         shared: true,
+                        intersect: false,
                         custom: function({series, seriesIndex, dataPointIndex, w}) {
                             var approved = series[0][dataPointIndex];
                             var total = workedSeries[dataPointIndex];
