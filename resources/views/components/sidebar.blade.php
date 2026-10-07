@@ -84,7 +84,7 @@
 
                     @php
                         $isAstro = false;
-                        if ($partner && str_contains(strtoupper($partner->group ?? ''), 'ASTRO')) {
+                        if ($partner && str_contains(strtoupper($partner->group_name ?? ''), 'ASTRO')) {
                             $isAstro = true;
                         } elseif (Auth::check()) {
                             $isAstro = \App\Models\AtlasWorker::where('user_id', Auth::id())->orWhere('atlas_email', Auth::user()->email)->exists();
