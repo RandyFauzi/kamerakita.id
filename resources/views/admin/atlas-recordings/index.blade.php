@@ -7,89 +7,94 @@
         <div class="space-y-4 sm:space-y-6">
             
             <!-- Stats Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-2">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
                 <!-- Total Jam Kerja (Main Highlight) -->
-                <div class="rounded-[20px] p-6 relative overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4);">
-                    <div class="absolute right-0 top-0 w-32 h-32 bg-white opacity-5 rounded-full -mr-10 -mt-10 blur-2xl"></div>
+                <div class="rounded-[24px] p-7 relative overflow-hidden transition-all duration-300 hover:-translate-y-1" style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); box-shadow: 0 12px 30px -10px rgba(37, 99, 235, 0.4);">
+                    <!-- Decorative minimal rings -->
+                    <svg class="absolute -right-6 -top-6 w-32 h-32 text-white opacity-10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle></svg>
                     
-                    <div class="flex justify-between items-start mb-4 relative z-10">
-                        <h3 class="text-sm font-semibold text-blue-100">Total Jam Kerja</h3>
-                        <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
+                    <div class="flex justify-between items-start mb-6 relative z-10">
+                        <div>
+                            <h3 class="text-[11px] font-bold text-blue-200 uppercase tracking-widest">Total Jam Kerja</h3>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-md shadow-sm">
                             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         </div>
                     </div>
-                    <div class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight relative z-10">
-                        {{ floor($stats['total_worked'] / 60) }}<span class="text-xl font-semibold text-blue-200 ml-1">h</span>
-                        {{ round($stats['total_worked'] % 60) }}<span class="text-xl font-semibold text-blue-200 ml-1">m</span>
-                    </div>
-                    <div class="mt-4 text-xs font-medium text-blue-100 flex items-center gap-1.5 relative z-10">
-                        <span class="px-2 py-0.5 rounded-md bg-white/20">Seluruh Pekerja</span>
-                        Berdasarkan durasi Atlas
+                    <div class="relative z-10">
+                        <div class="text-4xl font-black text-white tracking-tighter drop-shadow-sm flex items-baseline gap-1">
+                            {{ floor($stats['total_worked'] / 60) }}<span class="text-xl font-bold text-blue-200">h</span>
+                            {{ round($stats['total_worked'] % 60) }}<span class="text-xl font-bold text-blue-200">m</span>
+                        </div>
+                        <p class="text-[11px] font-medium text-blue-200 mt-2 opacity-90">Total durasi Atlas V.2 dari seluruh pekerja</p>
                     </div>
                 </div>
 
                 <!-- Approved -->
-                <div class="bg-white rounded-[20px] p-6 border border-gray-100 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg flex flex-col justify-between">
-                    <div class="flex justify-between items-start mb-2">
-                        <h3 class="text-sm font-semibold text-gray-500">Approved</h3>
+                <div class="bg-white rounded-[24px] p-7 transition-all duration-300 hover:-translate-y-1" style="box-shadow: 0 10px 40px -10px rgba(0,0,0,0.06); border: 1px solid #f8fafc;">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <h3 class="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Total Approved</h3>
+                        </div>
                         <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background-color: #ecfdf5;">
                             <svg class="w-5 h-5" style="color: #10b981;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
                         </div>
                     </div>
                     <div>
-                        <div class="flex items-end gap-3 mb-1">
-                            <div class="text-3xl font-extrabold text-gray-900 tracking-tight">
-                                {{ floor($stats['total_approved'] / 60) }}<span class="text-lg font-bold text-gray-400 ml-0.5">h</span>
-                                {{ round($stats['total_approved'] % 60) }}<span class="text-lg font-bold text-gray-400 ml-0.5">m</span>
-                            </div>
+                        <div class="text-3xl font-black text-gray-800 tracking-tighter flex items-baseline gap-1 mb-2">
+                            {{ floor($stats['total_approved'] / 60) }}<span class="text-lg font-bold text-gray-400">h</span>
+                            {{ round($stats['total_approved'] % 60) }}<span class="text-lg font-bold text-gray-400">m</span>
                         </div>
                         @php $pctApp = $stats['total_worked'] > 0 ? round(($stats['total_approved'] / $stats['total_worked']) * 100, 1) : 0; @endphp
-                        <div class="text-xs font-semibold" style="color: #10b981;">
-                            <span class="px-1.5 py-0.5 rounded mr-1" style="background-color: #ecfdf5;">{{ $pctApp }}%</span> dari total kerja
+                        <div class="flex items-center gap-2">
+                            <span class="px-2 py-1 rounded text-[11px] font-bold" style="background-color: #ecfdf5; color: #10b981;">{{ $pctApp }}%</span>
+                            <span class="text-[11px] font-semibold text-gray-400">dari total durasi</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Review -->
-                <div class="bg-white rounded-[20px] p-6 border border-gray-100 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg flex flex-col justify-between">
-                    <div class="flex justify-between items-start mb-2">
-                        <h3 class="text-sm font-semibold text-gray-500">Dalam Ulasan</h3>
+                <!-- Dalam Ulasan -->
+                <div class="bg-white rounded-[24px] p-7 transition-all duration-300 hover:-translate-y-1" style="box-shadow: 0 10px 40px -10px rgba(0,0,0,0.06); border: 1px solid #f8fafc;">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <h3 class="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Dalam Ulasan</h3>
+                        </div>
                         <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background-color: #fffbeb;">
                             <svg class="w-5 h-5" style="color: #f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         </div>
                     </div>
                     <div>
-                        <div class="flex items-end gap-3 mb-1">
-                            <div class="text-3xl font-extrabold text-gray-900 tracking-tight">
-                                {{ floor($stats['total_review'] / 60) }}<span class="text-lg font-bold text-gray-400 ml-0.5">h</span>
-                                {{ round($stats['total_review'] % 60) }}<span class="text-lg font-bold text-gray-400 ml-0.5">m</span>
-                            </div>
+                        <div class="text-3xl font-black text-gray-800 tracking-tighter flex items-baseline gap-1 mb-2">
+                            {{ floor($stats['total_review'] / 60) }}<span class="text-lg font-bold text-gray-400">h</span>
+                            {{ round($stats['total_review'] % 60) }}<span class="text-lg font-bold text-gray-400">m</span>
                         </div>
                         @php $pctRev = $stats['total_worked'] > 0 ? round(($stats['total_review'] / $stats['total_worked']) * 100, 1) : 0; @endphp
-                        <div class="text-xs font-semibold" style="color: #d97706;">
-                            <span class="px-1.5 py-0.5 rounded mr-1" style="background-color: #fef3c7;">{{ $pctRev }}%</span> dari total kerja
+                        <div class="flex items-center gap-2">
+                            <span class="px-2 py-1 rounded text-[11px] font-bold" style="background-color: #fffbeb; color: #d97706;">{{ $pctRev }}%</span>
+                            <span class="text-[11px] font-semibold text-gray-400">dari total durasi</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Rejected -->
-                <div class="bg-white rounded-[20px] p-6 border border-gray-100 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg flex flex-col justify-between">
-                    <div class="flex justify-between items-start mb-2">
-                        <h3 class="text-sm font-semibold text-gray-500">Ditolak</h3>
+                <!-- Ditolak -->
+                <div class="bg-white rounded-[24px] p-7 transition-all duration-300 hover:-translate-y-1" style="box-shadow: 0 10px 40px -10px rgba(0,0,0,0.06); border: 1px solid #f8fafc;">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <h3 class="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Ditolak</h3>
+                        </div>
                         <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background-color: #fff1f2;">
                             <svg class="w-5 h-5" style="color: #f43f5e;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
                         </div>
                     </div>
                     <div>
-                        <div class="flex items-end gap-3 mb-1">
-                            <div class="text-3xl font-extrabold text-gray-900 tracking-tight">
-                                {{ floor($stats['total_rejected'] / 60) }}<span class="text-lg font-bold text-gray-400 ml-0.5">h</span>
-                                {{ round($stats['total_rejected'] % 60) }}<span class="text-lg font-bold text-gray-400 ml-0.5">m</span>
-                            </div>
+                        <div class="text-3xl font-black text-gray-800 tracking-tighter flex items-baseline gap-1 mb-2">
+                            {{ floor($stats['total_rejected'] / 60) }}<span class="text-lg font-bold text-gray-400">h</span>
+                            {{ round($stats['total_rejected'] % 60) }}<span class="text-lg font-bold text-gray-400">m</span>
                         </div>
                         @php $pctRej = $stats['total_worked'] > 0 ? round(($stats['total_rejected'] / $stats['total_worked']) * 100, 1) : 0; @endphp
-                        <div class="text-xs font-semibold" style="color: #e11d48;">
-                            <span class="px-1.5 py-0.5 rounded mr-1" style="background-color: #ffe4e6;">{{ $pctRej }}%</span> dari total kerja
+                        <div class="flex items-center gap-2">
+                            <span class="px-2 py-1 rounded text-[11px] font-bold" style="background-color: #fff1f2; color: #e11d48;">{{ $pctRej }}%</span>
+                            <span class="text-[11px] font-semibold text-gray-400">dari total durasi</span>
                         </div>
                     </div>
                 </div>
@@ -103,7 +108,9 @@
                         <p class="text-xs font-medium text-gray-400 mt-1">Total Durasi & Approved (Dalam Menit)</p>
                     </div>
                 </div>
-                <div id="admin-trend-chart" class="-ml-2"></div>
+                <div class="overflow-x-auto pb-2" style="scrollbar-width: none;">
+                    <div id="admin-trend-chart" class="-ml-2" style="min-width: 800px;"></div>
+                </div>
             </div>
 
             <div class="overflow-hidden rounded-2xl bg-white border border-gray-100 p-4 shadow-sm sm:p-6">
@@ -221,60 +228,78 @@
             var trendData = @json($trend);
             
             if(trendData.length > 0 && document.querySelector("#admin-trend-chart")) {
-                var categories = trendData.map(item => item.task_date);
-                var workedSeries = trendData.map(item => parseFloat(item.worked).toFixed(1));
-                var approvedSeries = trendData.map(item => parseFloat(item.approved).toFixed(1));
+                var categories = trendData.map(item => {
+                    var d = new Date(item.task_date);
+                    var months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+                    return d.getDate() + ' ' + months[d.getMonth()];
+                });
+                
+                var workedSeries = trendData.map(item => parseFloat(item.worked));
+                var approvedSeries = trendData.map(item => parseFloat(item.approved));
+                var sisaSeries = trendData.map(item => parseFloat(item.worked) - parseFloat(item.approved));
                 
                 var options = {
                     series: [{
-                        name: 'Total Durasi (Menit)',
-                        data: workedSeries
-                    }, {
-                        name: 'Approved (Menit)',
+                        name: 'Approved',
                         data: approvedSeries
+                    }, {
+                        name: 'Sisa Durasi',
+                        data: sisaSeries
                     }],
                     chart: {
                         type: 'bar',
-                        height: 300,
+                        stacked: true,
+                        height: 320,
                         toolbar: { show: false },
                         animations: { enabled: true, easing: 'easeinout', speed: 800 }
                     },
-                    colors: ['#cbd5e1', '#3b82f6'],
+                    colors: ['#3b82f6', '#e2e8f0'],
                     plotOptions: {
                         bar: {
-                            columnWidth: '45%',
+                            columnWidth: '40%',
                             borderRadius: 6,
                             borderRadiusApplication: 'end',
                         }
                     },
                     dataLabels: { enabled: false },
-                    stroke: { show: true, width: 4, colors: ['transparent'] },
+                    stroke: { show: false },
                     xaxis: {
                         categories: categories,
-                        labels: { style: { colors: '#94a3b8', fontSize: '11px', fontWeight: 500 } },
+                        labels: { 
+                            rotate: 0, 
+                            hideOverlappingLabels: false,
+                            style: { colors: '#64748b', fontSize: '11px', fontWeight: 600 } 
+                        },
                         axisBorder: { show: false },
                         axisTicks: { show: false },
-                        crosshairs: {
-                            fill: { type: 'gradient', gradient: { colorFrom: '#D8E3F0', colorTo: '#BED1E6', stops: [0, 100], opacityFrom: 0.4, opacityTo: 0.5 } }
-                        }
                     },
                     yaxis: {
+                        title: { text: 'Total Menit', style: { color: '#94a3b8', fontSize: '10px', fontWeight: 600, cssClass: 'uppercase tracking-widest' } },
                         labels: { style: { colors: '#94a3b8', fontSize: '11px', fontWeight: 500 } }
                     },
                     grid: { borderColor: '#f1f5f9', strokeDashArray: 4, yaxis: { lines: { show: true } }, xaxis: { lines: { show: false } } },
-                    legend: { show: true, position: 'top', horizontalAlign: 'right', markers: { radius: 12 }, itemMargin: { horizontal: 10 } },
+                    legend: { show: false },
                     fill: {
-                        type: ['solid', 'gradient'],
+                        type: ['gradient', 'solid'],
                         gradient: { shade: 'light', type: 'vertical', shadeIntensity: 0.5, gradientToColors: ['#2563eb'], inverseColors: true, opacityFrom: 1, opacityTo: 1, stops: [0, 100] }
                     },
                     tooltip: {
                         shared: true,
-                        intersect: false,
-                        theme: 'light',
-                        style: { fontSize: '12px', fontFamily: 'inherit' },
-                        y: { formatter: function (val) { return val + " Menit" } }
+                        custom: function({series, seriesIndex, dataPointIndex, w}) {
+                            var approved = series[0][dataPointIndex];
+                            var total = workedSeries[dataPointIndex];
+                            return '<div class="p-3 bg-white shadow-xl rounded-xl border border-gray-100 min-w-[140px]">' +
+                                '<div class="font-bold text-gray-800 mb-2 border-b border-gray-100 pb-2">' + w.globals.labels[dataPointIndex] + '</div>' +
+                                '<div class="flex items-center justify-between gap-4 mb-1.5"><span class="text-gray-500 text-xs font-semibold flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>Approved</span> <span class="font-bold text-gray-900">' + approved.toFixed(1) + ' mnt</span></div>' +
+                                '<div class="flex items-center justify-between gap-4"><span class="text-gray-500 text-xs font-semibold flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-gray-300"></span>Total Durasi</span> <span class="font-bold text-gray-900">' + total.toFixed(1) + ' mnt</span></div>' +
+                                '</div>';
+                        }
                     }
                 };
+
+                // Dynamic min-width so it scrolls nicely on many dates
+                var minW = Math.max(800, categories.length * 60);
+                document.getElementById('admin-trend-chart').style.minWidth = minW + 'px';
 
                 var chart = new ApexCharts(document.querySelector("#admin-trend-chart"), options);
                 chart.render();
