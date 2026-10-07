@@ -50,49 +50,49 @@
         </div>
     </x-slot>
 
-    <div class="py-8">
+    <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
             <!-- LEVEL 1: OVERVIEW (TODAY) -->
-            <div class="bg-white overflow-hidden shadow-sm rounded-2xl border border-gray-100 p-6">
-                <h3 class="text-lg font-bold text-gray-900 mb-4 border-b pb-2">Today's Overview</h3>
-                <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
-                        <div class="text-xs font-bold text-gray-500 uppercase mb-1">{{ $t['total_tasks'] }}</div>
+            <div class="bg-white overflow-hidden shadow-sm rounded-2xl border border-gray-100 p-5 sm:p-6">
+                <h3 class="text-base font-extrabold text-gray-900 mb-4">{{ $t['overview'] }}</h3>
+                <div class="flex flex-wrap gap-3 sm:gap-4">
+                    <div class="flex-1 min-w-[130px] bg-gray-50 rounded-xl p-4 border border-gray-100">
+                        <div class="text-[11px] font-bold text-gray-500 uppercase tracking-wide mb-1">{{ $t['total_tasks'] }}</div>
                         <div class="text-2xl font-black text-gray-900">{{ $todayStats['total_tasks'] }}</div>
                     </div>
-                    <div class="bg-indigo-50 rounded-xl p-4 border border-indigo-100">
-                        <div class="text-xs font-bold text-indigo-500 uppercase mb-1">{{ $t['worked'] }}</div>
-                        <div class="text-2xl font-black text-indigo-700">{{ number_format($todayStats['total_worked'], 1) }} <span class="text-sm">{{ $t['min'] }}</span></div>
+                    <div class="flex-1 min-w-[130px] bg-indigo-50/50 rounded-xl p-4 border border-indigo-100">
+                        <div class="text-[11px] font-bold text-indigo-600 uppercase tracking-wide mb-1">{{ $t['worked'] }}</div>
+                        <div class="text-2xl font-black text-indigo-700">{{ number_format($todayStats['total_worked'], 1) }} <span class="text-xs font-semibold">{{ $t['min'] }}</span></div>
                     </div>
-                    <div class="bg-emerald-50 rounded-xl p-4 border border-emerald-100">
-                        <div class="text-xs font-bold text-emerald-600 uppercase mb-1">{{ $t['approved'] }}</div>
-                        <div class="text-2xl font-black text-emerald-700">{{ number_format($todayStats['approved'], 1) }} <span class="text-sm">{{ $t['min'] }}</span></div>
+                    <div class="flex-1 min-w-[130px] bg-emerald-50/50 rounded-xl p-4 border border-emerald-100">
+                        <div class="text-[11px] font-bold text-emerald-600 uppercase tracking-wide mb-1">{{ $t['approved'] }}</div>
+                        <div class="text-2xl font-black text-emerald-700">{{ number_format($todayStats['approved'], 1) }} <span class="text-xs font-semibold">{{ $t['min'] }}</span></div>
                     </div>
-                    <div class="bg-rose-50 rounded-xl p-4 border border-rose-100">
-                        <div class="text-xs font-bold text-rose-600 uppercase mb-1">{{ $t['rejected'] }}</div>
-                        <div class="text-2xl font-black text-rose-700">{{ number_format($todayStats['rejected'], 1) }} <span class="text-sm">{{ $t['min'] }}</span></div>
+                    <div class="flex-1 min-w-[130px] bg-rose-50/50 rounded-xl p-4 border border-rose-100">
+                        <div class="text-[11px] font-bold text-rose-600 uppercase tracking-wide mb-1">{{ $t['rejected'] }}</div>
+                        <div class="text-2xl font-black text-rose-700">{{ number_format($todayStats['rejected'], 1) }} <span class="text-xs font-semibold">{{ $t['min'] }}</span></div>
                     </div>
-                    <div class="bg-yellow-50 rounded-xl p-4 border border-yellow-100">
-                        <div class="text-xs font-bold text-yellow-600 uppercase mb-1">{{ $t['under_review'] }}</div>
-                        <div class="text-2xl font-black text-yellow-700">{{ number_format($todayStats['review'], 1) }} <span class="text-sm">{{ $t['min'] }}</span></div>
+                    <div class="flex-1 min-w-[130px] bg-amber-50/50 rounded-xl p-4 border border-amber-100/60">
+                        <div class="text-[11px] font-bold text-amber-700 uppercase tracking-wide mb-1">{{ $t['under_review'] }}</div>
+                        <div class="text-2xl font-black text-amber-800">{{ number_format($todayStats['review'], 1) }} <span class="text-xs font-semibold">{{ $t['min'] }}</span></div>
                     </div>
                 </div>
             </div>
 
             <!-- LEVEL 2: PERFORMANCE (ALL TIME) -->
-            <div class="bg-white overflow-hidden shadow-sm rounded-2xl border border-gray-100 p-6">
-                <h3 class="text-lg font-bold text-gray-900 mb-4 border-b pb-2">{{ $t['all_time_perf'] }}</h3>
+            <div class="bg-white overflow-hidden shadow-sm rounded-2xl border border-gray-100 p-5 sm:p-6">
+                <h3 class="text-base font-extrabold text-gray-900 mb-5">{{ $t['all_time_perf'] }}</h3>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="flex flex-col justify-center">
-                        <div class="text-sm font-bold text-gray-500 uppercase mb-2">{{ $t['total_accumulated'] }}</div>
-                        <div class="text-5xl font-black text-gray-900">
+                <div class="flex flex-col md:flex-row gap-8 items-center">
+                    <div class="flex-shrink-0 text-center md:text-left w-full md:w-1/3">
+                        <div class="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">{{ $t['total_accumulated'] }}</div>
+                        <div class="text-4xl sm:text-5xl font-black text-gray-900 tracking-tight">
                             {{ floor($allTimeStats['total_worked'] / 60) }}h {{ round($allTimeStats['total_worked'] % 60) }}m
                         </div>
                     </div>
 
-                    <div class="space-y-4">
+                    <div class="w-full md:w-2/3 space-y-4">
                         @php
                             $total = $allTimeStats['total_worked'] > 0 ? $allTimeStats['total_worked'] : 1;
                             $pctApproved = round(($allTimeStats['approved'] / $total) * 100, 1);
@@ -137,10 +137,10 @@
             </div>
 
             <!-- LEVEL 3: TASK HISTORY -->
-            <div class="bg-white overflow-hidden shadow-sm rounded-2xl border border-gray-100 p-6">
-                <h3 class="text-lg font-bold text-gray-900 mb-6 border-b pb-2">{{ $t['history'] }}</h3>
+            <div class="bg-white overflow-hidden shadow-sm rounded-2xl border border-gray-100 p-5 sm:p-6">
+                <h3 class="text-base font-extrabold text-gray-900 mb-5">{{ $t['history'] }}</h3>
                 
-                <div class="space-y-8">
+                <div class="space-y-6">
                     @forelse($history as $date => $tasks)
                         <div x-data="{ open: false }" class="bg-white border border-gray-200/90 rounded-2xl shadow-sm overflow-hidden transition-all hover:border-gray-300">
                             <!-- DAY ACCORDION HEADER (Clickable) -->
