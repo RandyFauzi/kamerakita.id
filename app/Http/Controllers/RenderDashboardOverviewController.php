@@ -45,7 +45,48 @@ class RenderDashboardOverviewController extends Controller
                 $userRank = $this->leaderboardService->getPartnerWeeklyRank($partner->id, 3);
                 $isRankOneThisWeek = $userRank === 1;
 
-                return view('dashboard.worker', compact('partner', 'metrics', 'reports', 'isRankOneThisWeek', 'userRank'));
+                // Astro Data Check
+                $isAstro = str_contains($partner->group_name ?? '', 'ASTRO') || str_contains($partner->group ?? '', 'ASTRO');
+                $astroStats = null;
+                
+                if ($isAstro) {
+                    $atlasWorker = \App\Models\AtlasWorker::where('atlas_email', $user->email)->first();
+                    if ($atlasWorker) {
+                        $statsQuery = \App\Models\AtlasTask::where('atlas_worker_id', $atlasWorker->id);
+                        $totalWorked = $statsQuery->sum('worked_minutes');
+                        $totalApproved = $statsQuery->sum('approved_minutes');
+                        $totalReview = $statsQuery->sum('review_minutes');
+                        $totalRejected = $statsQuery->sum('rejected_minutes');
+                        
+                        $approvalRate = $totalWorked > 0 ? round(($totalApproved / $totalWorked) * 100) : 0;
+                        
+                        $todayWorked = \App\Models\AtlasTask::where('atlas_worker_id', $atlasWorker->id)
+                                        ->whereDate('task_date', \Carbon\Carbon::today())
+                                        ->sum('worked_minutes');
+
+                        $astroStats = [
+                            'worked_hours' => floor($totalWorked / 60) . 'h ' . round($totalWorked % 60) . 'm',
+                            'approved_hours' => floor($totalApproved / 60) . 'h ' . round($totalApproved % 60) . 'm',
+                            'review_hours' => floor($totalReview / 60) . 'h ' . round($totalReview % 60) . 'm',
+                            'rejected_hours' => floor($totalRejected / 60) . 'h ' . round($totalRejected % 60) . 'm',
+                            'approval_rate' => $approvalRate,
+                            'total_worked' => $totalWorked,
+                            'today_worked' => $todayWorked,
+                        ];
+                    } else {
+                        $astroStats = [
+                            'worked_hours' => '0h 0m',
+                            'approved_hours' => '0h 0m',
+                            'review_hours' => '0h 0m',
+                            'rejected_hours' => '0h 0m',
+                            'approval_rate' => 0,
+                            'total_worked' => 0,
+                            'today_worked' => 0,
+                        ];
+                    }
+                }
+
+                return view('dashboard.worker', compact('partner', 'metrics', 'reports', 'isRankOneThisWeek', 'userRank', 'isAstro', 'astroStats'));
             }
 
             if ($partner->partner_role === 'mitra') {

@@ -124,6 +124,59 @@
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 
+                @if(isset($isAstro) && $isAstro)
+                <!-- 1. ATLAS ASTRO STATS -->
+                <div class="bg-indigo-50/50 rounded-[28px] p-2 flex flex-col h-full border border-indigo-100/50">
+                    <div class="text-center py-2 pb-3 flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span class="text-[13px] font-bold text-indigo-700">Statistik Jam Kerja (Atlas V.2)</span>
+                    </div>
+                    <div class="bg-white rounded-[24px] p-5 sm:p-6 flex-grow flex flex-col justify-center border border-indigo-50 shadow-sm">
+                        
+                        <div class="flex justify-between items-center text-center">
+                            <!-- Worked -->
+                            <div class="flex-1">
+                                <h3 class="text-[11px] font-semibold text-slate-400 mb-2 uppercase tracking-wide">Total Durasi</h3>
+                                <div class="text-xl sm:text-2xl font-bold text-slate-800 tracking-tight">
+                                    {{ $astroStats['worked_hours'] }}
+                                </div>
+                            </div>
+                            
+                            <!-- Divider -->
+                            <div class="w-px h-10 bg-slate-100"></div>
+                            
+                            <!-- Approved -->
+                            <div class="flex-1">
+                                <h3 class="text-[11px] font-semibold text-emerald-500 mb-2 uppercase tracking-wide">Disetujui</h3>
+                                <div class="text-xl sm:text-2xl font-bold text-emerald-700 tracking-tight">
+                                    {{ $astroStats['approved_hours'] }}
+                                </div>
+                            </div>
+                            
+                            <!-- Divider -->
+                            <div class="w-px h-10 bg-slate-100"></div>
+                            
+                            <!-- Rate -->
+                            <div class="flex-1">
+                                <h3 class="text-[11px] font-semibold text-slate-400 mb-2 uppercase tracking-wide">Tingkat</h3>
+                                <div class="text-xl sm:text-2xl font-bold text-slate-800 tracking-tight">
+                                    {{ $astroStats['approval_rate'] }}<span class="text-sm sm:text-base text-slate-500 font-bold ml-0.5">%</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Badge at bottom -->
+                        <div class="mt-6 flex justify-start">
+                            <div class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 border border-indigo-100 rounded-full text-[11px] font-bold text-indigo-700 shadow-sm">
+                                <svg class="w-3.5 h-3.5 text-indigo-500" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                                Sinkronisasi otomatis dari Atlas
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @else
                 <!-- 1. Total Kirim vs Approved -->
                 @php
                     $totalSub = $metrics['total_submitted_minutes'];
@@ -179,10 +232,15 @@
                         </div>
                     </div>
                 </div>
+                @endif
 
                 <!-- 2. Target Harian Laps -->
                 @php
-                    $mins = $metrics['today_submitted_minutes'];
+                    if (isset($isAstro) && $isAstro) {
+                        $mins = $astroStats['today_worked'] ?? 0;
+                    } else {
+                        $mins = $metrics['today_submitted_minutes'];
+                    }
                     $hours = floor($mins / 60);
                     $completedLaps = min(3, floor($mins / 120));
                     
