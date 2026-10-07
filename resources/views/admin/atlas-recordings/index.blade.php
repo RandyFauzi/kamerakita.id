@@ -7,32 +7,103 @@
         <div class="space-y-4 sm:space-y-6">
             
             <!-- Stats Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-2">
-                <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
-                    <h3 class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Total Jam Kerja</h3>
-                    <div class="text-2xl font-black text-gray-900">{{ floor($stats['total_worked'] / 60) }}h {{ round($stats['total_worked'] % 60) }}m</div>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-2">
+                <!-- Total Jam Kerja (Main Highlight) -->
+                <div class="rounded-[20px] p-6 relative overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4);">
+                    <div class="absolute right-0 top-0 w-32 h-32 bg-white opacity-5 rounded-full -mr-10 -mt-10 blur-2xl"></div>
+                    
+                    <div class="flex justify-between items-start mb-4 relative z-10">
+                        <h3 class="text-sm font-semibold text-blue-100">Total Jam Kerja</h3>
+                        <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                    </div>
+                    <div class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight relative z-10">
+                        {{ floor($stats['total_worked'] / 60) }}<span class="text-xl font-semibold text-blue-200 ml-1">h</span>
+                        {{ round($stats['total_worked'] % 60) }}<span class="text-xl font-semibold text-blue-200 ml-1">m</span>
+                    </div>
+                    <div class="mt-4 text-xs font-medium text-blue-100 flex items-center gap-1.5 relative z-10">
+                        <span class="px-2 py-0.5 rounded-md bg-white/20">Seluruh Pekerja</span>
+                        Berdasarkan durasi Atlas
+                    </div>
                 </div>
-                <div class="bg-white rounded-2xl border border-emerald-100 p-5 shadow-sm relative overflow-hidden">
-                    <div class="absolute -right-4 -top-4 w-16 h-16 rounded-full bg-emerald-50"></div>
-                    <h3 class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider mb-2 relative z-10">Total Approved</h3>
-                    <div class="text-2xl font-black text-emerald-700 relative z-10">{{ floor($stats['total_approved'] / 60) }}h {{ round($stats['total_approved'] % 60) }}m</div>
+
+                <!-- Approved -->
+                <div class="bg-white rounded-[20px] p-6 border border-gray-100 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg flex flex-col justify-between">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="text-sm font-semibold text-gray-500">Approved</h3>
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background-color: #ecfdf5;">
+                            <svg class="w-5 h-5" style="color: #10b981;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex items-end gap-3 mb-1">
+                            <div class="text-3xl font-extrabold text-gray-900 tracking-tight">
+                                {{ floor($stats['total_approved'] / 60) }}<span class="text-lg font-bold text-gray-400 ml-0.5">h</span>
+                                {{ round($stats['total_approved'] % 60) }}<span class="text-lg font-bold text-gray-400 ml-0.5">m</span>
+                            </div>
+                        </div>
+                        @php $pctApp = $stats['total_worked'] > 0 ? round(($stats['total_approved'] / $stats['total_worked']) * 100, 1) : 0; @endphp
+                        <div class="text-xs font-semibold" style="color: #10b981;">
+                            <span class="px-1.5 py-0.5 rounded mr-1" style="background-color: #ecfdf5;">{{ $pctApp }}%</span> dari total kerja
+                        </div>
+                    </div>
                 </div>
-                <div class="bg-white rounded-2xl border border-amber-100 p-5 shadow-sm relative overflow-hidden">
-                    <div class="absolute -right-4 -top-4 w-16 h-16 rounded-full bg-amber-50"></div>
-                    <h3 class="text-[10px] font-bold text-amber-600 uppercase tracking-wider mb-2 relative z-10">Total Review</h3>
-                    <div class="text-2xl font-black text-amber-700 relative z-10">{{ floor($stats['total_review'] / 60) }}h {{ round($stats['total_review'] % 60) }}m</div>
+
+                <!-- Review -->
+                <div class="bg-white rounded-[20px] p-6 border border-gray-100 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg flex flex-col justify-between">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="text-sm font-semibold text-gray-500">Dalam Ulasan</h3>
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background-color: #fffbeb;">
+                            <svg class="w-5 h-5" style="color: #f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex items-end gap-3 mb-1">
+                            <div class="text-3xl font-extrabold text-gray-900 tracking-tight">
+                                {{ floor($stats['total_review'] / 60) }}<span class="text-lg font-bold text-gray-400 ml-0.5">h</span>
+                                {{ round($stats['total_review'] % 60) }}<span class="text-lg font-bold text-gray-400 ml-0.5">m</span>
+                            </div>
+                        </div>
+                        @php $pctRev = $stats['total_worked'] > 0 ? round(($stats['total_review'] / $stats['total_worked']) * 100, 1) : 0; @endphp
+                        <div class="text-xs font-semibold" style="color: #d97706;">
+                            <span class="px-1.5 py-0.5 rounded mr-1" style="background-color: #fef3c7;">{{ $pctRev }}%</span> dari total kerja
+                        </div>
+                    </div>
                 </div>
-                <div class="bg-white rounded-2xl border border-rose-100 p-5 shadow-sm relative overflow-hidden">
-                    <div class="absolute -right-4 -top-4 w-16 h-16 rounded-full bg-rose-50"></div>
-                    <h3 class="text-[10px] font-bold text-rose-600 uppercase tracking-wider mb-2 relative z-10">Total Rejected</h3>
-                    <div class="text-2xl font-black text-rose-700 relative z-10">{{ floor($stats['total_rejected'] / 60) }}h {{ round($stats['total_rejected'] % 60) }}m</div>
+
+                <!-- Rejected -->
+                <div class="bg-white rounded-[20px] p-6 border border-gray-100 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg flex flex-col justify-between">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="text-sm font-semibold text-gray-500">Ditolak</h3>
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background-color: #fff1f2;">
+                            <svg class="w-5 h-5" style="color: #f43f5e;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex items-end gap-3 mb-1">
+                            <div class="text-3xl font-extrabold text-gray-900 tracking-tight">
+                                {{ floor($stats['total_rejected'] / 60) }}<span class="text-lg font-bold text-gray-400 ml-0.5">h</span>
+                                {{ round($stats['total_rejected'] % 60) }}<span class="text-lg font-bold text-gray-400 ml-0.5">m</span>
+                            </div>
+                        </div>
+                        @php $pctRej = $stats['total_worked'] > 0 ? round(($stats['total_rejected'] / $stats['total_worked']) * 100, 1) : 0; @endphp
+                        <div class="text-xs font-semibold" style="color: #e11d48;">
+                            <span class="px-1.5 py-0.5 rounded mr-1" style="background-color: #ffe4e6;">{{ $pctRej }}%</span> dari total kerja
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <!-- Chart -->
-            <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm mb-2">
-                <h3 class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Grafik Tren Pekerjaan (Menit)</h3>
-                <div id="admin-trend-chart"></div>
+            <div class="bg-white rounded-[20px] border border-gray-100 p-6 shadow-sm mb-4 relative z-0">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h3 class="text-base font-bold text-gray-900">Performance Overview</h3>
+                        <p class="text-xs font-medium text-gray-400 mt-1">Total Durasi & Approved (Dalam Menit)</p>
+                    </div>
+                </div>
+                <div id="admin-trend-chart" class="-ml-2"></div>
             </div>
 
             <div class="overflow-hidden rounded-2xl bg-white border border-gray-100 p-4 shadow-sm sm:p-6">
@@ -156,36 +227,53 @@
                 
                 var options = {
                     series: [{
-                        name: 'Total Durasi',
+                        name: 'Total Durasi (Menit)',
                         data: workedSeries
                     }, {
-                        name: 'Approved',
+                        name: 'Approved (Menit)',
                         data: approvedSeries
                     }],
                     chart: {
-                        type: 'area',
-                        height: 250,
+                        type: 'bar',
+                        height: 300,
                         toolbar: { show: false },
-                        animations: { enabled: true }
+                        animations: { enabled: true, easing: 'easeinout', speed: 800 }
                     },
-                    colors: ['#818cf8', '#10b981'],
-                    fill: {
-                        type: 'gradient',
-                        gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05, stops: [0, 100] }
+                    colors: ['#cbd5e1', '#3b82f6'],
+                    plotOptions: {
+                        bar: {
+                            columnWidth: '45%',
+                            borderRadius: 6,
+                            borderRadiusApplication: 'end',
+                        }
                     },
                     dataLabels: { enabled: false },
-                    stroke: { curve: 'smooth', width: 2 },
+                    stroke: { show: true, width: 4, colors: ['transparent'] },
                     xaxis: {
                         categories: categories,
-                        labels: { style: { colors: '#9ca3af', fontSize: '11px' } },
+                        labels: { style: { colors: '#94a3b8', fontSize: '11px', fontWeight: 500 } },
                         axisBorder: { show: false },
-                        axisTicks: { show: false }
+                        axisTicks: { show: false },
+                        crosshairs: {
+                            fill: { type: 'gradient', gradient: { colorFrom: '#D8E3F0', colorTo: '#BED1E6', stops: [0, 100], opacityFrom: 0.4, opacityTo: 0.5 } }
+                        }
                     },
                     yaxis: {
-                        labels: { style: { colors: '#9ca3af', fontSize: '11px' } }
+                        labels: { style: { colors: '#94a3b8', fontSize: '11px', fontWeight: 500 } }
                     },
-                    grid: { borderColor: '#f3f4f6', strokeDashArray: 4 },
-                    legend: { show: false }
+                    grid: { borderColor: '#f1f5f9', strokeDashArray: 4, yaxis: { lines: { show: true } }, xaxis: { lines: { show: false } } },
+                    legend: { show: true, position: 'top', horizontalAlign: 'right', markers: { radius: 12 }, itemMargin: { horizontal: 10 } },
+                    fill: {
+                        type: ['solid', 'gradient'],
+                        gradient: { shade: 'light', type: 'vertical', shadeIntensity: 0.5, gradientToColors: ['#2563eb'], inverseColors: true, opacityFrom: 1, opacityTo: 1, stops: [0, 100] }
+                    },
+                    tooltip: {
+                        shared: true,
+                        intersect: false,
+                        theme: 'light',
+                        style: { fontSize: '12px', fontFamily: 'inherit' },
+                        y: { formatter: function (val) { return val + " Menit" } }
+                    }
                 };
 
                 var chart = new ApexCharts(document.querySelector("#admin-trend-chart"), options);
