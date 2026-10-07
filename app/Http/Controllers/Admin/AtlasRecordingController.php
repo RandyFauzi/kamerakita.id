@@ -51,7 +51,7 @@ class AtlasRecordingController extends Controller
                             ->limit(90)
                             ->get();
 
-        $recordings = $query->orderBy('task_date', 'desc')
+        $recordings = $query->orderBy('recorded_at', 'desc')
                             ->orderBy('created_at', 'desc')
                             ->paginate(50)
                             ->withQueryString();

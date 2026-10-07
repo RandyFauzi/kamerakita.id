@@ -184,8 +184,8 @@
                             @forelse($recordings as $record)
                                 <tr class="hover:bg-gray-50 transition-colors">
                                     <td class="whitespace-nowrap px-6 py-4">
-                                        <div class="font-bold text-gray-900">{{ \Carbon\Carbon::parse($record->task_date)->format('d M Y') }}</div>
-                                        <div class="local-time text-[11px] text-gray-500 font-medium" data-utc="{{ $record->created_at ? $record->created_at->toISOString() : '' }}">-</div>
+                                        <div class="local-date font-bold text-gray-900" data-utc="{{ \->recorded_at ? \Carbon\Carbon::parse(\->recorded_at)->toISOString() : (\->created_at ? \->created_at->toISOString() : '') }}">{{ \Carbon\Carbon::parse(\->task_date)->format('d M Y') }}</div>
+                                        <div class="local-time text-[11px] text-gray-500 font-medium" data-utc="{{ \->recorded_at ? \Carbon\Carbon::parse(\->recorded_at)->toISOString() : (\->created_at ? \->created_at->toISOString() : '') }}">-</div>
                                     </td>
                                     <td class="px-6 py-4 font-medium text-gray-900">{{ $record->atlasWorker->atlas_email ?? '-' }}</td>
                                     <td class="px-6 py-4">
@@ -403,6 +403,15 @@
                 var offset = -date.getTimezoneOffset() / 60;
                 return offset === 7 ? 'WIB' : (offset === 8 ? 'WITA' : (offset === 9 ? 'WIT' : 'Lokal'));
             }
+
+            document.querySelectorAll('.local-date').forEach(function(el) {
+                var utcStr = el.getAttribute('data-utc');
+                if(utcStr) {
+                    var d = new Date(utcStr);
+                    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                    el.innerText = d.getDate().toString().padStart(2, '0') + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
+                }
+            });
 
             document.querySelectorAll('.local-time').forEach(function(el) {
                 var utcStr = el.getAttribute('data-utc');
