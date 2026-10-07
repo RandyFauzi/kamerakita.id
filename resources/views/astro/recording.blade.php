@@ -34,7 +34,7 @@
                     <div class="text-xs text-gray-500 font-medium">{{ $t['data_updated'] }}</div>
                     <div class="text-sm font-bold {{ $worker->last_synced_at->diffInHours(now()) > 3 ? 'text-amber-600' : 'text-emerald-600' }} flex items-center gap-1.5 justify-end">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        {{ $worker->last_synced_at->format('d M Y, H:i') }}
+                        {{ $worker->last_synced_at->timezone('Asia/Makassar')->format('d M Y, H:i') }} WITA
                         @if($worker->last_synced_at->diffInHours(now()) > 3)
                             <span class="text-xs bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded ml-1">{{ $t['delayed'] }}</span>
                         @else
