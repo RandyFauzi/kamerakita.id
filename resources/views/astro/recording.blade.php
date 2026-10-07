@@ -123,40 +123,49 @@
                                 </div>
                             </div>
 
-                            <!-- Progress Bars -->
-                            <div class="space-y-4">
-                                <!-- Approved -->
-                                <div>
-                                    <div class="flex justify-between text-xs font-bold mb-1.5">
-                                        <span class="text-emerald-700 flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-emerald-500 shadow-sm"></div> {{ $t['approved'] }}</span>
-                                        <span class="text-gray-900">{{ floor($allTimeStats['approved'] / 60) }}h {{ round($allTimeStats['approved'] % 60) }}m <span class="text-gray-400 font-medium">({{ $pctApproved }}%)</span></span>
-                                    </div>
-                                    <div class="w-full bg-gray-100/80 rounded-full h-2 overflow-hidden shadow-inner">
-                                        <div class="h-2 rounded-full shadow-sm transition-all duration-1000" style="width: {{ $pctApproved }}%; background: linear-gradient(to right, #34d399, #10b981);"></div>
-                                    </div>
+                            <!-- Unified Progress Bar & Stats List -->
+                            <div class="mt-2 bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h4 class="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Detail Status Waktu</h4>
                                 </div>
                                 
-                                <!-- Under Review -->
-                                <div>
-                                    <div class="flex justify-between text-xs font-bold mb-1.5">
-                                        <span class="text-amber-600 flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-amber-400 shadow-sm"></div> {{ $t['under_review'] }}</span>
-                                        <span class="text-gray-900">{{ floor($allTimeStats['review'] / 60) }}h {{ round($allTimeStats['review'] % 60) }}m <span class="text-gray-400 font-medium">({{ $pctReview }}%)</span></span>
-                                    </div>
-                                    <div class="w-full bg-gray-100/80 rounded-full h-2 overflow-hidden shadow-inner">
-                                        <div class="h-2 rounded-full shadow-sm transition-all duration-1000" style="width: {{ $pctReview }}%; background: linear-gradient(to right, #fcd34d, #fbbf24);"></div>
-                                    </div>
+                                <!-- Unified Bar -->
+                                <div class="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden flex mb-5 shadow-inner">
+                                    <div class="h-full transition-all duration-1000" style="width: {{ $pctApproved }}%; background: linear-gradient(to right, #34d399, #10b981);"></div>
+                                    <div class="h-full transition-all duration-1000" style="width: {{ $pctReview }}%; background: linear-gradient(to right, #fcd34d, #fbbf24);"></div>
+                                    <div class="h-full transition-all duration-1000" style="width: {{ $pctRejected }}%; background: linear-gradient(to right, #fb7185, #f43f5e);"></div>
                                 </div>
-                                
-                                <!-- Rejected -->
-                                <div>
-                                    <div class="flex justify-between text-xs font-bold mb-1.5">
-                                        <span class="text-rose-600 flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-rose-500 shadow-sm"></div> {{ $t['rejected'] }}</span>
-                                        <span class="text-gray-900">{{ floor($allTimeStats['rejected'] / 60) }}h {{ round($allTimeStats['rejected'] % 60) }}m <span class="text-gray-400 font-medium">({{ $pctRejected }}%)</span></span>
-                                    </div>
-                                    <div class="w-full bg-gray-100/80 rounded-full h-2 overflow-hidden shadow-inner">
-                                        <div class="h-2 rounded-full shadow-sm transition-all duration-1000" style="width: {{ $pctRejected }}%; background: linear-gradient(to right, #fb7185, #f43f5e);"></div>
-                                    </div>
-                                </div>
+
+                                <!-- Modern List -->
+                                <ul class="space-y-3">
+                                    <li class="flex justify-between items-center text-sm font-medium">
+                                        <span class="flex items-center gap-3 text-gray-600 text-xs">
+                                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm"></span> {{ $t['approved'] }}
+                                        </span>
+                                        <div class="text-right flex items-center gap-2">
+                                            <span class="text-gray-900 font-bold text-xs">{{ floor($allTimeStats['approved'] / 60) }}h {{ round($allTimeStats['approved'] % 60) }}m</span>
+                                            <span class="text-emerald-600 text-[10px] font-bold bg-emerald-50 px-1.5 py-0.5 rounded w-10 text-center">{{ $pctApproved }}%</span>
+                                        </div>
+                                    </li>
+                                    <li class="flex justify-between items-center text-sm font-medium border-t border-gray-50 pt-3">
+                                        <span class="flex items-center gap-3 text-gray-600 text-xs">
+                                            <span class="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-sm"></span> {{ $t['under_review'] }}
+                                        </span>
+                                        <div class="text-right flex items-center gap-2">
+                                            <span class="text-gray-900 font-bold text-xs">{{ floor($allTimeStats['review'] / 60) }}h {{ round($allTimeStats['review'] % 60) }}m</span>
+                                            <span class="text-amber-600 text-[10px] font-bold bg-amber-50 px-1.5 py-0.5 rounded w-10 text-center">{{ $pctReview }}%</span>
+                                        </div>
+                                    </li>
+                                    <li class="flex justify-between items-center text-sm font-medium border-t border-gray-50 pt-3">
+                                        <span class="flex items-center gap-3 text-gray-600 text-xs">
+                                            <span class="w-2.5 h-2.5 rounded-full bg-rose-500 shadow-sm"></span> {{ $t['rejected'] }}
+                                        </span>
+                                        <div class="text-right flex items-center gap-2">
+                                            <span class="text-gray-900 font-bold text-xs">{{ floor($allTimeStats['rejected'] / 60) }}h {{ round($allTimeStats['rejected'] % 60) }}m</span>
+                                            <span class="text-rose-600 text-[10px] font-bold bg-rose-50 px-1.5 py-0.5 rounded w-10 text-center">{{ $pctRejected }}%</span>
+                                        </div>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -224,90 +233,91 @@
                                 <div class="flex justify-between items-center text-xs font-bold text-gray-500 uppercase tracking-wider pb-2 border-b border-gray-100">
                                     <span>{{ $t['task_list'] }} ({{ $tasks->count() }})</span>
                                 </div>
-                                <div class="flex flex-col space-y-3">
+                                <!-- VERTICAL TIMELINE -->
+                                <div class="relative border-l-2 border-gray-100 ml-4 space-y-6 mt-4 pb-2">
                                     @foreach($tasks as $task)
                                         @php
                                             $total = $task->worked_minutes > 0 ? $task->worked_minutes : 1;
-                                            $pctApproved = ($task->approved_minutes / $total) * 100;
-                                            $pctRejected = ($task->rejected_minutes / $total) * 100;
-                                            $pctReview = ($task->review_minutes / $total) * 100;
+                                            
+                                            // Determine timeline node color
+                                            $nodeColor = 'bg-indigo-400';
+                                            $nodeRing = 'ring-indigo-50';
+                                            
+                                            if ($task->rejected_minutes > 0) {
+                                                $nodeColor = 'bg-rose-500';
+                                                $nodeRing = 'ring-rose-50';
+                                            } elseif ($task->review_minutes > 0 && $task->approved_minutes == 0) {
+                                                $nodeColor = 'bg-amber-400';
+                                                $nodeRing = 'ring-amber-50';
+                                            } elseif ($task->approved_minutes > 0 && $task->rejected_minutes == 0) {
+                                                $nodeColor = 'bg-emerald-500';
+                                                $nodeRing = 'ring-emerald-50';
+                                            }
                                         @endphp
-                                        <div class="border border-gray-200 rounded-xl p-4 bg-gray-50/30 hover:bg-gray-50 transition-colors">
-                                            <!-- Top Line: Task Name & Total Duration -->
-                                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 gap-2">
-                                                <div class="flex items-center gap-2">
-                                                    <span class="bg-gray-200 text-gray-500 font-bold text-[10px] w-5 h-5 flex items-center justify-center rounded-full shrink-0">{{ $loop->iteration }}</span>
-                                                    <h5 class="font-bold text-sm text-gray-900" title="{{ $task->task_name }}">{{ $task->task_name }}</h5>
-                                                    @if($task->recorded_at)
-                                                        <span class="text-[11px] text-gray-400 font-medium whitespace-nowrap">&bull; {{ \Carbon\Carbon::parse($task->recorded_at)->format('M d, Y, h:i A') }} UTC</span>
+                                        
+                                        <div class="relative pl-6">
+                                            <!-- Timeline Dot -->
+                                            <div class="absolute -left-[9px] top-2.5 w-4 h-4 rounded-full border-[3px] border-white shadow-sm ring-4 {{ $nodeColor }} {{ $nodeRing }}"></div>
+                                            
+                                            <!-- Task Content Card -->
+                                            <div class="bg-gray-50/50 hover:bg-gray-50 border border-gray-100 rounded-xl p-4 transition-colors">
+                                                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 gap-2">
+                                                    <h5 class="font-bold text-sm text-gray-900 leading-tight" title="{{ $task->task_name }}">{{ $task->task_name }}</h5>
+                                                    <div class="flex items-center gap-2 mt-1 sm:mt-0">
+                                                        @if($task->recorded_at)
+                                                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider bg-white border border-gray-100 px-2 py-0.5 rounded-md">{{ \Carbon\Carbon::parse($task->recorded_at)->format('H:i') }} UTC</span>
+                                                        @endif
+                                                        <span class="text-xs font-black text-gray-800 bg-white border border-gray-200 px-2.5 py-1 rounded-md shadow-sm">{{ number_format($task->worked_minutes, 1) }} Min</span>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- Breakdown -->
+                                                <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] font-semibold mt-3">
+                                                    @if($task->approved_minutes > 0)
+                                                        <div class="text-emerald-700 flex items-center gap-1.5">
+                                                            <div class="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+                                                            {{ number_format($task->approved_minutes, 1) }} {{ $t['min'] }} App
+                                                        </div>
+                                                    @endif
+                                                    @if($task->review_minutes > 0)
+                                                        <div class="text-amber-700 flex items-center gap-1.5">
+                                                            <div class="w-1.5 h-1.5 rounded-full bg-amber-400"></div>
+                                                            {{ number_format($task->review_minutes, 1) }} {{ $t['min'] }} Rev
+                                                        </div>
+                                                    @endif
+                                                    @if($task->rejected_minutes > 0)
+                                                        <div class="text-rose-700 flex items-center gap-1.5">
+                                                            <div class="w-1.5 h-1.5 rounded-full bg-rose-500"></div>
+                                                            {{ number_format($task->rejected_minutes, 1) }} {{ $t['min'] }} Rej
+                                                        </div>
                                                     @endif
                                                 </div>
-                                                <div class="text-right">
-                                                    <span class="text-xs font-black text-gray-900">{{ number_format($task->worked_minutes, 1) }} {{ $t['min'] }}</span>
-                                                    <span class="text-[11px] text-gray-400 font-medium">({{ round($task->worked_minutes / 60, 2) }}h)</span>
-                                                </div>
-                                            </div>
-                                            
-                                            <!-- Progress Bar -->
-                                            <div class="h-1.5 w-full bg-gray-200 rounded-full overflow-hidden flex mb-2.5">
-                                                @if($task->approved_minutes > 0)
-                                                    <div class="bg-emerald-500 h-full" style="width: {{ $pctApproved }}%"></div>
-                                                @endif
-                                                @if($task->review_minutes > 0)
-                                                    <div class="bg-amber-400 h-full" style="width: {{ $pctReview }}%"></div>
-                                                @endif
-                                                @if($task->rejected_minutes > 0)
-                                                    <div class="bg-rose-500 h-full" style="width: {{ $pctRejected }}%"></div>
-                                                @endif
-                                            </div>
-                                            
-                                            <!-- Details Line -->
-                                            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] font-medium">
-                                                @if($task->approved_minutes > 0)
-                                                    <div class="text-emerald-700 flex items-center gap-1">
-                                                        <div class="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
-                                                        {{ number_format($task->approved_minutes, 1) }} {{ $t['min'] }} {{ strtolower($t['approved']) }} ({{ round($task->approved_minutes / 60, 2) }}h)
-                                                    </div>
-                                                @endif
                                                 
-                                                @if($task->rejected_minutes > 0)
-                                                    <div class="text-rose-700 flex items-center gap-1">
-                                                        <div class="w-1.5 h-1.5 rounded-full bg-rose-500"></div>
-                                                        {{ number_format($task->rejected_minutes, 1) }} {{ $t['min'] }} {{ strtolower($t['rejected']) }} ({{ round($task->rejected_minutes / 60, 2) }}h)
-                                                    </div>
-                                                @endif
-                                                
-                                                @if($task->review_minutes > 0)
-                                                    <div class="text-amber-700 flex items-center gap-1">
-                                                        <div class="w-1.5 h-1.5 rounded-full bg-amber-400"></div>
-                                                        {{ number_format($task->review_minutes, 1) }} {{ $t['min'] }} {{ strtolower($t['review']) }} ({{ round($task->review_minutes / 60, 2) }}h)
+                                                <!-- Notes -->
+                                                @if($task->notes)
+                                                    @php
+                                                        $noteStyle = 'bg-indigo-50 border-indigo-100 text-indigo-800';
+                                                        $iconStyle = 'text-indigo-500';
+                                                        $noteTitle = 'Catatan';
+                                                        if ($task->rejected_minutes > 0) {
+                                                            $noteStyle = 'bg-rose-50 border-rose-100 text-rose-800';
+                                                            $iconStyle = 'text-rose-500';
+                                                            $noteTitle = 'Alasan Penolakan';
+                                                        } elseif ($task->review_minutes > 0 && $task->approved_minutes == 0) {
+                                                            $noteStyle = 'bg-amber-50 border-amber-100 text-amber-800';
+                                                            $iconStyle = 'text-amber-500';
+                                                            $noteTitle = 'Status Review';
+                                                        }
+                                                    @endphp
+                                                    <div class="mt-3 text-xs p-3 rounded-xl border flex items-start gap-2.5 {{ $noteStyle }}">
+                                                        <svg class="w-4 h-4 shrink-0 mt-0.5 {{ $iconStyle }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                                        <div>
+                                                            <span class="font-bold uppercase tracking-wider text-[9px] opacity-80 block mb-0.5">{{ $noteTitle }}</span>
+                                                            <span class="font-medium leading-relaxed">{{ $task->notes }}</span>
+                                                        </div>
                                                     </div>
                                                 @endif
                                             </div>
-                                            
-                                            @if($task->notes)
-                                                @php
-                                                    $noteStyle = 'bg-indigo-50 border-indigo-100 text-indigo-800';
-                                                    $iconStyle = 'text-indigo-500';
-                                                    $noteTitle = 'Info / Notes';
-                                                    if ($task->rejected_minutes > 0) {
-                                                        $noteStyle = 'bg-rose-50 border-rose-100 text-rose-800';
-                                                        $iconStyle = 'text-rose-500';
-                                                        $noteTitle = 'Alasan Penolakan (Reject Reason)';
-                                                    } elseif ($task->review_minutes > 0 && $task->approved_minutes == 0) {
-                                                        $noteStyle = 'bg-amber-50 border-amber-100 text-amber-800';
-                                                        $iconStyle = 'text-amber-500';
-                                                        $noteTitle = 'Status Review';
-                                                    }
-                                                @endphp
-                                                <div class="mt-3 text-xs p-3 rounded-xl border flex items-start gap-2.5 {{ $noteStyle }}">
-                                                    <svg class="w-4 h-4 shrink-0 mt-0.5 {{ $iconStyle }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                                    <div>
-                                                        <span class="font-bold uppercase tracking-wider text-[10px] opacity-75 block mb-0.5">{{ $noteTitle }}</span>
-                                                        <span class="font-medium leading-relaxed">{{ $task->notes }}</span>
-                                                    </div>
-                                                </div>
-                                            @endif
                                         </div>
                                     @endforeach
                                 </div>
