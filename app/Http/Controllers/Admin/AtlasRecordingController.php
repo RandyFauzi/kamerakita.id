@@ -48,7 +48,7 @@ class AtlasRecordingController extends Controller
         $trend = $chartQuery->selectRaw('task_date, SUM(worked_minutes) as worked, SUM(approved_minutes) as approved, SUM(review_minutes) as review, SUM(rejected_minutes) as rejected')
                             ->groupBy('task_date')
                             ->orderBy('task_date', 'asc')
-                            ->limit(30)
+                            ->limit(90)
                             ->get();
 
         $recordings = $query->orderBy('task_date', 'desc')

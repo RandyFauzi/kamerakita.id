@@ -118,11 +118,18 @@
 
             <!-- Chart -->
             <div class="bg-white rounded-[20px] border border-gray-100 p-6 shadow-sm mb-4 relative z-0">
-                <div class="flex justify-between items-center mb-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                     <div>
                         <h3 class="text-base font-bold text-gray-900">Performance Overview</h3>
                         <p class="text-xs font-medium text-gray-400 mt-1">Total Durasi & Approved (Dalam Menit)</p>
                     </div>
+                    @if(count($trend) > 0)
+                    <div class="inline-flex bg-gray-100/80 p-1 rounded-xl items-center shadow-inner">
+                        <button onclick="updateChartTimeframe('daily')" id="btn-tf-daily" class="tf-btn px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all focus:outline-none bg-white shadow-sm text-blue-600">Harian</button>
+                        <button onclick="updateChartTimeframe('weekly')" id="btn-tf-weekly" class="tf-btn px-3.5 py-1.5 text-xs font-bold text-gray-500 rounded-lg transition-all hover:text-gray-900 focus:outline-none">Mingguan</button>
+                        <button onclick="updateChartTimeframe('monthly')" id="btn-tf-monthly" class="tf-btn px-3.5 py-1.5 text-xs font-bold text-gray-500 rounded-lg transition-all hover:text-gray-900 focus:outline-none">Bulanan</button>
+                    </div>
+                    @endif
                 </div>
                 <div class="overflow-x-auto pb-2" style="scrollbar-width: none;">
                     @if(count($trend) > 0)
@@ -244,28 +251,103 @@
     <!-- ApexCharts for Admin -->
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script>
+        window.adminTrendChart = null;
+        window.rawTrendData = [];
+        window.currentWorkedSeries = [];
+
+        window.updateChartTimeframe = function(tf) {
+            if(!window.adminTrendChart || !window.rawTrendData.length) return;
+            
+            document.querySelectorAll('.tf-btn').forEach(el => {
+                el.classList.remove('bg-white', 'shadow-sm', 'text-blue-600');
+                el.classList.add('text-gray-500');
+            });
+            let btn = document.getElementById('btn-tf-' + tf);
+            if(btn) {
+                btn.classList.remove('text-gray-500');
+                btn.classList.add('bg-white', 'shadow-sm', 'text-blue-600');
+            }
+
+            var grouped = [];
+            var months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+
+            if (tf === 'daily') {
+                grouped = window.rawTrendData.slice(-30).map(item => {
+                    var d = new Date(item.task_date);
+                    return {
+                        label: d.getDate() + ' ' + months[d.getMonth()],
+                        worked: parseFloat(item.worked) || 0,
+                        approved: parseFloat(item.approved) || 0
+                    };
+                });
+            } else if (tf === 'weekly') {
+                var weeksMap = {};
+                window.rawTrendData.forEach(item => {
+                    var d = new Date(item.task_date);
+                    var day = d.getDay();
+                    var diff = d.getDate() - day + (day === 0 ? -6 : 1); 
+                    var monday = new Date(d.setDate(diff));
+                    var key = monday.getDate() + ' ' + months[monday.getMonth()];
+                    if(!weeksMap[key]) weeksMap[key] = { worked: 0, approved: 0 };
+                    weeksMap[key].worked += (parseFloat(item.worked) || 0);
+                    weeksMap[key].approved += (parseFloat(item.approved) || 0);
+                });
+                for(var k in weeksMap) {
+                    grouped.push({ label: 'Mgg ' + k, worked: weeksMap[k].worked, approved: weeksMap[k].approved });
+                }
+                grouped = grouped.slice(-12);
+            } else if (tf === 'monthly') {
+                var mthsMap = {};
+                window.rawTrendData.forEach(item => {
+                    var d = new Date(item.task_date);
+                    var key = months[d.getMonth()] + ' ' + d.getFullYear();
+                    if(!mthsMap[key]) mthsMap[key] = { worked: 0, approved: 0 };
+                    mthsMap[key].worked += (parseFloat(item.worked) || 0);
+                    mthsMap[key].approved += (parseFloat(item.approved) || 0);
+                });
+                for(var k in mthsMap) {
+                    grouped.push({ label: k, worked: mthsMap[k].worked, approved: mthsMap[k].approved });
+                }
+            }
+
+            var cats = grouped.map(item => item.label);
+            var appS = grouped.map(item => item.approved);
+            var sisaS = grouped.map(item => item.worked - item.approved);
+            window.currentWorkedSeries = grouped.map(item => item.worked);
+
+            var minW = Math.max(800, cats.length * 60);
+            document.getElementById('admin-trend-chart').style.minWidth = minW + 'px';
+
+            window.adminTrendChart.updateOptions({ xaxis: { categories: cats } });
+            window.adminTrendChart.updateSeries([
+                { name: 'Approved', data: appS },
+                { name: 'Sisa Durasi', data: sisaS }
+            ]);
+        };
+
         document.addEventListener("DOMContentLoaded", function() {
             var trendData = @json($trend);
+            window.rawTrendData = trendData;
             
             if(trendData.length > 0 && document.querySelector("#admin-trend-chart")) {
-                var categories = trendData.map(item => {
-                    var d = new Date(item.task_date);
-                    var months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
-                    return d.getDate() + ' ' + months[d.getMonth()];
-                });
+                var months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
                 
-                var workedSeries = trendData.map(item => parseFloat(item.worked));
-                var approvedSeries = trendData.map(item => parseFloat(item.approved));
-                var sisaSeries = trendData.map(item => parseFloat(item.worked) - parseFloat(item.approved));
+                var initialData = trendData.slice(-30).map(item => {
+                    var d = new Date(item.task_date);
+                    return {
+                        label: d.getDate() + ' ' + months[d.getMonth()],
+                        worked: parseFloat(item.worked) || 0,
+                        approved: parseFloat(item.approved) || 0
+                    };
+                });
+
+                var categories = initialData.map(i => i.label);
+                window.currentWorkedSeries = initialData.map(i => i.worked);
+                var approvedSeries = initialData.map(i => i.approved);
+                var sisaSeries = initialData.map(i => i.worked - i.approved);
                 
                 var options = {
-                    series: [{
-                        name: 'Approved',
-                        data: approvedSeries
-                    }, {
-                        name: 'Sisa Durasi',
-                        data: sisaSeries
-                    }],
+                    series: [{ name: 'Approved', data: approvedSeries }, { name: 'Sisa Durasi', data: sisaSeries }],
                     chart: {
                         type: 'bar',
                         stacked: true,
@@ -274,51 +356,42 @@
                         animations: { enabled: true, easing: 'easeinout', speed: 800 }
                     },
                     colors: ['#3b82f6', '#e2e8f0'],
-                    plotOptions: {
-                        bar: {
-                            columnWidth: '40%',
-                            borderRadius: 6,
-                            borderRadiusApplication: 'end',
-                        }
-                    },
+                    plotOptions: { bar: { columnWidth: '40%', borderRadius: 6, borderRadiusApplication: 'end' } },
                     dataLabels: { enabled: false },
                     stroke: { show: false },
                     xaxis: {
                         categories: categories,
-                        labels: { 
-                            rotate: 0, 
-                            hideOverlappingLabels: false,
-                            style: { colors: '#64748b', fontSize: '11px', fontWeight: 600 } 
-                        },
-                        axisBorder: { show: false },
-                        axisTicks: { show: false },
+                        labels: { rotate: 0, hideOverlappingLabels: false, style: { colors: '#64748b', fontSize: '11px', fontWeight: 600 } },
+                        axisBorder: { show: false }, axisTicks: { show: false },
                     },
                     yaxis: {
                         title: { text: 'Total Menit', style: { color: '#94a3b8', fontSize: '10px', fontWeight: 600, cssClass: 'uppercase tracking-widest' } },
-                        labels: { style: { colors: '#94a3b8', fontSize: '11px', fontWeight: 500 } }
+                        labels: { 
+                            style: { colors: '#94a3b8', fontSize: '11px', fontWeight: 500 },
+                            formatter: function (val) { return Math.round(val); }
+                        }
                     },
                     grid: { borderColor: '#f1f5f9', strokeDashArray: 4, yaxis: { lines: { show: true } }, xaxis: { lines: { show: false } } },
                     legend: { show: true, position: 'top', horizontalAlign: 'right' },
                     tooltip: {
                         custom: function({series, seriesIndex, dataPointIndex, w}) {
                             var approved = series[0][dataPointIndex];
-                            var total = workedSeries[dataPointIndex];
+                            var total = window.currentWorkedSeries[dataPointIndex];
                             return '<div class="p-3 bg-white shadow-xl rounded-xl border border-gray-100 min-w-[140px]">' +
                                 '<div class="font-bold text-gray-800 mb-2 border-b border-gray-100 pb-2">' + w.globals.labels[dataPointIndex] + '</div>' +
-                                '<div class="flex items-center justify-between gap-4 mb-1.5"><span class="text-gray-500 text-xs font-semibold flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>Approved</span> <span class="font-bold text-gray-900">' + approved.toFixed(1) + ' mnt</span></div>' +
-                                '<div class="flex items-center justify-between gap-4"><span class="text-gray-500 text-xs font-semibold flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-gray-300"></span>Total Durasi</span> <span class="font-bold text-gray-900">' + total.toFixed(1) + ' mnt</span></div>' +
+                                '<div class="flex items-center justify-between gap-4 mb-1.5"><span class="text-gray-500 text-xs font-semibold flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>Approved</span> <span class="font-bold text-gray-900">' + (approved||0).toFixed(1) + ' mnt</span></div>' +
+                                '<div class="flex items-center justify-between gap-4"><span class="text-gray-500 text-xs font-semibold flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-gray-300"></span>Total Durasi</span> <span class="font-bold text-gray-900">' + (total||0).toFixed(1) + ' mnt</span></div>' +
                                 '</div>';
                         }
                     }
                 };
 
-                // Dynamic min-width so it scrolls nicely on many dates
                 var minW = Math.max(800, categories.length * 60);
                 document.getElementById('admin-trend-chart').style.minWidth = minW + 'px';
 
                 try {
-                    var chart = new ApexCharts(document.querySelector("#admin-trend-chart"), options);
-                    chart.render();
+                    window.adminTrendChart = new ApexCharts(document.querySelector("#admin-trend-chart"), options);
+                    window.adminTrendChart.render();
                 } catch (e) {
                     console.error("ApexCharts Render Error:", e);
                     document.querySelector("#admin-trend-chart").innerHTML = "<p class='text-red-500 text-sm'>Failed to load chart: " + e.message + "</p>";
