@@ -4,11 +4,10 @@
             <h2 class="font-bold text-xl sm:text-2xl text-gray-800 leading-tight">Atlas Recordings</h2>
             @php
                 $lastSync = \App\Models\AtlasTask::max('updated_at');
-                $lastSyncText = $lastSync ? \Carbon\Carbon::parse($lastSync)->timezone('Asia/Makassar')->format('d M Y, H:i') . ' WITA' : '-';
             @endphp
             <div class="inline-flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-gray-100 shadow-sm text-sm font-medium text-gray-600">
                 <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                Update Terakhir: <span class="font-bold text-gray-800">{{ $lastSyncText }}</span>
+                Update Terakhir: <span id="last-sync-time" data-utc="{{ $lastSync ? \Carbon\Carbon::parse($lastSync)->toISOString() : '' }}" class="font-bold text-gray-800">-</span>
             </div>
         </div>
     </x-slot>
@@ -173,7 +172,7 @@
                                 <tr class="hover:bg-gray-50 transition-colors">
                                     <td class="whitespace-nowrap px-6 py-4">
                                         <div class="font-bold text-gray-900">{{ \Carbon\Carbon::parse($record->task_date)->format('d M Y') }}</div>
-                                        <div class="text-[11px] text-gray-500 font-medium">{{ $record->created_at ? $record->created_at->format('H:i') . ' WITA' : '-' }}</div>
+                                        <div class="local-time text-[11px] text-gray-500 font-medium" data-utc="{{ $record->created_at ? $record->created_at->toISOString() : '' }}">-</div>
                                     </td>
                                     <td class="px-6 py-4 font-medium text-gray-900">{{ $record->atlasWorker->atlas_email ?? '-' }}</td>
                                     <td class="px-6 py-4">
@@ -318,6 +317,29 @@
 
                 var chart = new ApexCharts(document.querySelector("#admin-trend-chart"), options);
                 chart.render();
+            }
+
+            // Convert UTC times to local browser time (WIB/WITA/WIT dynamically)
+            function getLocalTZ(date) {
+                var offset = -date.getTimezoneOffset() / 60;
+                return offset === 7 ? 'WIB' : (offset === 8 ? 'WITA' : (offset === 9 ? 'WIT' : 'Lokal'));
+            }
+
+            document.querySelectorAll('.local-time').forEach(function(el) {
+                var utcStr = el.getAttribute('data-utc');
+                if(utcStr) {
+                    var d = new Date(utcStr);
+                    var timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+                    el.innerText = timeStr + ' ' + getLocalTZ(d);
+                }
+            });
+
+            var headerSync = document.getElementById('last-sync-time');
+            if(headerSync && headerSync.dataset.utc) {
+                var d2 = new Date(headerSync.dataset.utc);
+                var timeStr2 = d2.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+                var dateStr2 = d2.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+                headerSync.innerText = dateStr2 + ', ' + timeStr2 + ' ' + getLocalTZ(d2);
             }
         });
     </script>
