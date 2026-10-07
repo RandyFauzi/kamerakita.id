@@ -132,7 +132,7 @@
                                         <span class="text-gray-900">{{ floor($allTimeStats['approved'] / 60) }}h {{ round($allTimeStats['approved'] % 60) }}m <span class="text-gray-400 font-medium">({{ $pctApproved }}%)</span></span>
                                     </div>
                                     <div class="w-full bg-gray-100/80 rounded-full h-2 overflow-hidden shadow-inner">
-                                        <div class="bg-gradient-to-r from-emerald-400 to-emerald-500 h-2 rounded-full shadow-sm transition-all duration-1000" style="width: {{ $pctApproved }}%"></div>
+                                        <div class="h-2 rounded-full shadow-sm transition-all duration-1000" style="width: {{ $pctApproved }}%; background: linear-gradient(to right, #34d399, #10b981);"></div>
                                     </div>
                                 </div>
                                 
@@ -143,7 +143,7 @@
                                         <span class="text-gray-900">{{ floor($allTimeStats['review'] / 60) }}h {{ round($allTimeStats['review'] % 60) }}m <span class="text-gray-400 font-medium">({{ $pctReview }}%)</span></span>
                                     </div>
                                     <div class="w-full bg-gray-100/80 rounded-full h-2 overflow-hidden shadow-inner">
-                                        <div class="bg-gradient-to-r from-amber-300 to-amber-400 h-2 rounded-full shadow-sm transition-all duration-1000" style="width: {{ $pctReview }}%"></div>
+                                        <div class="h-2 rounded-full shadow-sm transition-all duration-1000" style="width: {{ $pctReview }}%; background: linear-gradient(to right, #fcd34d, #fbbf24);"></div>
                                     </div>
                                 </div>
                                 
@@ -154,7 +154,7 @@
                                         <span class="text-gray-900">{{ floor($allTimeStats['rejected'] / 60) }}h {{ round($allTimeStats['rejected'] % 60) }}m <span class="text-gray-400 font-medium">({{ $pctRejected }}%)</span></span>
                                     </div>
                                     <div class="w-full bg-gray-100/80 rounded-full h-2 overflow-hidden shadow-inner">
-                                        <div class="bg-gradient-to-r from-rose-400 to-rose-500 h-2 rounded-full shadow-sm transition-all duration-1000" style="width: {{ $pctRejected }}%"></div>
+                                        <div class="h-2 rounded-full shadow-sm transition-all duration-1000" style="width: {{ $pctRejected }}%; background: linear-gradient(to right, #fb7185, #f43f5e);"></div>
                                     </div>
                                 </div>
                             </div>
@@ -213,7 +213,14 @@
                             </div>
 
                             <!-- DAY COLLAPSIBLE CONTENT -->
-                            <div x-show="open" x-collapse class="p-4 sm:p-5 bg-white space-y-4" style="display: none;">
+                            <div x-show="open" 
+                                 x-transition:enter="transition ease-out duration-300"
+                                 x-transition:enter-start="opacity-0 -translate-y-4"
+                                 x-transition:enter-end="opacity-100 translate-y-0"
+                                 x-transition:leave="transition ease-in duration-200"
+                                 x-transition:leave-start="opacity-100 translate-y-0"
+                                 x-transition:leave-end="opacity-0 -translate-y-4"
+                                 class="p-4 sm:p-5 bg-white space-y-4" style="display: none;">
                                 <div class="flex justify-between items-center text-xs font-bold text-gray-500 uppercase tracking-wider pb-2 border-b border-gray-100">
                                     <span>{{ $t['task_list'] }} ({{ $tasks->count() }})</span>
                                 </div>
