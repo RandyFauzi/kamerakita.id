@@ -292,11 +292,7 @@
                         labels: { style: { colors: '#94a3b8', fontSize: '11px', fontWeight: 500 } }
                     },
                     grid: { borderColor: '#f1f5f9', strokeDashArray: 4, yaxis: { lines: { show: true } }, xaxis: { lines: { show: false } } },
-                    legend: { show: false },
-                    fill: {
-                        type: 'solid',
-                        opacity: 1
-                    },
+                    legend: { show: true, position: 'top', horizontalAlign: 'right' },
                     tooltip: {
                         shared: true,
                         custom: function({series, seriesIndex, dataPointIndex, w}) {
@@ -315,8 +311,13 @@
                 var minW = Math.max(800, categories.length * 60);
                 document.getElementById('admin-trend-chart').style.minWidth = minW + 'px';
 
-                var chart = new ApexCharts(document.querySelector("#admin-trend-chart"), options);
-                chart.render();
+                try {
+                    var chart = new ApexCharts(document.querySelector("#admin-trend-chart"), options);
+                    chart.render();
+                } catch (e) {
+                    console.error("ApexCharts Render Error:", e);
+                    document.querySelector("#admin-trend-chart").innerHTML = "<p class='text-red-500 text-sm'>Failed to load chart: " + e.message + "</p>";
+                }
             }
 
             // Convert UTC times to local browser time (WIB/WITA/WIT dynamically)
