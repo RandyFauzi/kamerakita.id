@@ -293,30 +293,7 @@
                                                     @endif
                                                 </div>
                                                 
-                                                <!-- Notes -->
-                                                @if($task->notes)
-                                                    @php
-                                                        $noteStyle = 'bg-indigo-50 border-indigo-100 text-indigo-800';
-                                                        $iconStyle = 'text-indigo-500';
-                                                        $noteTitle = 'Catatan';
-                                                        if ($task->rejected_minutes > 0) {
-                                                            $noteStyle = 'bg-rose-50 border-rose-100 text-rose-800';
-                                                            $iconStyle = 'text-rose-500';
-                                                            $noteTitle = 'Alasan Penolakan';
-                                                        } elseif ($task->review_minutes > 0 && $task->approved_minutes == 0) {
-                                                            $noteStyle = 'bg-amber-50 border-amber-100 text-amber-800';
-                                                            $iconStyle = 'text-amber-500';
-                                                            $noteTitle = 'Status Review';
-                                                        }
-                                                    @endphp
-                                                    <div class="mt-3 text-xs p-3 rounded-xl border flex items-start gap-2.5 {{ $noteStyle }}">
-                                                        <svg class="w-4 h-4 shrink-0 mt-0.5 {{ $iconStyle }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                                        <div>
-                                                            <span class="font-bold uppercase tracking-wider text-[9px] opacity-80 block mb-0.5">{{ $noteTitle }}</span>
-                                                            <span class="font-medium leading-relaxed">{{ $task->notes }}</span>
-                                                        </div>
-                                                    </div>
-                                                @endif
+
                                             </div>
                                         </div>
                                     @endforeach
