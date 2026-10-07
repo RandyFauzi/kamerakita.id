@@ -18,7 +18,7 @@
         
         <div class="flex-1 w-full">
             <h3 class="text-xl font-bold text-gray-900 mb-2" x-text="bannerTitle">Aktifkan Notifikasi Real-time</h3>
-            <p class="text-sm text-gray-500 leading-relaxed" x-text="bannerMessage" x-html="bannerMessageHtml">
+            <p class="text-sm text-gray-500 leading-relaxed"  x-html="bannerMessageHtml">
                 Nyalakan notifikasi untuk selalu mendapat pengumuman terbaru dari Admin dan tidak ketinggalan informasi penting!
             </p>
         </div>
