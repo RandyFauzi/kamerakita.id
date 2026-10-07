@@ -332,10 +332,11 @@
         document.addEventListener("DOMContentLoaded", function() {
             if (document.querySelector("#performance-chart")) {
                 var options = {
-                    series: [{{ isset($pctApproved) ? $pctApproved : 0 }}, {{ isset($pctReview) ? $pctReview : 0 }}, {{ isset($pctRejected) ? $pctRejected : 0 }}],
+                    series: [{{ isset($pctApproved) ? round($pctApproved, 1) : 0 }}],
                     chart: {
-                        type: 'donut',
-                        height: 280,
+                        type: 'radialBar',
+                        height: 320,
+                        offsetY: -10,
                         animations: {
                             enabled: true,
                             easing: 'easeinout',
@@ -345,54 +346,48 @@
                         },
                         sparkline: { enabled: true }
                     },
-                    labels: ['{{ $t["approved"] ?? "Disetujui" }}', '{{ $t["under_review"] ?? "Dalam Ulasan" }}', '{{ $t["rejected"] ?? "Ditolak" }}'],
-                    colors: ['#10b981', '#fbbf24', '#f43f5e'],
+                    colors: ['#10b981'],
                     plotOptions: {
-                        pie: {
-                            donut: {
-                                size: '78%',
-                                labels: {
+                        radialBar: {
+                            startAngle: -90,
+                            endAngle: 90,
+                            track: {
+                                background: "#f3f4f6",
+                                strokeWidth: '100%',
+                                margin: 0,
+                                dropShadow: {
+                                    enabled: true,
+                                    top: 0,
+                                    left: 0,
+                                    color: '#999',
+                                    opacity: 0.1,
+                                    blur: 3
+                                }
+                            },
+                            dataLabels: {
+                                name: {
                                     show: true,
-                                    name: {
-                                        show: true,
-                                        fontSize: '11px',
-                                        fontFamily: 'inherit',
-                                        fontWeight: 800,
-                                        color: '#9ca3af',
-                                        offsetY: -15
-                                    },
-                                    value: {
-                                        show: true,
-                                        fontSize: '36px',
-                                        fontFamily: 'inherit',
-                                        fontWeight: 900,
-                                        color: '#111827',
-                                        offsetY: 5,
-                                        formatter: function (val) { return val + "%" }
-                                    },
-                                    total: {
-                                        show: true,
-                                        showAlways: true,
-                                        label: 'APPROVAL RATE',
-                                        fontSize: '11px',
-                                        fontFamily: 'inherit',
-                                        fontWeight: 800,
-                                        color: '#9ca3af',
-                                        formatter: function (w) {
-                                            return "{{ isset($pctApproved) ? round($pctApproved) : 0 }}%"
-                                        }
-                                    }
+                                    fontSize: '11px',
+                                    fontFamily: 'inherit',
+                                    fontWeight: 800,
+                                    color: '#9ca3af',
+                                    offsetY: 25
+                                },
+                                value: {
+                                    show: true,
+                                    fontSize: '36px',
+                                    fontFamily: 'inherit',
+                                    fontWeight: 900,
+                                    color: '#111827',
+                                    offsetY: -5,
+                                    formatter: function (val) { return val + "%" }
                                 }
                             }
                         }
                     },
-                    dataLabels: { enabled: false },
-                    stroke: { width: 0 },
-                    legend: { show: false },
-                    tooltip: {
-                        theme: 'light',
-                        y: { formatter: function(value) { return value + "%" } }
-                    }
+                    labels: ['APPROVAL RATE'],
+                    stroke: { lineCap: 'round' },
+                    tooltip: { enabled: false }
                 };
 
                 var chart = new ApexCharts(document.querySelector("#performance-chart"), options);
