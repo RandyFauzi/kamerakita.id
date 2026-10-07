@@ -32,11 +32,28 @@ class AtlasRecordingController extends Controller
             $query->where('task_date', '<=', $request->input('end_date'));
         }
 
+        // Aggregate Stats
+        $statsQuery = clone $query;
+        $stats = [
+            'total_worked' => $statsQuery->sum('worked_minutes'),
+            'total_approved' => $statsQuery->sum('approved_minutes'),
+            'total_review' => $statsQuery->sum('review_minutes'),
+            'total_rejected' => $statsQuery->sum('rejected_minutes'),
+        ];
+
+        // Chart Data (Group by date)
+        $chartQuery = clone $query;
+        $trend = $chartQuery->selectRaw('task_date, SUM(worked_minutes) as worked, SUM(approved_minutes) as approved, SUM(review_minutes) as review, SUM(rejected_minutes) as rejected')
+                            ->groupBy('task_date')
+                            ->orderBy('task_date', 'asc')
+                            ->limit(30)
+                            ->get();
+
         $recordings = $query->orderBy('task_date', 'desc')
                             ->orderBy('created_at', 'desc')
                             ->paginate(50)
                             ->withQueryString();
 
-        return view('admin.atlas-recordings.index', compact('recordings'));
+        return view('admin.atlas-recordings.index', compact('recordings', 'stats', 'trend'));
     }
 }
