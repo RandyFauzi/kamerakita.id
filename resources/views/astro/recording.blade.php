@@ -237,10 +237,10 @@
                                 <div class="relative border-l-2 border-gray-100 ml-4 space-y-6 mt-4 pb-2">
                                     @foreach($tasks as $task)
                                         @php
-                                            $total = $task->worked_minutes > 0 ? $task->worked_minutes : 1;
-                                            $pctApproved = ($task->approved_minutes / $total) * 100;
-                                            $pctRejected = ($task->rejected_minutes / $total) * 100;
-                                            $pctReview = ($task->review_minutes / $total) * 100;
+                                            $taskTotal = $task->worked_minutes > 0 ? $task->worked_minutes : 1;
+                                            $taskPctApproved = ($task->approved_minutes / $taskTotal) * 100;
+                                            $taskPctRejected = ($task->rejected_minutes / $taskTotal) * 100;
+                                            $taskPctReview = ($task->review_minutes / $taskTotal) * 100;
                                             
                                             // Determine timeline node color
                                             $nodeColor = 'bg-indigo-400';
@@ -277,13 +277,13 @@
                                                 <!-- Progress Bar -->
                                                 <div class="h-1.5 w-full bg-gray-200 rounded-full overflow-hidden flex mb-2.5">
                                                     @if($task->approved_minutes > 0)
-                                                        <div class="h-full" style="width: {{ $pctApproved }}%; background-color: #10b981;"></div>
+                                                        <div class="h-full" style="width: {{ $taskPctApproved }}%; background-color: #10b981;"></div>
                                                     @endif
                                                     @if($task->review_minutes > 0)
-                                                        <div class="h-full" style="width: {{ $pctReview }}%; background-color: #fbbf24;"></div>
+                                                        <div class="h-full" style="width: {{ $taskPctReview }}%; background-color: #fbbf24;"></div>
                                                     @endif
                                                     @if($task->rejected_minutes > 0)
-                                                        <div class="h-full" style="width: {{ $pctRejected }}%; background-color: #f43f5e;"></div>
+                                                        <div class="h-full" style="width: {{ $taskPctRejected }}%; background-color: #f43f5e;"></div>
                                                     @endif
                                                 </div>
                                                 
