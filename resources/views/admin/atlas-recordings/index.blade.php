@@ -3,8 +3,8 @@
         <h2 class="font-bold text-xl sm:text-2xl text-gray-800 leading-tight">Atlas Recordings</h2>
     </x-slot>
 
-    <div class="py-2 sm:py-8">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-4 sm:space-y-6">
+    <div class="py-2 sm:py-6">
+        <div class="space-y-4 sm:space-y-6">
             
             <div class="overflow-hidden rounded-2xl bg-white border border-gray-100 p-4 shadow-sm sm:p-6">
                 <!-- Header / Filters -->
@@ -49,6 +49,9 @@
                                 <tr class="hover:bg-gray-50 transition-colors">
                                     <td class="whitespace-nowrap px-6 py-4">
                                         <div class="font-bold text-gray-900">{{ \Carbon\Carbon::parse($record->task_date)->format('d M Y') }}</div>
+                                        @if($record->recorded_at)
+                                            <div class="text-[11px] text-gray-500 font-medium">{{ \Carbon\Carbon::parse($record->recorded_at)->format('H:i') }} UTC</div>
+                                        @endif
                                     </td>
                                     <td class="px-6 py-4 font-medium text-gray-900">{{ $record->atlasWorker->atlas_email ?? '-' }}</td>
                                     <td class="px-6 py-4">

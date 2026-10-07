@@ -50,8 +50,8 @@
         </div>
     </x-slot>
 
-    <div class="py-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    <div class="py-2">
+        <div class="space-y-6">
 
             <!-- LEVEL 1: OVERVIEW (TODAY) -->
             <div class="bg-white overflow-hidden shadow-sm rounded-2xl border border-gray-100 p-5 sm:p-6">
