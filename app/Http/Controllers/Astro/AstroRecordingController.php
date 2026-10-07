@@ -66,6 +66,7 @@ class AstroRecordingController extends Controller
             // Get History Grouped By Date
             $history = $worker->atlasTasks()
                 ->orderBy('task_date', 'desc')
+                ->orderBy('recorded_at', 'desc')
                 ->orderBy('created_at', 'desc')
                 ->get()
                 ->groupBy('task_date');

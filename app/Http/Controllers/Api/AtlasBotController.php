@@ -53,6 +53,7 @@ class AtlasBotController extends Controller
                 ],
                 [
                     'task_date' => date('Y-m-d', strtotime($rec['recorded_utc'])),
+                    'recorded_at' => date('Y-m-d H:i:s', strtotime($rec['recorded_utc'])),
                     'task_name' => $rec['task'],
                     'worked_minutes' => $total,
                     'approved_minutes' => $approved,

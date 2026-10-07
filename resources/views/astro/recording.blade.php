@@ -200,6 +200,9 @@
                                                 <div class="flex items-center gap-2">
                                                     <span class="bg-gray-200 text-gray-500 font-bold text-[10px] w-5 h-5 flex items-center justify-center rounded-full shrink-0">{{ $loop->iteration }}</span>
                                                     <h5 class="font-bold text-sm text-gray-900" title="{{ $task->task_name }}">{{ $task->task_name }}</h5>
+                                                    @if($task->recorded_at)
+                                                        <span class="text-[11px] text-gray-400 font-medium whitespace-nowrap">&bull; {{ \Carbon\Carbon::parse($task->recorded_at)->format('M d, Y, h:i A') }} UTC</span>
+                                                    @endif
                                                 </div>
                                                 <div class="text-right">
                                                     <span class="text-xs font-black text-gray-900">{{ number_format($task->worked_minutes, 1) }} {{ $t['min'] }}</span>
