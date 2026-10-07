@@ -19,24 +19,31 @@
             <!-- Stats Grid -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
                 <!-- Total Jam Kerja (Main Highlight) -->
-                <div class="rounded-[24px] p-7 relative overflow-hidden transition-all duration-300 hover:-translate-y-1" style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); box-shadow: 0 12px 30px -10px rgba(37, 99, 235, 0.4);">
-                    <!-- Decorative minimal rings -->
-                    <svg style="position: absolute; right: -24px; top: -24px; width: 128px; height: 128px;" class="text-white opacity-10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle></svg>
+                <div class="rounded-[24px] p-7 relative overflow-hidden transition-all duration-300 hover:-translate-y-1" style="background: linear-gradient(135deg, #2563eb 0%, #1e3a8a 100%); box-shadow: 0 12px 30px -10px rgba(37, 99, 235, 0.5);">
+                    <!-- Soft top-right ambient glow instead of hard rings -->
+                    <div class="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-blue-400 opacity-20 blur-3xl"></div>
                     
-                    <div class="flex justify-between items-start mb-6 relative z-10">
+                    <div class="flex justify-between items-start mb-8 relative z-10">
                         <div>
-                            <h3 class="text-[11px] font-bold text-blue-200 uppercase tracking-widest">Total Jam Kerja</h3>
+                            <h3 class="text-xs font-semibold text-blue-100 uppercase tracking-wider">Total Jam Kerja</h3>
                         </div>
-                        <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-md shadow-sm">
+                        <div class="w-10 h-10 rounded-2xl bg-white/10 border border-white/10 flex items-center justify-center backdrop-blur-md">
                             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         </div>
                     </div>
-                    <div class="relative z-10">
-                        <div class="text-4xl font-black text-white tracking-tighter drop-shadow-sm flex items-baseline gap-1">
-                            {{ floor($stats['total_worked'] / 60) }}<span class="text-xl font-bold text-blue-200">h</span>
-                            {{ round($stats['total_worked'] % 60) }}<span class="text-xl font-bold text-blue-200">m</span>
+                    
+                    <div class="relative z-10 mt-2">
+                        <div class="text-4xl sm:text-5xl font-black text-white tracking-tight flex items-baseline gap-1.5 drop-shadow-sm">
+                            {{ floor($stats['total_worked'] / 60) }}<span class="text-2xl font-bold text-blue-200/80">h</span>
+                            {{ round($stats['total_worked'] % 60) }}<span class="text-2xl font-bold text-blue-200/80">m</span>
                         </div>
-                        <p class="text-[11px] font-medium text-blue-200 mt-2 opacity-90">Total durasi Atlas V.2 dari seluruh pekerja</p>
+                        
+                        <div class="mt-6 flex items-center gap-2">
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-bold bg-white/15 text-white border border-white/10 tracking-wide uppercase">
+                                Seluruh Pekerja
+                            </span>
+                            <span class="text-[11px] font-medium text-blue-200/80">Durasi Atlas V.2</span>
+                        </div>
                     </div>
                 </div>
 
