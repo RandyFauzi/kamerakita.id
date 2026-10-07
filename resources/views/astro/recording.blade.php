@@ -140,29 +140,29 @@
                                 <ul class="space-y-3">
                                     <li class="flex justify-between items-center text-sm font-medium">
                                         <span class="flex items-center gap-3 text-gray-600 text-xs">
-                                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm"></span> {{ $t['approved'] }}
+                                            <span class="w-2.5 h-2.5 rounded-full shadow-sm" style="background-color: #10b981;"></span> {{ $t['approved'] }}
                                         </span>
                                         <div class="text-right flex items-center gap-2">
                                             <span class="text-gray-900 font-bold text-xs">{{ floor($allTimeStats['approved'] / 60) }}h {{ round($allTimeStats['approved'] % 60) }}m</span>
-                                            <span class="text-emerald-600 text-[10px] font-bold bg-emerald-50 px-1.5 py-0.5 rounded w-10 text-center">{{ $pctApproved }}%</span>
+                                            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded w-10 text-center" style="color: #059669; background-color: #ecfdf5;">{{ $pctApproved }}%</span>
                                         </div>
                                     </li>
                                     <li class="flex justify-between items-center text-sm font-medium border-t border-gray-50 pt-3">
                                         <span class="flex items-center gap-3 text-gray-600 text-xs">
-                                            <span class="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-sm"></span> {{ $t['under_review'] }}
+                                            <span class="w-2.5 h-2.5 rounded-full shadow-sm" style="background-color: #fbbf24;"></span> {{ $t['under_review'] }}
                                         </span>
                                         <div class="text-right flex items-center gap-2">
                                             <span class="text-gray-900 font-bold text-xs">{{ floor($allTimeStats['review'] / 60) }}h {{ round($allTimeStats['review'] % 60) }}m</span>
-                                            <span class="text-amber-600 text-[10px] font-bold bg-amber-50 px-1.5 py-0.5 rounded w-10 text-center">{{ $pctReview }}%</span>
+                                            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded w-10 text-center" style="color: #d97706; background-color: #fffbeb;">{{ $pctReview }}%</span>
                                         </div>
                                     </li>
                                     <li class="flex justify-between items-center text-sm font-medium border-t border-gray-50 pt-3">
                                         <span class="flex items-center gap-3 text-gray-600 text-xs">
-                                            <span class="w-2.5 h-2.5 rounded-full bg-rose-500 shadow-sm"></span> {{ $t['rejected'] }}
+                                            <span class="w-2.5 h-2.5 rounded-full shadow-sm" style="background-color: #f43f5e;"></span> {{ $t['rejected'] }}
                                         </span>
                                         <div class="text-right flex items-center gap-2">
                                             <span class="text-gray-900 font-bold text-xs">{{ floor($allTimeStats['rejected'] / 60) }}h {{ round($allTimeStats['rejected'] % 60) }}m</span>
-                                            <span class="text-rose-600 text-[10px] font-bold bg-rose-50 px-1.5 py-0.5 rounded w-10 text-center">{{ $pctRejected }}%</span>
+                                            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded w-10 text-center" style="color: #e11d48; background-color: #fff1f2;">{{ $pctRejected }}%</span>
                                         </div>
                                     </li>
                                 </ul>
@@ -193,8 +193,8 @@
                                  @click="open = !open">
                                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-xl bg-indigo-100 text-indigo-700 font-extrabold text-xs flex items-center justify-center shrink-0">
-                                            H{{ $loop->iteration }}
+                                        <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-500 flex items-center justify-center shrink-0 border border-indigo-100 shadow-sm">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                         </div>
                                         
                                         <div class="flex items-center gap-1.5 bg-white border border-gray-200 px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-700 shadow-sm">
