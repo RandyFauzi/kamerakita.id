@@ -466,6 +466,14 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <div class="flex items-center justify-end gap-2">
+                                                @if($partner->partner_role === 'worker' || str_contains($partner->group_name, 'ASTRO'))
+                                                <a href="{{ route('admin.recordings.index', ['search' => $partner->user?->email ?? $partner->mitra_id]) }}" class="p-1.5 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition" title="Lihat Laporan Pekerjaan (Recording)">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                                    </svg>
+                                                </a>
+                                                @endif
                                                 <a href="{{ route('partners.edit', $partner) }}" class="p-1.5 text-gray-500 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition" title="Edit">
                                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
@@ -531,7 +539,12 @@
                                                                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border {{ $child->statusBadgeClasses() }}">{{ $child->statusLabel() }}</span>
                                                                     </td>
                                                                     <td class="px-6 py-3.5 whitespace-nowrap text-right text-xs">
-                                                                        <a href="{{ route('partners.edit', $child) }}" class="text-indigo-600 hover:text-indigo-900 font-semibold px-2 py-1 rounded hover:bg-indigo-50 transition">Edit</a>
+                                                                        <div class="flex items-center justify-end gap-2">
+                                                                            @if($child->partner_role === 'worker' || str_contains($child->group_name, 'ASTRO'))
+                                                                            <a href="{{ route('admin.recordings.index', ['search' => $child->user?->email ?? $child->mitra_id]) }}" class="text-indigo-600 hover:text-indigo-900 font-semibold px-2 py-1 rounded hover:bg-indigo-50 transition" title="Lihat Laporan (Recording)">Lihat Record</a>
+                                                                            @endif
+                                                                            <a href="{{ route('partners.edit', $child) }}" class="text-indigo-600 hover:text-indigo-900 font-semibold px-2 py-1 rounded hover:bg-indigo-50 transition">Edit</a>
+                                                                        </div>
                                                                     </td>
                                                                 </tr>
                                                                 @endforeach
