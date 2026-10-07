@@ -115,57 +115,90 @@
                 
                 <div class="space-y-8">
                     @forelse($history as $date => $tasks)
-                        <div>
-                            <div class="flex items-center gap-3 mb-4">
-                                <h4 class="font-bold text-gray-800">{{ \Carbon\Carbon::parse($date)->format('l, d M Y') }}</h4>
-                                <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full font-bold">{{ $tasks->count() }} Tasks</span>
-                                <span class="text-xs bg-indigo-50 text-indigo-700 px-2 py-1 rounded-full font-bold">{{ number_format($tasks->sum('worked_minutes'), 1) }} min total</span>
-                            </div>
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                @foreach($tasks as $task)
-                                    <div class="border rounded-xl p-4 hover:shadow-md transition-shadow bg-white">
-                                        <div class="flex justify-between items-start mb-2">
-                                            <h5 class="font-bold text-sm text-gray-900 line-clamp-2" title="{{ $task->task_name }}">{{ $task->task_name }}</h5>
-                                            @if($task->status === 'APPROVED')
-                                                <span class="inline-flex items-center rounded-full bg-emerald-50 px-2 py-1 text-[10px] font-bold text-emerald-700 ring-1 ring-inset ring-emerald-600/20">APPROVED</span>
-                                            @elseif($task->status === 'REJECTED')
-                                                <span class="inline-flex items-center rounded-full bg-rose-50 px-2 py-1 text-[10px] font-bold text-rose-700 ring-1 ring-inset ring-rose-600/20">REJECTED</span>
-                                            @elseif($task->status === 'PARTIALLY_APPROVED')
-                                                <span class="inline-flex items-center rounded-full bg-amber-50 px-2 py-1 text-[10px] font-bold text-amber-700 ring-1 ring-inset ring-amber-600/20">PARTIAL</span>
-                                            @else
-                                                <span class="inline-flex items-center rounded-full bg-yellow-50 px-2 py-1 text-[10px] font-bold text-yellow-800 ring-1 ring-inset ring-yellow-600/20">REVIEW</span>
-                                            @endif
+                        <div x-data="{ open: false }" class="bg-white border border-gray-200/90 rounded-2xl shadow-sm overflow-hidden transition-all hover:border-gray-300">
+                            <!-- DAY ACCORDION HEADER (Clickable) -->
+                            <div class="p-4 bg-gray-50/70 border-b border-gray-100 cursor-pointer hover:bg-gray-100/60 transition-colors select-none"
+                                 @click="open = !open">
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-xl bg-indigo-100 text-indigo-700 font-extrabold text-xs flex items-center justify-center shrink-0">
+                                            H{{ $loop->iteration }}
                                         </div>
                                         
-                                        <div class="text-xs text-gray-500 font-medium mb-3">
-                                            Duration: {{ number_format($task->worked_minutes, 1) }} min
+                                        <div class="flex items-center gap-1.5 bg-white border border-gray-200 px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-700 shadow-sm">
+                                            <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                            <span>{{ \Carbon\Carbon::parse($date)->format('d M Y') }}</span>
                                         </div>
-                                        
-                                        <div class="space-y-1">
-                                            @if($task->approved_minutes > 0)
-                                                <div class="flex items-center text-xs">
-                                                    <svg class="w-3.5 h-3.5 mr-1.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                                    <span class="text-gray-600">Approved <span class="font-bold text-gray-900">{{ number_format($task->approved_minutes, 1) }}</span></span>
-                                                </div>
-                                            @endif
-                                            
-                                            @if($task->rejected_minutes > 0)
-                                                <div class="flex items-center text-xs">
-                                                    <svg class="w-3.5 h-3.5 mr-1.5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                                                    <span class="text-gray-600">Rejected <span class="font-bold text-gray-900">{{ number_format($task->rejected_minutes, 1) }}</span></span>
-                                                </div>
-                                            @endif
-                                            
-                                            @if($task->review_minutes > 0)
-                                                <div class="flex items-center text-xs">
-                                                    <svg class="w-3.5 h-3.5 mr-1.5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                                    <span class="text-gray-600">Review <span class="font-bold text-gray-900">{{ number_format($task->review_minutes, 1) }}</span></span>
-                                                </div>
-                                            @endif
+
+                                        <span class="bg-gray-200/70 text-gray-600 text-[11px] font-extrabold px-2 py-0.5 rounded-full">{{ $tasks->count() }} Task</span>
+                                    </div>
+
+                                    <div class="flex items-center gap-3 self-end sm:self-center">
+                                        <!-- Day Total Duration -->
+                                        <div class="text-right">
+                                            <span class="text-xs font-black text-gray-900">{{ number_format($tasks->sum('worked_minutes'), 1) }} mnt</span>
+                                            <span class="text-[11px] text-gray-400 font-medium">({{ floor($tasks->sum('worked_minutes') / 60) }}h {{ round($tasks->sum('worked_minutes') % 60) }}m)</span>
+                                        </div>
+
+                                        <!-- Chevron Icon -->
+                                        <div class="w-6 h-6 rounded-lg bg-white border border-gray-200 flex items-center justify-center text-gray-400 transition-transform duration-200"
+                                             :class="open ? 'rotate-180' : ''">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                                         </div>
                                     </div>
-                                @endforeach
+                                </div>
+                            </div>
+
+                            <!-- DAY COLLAPSIBLE CONTENT -->
+                            <div x-show="open" x-collapse class="p-4 sm:p-5 bg-white space-y-4" style="display: none;">
+                                <div class="flex justify-between items-center text-xs font-bold text-gray-500 uppercase tracking-wider pb-2 border-b border-gray-100">
+                                    <span>Daftar Tugas / Task ({{ $tasks->count() }})</span>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    @foreach($tasks as $task)
+                                        <div class="border rounded-xl p-4 hover:shadow-md transition-shadow bg-white">
+                                            <div class="flex justify-between items-start mb-2">
+                                                <h5 class="font-bold text-sm text-gray-900 line-clamp-2" title="{{ $task->task_name }}">{{ $task->task_name }}</h5>
+                                                @if($task->status === 'APPROVED')
+                                                    <span class="inline-flex items-center rounded-full bg-emerald-50 px-2 py-1 text-[10px] font-bold text-emerald-700 ring-1 ring-inset ring-emerald-600/20">APPROVED</span>
+                                                @elseif($task->status === 'REJECTED')
+                                                    <span class="inline-flex items-center rounded-full bg-rose-50 px-2 py-1 text-[10px] font-bold text-rose-700 ring-1 ring-inset ring-rose-600/20">REJECTED</span>
+                                                @elseif($task->status === 'PARTIALLY_APPROVED')
+                                                    <span class="inline-flex items-center rounded-full bg-amber-50 px-2 py-1 text-[10px] font-bold text-amber-700 ring-1 ring-inset ring-amber-600/20">PARTIAL</span>
+                                                @else
+                                                    <span class="inline-flex items-center rounded-full bg-yellow-50 px-2 py-1 text-[10px] font-bold text-yellow-800 ring-1 ring-inset ring-yellow-600/20">REVIEW</span>
+                                                @endif
+                                            </div>
+                                            
+                                            <div class="text-xs text-gray-500 font-medium mb-3">
+                                                Duration: {{ number_format($task->worked_minutes, 1) }} min
+                                            </div>
+                                            
+                                            <div class="space-y-1">
+                                                @if($task->approved_minutes > 0)
+                                                    <div class="flex items-center text-xs">
+                                                        <svg class="w-3.5 h-3.5 mr-1.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                        <span class="text-gray-600">Approved <span class="font-bold text-gray-900">{{ number_format($task->approved_minutes, 1) }}</span></span>
+                                                    </div>
+                                                @endif
+                                                
+                                                @if($task->rejected_minutes > 0)
+                                                    <div class="flex items-center text-xs">
+                                                        <svg class="w-3.5 h-3.5 mr-1.5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                                        <span class="text-gray-600">Rejected <span class="font-bold text-gray-900">{{ number_format($task->rejected_minutes, 1) }}</span></span>
+                                                    </div>
+                                                @endif
+                                                
+                                                @if($task->review_minutes > 0)
+                                                    <div class="flex items-center text-xs">
+                                                        <svg class="w-3.5 h-3.5 mr-1.5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                                        <span class="text-gray-600">Review <span class="font-bold text-gray-900">{{ number_format($task->review_minutes, 1) }}</span></span>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
                             </div>
                         </div>
                     @empty
