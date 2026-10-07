@@ -89,56 +89,99 @@
             <div class="bg-white overflow-hidden shadow-sm rounded-2xl border border-gray-100 p-5 sm:p-6">
                 <h3 class="text-base font-extrabold text-gray-900 mb-5">{{ $t['all_time_perf'] }}</h3>
                 
-                <div class="flex flex-col md:flex-row gap-8 items-center">
-                    <div class="flex-shrink-0 text-center md:text-left w-full md:w-1/3">
-                        <div class="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">{{ $t['total_accumulated'] }}</div>
-                        <div class="text-4xl sm:text-5xl font-black text-gray-900 tracking-tight">
-                            {{ floor($allTimeStats['total_worked'] / 60) }}h {{ round($allTimeStats['total_worked'] % 60) }}m
-                        </div>
-                    </div>
-
-                    <div class="w-full md:w-2/3 space-y-4">
-                        @php
-                            $total = $allTimeStats['total_worked'] > 0 ? $allTimeStats['total_worked'] : 1;
-                            $pctApproved = round(($allTimeStats['approved'] / $total) * 100, 1);
-                            $pctRejected = round(($allTimeStats['rejected'] / $total) * 100, 1);
-                            $pctReview = round(($allTimeStats['review'] / $total) * 100, 1);
-                        @endphp
+                @if($allTimeStats['total_worked'] > 0)
+                    @php
+                        $total = $allTimeStats['total_worked'];
+                        $pctApproved = round(($allTimeStats['approved'] / $total) * 100, 1);
+                        $pctRejected = round(($allTimeStats['rejected'] / $total) * 100, 1);
+                        $pctReview = round(($allTimeStats['review'] / $total) * 100, 1);
                         
-                        <!-- Approved Bar -->
-                        <div>
-                            <div class="flex justify-between text-sm mb-1">
-                                <span class="font-bold text-emerald-700">{{ $t['approved'] }}</span>
-                                <span class="font-bold text-gray-700">{{ floor($allTimeStats['approved'] / 60) }}h {{ round($allTimeStats['approved'] % 60) }}m ({{ $pctApproved }}%)</span>
-                            </div>
-                            <div class="w-full bg-gray-100 rounded-full h-2.5">
-                                <div class="bg-emerald-500 h-2.5 rounded-full" style="width: {{ $pctApproved }}%"></div>
+                        $statusBadge = ['text' => 'Perlu Ditingkatkan', 'class' => 'text-rose-600 bg-rose-50 border-rose-200'];
+                        if ($pctApproved >= 90) $statusBadge = ['text' => 'Sangat Baik (Excellent)', 'class' => 'text-emerald-600 bg-emerald-50 border-emerald-200'];
+                        elseif ($pctApproved >= 70) $statusBadge = ['text' => 'Baik (Good)', 'class' => 'text-indigo-600 bg-indigo-50 border-indigo-200'];
+                    @endphp
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+                        <!-- Graphic Chart -->
+                        <div class="flex justify-center lg:justify-start lg:col-span-1">
+                            <div class="relative w-48 h-48 rounded-full shadow-sm flex items-center justify-center transition-transform hover:scale-105 duration-500"
+                                 style="background: conic-gradient(
+                                    #10b981 0% {{ $pctApproved }}%, 
+                                    #fbbf24 {{ $pctApproved }}% {{ $pctApproved + $pctReview }}%, 
+                                    #f43f5e {{ $pctApproved + $pctReview }}% {{ $pctApproved + $pctReview + $pctRejected }}%, 
+                                    #f3f4f6 {{ $pctApproved + $pctReview + $pctRejected }}% 100%
+                                 );">
+                                <!-- Inner Circle -->
+                                <div class="absolute inset-[12px] bg-white rounded-full flex flex-col items-center justify-center shadow-inner">
+                                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">{{ $t['approved'] }}</span>
+                                    <span class="text-4xl font-black text-gray-900 tracking-tighter">{{ round($pctApproved) }}%</span>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Rejected Bar -->
-                        <div>
-                            <div class="flex justify-between text-sm mb-1">
-                                <span class="font-bold text-rose-700">{{ $t['rejected'] }}</span>
-                                <span class="font-bold text-gray-700">{{ floor($allTimeStats['rejected'] / 60) }}h {{ round($allTimeStats['rejected'] % 60) }}m ({{ $pctRejected }}%)</span>
+                        <!-- Details & Bars -->
+                        <div class="lg:col-span-2 space-y-6">
+                            <!-- Overall Time -->
+                            <div class="flex flex-col sm:flex-row sm:items-end justify-between border-b border-gray-100 pb-4 gap-4">
+                                <div>
+                                    <div class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">{{ $t['total_accumulated'] }}</div>
+                                    <div class="text-4xl sm:text-5xl font-black text-gray-900 tracking-tight">
+                                        {{ floor($allTimeStats['total_worked'] / 60) }}h {{ round($allTimeStats['total_worked'] % 60) }}m
+                                    </div>
+                                </div>
+                                <div class="text-left sm:text-right">
+                                    <div class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Rating Kinerja</div>
+                                    <div class="inline-block text-xs font-bold px-3 py-1.5 rounded-lg border {{ $statusBadge['class'] }}">{{ $statusBadge['text'] }}</div>
+                                </div>
                             </div>
-                            <div class="w-full bg-gray-100 rounded-full h-2.5">
-                                <div class="bg-rose-500 h-2.5 rounded-full" style="width: {{ $pctRejected }}%"></div>
-                            </div>
-                        </div>
 
-                        <!-- {{ $t['under_review'] }} Bar -->
-                        <div>
-                            <div class="flex justify-between text-sm mb-1">
-                                <span class="font-bold text-yellow-700">{{ $t['under_review'] }}</span>
-                                <span class="font-bold text-gray-700">{{ floor($allTimeStats['review'] / 60) }}h {{ round($allTimeStats['review'] % 60) }}m ({{ $pctReview }}%)</span>
-                            </div>
-                            <div class="w-full bg-gray-100 rounded-full h-2.5">
-                                <div class="bg-yellow-400 h-2.5 rounded-full" style="width: {{ $pctReview }}%"></div>
+                            <!-- Progress Bars -->
+                            <div class="space-y-4">
+                                <!-- Approved -->
+                                <div>
+                                    <div class="flex justify-between text-xs font-bold mb-1.5">
+                                        <span class="text-emerald-700 flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-emerald-500 shadow-sm"></div> {{ $t['approved'] }}</span>
+                                        <span class="text-gray-900">{{ floor($allTimeStats['approved'] / 60) }}h {{ round($allTimeStats['approved'] % 60) }}m <span class="text-gray-400 font-medium">({{ $pctApproved }}%)</span></span>
+                                    </div>
+                                    <div class="w-full bg-gray-100/80 rounded-full h-2 overflow-hidden shadow-inner">
+                                        <div class="bg-gradient-to-r from-emerald-400 to-emerald-500 h-2 rounded-full shadow-sm transition-all duration-1000" style="width: {{ $pctApproved }}%"></div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Under Review -->
+                                <div>
+                                    <div class="flex justify-between text-xs font-bold mb-1.5">
+                                        <span class="text-amber-600 flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-amber-400 shadow-sm"></div> {{ $t['under_review'] }}</span>
+                                        <span class="text-gray-900">{{ floor($allTimeStats['review'] / 60) }}h {{ round($allTimeStats['review'] % 60) }}m <span class="text-gray-400 font-medium">({{ $pctReview }}%)</span></span>
+                                    </div>
+                                    <div class="w-full bg-gray-100/80 rounded-full h-2 overflow-hidden shadow-inner">
+                                        <div class="bg-gradient-to-r from-amber-300 to-amber-400 h-2 rounded-full shadow-sm transition-all duration-1000" style="width: {{ $pctReview }}%"></div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Rejected -->
+                                <div>
+                                    <div class="flex justify-between text-xs font-bold mb-1.5">
+                                        <span class="text-rose-600 flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-rose-500 shadow-sm"></div> {{ $t['rejected'] }}</span>
+                                        <span class="text-gray-900">{{ floor($allTimeStats['rejected'] / 60) }}h {{ round($allTimeStats['rejected'] % 60) }}m <span class="text-gray-400 font-medium">({{ $pctRejected }}%)</span></span>
+                                    </div>
+                                    <div class="w-full bg-gray-100/80 rounded-full h-2 overflow-hidden shadow-inner">
+                                        <div class="bg-gradient-to-r from-rose-400 to-rose-500 h-2 rounded-full shadow-sm transition-all duration-1000" style="width: {{ $pctRejected }}%"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                @else
+                    <!-- EMPTY STATE -->
+                    <div class="flex flex-col items-center justify-center py-12 px-4 bg-gray-50/50 rounded-xl border border-gray-100 border-dashed">
+                        <div class="w-16 h-16 bg-white shadow-sm rounded-2xl flex items-center justify-center mb-4 border border-gray-100">
+                            <svg class="w-8 h-8 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                        </div>
+                        <h4 class="text-sm font-extrabold text-gray-900 mb-1">Belum Ada Data Kinerja</h4>
+                        <p class="text-xs text-gray-500 text-center max-w-sm">Grafik performa akan muncul di sini secara otomatis setelah Anda mulai mencatat waktu di Atlas.</p>
+                    </div>
+                @endif
             </div>
 
             <!-- LEVEL 3: TASK HISTORY -->
