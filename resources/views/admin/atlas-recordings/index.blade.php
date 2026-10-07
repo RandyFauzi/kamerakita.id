@@ -3,7 +3,7 @@
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <h2 class="font-bold text-xl sm:text-2xl text-gray-800 leading-tight">Atlas Recordings</h2>
             @php
-                $lastSync = \App\Models\AtlasTask::max('updated_at');
+                $lastSync = \App\Models\AtlasWorker::max('last_synced_at');
             @endphp
             <div class="inline-flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-gray-100 shadow-sm text-sm font-medium text-gray-600">
                 <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
