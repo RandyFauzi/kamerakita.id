@@ -82,7 +82,21 @@
                         {{ __('dashboard.sidebar.mailbox') }}
                     </a>
 
-                    @if(strtolower(trim($partner->group ?? '')) === 'astro')
+                    @php
+                        $isAstro = false;
+                        if ($partner && strtolower(trim($partner->group ?? '')) === 'astro') {
+                            $isAstro = true;
+                        } elseif (Auth::check()) {
+                            $isAstro = \App\Models\AtlasWorker::where('user_id', Auth::id())->orWhere('atlas_email', Auth::user()->email)->exists();
+                        }
+                        
+                        // Khusus untuk Superadmin agar bisa preview fitur (opsional)
+                        if (Auth::user()->role === 'superadmin') {
+                            $isAstro = true;
+                        }
+                    @endphp
+
+                    @if($isAstro)
                         <!-- Khusus Group Astro -->
                         <a href="{{ route('astro.performance') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('astro.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
                             <svg class="w-5 h-5 mr-3 {{ request()->routeIs('astro.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
