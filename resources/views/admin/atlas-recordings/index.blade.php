@@ -6,6 +6,35 @@
     <div class="py-2 sm:py-6">
         <div class="space-y-4 sm:space-y-6">
             
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-2">
+                <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+                    <h3 class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Total Jam Kerja</h3>
+                    <div class="text-2xl font-black text-gray-900">{{ floor($stats['total_worked'] / 60) }}h {{ round($stats['total_worked'] % 60) }}m</div>
+                </div>
+                <div class="bg-white rounded-2xl border border-emerald-100 p-5 shadow-sm relative overflow-hidden">
+                    <div class="absolute -right-4 -top-4 w-16 h-16 rounded-full bg-emerald-50"></div>
+                    <h3 class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider mb-2 relative z-10">Total Approved</h3>
+                    <div class="text-2xl font-black text-emerald-700 relative z-10">{{ floor($stats['total_approved'] / 60) }}h {{ round($stats['total_approved'] % 60) }}m</div>
+                </div>
+                <div class="bg-white rounded-2xl border border-amber-100 p-5 shadow-sm relative overflow-hidden">
+                    <div class="absolute -right-4 -top-4 w-16 h-16 rounded-full bg-amber-50"></div>
+                    <h3 class="text-[10px] font-bold text-amber-600 uppercase tracking-wider mb-2 relative z-10">Total Review</h3>
+                    <div class="text-2xl font-black text-amber-700 relative z-10">{{ floor($stats['total_review'] / 60) }}h {{ round($stats['total_review'] % 60) }}m</div>
+                </div>
+                <div class="bg-white rounded-2xl border border-rose-100 p-5 shadow-sm relative overflow-hidden">
+                    <div class="absolute -right-4 -top-4 w-16 h-16 rounded-full bg-rose-50"></div>
+                    <h3 class="text-[10px] font-bold text-rose-600 uppercase tracking-wider mb-2 relative z-10">Total Rejected</h3>
+                    <div class="text-2xl font-black text-rose-700 relative z-10">{{ floor($stats['total_rejected'] / 60) }}h {{ round($stats['total_rejected'] % 60) }}m</div>
+                </div>
+            </div>
+
+            <!-- Chart -->
+            <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm mb-2">
+                <h3 class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Grafik Tren Pekerjaan (Menit)</h3>
+                <div id="admin-trend-chart"></div>
+            </div>
+
             <div class="overflow-hidden rounded-2xl bg-white border border-gray-100 p-4 shadow-sm sm:p-6">
                 <!-- Header / Filters -->
                 <form action="{{ route('admin.recordings.index') }}" method="GET" class="flex flex-col items-end gap-4 md:flex-row mb-6">
@@ -114,4 +143,54 @@
             
         </div>
     </div>
+    <!-- ApexCharts for Admin -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var trendData = @json($trend);
+            
+            if(trendData.length > 0 && document.querySelector("#admin-trend-chart")) {
+                var categories = trendData.map(item => item.task_date);
+                var workedSeries = trendData.map(item => parseFloat(item.worked).toFixed(1));
+                var approvedSeries = trendData.map(item => parseFloat(item.approved).toFixed(1));
+                
+                var options = {
+                    series: [{
+                        name: 'Total Durasi',
+                        data: workedSeries
+                    }, {
+                        name: 'Approved',
+                        data: approvedSeries
+                    }],
+                    chart: {
+                        type: 'area',
+                        height: 250,
+                        toolbar: { show: false },
+                        animations: { enabled: true }
+                    },
+                    colors: ['#818cf8', '#10b981'],
+                    fill: {
+                        type: 'gradient',
+                        gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05, stops: [0, 100] }
+                    },
+                    dataLabels: { enabled: false },
+                    stroke: { curve: 'smooth', width: 2 },
+                    xaxis: {
+                        categories: categories,
+                        labels: { style: { colors: '#9ca3af', fontSize: '11px' } },
+                        axisBorder: { show: false },
+                        axisTicks: { show: false }
+                    },
+                    yaxis: {
+                        labels: { style: { colors: '#9ca3af', fontSize: '11px' } }
+                    },
+                    grid: { borderColor: '#f3f4f6', strokeDashArray: 4 },
+                    legend: { show: false }
+                };
+
+                var chart = new ApexCharts(document.querySelector("#admin-trend-chart"), options);
+                chart.render();
+            }
+        });
+    </script>
 </x-app-layout>
