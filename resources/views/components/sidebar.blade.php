@@ -98,11 +98,11 @@
 
                     @if($isAstro)
                         <!-- Khusus Group Astro -->
-                        <a href="{{ route('astro.performance') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('astro.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
+                        <a href="{{ route('astro.recording') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('astro.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
                             <svg class="w-5 h-5 mr-3 {{ request()->routeIs('astro.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
                             </svg>
-                            My Atlas Performance
+                            Recording
                         </a>
                     @else
                         <!-- Pekerja Biasa (Non-Astro) -->

@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-bold text-2xl text-gray-800 leading-tight">
-                My Atlas Performance
+                Recording
             </h2>
             @if($worker && $worker->last_synced_at)
                 <div class="text-right">

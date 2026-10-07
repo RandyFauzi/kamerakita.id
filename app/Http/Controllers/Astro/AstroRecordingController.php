@@ -9,7 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class AtlasPerformanceController extends Controller
+class AstroRecordingController extends Controller
 {
     public function index(Request $request)
     {
@@ -68,7 +68,7 @@ class AtlasPerformanceController extends Controller
                 ->groupBy('task_date');
         }
 
-        return view('astro.atlas-performance', [
+        return view('astro.recording', [
             'worker' => $worker,
             'todayStats' => $todayStats,
             'allTimeStats' => $allTimeStats,
