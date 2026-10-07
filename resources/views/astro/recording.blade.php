@@ -19,6 +19,8 @@
         'task_list' => $l == 'id' ? 'Daftar Tugas' : 'Task List',
         'duration' => $l == 'id' ? 'Durasi' : 'Duration',
         'review' => $l == 'id' ? 'Ulasan' : 'Review',
+        'all_time_perf' => $l == 'id' ? 'Performa Kerja (Total Keseluruhan)' : 'Work Performance (All Time)',
+        'total_accumulated' => $l == 'id' ? 'TOTAL PEKERJAAN TERAKUMULASI' : 'TOTAL ACCUMULATED WORK',
         'no_history' => $l == 'id' ? 'Belum Ada Riwayat Tugas' : 'No Task History Yet',
         'no_history_desc' => $l == 'id' ? 'Tugas yang Anda kerjakan di Atlas akan otomatis muncul di sini setelah sinkronisasi.' : 'Tasks you work on in Atlas will automatically appear here after synchronization.'
     ];
@@ -61,30 +63,30 @@
                     </div>
                     <div class="bg-indigo-50 rounded-xl p-4 border border-indigo-100">
                         <div class="text-xs font-bold text-indigo-500 uppercase mb-1">{{ $t['worked'] }}</div>
-                        <div class="text-2xl font-black text-indigo-700">{{ number_format($todayStats['total_worked'], 1) }} <span class="text-sm">min</span></div>
+                        <div class="text-2xl font-black text-indigo-700">{{ number_format($todayStats['total_worked'], 1) }} <span class="text-sm">{{ $t['min'] }}</span></div>
                     </div>
                     <div class="bg-emerald-50 rounded-xl p-4 border border-emerald-100">
                         <div class="text-xs font-bold text-emerald-600 uppercase mb-1">{{ $t['approved'] }}</div>
-                        <div class="text-2xl font-black text-emerald-700">{{ number_format($todayStats['approved'], 1) }} <span class="text-sm">min</span></div>
+                        <div class="text-2xl font-black text-emerald-700">{{ number_format($todayStats['approved'], 1) }} <span class="text-sm">{{ $t['min'] }}</span></div>
                     </div>
                     <div class="bg-rose-50 rounded-xl p-4 border border-rose-100">
                         <div class="text-xs font-bold text-rose-600 uppercase mb-1">{{ $t['rejected'] }}</div>
-                        <div class="text-2xl font-black text-rose-700">{{ number_format($todayStats['rejected'], 1) }} <span class="text-sm">min</span></div>
+                        <div class="text-2xl font-black text-rose-700">{{ number_format($todayStats['rejected'], 1) }} <span class="text-sm">{{ $t['min'] }}</span></div>
                     </div>
                     <div class="bg-yellow-50 rounded-xl p-4 border border-yellow-100">
                         <div class="text-xs font-bold text-yellow-600 uppercase mb-1">{{ $t['under_review'] }}</div>
-                        <div class="text-2xl font-black text-yellow-700">{{ number_format($todayStats['review'], 1) }} <span class="text-sm">min</span></div>
+                        <div class="text-2xl font-black text-yellow-700">{{ number_format($todayStats['review'], 1) }} <span class="text-sm">{{ $t['min'] }}</span></div>
                     </div>
                 </div>
             </div>
 
             <!-- LEVEL 2: PERFORMANCE (ALL TIME) -->
             <div class="bg-white overflow-hidden shadow-sm rounded-2xl border border-gray-100 p-6">
-                <h3 class="text-lg font-bold text-gray-900 mb-4 border-b pb-2">Work Performance (All Time)</h3>
+                <h3 class="text-lg font-bold text-gray-900 mb-4 border-b pb-2">{{ $t['all_time_perf'] }}</h3>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div class="flex flex-col justify-center">
-                        <div class="text-sm font-bold text-gray-500 uppercase mb-2">Total Accumulated Work</div>
+                        <div class="text-sm font-bold text-gray-500 uppercase mb-2">{{ $t['total_accumulated'] }}</div>
                         <div class="text-5xl font-black text-gray-900">
                             {{ floor($allTimeStats['total_worked'] / 60) }}h {{ round($allTimeStats['total_worked'] % 60) }}m
                         </div>
