@@ -111,7 +111,7 @@
             <!-- GROUP 2: ADMIN OPERASIONAL -->
             @if(Auth::user()->canAccessQcRoom() || in_array(Auth::user()->role ?? '', ['superadmin', 'admin']))
             @php
-                $isAdminActive = request()->routeIs('video-submissions.*', 'payments.*', 'payroll.*', 'invoices.*', 'partners.*', 'admin.onboardings.*', 'admin.password-recoveries.*', 'push-notifications.broadcast.*');
+                $isAdminActive = request()->routeIs('video-submissions.*', 'admin.recordings.*', 'payments.*', 'payroll.*', 'invoices.*', 'partners.*', 'admin.onboardings.*', 'admin.password-recoveries.*', 'push-notifications.broadcast.*');
             @endphp
             <details name="sidebar-menu" class="group border-t border-gray-100 pt-3" {{ $isAdminActive ? 'open' : '' }}>
                 <summary class="flex items-center justify-between px-3 py-2 cursor-pointer rounded-xl text-[10px] font-bold text-gray-400 uppercase tracking-wider hover:bg-gray-50 transition-colors">
