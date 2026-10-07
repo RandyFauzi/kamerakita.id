@@ -184,8 +184,8 @@
                             @forelse($recordings as $record)
                                 <tr class="hover:bg-gray-50 transition-colors">
                                     <td class="whitespace-nowrap px-6 py-4">
-                                        <div class="local-date font-bold text-gray-900" data-utc="{{ \->recorded_at ? \Carbon\Carbon::parse(\->recorded_at)->toISOString() : (\->created_at ? \->created_at->toISOString() : '') }}">{{ \Carbon\Carbon::parse(\->task_date)->format('d M Y') }}</div>
-                                        <div class="local-time text-[11px] text-gray-500 font-medium" data-utc="{{ \->recorded_at ? \Carbon\Carbon::parse(\->recorded_at)->toISOString() : (\->created_at ? \->created_at->toISOString() : '') }}">-</div>
+                                        <div class="local-date font-bold text-gray-900" data-utc="{{ $record->recorded_at ? \Carbon\Carbon::parse($record->recorded_at)->toISOString() : ($record->created_at ? $record->created_at->toISOString() : '') }}">{{ \Carbon\Carbon::parse($record->task_date)->format('d M Y') }}</div>
+                                        <div class="local-time text-[11px] text-gray-500 font-medium" data-utc="{{ $record->recorded_at ? \Carbon\Carbon::parse($record->recorded_at)->toISOString() : ($record->created_at ? $record->created_at->toISOString() : '') }}">-</div>
                                     </td>
                                     <td class="px-6 py-4 font-medium text-gray-900">{{ $record->atlasWorker->atlas_email ?? '-' }}</td>
                                     <td class="px-6 py-4">
