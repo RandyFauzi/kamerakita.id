@@ -156,9 +156,7 @@
                                 <tr class="hover:bg-gray-50 transition-colors">
                                     <td class="whitespace-nowrap px-6 py-4">
                                         <div class="font-bold text-gray-900">{{ \Carbon\Carbon::parse($record->task_date)->format('d M Y') }}</div>
-                                        @if($record->recorded_at)
-                                            <div class="text-[11px] text-gray-500 font-medium">{{ \Carbon\Carbon::parse($record->recorded_at)->format('H:i') }} UTC</div>
-                                        @endif
+                                        <div class="text-[11px] text-gray-500 font-medium">{{ $record->created_at ? $record->created_at->format('H:i') . ' WITA' : '-' }}</div>
                                     </td>
                                     <td class="px-6 py-4 font-medium text-gray-900">{{ $record->atlasWorker->atlas_email ?? '-' }}</td>
                                     <td class="px-6 py-4">
