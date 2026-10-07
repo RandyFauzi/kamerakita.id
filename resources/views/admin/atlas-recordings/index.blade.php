@@ -125,7 +125,13 @@
                     </div>
                 </div>
                 <div class="overflow-x-auto pb-2" style="scrollbar-width: none;">
-                    <div id="admin-trend-chart" class="-ml-2" style="min-width: 800px;"></div>
+                    @if(count($trend) > 0)
+                        <div id="admin-trend-chart" class="-ml-2" style="min-width: 800px;"></div>
+                    @else
+                        <div class="flex items-center justify-center h-48 bg-gray-50 rounded-xl border border-gray-100 border-dashed">
+                            <span class="text-gray-400 font-medium text-sm">Belum ada data rekaman (Chart kosong)</span>
+                        </div>
+                    @endif
                 </div>
             </div>
 

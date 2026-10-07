@@ -34,6 +34,7 @@ class AtlasRecordingController extends Controller
 
         // Aggregate Stats
         $statsQuery = clone $query;
+        $statsQuery->setEagerLoads([]);
         $stats = [
             'total_worked' => $statsQuery->sum('worked_minutes'),
             'total_approved' => $statsQuery->sum('approved_minutes'),
@@ -43,6 +44,7 @@ class AtlasRecordingController extends Controller
 
         // Chart Data (Group by date)
         $chartQuery = clone $query;
+        $chartQuery->setEagerLoads([]);
         $trend = $chartQuery->selectRaw('task_date, SUM(worked_minutes) as worked, SUM(approved_minutes) as approved, SUM(review_minutes) as review, SUM(rejected_minutes) as rejected')
                             ->groupBy('task_date')
                             ->orderBy('task_date', 'asc')
