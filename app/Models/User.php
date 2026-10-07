@@ -58,3 +58,13 @@ class User extends Authenticatable
         return in_array($this->role, ['superadmin', 'admin', 'finance'], true);
     }
 }
+
+    public function atlasWorker(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(AtlasWorker::class);
+    
+    public function atlasWorker(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return ->hasOne(AtlasWorker::class);
+    }
+}
