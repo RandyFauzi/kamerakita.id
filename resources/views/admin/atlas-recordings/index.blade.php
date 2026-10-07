@@ -49,9 +49,8 @@
                                 <tr class="hover:bg-gray-50 transition-colors">
                                     <td class="whitespace-nowrap px-6 py-4">
                                         <div class="font-bold text-gray-900">{{ \Carbon\Carbon::parse($record->task_date)->format('d M Y') }}</div>
-                                        <div class="text-[11px] text-gray-500">{{ $record->time_str ?? '-' }}</div>
                                     </td>
-                                    <td class="px-6 py-4 font-medium text-gray-900">{{ $record->email }}</td>
+                                    <td class="px-6 py-4 font-medium text-gray-900">{{ $record->atlasWorker->atlas_email ?? '-' }}</td>
                                     <td class="px-6 py-4">
                                         <div class="font-semibold text-gray-800 line-clamp-2" title="{{ $record->task_name }}">{{ $record->task_name }}</div>
                                         @if($record->notes)
@@ -59,30 +58,30 @@
                                         @endif
                                     </td>
                                     <td class="whitespace-nowrap px-6 py-4 text-center font-bold text-gray-900">
-                                        {{ number_format($record->total_video_mins, 1) }} mnt
+                                        {{ number_format($record->worked_minutes, 1) }} mnt
                                     </td>
                                     <td class="whitespace-nowrap px-6 py-4 text-center">
-                                        @if($record->approved_mins > 0)
+                                        @if($record->approved_minutes > 0)
                                             <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-700 border border-emerald-200">
-                                                {{ number_format($record->approved_mins, 1) }} m
+                                                {{ number_format($record->approved_minutes, 1) }} m
                                             </span>
                                         @else
                                             <span class="text-gray-300">-</span>
                                         @endif
                                     </td>
                                     <td class="whitespace-nowrap px-6 py-4 text-center">
-                                        @if($record->rejected_mins > 0)
+                                        @if($record->rejected_minutes > 0)
                                             <span class="inline-flex items-center gap-1 rounded-full bg-rose-50 px-2.5 py-1 text-[11px] font-bold text-rose-700 border border-rose-200">
-                                                {{ number_format($record->rejected_mins, 1) }} m
+                                                {{ number_format($record->rejected_minutes, 1) }} m
                                             </span>
                                         @else
                                             <span class="text-gray-300">-</span>
                                         @endif
                                     </td>
                                     <td class="whitespace-nowrap px-6 py-4 text-center">
-                                        @if($record->pending_mins > 0)
+                                        @if($record->review_minutes > 0)
                                             <span class="inline-flex items-center gap-1 rounded-full bg-yellow-50 px-2.5 py-1 text-[11px] font-bold text-yellow-700 border border-yellow-200">
-                                                {{ number_format($record->pending_mins, 1) }} m
+                                                {{ number_format($record->review_minutes, 1) }} m
                                             </span>
                                         @else
                                             <span class="text-gray-300">-</span>

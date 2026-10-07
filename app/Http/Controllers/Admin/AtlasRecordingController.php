@@ -10,13 +10,15 @@ class AtlasRecordingController extends Controller
 {
     public function index(Request $request)
     {
-        $query = AtlasTask::query();
+        $query = AtlasTask::with('atlasWorker');
 
         // Search by email, task_name, or notes
         if ($request->filled('search')) {
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
-                $q->where('email', 'like', "%{$search}%")
+                $q->whereHas('atlasWorker', function($w) use ($search) {
+                      $w->where('atlas_email', 'like', "%{$search}%");
+                  })
                   ->orWhere('task_name', 'like', "%{$search}%")
                   ->orWhere('notes', 'like', "%{$search}%");
             });
@@ -31,7 +33,7 @@ class AtlasRecordingController extends Controller
         }
 
         $recordings = $query->orderBy('task_date', 'desc')
-                            ->orderBy('time_str', 'desc')
+                            ->orderBy('created_at', 'desc')
                             ->paginate(50)
                             ->withQueryString();
 
