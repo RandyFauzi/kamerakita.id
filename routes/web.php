@@ -256,3 +256,5 @@ Route::post('/onboarding', [\App\Http\Controllers\FastworkOnboardingController::
 require __DIR__.'/auth.php';
 
     Route::get('/admin/recordings', [\App\Http\Controllers\Admin\AtlasRecordingController::class, 'index'])->middleware('role:superadmin,admin')->name('admin.recordings.index');
+
+    Route::get('/astro/performance', [\App\Http\Controllers\Astro\AtlasPerformanceController::class, 'index'])->name('astro.performance');

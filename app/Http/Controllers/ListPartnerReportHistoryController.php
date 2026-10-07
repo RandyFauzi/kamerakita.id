@@ -69,14 +69,7 @@ class ListPartnerReportHistoryController extends Controller
             ->orderByDesc('created_at')
             ->paginate(20)
             ->withQueryString();
-
         $atlasData = null;
-        if (strtolower($partner->group ?? '') === 'astro') {
-            $atlasData = \App\Models\AtlasTask::where('email', Auth::user()->email)
-                ->orderBy('task_date', 'desc')
-                ->get()
-                ->groupBy('task_date');
-        }
 
         return view('video-submissions.report-history', [
             'partner' => $partner,
