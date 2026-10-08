@@ -131,9 +131,9 @@
                     </div>
                     @endif
                 </div>
-                <div class="overflow-x-auto pb-2" style="scrollbar-width: none;">
+                <div id="chart-scroll-container" class="overflow-x-auto pb-4 custom-scrollbar">
                     @if(count($trend) > 0)
-                        <div id="admin-trend-chart" class="-ml-2" style="min-width: 800px;"></div>
+                        <div id="admin-trend-chart" class="-ml-2 pr-4" style="min-width: 800px;"></div>
                     @else
                         <div class="flex items-center justify-center h-48 bg-gray-50 rounded-xl border border-gray-100 border-dashed">
                             <span class="text-gray-400 font-medium text-sm">Belum ada data rekaman (Chart kosong)</span>
@@ -391,7 +391,12 @@
 
                 try {
                     window.adminTrendChart = new ApexCharts(document.querySelector("#admin-trend-chart"), options);
-                    window.adminTrendChart.render();
+                    window.adminTrendChart.render().then(() => {
+                        var scrollContainer = document.getElementById('chart-scroll-container');
+                        if (scrollContainer) {
+                            scrollContainer.scrollLeft = scrollContainer.scrollWidth;
+                        }
+                    });
                 } catch (e) {
                     console.error("ApexCharts Render Error:", e);
                     document.querySelector("#admin-trend-chart").innerHTML = "<p class='text-red-500 text-sm'>Failed to load chart: " + e.message + "</p>";
@@ -431,4 +436,21 @@
             }
         });
     </script>
+
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
 </x-app-layout>
