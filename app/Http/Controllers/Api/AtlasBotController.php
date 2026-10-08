@@ -15,6 +15,10 @@ class AtlasBotController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
+        if (!$request->has('records') || !is_array($request->input('records'))) {
+            return response()->json(['error' => 'Invalid or empty JSON payload. Ensure Content-Type is application/json.'], 400);
+        }
+
         $records = $request->input('records', []);
         
         $count = 0;
