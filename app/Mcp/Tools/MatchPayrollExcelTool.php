@@ -109,21 +109,42 @@ class MatchPayrollExcelTool extends BaseTool
                 $lockedTaskIds = [];
                 $maxDate = '2026-09-06 00:00:00';
 
-                foreach ($tasks as $task) {
-                    // OPSI B: Berhenti JIKA menambahkan task ini akan membuat total melewati target Excel!
-                    // Ditambah 0.1 menit sebagai toleransi float.
-                    if (($cumulativeMinutes + $task->approved_minutes) > ($targetMinutes + 0.1)) {
-                        break;
+                \Illuminate\Support\Facades\DB::beginTransaction();
+                try {
+                    foreach ($tasks as $task) {
+                        if (($cumulativeMinutes + $task->approved_minutes) > ($targetMinutes + 0.05)) {
+                            // JALAN 2: BELAH TASK AGAR AKURAT 100%
+                            $gap = round($targetMinutes - $cumulativeMinutes, 2);
+                            if ($gap > 0.01) {
+                                // Buat copyan dari task ini untuk sisa Pending
+                                $leftoverTask = $task->replicate();
+                                $leftoverTask->task_name = $task->task_name . ' (Sisa)';
+                                
+                                // Porsi PAID (task asli)
+                                $task->worked_minutes = $gap;
+                                $task->approved_minutes = $gap;
+                                $task->rejected_minutes = 0;
+                                $task->review_minutes = 0;
+                                $task->save();
+                                
+                                // Porsi PENDING (task baru)
+                                $leftoverTask->worked_minutes = max(0, $leftoverTask->worked_minutes - $gap);
+                                $leftoverTask->approved_minutes = max(0, $leftoverTask->approved_minutes - $gap);
+                                $leftoverTask->save();
+                                
+                                $cumulativeMinutes += $gap;
+                                $lockedTaskIds[] = $task->id;
+                                $maxDate = $task->task_date;
+                            }
+                            break;
+                        }
+                        
+                        $cumulativeMinutes += $task->approved_minutes;
+                        $lockedTaskIds[] = $task->id;
+                        $maxDate = $task->task_date;
                     }
-                    
-                    $cumulativeMinutes += $task->approved_minutes;
-                    $lockedTaskIds[] = $task->id;
-                    $maxDate = $task->task_date;
-                }
 
-                if (count($lockedTaskIds) > 0) {
-                    \Illuminate\Support\Facades\DB::beginTransaction();
-                    try {
+                    if (count($lockedTaskIds) > 0) {
                         // Calculate standard nominal just for record
                         $partner = $worker->user->partner ?? null;
                         $ratePerHour = 60000;
