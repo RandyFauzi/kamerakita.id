@@ -69,10 +69,30 @@ class MatchPayrollExcelTool extends BaseTool
                     AtlasTask::whereIn('payroll_id', $payrollIds)->update(['payroll_id' => null]);
                     \App\Models\Payroll::whereIn('id', $payrollIds)->delete();
                 }
+
+                // Restore Sisa tasks
+                $sisaTasks = AtlasTask::where('task_name', 'like', '%(Sisa)')->get();
+                foreach ($sisaTasks as $sisa) {
+                    $parentName = str_replace(' (Sisa)', '', $sisa->task_name);
+                    $parent = AtlasTask::where('atlas_worker_id', $sisa->atlas_worker_id)
+                        ->where('task_date', $sisa->task_date)
+                        ->where('recorded_at', $sisa->recorded_at)
+                        ->where('task_name', $parentName)
+                        ->first();
+                    
+                    if ($parent) {
+                        $parent->worked_minutes += $sisa->worked_minutes;
+                        $parent->approved_minutes += $sisa->approved_minutes;
+                        $parent->save();
+                    }
+                    $sisa->delete();
+                }
+
                 return [
                     'summary' => [
                         'mode' => 'reset_deduction',
-                        'payrolls_deleted' => count($payrollIds)
+                        'payrolls_deleted' => count($payrollIds),
+                        'sisa_tasks_merged' => $sisaTasks->count()
                     ]
                 ];
             }
