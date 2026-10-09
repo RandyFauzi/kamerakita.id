@@ -240,6 +240,10 @@
                                             <span class="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-1 text-[11px] font-bold text-blue-700 border border-blue-200">
                                                 PAID
                                             </span>
+                                        @elseif($record->approved_minutes == 0 && $record->review_minutes == 0 && $record->rejected_minutes > 0)
+                                            <span class="inline-flex items-center gap-1 rounded-full bg-red-50 px-2.5 py-1 text-[11px] font-bold text-red-700 border border-red-200">
+                                                REJECTED
+                                            </span>
                                         @else
                                             <span class="inline-flex items-center gap-1 rounded-full bg-gray-50 px-2.5 py-1 text-[11px] font-bold text-gray-500 border border-gray-200">
                                                 PENDING
