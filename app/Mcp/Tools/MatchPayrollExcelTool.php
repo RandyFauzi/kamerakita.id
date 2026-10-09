@@ -62,10 +62,26 @@ class MatchPayrollExcelTool extends BaseTool
             $worker = AtlasWorker::with('user.partner')->where('atlas_email', $email)->first();
             if (!$worker) continue;
 
+            if ($mode === 'reset_deduction') {
+                $payrolls = \App\Models\Payroll::where('payment_proof_path', 'SINKRONISASI_EXCEL_PERIODE_1')->get();
+                $payrollIds = $payrolls->pluck('id')->toArray();
+                if (count($payrollIds) > 0) {
+                    AtlasTask::whereIn('payroll_id', $payrollIds)->update(['payroll_id' => null]);
+                    \App\Models\Payroll::whereIn('id', $payrollIds)->delete();
+                }
+                return [
+                    'summary' => [
+                        'mode' => 'reset_deduction',
+                        'payrolls_deleted' => count($payrollIds)
+                    ]
+                ];
+            }
+
             if ($mode === 'execute_deduction') {
                 $tasks = AtlasTask::where('atlas_worker_id', $worker->id)
                     ->where('approved_minutes', '>', 0)
                     ->whereNull('payroll_id')
+                    ->where('task_date', '<=', $endDate)
                     ->orderBy('task_date', 'asc')
                     ->get();
                 
