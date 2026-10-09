@@ -163,12 +163,12 @@ class RenderDashboardOverviewController extends Controller
                 return $merged;
             }));
 
-            $dailyAverageData = collect(\Illuminate\Support\Facades\Cache::remember('admin_daily_average_data_v3', 600, function () {
+            $dailyAverageData = collect(\Illuminate\Support\Facades\Cache::remember('admin_daily_average_data_v4', 600, function () {
                 $isMysql = \Illuminate\Support\Facades\DB::getDriverName() === 'mysql';
                 $dateRaw = $isMysql ? "DATE(task_date)" : "DATE(task_date)";
                 return \App\Models\AtlasTask::select(
                         \Illuminate\Support\Facades\DB::raw("$dateRaw as submission_date"),
-                        \Illuminate\Support\Facades\DB::raw("AVG(worked_minutes) as avg_minutes")
+                        \Illuminate\Support\Facades\DB::raw("SUM(worked_minutes) / COUNT(DISTINCT atlas_worker_id) as avg_minutes")
                     )
                     ->where('task_date', '>=', now()->subDays(7)->toDateString())
                     ->groupBy('submission_date')

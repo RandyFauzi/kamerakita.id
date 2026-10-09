@@ -454,7 +454,12 @@
             <div class="space-y-3 sm:hidden">
                 @forelse($reports as $report)
                     @php
-                        $statusClass = $report->status === 'UNDER_REVIEW' ? 'bg-yellow-50 text-yellow-700 border-yellow-100' : 'bg-emerald-50 text-emerald-700 border-emerald-100';
+                        $statusClasses = [
+                            'UNDER_REVIEW' => 'bg-yellow-50 text-yellow-700 border-yellow-100',
+                            'APPROVED' => 'bg-emerald-50 text-emerald-700 border-emerald-100',
+                            'REJECTED' => 'bg-rose-50 text-rose-700 border-rose-100',
+                        ];
+                        $statusClass = $statusClasses[$report->status] ?? 'bg-gray-50 text-gray-600 border-gray-100';
                     @endphp
                     <article class="rounded-xl border border-gray-150 p-4 space-y-3">
                         <div class="flex items-start justify-between gap-3">
@@ -487,7 +492,12 @@
                     <tbody class="divide-y divide-gray-100 bg-white">
                         @forelse($reports as $report)
                             @php
-                                $statusClass = $report->status === 'UNDER_REVIEW' ? 'bg-yellow-50 text-yellow-700 border-yellow-100' : 'bg-emerald-50 text-emerald-700 border-emerald-100';
+                                $statusClasses = [
+                                    'UNDER_REVIEW' => 'bg-yellow-50 text-yellow-700 border-yellow-100',
+                                    'APPROVED' => 'bg-emerald-50 text-emerald-700 border-emerald-100',
+                                    'REJECTED' => 'bg-rose-50 text-rose-700 border-rose-100',
+                                ];
+                                $statusClass = $statusClasses[$report->status] ?? 'bg-gray-50 text-gray-600 border-gray-100';
                             @endphp
                             <tr>
                                 <td class="py-3.5 text-gray-900 font-medium">{{ \Carbon\Carbon::parse($report->task_date)->translatedFormat('d F Y') }}</td>

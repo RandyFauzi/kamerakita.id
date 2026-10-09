@@ -499,7 +499,7 @@
                                             <span class="font-medium text-red-600">Unknown Worker</span>
                                             <span class="text-xs text-gray-450 font-mono">-</span>
                                         @else
-                                            <span class="font-medium text-gray-900">{{ $report->atlasWorker->user->name ?? 'Unknown' }}</span>
+                                            <span class="font-medium text-gray-900">{{ $report->atlasWorker->user->name ?? explode('@', $report->atlasWorker->atlas_email)[0] }}</span>
                                             <span class="text-xs text-gray-450 font-mono">{{ $report->atlasWorker->atlas_email }}</span>
                                         @endif
                                     </div>
@@ -508,7 +508,12 @@
                                 <td class="py-3.5 text-slate-800 font-bold">{{ floor($report->worked_minutes) }}m {{ round(($report->worked_minutes - floor($report->worked_minutes)) * 60) }}s</td>
                                 <td class="py-3.5">
                                     @php
-                                        $statusClass = $report->status === 'UNDER_REVIEW' ? 'bg-yellow-50 text-yellow-700 border-yellow-100' : 'bg-emerald-50 text-emerald-700 border-emerald-100';
+                                        $statusClasses = [
+                                            'UNDER_REVIEW' => 'bg-yellow-50 text-yellow-700 border-yellow-100',
+                                            'APPROVED' => 'bg-emerald-50 text-emerald-700 border-emerald-100',
+                                            'REJECTED' => 'bg-rose-50 text-rose-700 border-rose-100',
+                                        ];
+                                        $statusClass = $statusClasses[$report->status] ?? 'bg-gray-50 text-gray-600 border-gray-100';
                                     @endphp
                                     <span class="inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold border {{ $statusClass }}">
                                         {{ str_replace('_', ' ', $report->status ?? 'UNKNOWN') }}
