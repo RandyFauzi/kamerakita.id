@@ -94,59 +94,74 @@
                     </form>
                 </div>
                 
-                <div class="divide-y divide-gray-100">
-                    @forelse($masterTasks as $master)
-                        @php
-                            $stats = $master->stats;
-                            $worked = $stats ? $stats->total_worked : 0;
-                            $appRate = $stats ? round($stats->approval_rate, 1) : 0;
-                            $rejRate = $stats ? round($stats->reject_rate, 1) : 0;
-                            $totalOccur = $stats ? $stats->total_occurrences : 0;
-                        @endphp
-                        <div class="p-5 sm:p-6 hover:bg-gray-50/50 transition-colors flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
-                            <!-- Task Name & Info -->
-                            <div class="flex-1">
-                                <h4 class="text-sm font-bold text-gray-900">{{ $master->name }}</h4>
-                                <div class="flex flex-wrap items-center gap-3 sm:gap-4 mt-2 text-xs text-gray-500">
-                                    <span class="flex items-center gap-1.5 bg-gray-100/50 px-2.5 py-1 rounded-md border border-gray-100">
-                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                        {{ floor($worked / 60) }} jam {{ round($worked % 60) }} mnt
-                                    </span>
-                                    <span class="flex items-center gap-1.5 bg-gray-100/50 px-2.5 py-1 rounded-md border border-gray-100">
-                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
-                                        {{ $totalOccur }}x dikerjakan
-                                    </span>
-                                </div>
-                            </div>
-                            
-                            <!-- Stats Badges -->
-                            <div class="flex flex-wrap sm:flex-nowrap items-center gap-4 sm:gap-6">
-                                <!-- Approval Rate -->
-                                <div class="flex flex-col items-start sm:items-end">
-                                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Approval</span>
-                                    <span class="inline-flex items-center justify-center min-w-[3.5rem] px-2.5 py-1.5 rounded-lg text-xs font-bold border {{ $appRate >= 80 ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : ($appRate >= 50 ? 'bg-yellow-50 text-yellow-700 border-yellow-200' : 'bg-gray-50 text-gray-600 border-gray-200') }}">
-                                        {{ $appRate }}%
-                                    </span>
-                                </div>
+                <div class="p-5 sm:p-6 bg-gray-50/50">
+                    <div class="grid grid-cols-1 gap-4">
+                        @forelse($masterTasks as $master)
+                            @php
+                                $worked = $master->total_worked ?? 0;
+                                $appRate = round($master->approval_rate ?? 0, 1);
+                                $rejRate = round($master->reject_rate ?? 0, 1);
+                                $totalOccur = $master->total_occurrences ?? 0;
+                            @endphp
+                            <div class="group bg-white rounded-2xl border border-gray-200 hover:border-indigo-200 hover:shadow-lg hover:shadow-indigo-100/50 transition-all duration-300 overflow-hidden">
+                                <div class="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+                                    
+                                    <!-- Left: Task Name & Badges -->
+                                    <div class="flex items-start gap-4 flex-1 min-w-0">
+                                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-50 to-blue-50 text-indigo-500 border border-indigo-100 flex items-center justify-center shrink-0 group-hover:from-indigo-500 group-hover:to-blue-600 group-hover:text-white transition-all duration-300 shadow-sm">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                                        </div>
+                                        <div class="min-w-0 flex-1 mt-0.5">
+                                            <h4 class="text-sm sm:text-base font-bold text-gray-900 group-hover:text-indigo-700 transition-colors truncate" title="{{ $master->name }}">{{ $master->name }}</h4>
+                                            
+                                            <div class="flex flex-wrap items-center gap-2 mt-2">
+                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-50 border border-slate-100 text-[11px] font-semibold text-slate-600">
+                                                    <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                                    {{ floor($worked / 60) }}j {{ round($worked % 60) }}m
+                                                </span>
+                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-50 border border-slate-100 text-[11px] font-semibold text-slate-600">
+                                                    <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                                                    {{ $totalOccur }}x submit
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Right: Rate Metrics -->
+                                    <div class="flex items-center gap-3 w-full sm:w-auto border-t sm:border-t-0 border-gray-100 pt-4 sm:pt-0">
+                                        <div class="flex-1 sm:flex-none">
+                                            <div class="flex items-center justify-between sm:justify-start gap-3 px-3 py-2 rounded-xl {{ $appRate >= 80 ? 'bg-emerald-50/80 border-emerald-100' : ($appRate >= 50 ? 'bg-yellow-50/80 border-yellow-100' : 'bg-gray-50 border-gray-200') }} border">
+                                                <div class="flex items-center gap-1.5">
+                                                    <div class="w-1.5 h-1.5 rounded-full {{ $appRate >= 80 ? 'bg-emerald-500' : ($appRate >= 50 ? 'bg-yellow-500' : 'bg-gray-400') }}"></div>
+                                                    <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Approval</span>
+                                                </div>
+                                                <span class="text-sm font-black {{ $appRate >= 80 ? 'text-emerald-700' : ($appRate >= 50 ? 'text-yellow-700' : 'text-gray-700') }}">{{ $appRate }}%</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex-1 sm:flex-none">
+                                            <div class="flex items-center justify-between sm:justify-start gap-3 px-3 py-2 rounded-xl {{ $rejRate >= 20 ? 'bg-rose-50/80 border-rose-100' : 'bg-gray-50 border-gray-200' }} border">
+                                                <div class="flex items-center gap-1.5">
+                                                    <div class="w-1.5 h-1.5 rounded-full {{ $rejRate >= 20 ? 'bg-rose-500' : 'bg-gray-400' }}"></div>
+                                                    <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Reject</span>
+                                                </div>
+                                                <span class="text-sm font-black {{ $rejRate >= 20 ? 'text-rose-700' : 'text-gray-700' }}">{{ $rejRate }}%</span>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                                <!-- Reject Rate -->
-                                <div class="flex flex-col items-start sm:items-end">
-                                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Reject</span>
-                                    <span class="inline-flex items-center justify-center min-w-[3.5rem] px-2.5 py-1.5 rounded-lg text-xs font-bold border {{ $rejRate >= 20 ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-gray-50 text-gray-600 border-gray-200' }}">
-                                        {{ $rejRate }}%
-                                    </span>
                                 </div>
                             </div>
-                        </div>
-                    @empty
-                        <div class="p-12 text-center text-gray-400">
-                            <p class="text-sm font-medium">Belum ada task yang terdeteksi.</p>
-                        </div>
-                    @endforelse
+                        @empty
+                            <div class="p-12 text-center text-gray-400 bg-white rounded-2xl border border-dashed border-gray-200">
+                                <svg class="w-12 h-12 mx-auto text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+                                <p class="text-sm font-medium">Belum ada task yang terdeteksi.</p>
+                            </div>
+                        @endforelse
+                    </div>
                 </div>
                 
                 @if($masterTasks->hasPages())
-                <div class="p-4 border-t border-gray-100 bg-gray-50">
+                <div class="p-5 border-t border-gray-100 bg-white">
                     {{ $masterTasks->links() }}
                 </div>
                 @endif
