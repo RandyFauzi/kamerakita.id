@@ -26,7 +26,7 @@ class ManagePaymentsController extends Controller
 
         $workers = [];
 
-        // ONLY Fetch UNPAID Payrolls (already generated)
+        // 1A. Fetch UNPAID Payrolls (AtlasTask)
         $unpaidPayrollsQuery = Payroll::with('atlasWorker.user.partner')->where('status', 'UNPAID');
         if ($search) {
             $unpaidPayrollsQuery->whereHas('atlasWorker.user.partner', function ($q) use ($search) {
@@ -56,10 +56,49 @@ class ManagePaymentsController extends Controller
                 'has_custom_rate' => false,
                 'period_approval' => null,
                 'latest_date' => $pr->period_end,
-                'is_payroll' => true, // Already a payroll
+                'is_payroll' => true,
                 'atlas_worker_id' => $pr->atlas_worker_id,
                 'task_count' => $pr->atlasTasks()->count(),
                 'payroll' => $pr
+            ];
+        }
+
+        // 1B. Fetch UNPAID VideoWorkReports (Legacy)
+        $unpaidReportsQuery = VideoWorkReport::with('partner')
+            ->where('qc_status', 'approved')
+            ->where('payment_status', 'unpaid');
+            
+        if ($search) {
+            $unpaidReportsQuery->whereHas('partner', function ($q) use ($search) {
+                $q->where('full_name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('bank_account_number', 'like', "%{$search}%");
+            });
+        }
+        $unpaidReports = $unpaidReportsQuery->get();
+        $groupedUnpaid = $unpaidReports->groupBy('partner_id');
+
+        foreach ($groupedUnpaid as $partnerId => $reports) {
+            $partner = $reports->first()->partner;
+            if (!$partner) continue;
+            
+            $totalMinutes = $reports->sum('approved_duration_minutes');
+            $hours = $totalMinutes / 60;
+            $rate = $partner->base_hourly_rate ?: self::DEFAULT_HOURLY_RATE_IDR;
+            $totalAmount = round($hours * $rate);
+            
+            $workers[] = [
+                'partner' => $partner,
+                'reports' => $reports->sortByDesc('submission_date'),
+                'total_minutes' => $totalMinutes,
+                'hours' => $hours,
+                'rate' => $rate,
+                'total_amount' => $totalAmount,
+                'has_custom_rate' => false,
+                'period_approval' => null,
+                'latest_date' => $reports->max('submission_date'),
+                'is_payroll' => false,
+                'task_count' => $reports->count(),
             ];
         }
 
@@ -70,12 +109,11 @@ class ManagePaymentsController extends Controller
             $workers = collect($workers)->sortByDesc(fn($w) => $w['latest_date'])->values()->all();
         }
 
-        // 2. Fetch payout history from Payrolls where status = PAID
+        // 2A. Fetch payout history from Payrolls (AtlasTask) where status = PAID
         $paidPayrollsQuery = Payroll::with('atlasWorker.user.partner')
             ->where('status', 'PAID')
             ->orderBy('paid_at', 'desc');
 
-        // Apply search if needed...
         if ($search) {
             $paidPayrollsQuery->whereHas('atlasWorker.user.partner', function ($q) use ($search) {
                 $q->where('full_name', 'like', "%{$search}%")
@@ -112,6 +150,53 @@ class ManagePaymentsController extends Controller
                 'payroll' => $pr,
             ];
         }
+
+        // 2B. Fetch payout history from VideoWorkReports (Legacy) where status = PAID
+        $paidReportsQuery = VideoWorkReport::with('partner')
+            ->where('payment_status', 'paid')
+            ->orderBy('paid_at', 'desc');
+
+        if ($search) {
+            $paidReportsQuery->whereHas('partner', function ($q) use ($search) {
+                $q->where('full_name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('bank_account_number', 'like', "%{$search}%");
+            });
+        }
+        
+        $paidReports = $paidReportsQuery->get();
+        $groupedPaid = $paidReports->groupBy(function($item) {
+            return ($item->paid_at ? $item->paid_at->format('Y-m-d H:i:s') : '') . '|' . $item->payment_reference_proof_path;
+        });
+        
+        foreach ($groupedPaid as $key => $reports) {
+            $first = $reports->first();
+            $partner = $first->partner;
+            if (!$partner) continue;
+            
+            $totalMinutes = $reports->sum('approved_duration_minutes');
+            $hours = $totalMinutes / 60;
+            $rate = $partner->base_hourly_rate ?: self::DEFAULT_HOURLY_RATE_IDR;
+            $totalAmount = round($hours * $rate);
+            
+            $payoutHistory[] = [
+                'paid_at' => $first->paid_at ?? clone $first->updated_at,
+                'proof_url' => $first->payment_proof_url,
+                'proof_path' => $first->payment_reference_proof_path,
+                'partner' => $partner,
+                'reports' => $reports->sortByDesc('submission_date'),
+                'task_count' => $reports->count(),
+                'total_minutes' => $totalMinutes,
+                'total_amount' => $totalAmount,
+                'has_custom_rate' => false,
+                'rate' => $rate,
+                'batch_id' => base64_encode(($first->paid_at ? $first->paid_at->format('Y-m-d H:i:s') : '') . '|' . $first->payment_reference_proof_path),
+                'is_payroll' => false,
+            ];
+        }
+
+        // Sort merged payout history by paid_at descending
+        $payoutHistory = collect($payoutHistory)->sortByDesc('paid_at')->values()->all();
 
         $currentPage = \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPage();
         $perPage = 50;
