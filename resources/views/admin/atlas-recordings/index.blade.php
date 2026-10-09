@@ -178,6 +178,7 @@
                                 <th scope="col" class="px-6 py-4 font-bold tracking-wider text-center">Approve</th>
                                 <th scope="col" class="px-6 py-4 font-bold tracking-wider text-center">Reject</th>
                                 <th scope="col" class="px-6 py-4 font-bold tracking-wider text-center">Pending</th>
+                                <th scope="col" class="px-6 py-4 font-bold tracking-wider text-center">Status Gaji</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100 bg-white">
@@ -222,6 +223,17 @@
                                             </span>
                                         @else
                                             <span class="text-gray-300">-</span>
+                                        @endif
+                                    </td>
+                                    <td class="whitespace-nowrap px-6 py-4 text-center">
+                                        @if($record->payroll_id)
+                                            <span class="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-1 text-[11px] font-bold text-blue-700 border border-blue-200">
+                                                PAID
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center gap-1 rounded-full bg-gray-50 px-2.5 py-1 text-[11px] font-bold text-gray-500 border border-gray-200">
+                                                PENDING
+                                            </span>
                                         @endif
                                     </td>
                                 </tr>
