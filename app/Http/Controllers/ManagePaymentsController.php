@@ -169,46 +169,6 @@ class ManagePaymentsController extends Controller
         
         return redirect()->back()->with('error', 'Tagihan tidak valid atau sudah dibayar.');
     }
-        }
-
-        $tasks = AtlasTask::where('atlas_worker_id', $validated['atlas_worker_id'])
-            ->where('status', 'Approved')
-            ->whereNull('payroll_id')
-            ->get();
-
-        if ($tasks->isEmpty()) {
-            return redirect()->back()->with('error', 'Tidak ada task yang perlu dibayar untuk mitra ini.');
-        }
-
-        try {
-            DB::transaction(function () use ($partner, $tasks, $request, $imageService, $backupService, $validated) {
-                // In case we want to store proof later, we can add a column.
-                $uploadedPath = $imageService->store($request->file('payment_proof'), 'payment_proofs');
-                $backupService->backup($uploadedPath);
-                
-                $totalMinutes = $tasks->sum('approved_minutes');
-                $amount = ($totalMinutes / 60) * $validated['rate'];
-
-                $payroll = Payroll::create([
-                    'atlas_worker_id' => $validated['atlas_worker_id'],
-                    'period_start' => clone $tasks->min('task_date'),
-                    'period_end' => clone $tasks->max('task_date'),
-                    'total_approved_minutes' => $totalMinutes,
-                    'amount_rupiah' => $amount,
-                    'status' => 'PAID',
-                    'paid_at' => now(),
-                    'payment_proof_path' => $uploadedPath // Add this column in a migration
-                ]);
-
-                foreach ($tasks as $task) {
-                    $task->update(['payroll_id' => $payroll->id]);
-                }
-            });
-            return redirect()->back()->with('success', "Pembayaran berhasil diproses dan invoice Payroll dibuat!");
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal memproses pembayaran: ' . $e->getMessage());
-        }
-    }
 
     /**
      * Batch process all queued payments.
