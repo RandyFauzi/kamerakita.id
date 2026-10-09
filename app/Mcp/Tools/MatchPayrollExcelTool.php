@@ -64,12 +64,31 @@ class MatchPayrollExcelTool extends BaseTool
 
             if ($mode === 'execute_deduction') {
                 $tasks = AtlasTask::where('atlas_worker_id', $worker->id)
-                    ->where('status', 'Approved')
+                    ->where('approved_minutes', '>', 0)
                     ->whereNull('payroll_id')
                     ->orderBy('task_date', 'asc')
                     ->get();
                 
-                $targetMinutes = $targetHours * 60;
+                // Kurangi target dengan jumlah yang sudah dilock sebelumnya oleh tool ini (agar bisa run ulang)
+                $alreadyLocked = \App\Models\Payroll::where('atlas_worker_id', $worker->id)
+                    ->where('payment_proof_path', 'SINKRONISASI_EXCEL_PERIODE_1')
+                    ->sum('total_approved_minutes');
+                
+                $targetMinutes = ($targetHours * 60) - $alreadyLocked;
+                
+                // Jika sudah terpenuhi dari run sebelumnya
+                if ($targetMinutes <= 0) {
+                    $results[] = [
+                        'email' => $email,
+                        'target_hours' => round($targetHours, 2),
+                        'locked_hours' => 0,
+                        'tasks_locked' => 0,
+                        'tasks_remaining' => $tasks->count(),
+                        'message' => 'Already fully locked'
+                    ];
+                    continue;
+                }
+
                 $cumulativeMinutes = 0;
                 $lockedTaskIds = [];
                 $maxDate = '2026-09-06 00:00:00';
@@ -144,7 +163,7 @@ class MatchPayrollExcelTool extends BaseTool
                 }
             } else if ($mode === 'test_date_range') {
                 $tasks = AtlasTask::where('atlas_worker_id', $worker->id)
-                    ->where('status', 'Approved')
+                    ->where('approved_minutes', '>', 0)
                     ->whereNull('payroll_id')
                     ->whereBetween('task_date', [$startDate, $endDate])
                     ->get();
