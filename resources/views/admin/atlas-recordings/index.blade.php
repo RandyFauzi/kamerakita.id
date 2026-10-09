@@ -244,6 +244,11 @@
                                             <span class="inline-flex items-center gap-1 rounded-full bg-red-50 px-2.5 py-1 text-[11px] font-bold text-red-700 border border-red-200">
                                                 REJECTED
                                             </span>
+                                        @elseif(str_ends_with($record->task_name, '(Sisa)'))
+                                            <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-bold text-amber-700 border border-amber-200" title="Sisa durasi dari pemotongan presisi (Belum Dibayar)">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                                SISA
+                                            </span>
                                         @else
                                             <span class="inline-flex items-center gap-1 rounded-full bg-gray-50 px-2.5 py-1 text-[11px] font-bold text-gray-500 border border-gray-200">
                                                 PENDING
