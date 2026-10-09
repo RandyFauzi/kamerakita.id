@@ -454,21 +454,20 @@
             <div class="space-y-3 sm:hidden">
                 @forelse($reports as $report)
                     @php
-                        $durationFormatted = floor($report->duration_seconds / 60) . 'm ' . ($report->duration_seconds % 60) . 's';
-                        $statusClass = $report->status === 'pending' ? 'bg-yellow-50 text-yellow-700 border-yellow-100' : 'bg-emerald-50 text-emerald-700 border-emerald-100';
+                        $statusClass = $report->status === 'UNDER_REVIEW' ? 'bg-yellow-50 text-yellow-700 border-yellow-100' : 'bg-emerald-50 text-emerald-700 border-emerald-100';
                     @endphp
                     <article class="rounded-xl border border-gray-150 p-4 space-y-3">
                         <div class="flex items-start justify-between gap-3">
                             <div>
-                                <span class="block text-xs text-gray-400">Tanggal Rekam</span>
-                                <strong class="block text-sm text-gray-900 mt-0.5">{{ $report->created_at->translatedFormat('d F Y, H:i') }}</strong>
+                                <span class="block text-xs text-gray-400">Tanggal Task</span>
+                                <strong class="block text-sm text-gray-900 mt-0.5">{{ \Carbon\Carbon::parse($report->task_date)->translatedFormat('d F Y') }}</strong>
                             </div>
                             <span class="inline-flex px-2.5 py-1 rounded-full text-[10px] font-bold border {{ $statusClass }}">
-                                {{ ucfirst($report->status ?? 'Pending') }}
+                                {{ str_replace('_', ' ', $report->status ?? 'UNKNOWN') }}
                             </span>
                         </div>
                         <div class="grid grid-cols-1 gap-3 text-xs">
-                            <div><span class="block text-gray-400">Durasi Rekaman</span><strong class="text-gray-800">{{ $durationFormatted }}</strong></div>
+                            <div><span class="block text-gray-400">Durasi Kerja</span><strong class="text-gray-800">{{ floor($report->worked_minutes) }}m {{ round(($report->worked_minutes - floor($report->worked_minutes)) * 60) }}s</strong></div>
                         </div>
                     </article>
                 @empty
@@ -480,23 +479,22 @@
                 <table class="min-w-full divide-y divide-gray-100 text-sm">
                     <thead>
                         <tr class="text-gray-500">
-                            <th class="py-3 text-left font-semibold">Waktu Rekam</th>
-                            <th class="py-3 text-left font-semibold">Durasi Rekaman</th>
+                            <th class="py-3 text-left font-semibold">Tanggal Task</th>
+                            <th class="py-3 text-left font-semibold">Durasi Kerja</th>
                             <th class="py-3 text-left font-semibold">Status</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100 bg-white">
                         @forelse($reports as $report)
                             @php
-                                $durationFormatted = floor($report->duration_seconds / 60) . 'm ' . ($report->duration_seconds % 60) . 's';
-                                $statusClass = $report->status === 'pending' ? 'bg-yellow-50 text-yellow-700 border-yellow-100' : 'bg-emerald-50 text-emerald-700 border-emerald-100';
+                                $statusClass = $report->status === 'UNDER_REVIEW' ? 'bg-yellow-50 text-yellow-700 border-yellow-100' : 'bg-emerald-50 text-emerald-700 border-emerald-100';
                             @endphp
                             <tr>
-                                <td class="py-3.5 text-gray-900 font-medium">{{ $report->created_at->translatedFormat('d F Y, H:i') }}</td>
-                                <td class="py-3.5 text-gray-600">{{ $durationFormatted }}</td>
+                                <td class="py-3.5 text-gray-900 font-medium">{{ \Carbon\Carbon::parse($report->task_date)->translatedFormat('d F Y') }}</td>
+                                <td class="py-3.5 text-gray-600">{{ floor($report->worked_minutes) }}m {{ round(($report->worked_minutes - floor($report->worked_minutes)) * 60) }}s</td>
                                 <td class="py-3.5">
                                     <span class="inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold border {{ $statusClass }}">
-                                        {{ ucfirst($report->status ?? 'Pending') }}
+                                        {{ str_replace('_', ' ', $report->status ?? 'UNKNOWN') }}
                                     </span>
                                 </td>
                             </tr>

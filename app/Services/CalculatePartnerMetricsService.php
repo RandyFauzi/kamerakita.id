@@ -23,17 +23,19 @@ class CalculatePartnerMetricsService
 
         $approvedReports = $allReports->where('qc_status', 'approved');
 
-        $totalSubmittedMinutes = \App\Models\Recording::query()
-            ->where('partner_id', $worker->id)
-            ->sum('duration_seconds') / 60;
-        
-        $allTimeMinutes = $approvedReports->sum('approved_duration_minutes');
-        
-        $todaySubmittedMinutes = \App\Models\Recording::query()
-            ->where('partner_id', $worker->id)
-            ->whereDate('created_at', now())
-            ->sum('duration_seconds') / 60;
-        
+        // Worker Metrics via AtlasTask
+        // Assuming AtlasWorker is linked to the Partner's user_id or email
+        $atlasWorkerIds = \App\Models\AtlasWorker::where(function ($q) use ($worker) {
+            $q->where('user_id', $worker->user_id)
+              ->orWhere('atlas_email', $worker->email);
+        })->pluck('id');
+
+        $totalSubmittedMinutes = \App\Models\AtlasTask::whereIn('atlas_worker_id', $atlasWorkerIds)->sum('worked_minutes');
+        $allTimeMinutes = \App\Models\AtlasTask::whereIn('atlas_worker_id', $atlasWorkerIds)->sum('approved_minutes');
+        $todaySubmittedMinutes = \App\Models\AtlasTask::whereIn('atlas_worker_id', $atlasWorkerIds)
+            ->whereDate('task_date', now())
+            ->sum('worked_minutes');
+
         $paidMinutes = $approvedReports->where('payment_status', 'paid')
             ->sum('approved_duration_minutes');
             
@@ -191,7 +193,7 @@ class CalculatePartnerMetricsService
         $totalWorkersCount = Partner::where('partner_role', 'worker')->count();
         $totalMitraCount = Partner::where('partner_role', 'mitra')->count();
 
-        $allTime = (int) VideoWorkReport::where('qc_status', 'approved')->sum('approved_duration_minutes');
+        $allTime = (int) \App\Models\AtlasTask::sum('approved_minutes');
         $paid = (int) VideoWorkReport::where('qc_status', 'approved')->where('payment_status', 'paid')->sum('approved_duration_minutes');
         $pending = (int) VideoWorkReport::where('qc_status', 'approved')->where('payment_status', 'unpaid')->sum('approved_duration_minutes');
 
@@ -204,19 +206,17 @@ class CalculatePartnerMetricsService
         $weeklyPeriodStart = $currentPeriod['start']->copy()->startOfDay();
         $weeklyPeriodEnd = $currentPeriod['end']->copy()->endOfDay();
 
-        $weeklyApprovedMinutes = VideoWorkReport::where('qc_status', 'approved')
-            ->whereBetween('verified_at', [
-                $weeklyPeriodStart->toDateTimeString(),
-                $weeklyPeriodEnd->toDateTimeString(),
+        $weeklyApprovedMinutes = \App\Models\AtlasTask::whereBetween('task_date', [
+                $weeklyPeriodStart->toDateString(),
+                $weeklyPeriodEnd->toDateString(),
             ])
-            ->sum('approved_duration_minutes');
+            ->sum('approved_minutes');
 
-        $weeklySubmittedMinutes = \App\Models\Recording::query()
-            ->whereBetween('created_at', [
-                $weeklyPeriodStart->toDateTimeString(),
-                $weeklyPeriodEnd->toDateTimeString(),
+        $weeklySubmittedMinutes = \App\Models\AtlasTask::whereBetween('task_date', [
+                $weeklyPeriodStart->toDateString(),
+                $weeklyPeriodEnd->toDateString(),
             ])
-            ->sum('duration_seconds') / 60;
+            ->sum('worked_minutes');
 
         $weeklyTargetHours = 625;
         $weeklyTargetMinutes = $weeklyTargetHours * 60;
@@ -230,19 +230,17 @@ class CalculatePartnerMetricsService
         $monthlyStart = now()->copy()->startOfMonth();
         $monthlyEnd = now()->copy()->endOfMonth();
 
-        $monthlyApprovedMinutes = VideoWorkReport::where('qc_status', 'approved')
-            ->whereBetween('verified_at', [
-                $monthlyStart->toDateTimeString(),
-                $monthlyEnd->toDateTimeString(),
+        $monthlyApprovedMinutes = \App\Models\AtlasTask::whereBetween('task_date', [
+                $monthlyStart->toDateString(),
+                $monthlyEnd->toDateString(),
             ])
-            ->sum('approved_duration_minutes');
+            ->sum('approved_minutes');
 
-        $monthlySubmittedMinutes = \App\Models\Recording::query()
-            ->whereBetween('created_at', [
-                $monthlyStart->toDateTimeString(),
-                $monthlyEnd->toDateTimeString(),
+        $monthlySubmittedMinutes = \App\Models\AtlasTask::whereBetween('task_date', [
+                $monthlyStart->toDateString(),
+                $monthlyEnd->toDateString(),
             ])
-            ->sum('duration_seconds') / 60;
+            ->sum('worked_minutes');
 
         $monthlyTargetHours = 2500;
         $monthlyTargetMinutes = $monthlyTargetHours * 60;

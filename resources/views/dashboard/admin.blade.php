@@ -475,41 +475,47 @@
                     <span class="block text-sm font-bold text-gray-900">Antrean Log Rekaman Global</span>
                     <span class="text-xs text-gray-400">10 data rekaman terbaru</span>
                 </div>
+                <a href="{{ route('admin.recordings.index') }}" class="text-xs font-bold text-indigo-650 hover:underline flex items-center gap-1">
+                    Semua Rekaman
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </a>
             </div>
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-100 text-sm">
                     <thead>
                         <tr class="text-gray-500">
                             <th class="py-3 text-left font-semibold">ID Rekaman</th>
-                            <th class="py-3 text-left font-semibold">Nama Worker</th>
-                            <th class="py-3 text-left font-semibold">Waktu Rekam</th>
-                            <th class="py-3 text-left font-semibold">Durasi</th>
+                            <th class="py-3 text-left font-semibold">Worker (Email)</th>
+                            <th class="py-3 text-left font-semibold">Tanggal Task</th>
+                            <th class="py-3 text-left font-semibold">Durasi Kerja</th>
                             <th class="py-3 text-left font-semibold">Status</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100 bg-white">
                         @forelse($latestReports as $report)
                             <tr>
-                                <td class="py-3.5 font-bold text-indigo-600">{{ substr($report->id, 0, 8) }}...</td>
+                                <td class="py-3.5 font-bold text-indigo-600">{{ substr($report->atlas_task_id ?? $report->id, 0, 8) }}</td>
                                 <td class="py-3.5">
                                     <div class="flex flex-col">
-                                        @if(!$report->partner)
-                                            <span class="font-medium text-red-600">Unknown Partner</span>
+                                        @if(!$report->atlasWorker)
+                                            <span class="font-medium text-red-600">Unknown Worker</span>
                                             <span class="text-xs text-gray-450 font-mono">-</span>
                                         @else
-                                            <span class="font-medium text-gray-900">{{ $report->partner->full_name }}</span>
-                                            <span class="text-xs text-gray-450 font-mono">{{ $report->partner->mitra_id }}</span>
+                                            <span class="font-medium text-gray-900">{{ $report->atlasWorker->user->name ?? 'Unknown' }}</span>
+                                            <span class="text-xs text-gray-450 font-mono">{{ $report->atlasWorker->atlas_email }}</span>
                                         @endif
                                     </div>
                                 </td>
-                                <td class="py-3.5 text-gray-600">{{ $report->created_at ? $report->created_at->translatedFormat('d F Y, H:i') : '-' }}</td>
-                                <td class="py-3.5 text-slate-800 font-bold">{{ floor($report->duration_seconds / 60) }}m {{ $report->duration_seconds % 60 }}s</td>
+                                <td class="py-3.5 text-gray-600">{{ \Carbon\Carbon::parse($report->task_date)->translatedFormat('d F Y') }}</td>
+                                <td class="py-3.5 text-slate-800 font-bold">{{ floor($report->worked_minutes) }}m {{ round(($report->worked_minutes - floor($report->worked_minutes)) * 60) }}s</td>
                                 <td class="py-3.5">
                                     @php
-                                        $statusClass = $report->status === 'pending' ? 'bg-yellow-50 text-yellow-700 border-yellow-100' : 'bg-emerald-50 text-emerald-700 border-emerald-100';
+                                        $statusClass = $report->status === 'UNDER_REVIEW' ? 'bg-yellow-50 text-yellow-700 border-yellow-100' : 'bg-emerald-50 text-emerald-700 border-emerald-100';
                                     @endphp
                                     <span class="inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold border {{ $statusClass }}">
-                                        {{ ucfirst($report->status ?? 'Pending') }}
+                                        {{ str_replace('_', ' ', $report->status ?? 'UNKNOWN') }}
                                     </span>
                                 </td>
                             </tr>

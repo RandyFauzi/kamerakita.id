@@ -35,9 +35,14 @@ class RenderDashboardOverviewController extends Controller
             if ($partner->partner_role === 'worker') {
                 $metrics = $this->metricsService->getWorkerMetrics($partner);
                 
-                // Get latest submissions from Recording
-                $reports = \App\Models\Recording::where('partner_id', $partner->id)
-                    ->orderBy('created_at', 'desc')
+                // Get latest submissions from AtlasTask
+                $atlasWorkerIds = \App\Models\AtlasWorker::where(function ($q) use ($partner) {
+                    $q->where('user_id', $partner->user_id)
+                      ->orWhere('atlas_email', $partner->email);
+                })->pluck('id');
+                
+                $reports = \App\Models\AtlasTask::whereIn('atlas_worker_id', $atlasWorkerIds)
+                    ->orderBy('task_date', 'desc')
                     ->limit(10)
                     ->get();
                 
@@ -112,8 +117,8 @@ class RenderDashboardOverviewController extends Controller
         if ($user->hasFullAdminAccess() || $user->role === 'finance') {
             $metrics = $this->metricsService->getGlobalMetrics();
             
-            $latestReports = \App\Models\Recording::with(['partner'])
-                ->orderBy('created_at', 'desc')
+            $latestReports = \App\Models\AtlasTask::with(['atlasWorker'])
+                ->orderBy('task_date', 'desc')
                 ->limit(10)
                 ->get();
 
@@ -124,24 +129,23 @@ class RenderDashboardOverviewController extends Controller
 
             $monthlyData = collect(\Illuminate\Support\Facades\Cache::remember('admin_monthly_data_v3', 600, function () {
                 $isMysql = \Illuminate\Support\Facades\DB::getDriverName() === 'mysql';
-                $groupByRaw = $isMysql ? "DATE_FORMAT(submission_date, '%Y-%m')" : "strftime('%Y-%m', submission_date)";
-                $groupByRawRecording = $isMysql ? "DATE_FORMAT(created_at, '%Y-%m')" : "strftime('%Y-%m', created_at)";
+                $groupByRawTaskDate = $isMysql ? "DATE_FORMAT(task_date, '%Y-%m')" : "strftime('%Y-%m', task_date)";
                 
-                $approvedData = VideoWorkReport::select(
-                        \Illuminate\Support\Facades\DB::raw("$groupByRaw as month"),
-                        \Illuminate\Support\Facades\DB::raw("SUM(CASE WHEN qc_status = 'approved' THEN approved_duration_minutes ELSE 0 END) as approved_minutes")
+                $approvedData = \App\Models\AtlasTask::select(
+                        \Illuminate\Support\Facades\DB::raw("$groupByRawTaskDate as month"),
+                        \Illuminate\Support\Facades\DB::raw("SUM(approved_minutes) as approved_minutes")
                     )
-                    ->where('submission_date', '>=', now()->subMonths(6)->startOfMonth())
+                    ->where('task_date', '>=', now()->subMonths(6)->startOfMonth())
                     ->groupBy('month')
                     ->get()
                     ->keyBy('month')
                     ->toArray();
 
-                $submittedData = \App\Models\Recording::select(
-                        \Illuminate\Support\Facades\DB::raw("$groupByRawRecording as month"),
-                        \Illuminate\Support\Facades\DB::raw("SUM(duration_seconds) / 60 as submitted_minutes")
+                $submittedData = \App\Models\AtlasTask::select(
+                        \Illuminate\Support\Facades\DB::raw("$groupByRawTaskDate as month"),
+                        \Illuminate\Support\Facades\DB::raw("SUM(worked_minutes) as submitted_minutes")
                     )
-                    ->where('created_at', '>=', now()->subMonths(6)->startOfMonth())
+                    ->where('task_date', '>=', now()->subMonths(6)->startOfMonth())
                     ->groupBy('month')
                     ->get()
                     ->keyBy('month')
@@ -161,12 +165,12 @@ class RenderDashboardOverviewController extends Controller
 
             $dailyAverageData = collect(\Illuminate\Support\Facades\Cache::remember('admin_daily_average_data_v3', 600, function () {
                 $isMysql = \Illuminate\Support\Facades\DB::getDriverName() === 'mysql';
-                $dateRaw = $isMysql ? "DATE(created_at)" : "DATE(created_at)";
-                return \App\Models\Recording::select(
+                $dateRaw = $isMysql ? "DATE(task_date)" : "DATE(task_date)";
+                return \App\Models\AtlasTask::select(
                         \Illuminate\Support\Facades\DB::raw("$dateRaw as submission_date"),
-                        \Illuminate\Support\Facades\DB::raw("AVG(duration_seconds) / 60 as avg_minutes")
+                        \Illuminate\Support\Facades\DB::raw("AVG(worked_minutes) as avg_minutes")
                     )
-                    ->where('created_at', '>=', now()->subDays(7)->toDateString())
+                    ->where('task_date', '>=', now()->subDays(7)->toDateString())
                     ->groupBy('submission_date')
                     ->orderBy('submission_date', 'asc')
                     ->get()
