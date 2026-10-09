@@ -80,7 +80,22 @@
                         <div class="p-4 sm:p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 cursor-pointer select-none" @click="open = !open">
                             <!-- Left: Date info & Icon -->
                             <div class="flex items-center gap-3 sm:gap-4">
-                                <div class="w-11 h-11 sm:w-12 sm:h-12 {{ $pay['has_custom_rate'] ? 'bg-amber-100 border-amber-200 text-amber-600' : 'bg-emerald-50 border-emerald-100 text-emerald-600' }} border rounded-xl flex items-center justify-center shrink-0">
+                                @if(isset($pay["is_payroll"]) && $pay["is_payroll"])
+                                    <div class="w-11 h-11 sm:w-12 sm:h-12 {{ $pay["payroll_status"] === "PAID" ? "bg-emerald-50 border-emerald-100 text-emerald-600" : "bg-indigo-50 border-indigo-100 text-indigo-600" }} border rounded-xl flex items-center justify-center shrink-0">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            @if($pay["payroll_status"] === "PAID")
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            @else
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            @endif
+                                        </svg>
+                                    </div>
+                                    <div class="space-y-0.5">
+                                        <span class="block text-[10px] font-bold {{ $pay["payroll_status"] === "PAID" ? "text-emerald-600" : "text-indigo-600" }} uppercase tracking-wider">{{ $pay["payroll_status"] === "PAID" ? "TAGIHAN DIBAYAR" : "MENUNGGU PEMBAYARAN" }}</span>
+                                        <span class="block text-sm font-black text-slate-800">{{ $pay["payroll_period"] }}</span>
+                                    </div>
+                                @else
+                                    <div class="w-11 h-11 sm:w-12 sm:h-12 {{ $pay['has_custom_rate'] ? 'bg-amber-100 border-amber-200 text-amber-600' : 'bg-emerald-50 border-emerald-100 text-emerald-600' }} border rounded-xl flex items-center justify-center shrink-0">
                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
@@ -89,6 +104,7 @@
                                     <span class="block text-[10px] font-bold {{ $pay['has_custom_rate'] ? 'text-amber-600' : 'text-emerald-600' }} uppercase tracking-wider">{{ __("dashboard.salary_history.transfer_complete") }}</span>
                                     <span class="block text-sm font-black text-slate-800">{{ $pay['paid_at']->translatedFormat('d F Y - H:i') }}</span>
                                 </div>
+                                @endif
                             </div>
 
                             <!-- Right: {{ __("dashboard.salary_history.nominal") }}, Proof button and expand indicator -->
@@ -101,7 +117,11 @@
                                         @endif
                                         <span class="block text-lg font-black {{ $pay['has_custom_rate'] ? 'text-amber-600' : 'text-slate-900' }} leading-tight">Rp {{ number_format($pay['total_amount'], 0, ',', '.') }}</span>
                                     </div>
-                                    <span class="block text-[9px] font-semibold text-gray-400 mt-0.5" x-text="'Untuk ' + {{ count($pay['reports']) }} + ' Laporan' "></span>
+                                    @if(isset($pay["is_payroll"]) && $pay["is_payroll"])
+                                        <span class="block text-[9px] font-semibold text-gray-400 mt-0.5">{{ round($pay["total_minutes"] / 60, 2) }} Jam Billable</span>
+                                    @else
+                                        <span class="block text-[9px] font-semibold text-gray-400 mt-0.5" x-text="'Untuk ' + {{ count($pay['reports']) }} + ' Laporan' "></span>
+                                    @endif
                                 </div>
 
                                 <div class="flex items-center gap-3">
@@ -128,6 +148,12 @@
                         <!-- Accordion Body (Included Work Reports) -->
                         <div x-show="open" x-collapse x-cloak>
                             <div class="px-4 sm:px-5 pb-4 sm:pb-5 border-t border-gray-100 bg-slate-50/50">
+                                @if(isset($pay["is_payroll"]) && $pay["is_payroll"])
+                                    <div class="pt-4 text-sm text-gray-500 text-center">
+                                        Total durasi jam kerja (*billable*): <span class="font-bold text-gray-800">{{ round($pay["total_minutes"] / 60, 2) }} Jam</span>
+                                        <br>Untuk detail masing-masing tugas, Anda dapat memeriksanya di halaman <strong>Menu Utama > Daftar Task</strong>.
+                                    </div>
+                                @else
                                 <div class="space-y-2 pt-3 sm:hidden">
                                     @foreach($pay['reports'] as $report)
                                         <div class="bg-white rounded-xl border border-gray-150 p-3">
@@ -171,6 +197,7 @@
                                         </tbody>
                                     </table>
                                 </div>
+                                @endif
                             </div>
                         </div>
                     </div>
