@@ -32,17 +32,30 @@ class PayrollController extends Controller
             'atlas_worker_id' => 'required|exists:atlas_workers,id',
             'period_start' => 'required|date',
             'period_end' => 'required|date|after_or_equal:period_start',
-            'rate_per_hour' => 'required|numeric|min:0',
         ]);
 
         $workerId = $request->atlas_worker_id;
         $periodStart = $request->period_start;
         $periodEnd = $request->period_end;
-        $ratePerHour = $request->rate_per_hour;
 
-        // Find all unpaid tasks for this worker within the selected period.
-        // Even though "carry forward" ignores task_date, we let admin specify the boundary to avoid locking tasks that are too new if they don't want to.
-        // Wait, best practice for "rollover": lock ALL unpaid tasks up to period_end.
+        // Automatically determine rate
+        $worker = AtlasWorker::with('user.partner')->find($workerId);
+        $partner = $worker->user->partner ?? null;
+        
+        $ratePerHour = 60000; // Default flat rate
+        if ($partner) {
+            if ($partner->base_hourly_rate > 0) {
+                $ratePerHour = $partner->base_hourly_rate;
+            } else {
+                // If under mitra, 50k. Otherwise 60k.
+                if (!empty($partner->mitra_parent_id) || !empty($partner->mitra_id)) {
+                    $ratePerHour = 50000;
+                } else {
+                    $ratePerHour = 60000;
+                }
+            }
+        }
+
         $tasksToLock = AtlasTask::where('atlas_worker_id', $workerId)
             ->whereNull('payroll_id')
             ->where('approved_minutes', '>', 0)
@@ -59,7 +72,6 @@ class PayrollController extends Controller
 
         DB::beginTransaction();
         try {
-            // 1. Create Payroll Record
             $payroll = Payroll::create([
                 'atlas_worker_id' => $workerId,
                 'period_start' => $periodStart,
@@ -69,17 +81,32 @@ class PayrollController extends Controller
                 'status' => 'UNPAID',
             ]);
 
-            // 2. Lock the tasks
             AtlasTask::whereIn('id', $tasksToLock->pluck('id'))->update([
                 'payroll_id' => $payroll->id,
             ]);
 
             DB::commit();
 
-            return back()->with('success', 'Payroll berhasil di-generate sejumlah Rp ' . number_format($totalRupiah, 0, ',', '.') . ' untuk ' . $tasksToLock->count() . ' tasks.');
+            return back()->with('success', 'Payroll berhasil di-generate sejumlah Rp ' . number_format($totalRupiah, 0, ',', '.') . ' (Rate: Rp '.number_format($ratePerHour, 0, ',', '.').'/jam).');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    public function destroy(Payroll $payroll)
+    {
+        DB::beginTransaction();
+        try {
+            AtlasTask::where('payroll_id', $payroll->id)->update([
+                'payroll_id' => null,
+            ]);
+            $payroll->delete();
+            DB::commit();
+            return back()->with('success', 'Data tagihan berhasil dihapus dan task dikembalikan ke status Unpaid.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal menghapus tagihan: ' . $e->getMessage());
         }
     }
 

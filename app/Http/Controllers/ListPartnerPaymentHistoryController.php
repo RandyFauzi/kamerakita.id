@@ -57,8 +57,36 @@ class ListPartnerPaymentHistoryController extends Controller
                 'total_minutes' => $totalMinutes,
                 'total_amount' => $totalAmount,
                 'has_custom_rate' => $hasCustomRate,
+                'is_payroll' => false,
             ];
         }
+
+        // New Payroll Payments
+        $atlasWorker = \App\Models\AtlasWorker::where('user_id', Auth::id())->first();
+        if ($atlasWorker) {
+            $payrolls = \App\Models\Payroll::where('atlas_worker_id', $atlasWorker->id)
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            foreach ($payrolls as $pr) {
+                $payments[] = [
+                    'paid_at' => $pr->paid_at ?? $pr->created_at,
+                    'proof_url' => null,
+                    'reports' => collect([]), // No old reports
+                    'total_minutes' => $pr->total_approved_minutes,
+                    'total_amount' => $pr->amount_rupiah,
+                    'has_custom_rate' => false,
+                    'is_payroll' => true,
+                    'payroll_period' => $pr->period_start->format('d M') . ' - ' . $pr->period_end->format('d M Y'),
+                    'payroll_status' => $pr->status,
+                ];
+            }
+        }
+
+        // Sort by paid_at descending
+        usort($payments, function($a, $b) {
+            return $b['paid_at'] <=> $a['paid_at'];
+        });
 
         return view('video-submissions.payment-history', compact('payments', 'partner'));
     }
