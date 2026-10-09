@@ -139,6 +139,7 @@ class MatchPayrollExcelTool extends BaseTool
                                 // Buat copyan dari task ini untuk sisa Pending
                                 $leftoverTask = $task->replicate();
                                 $leftoverTask->task_name = $task->task_name . ' (Sisa)';
+                                $leftoverTask->atlas_task_id = $task->atlas_task_id . '-sisa';
                                 
                                 // Porsi PAID (task asli)
                                 $task->worked_minutes = $gap;
