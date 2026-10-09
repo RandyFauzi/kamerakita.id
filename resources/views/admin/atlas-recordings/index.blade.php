@@ -66,6 +66,16 @@
                             <span class="px-2 py-1 rounded text-[11px] font-bold" style="background-color: #ecfdf5; color: #10b981;">{{ $pctApp }}%</span>
                             <span class="text-[11px] font-semibold text-gray-400">dari total durasi</span>
                         </div>
+                        <div class="mt-4 flex flex-col gap-2 border-t border-gray-100 pt-3">
+                            <div class="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider">
+                                <span class="text-blue-500">PAID (Lunas)</span>
+                                <span class="text-gray-700 bg-blue-50 px-2 py-0.5 rounded">{{ floor($stats['total_paid'] / 60) }}h {{ round($stats['total_paid'] % 60) }}m</span>
+                            </div>
+                            <div class="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider">
+                                <span class="text-gray-400">UNPAID (Pending)</span>
+                                <span class="text-gray-700 bg-gray-50 border border-gray-200 px-2 py-0.5 rounded">{{ floor($stats['total_unpaid'] / 60) }}h {{ round($stats['total_unpaid'] % 60) }}m</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

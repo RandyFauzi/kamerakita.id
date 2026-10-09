@@ -38,6 +38,8 @@ class AtlasRecordingController extends Controller
         $stats = [
             'total_worked' => $statsQuery->sum('worked_minutes'),
             'total_approved' => $statsQuery->sum('approved_minutes'),
+            'total_paid' => (clone $statsQuery)->whereNotNull('payroll_id')->sum('approved_minutes'),
+            'total_unpaid' => (clone $statsQuery)->whereNull('payroll_id')->sum('approved_minutes'),
             'total_review' => $statsQuery->sum('review_minutes'),
             'total_rejected' => $statsQuery->sum('rejected_minutes'),
         ];
