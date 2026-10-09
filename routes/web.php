@@ -260,6 +260,7 @@ require __DIR__.'/auth.php';
     // Payroll Routes (Admin)
     Route::get('/admin/payrolls', [\App\Http\Controllers\PayrollController::class, 'index'])->middleware('role:superadmin,admin')->name('payrolls.index');
     Route::post('/admin/payrolls', [\App\Http\Controllers\PayrollController::class, 'store'])->middleware('role:superadmin,admin')->name('payrolls.store');
+    Route::delete('/admin/payrolls/{payroll}', [\App\Http\Controllers\PayrollController::class, 'destroy'])->middleware('role:superadmin,admin')->name('payrolls.destroy');
     Route::post('/admin/payrolls/{payroll}/mark-paid', [\App\Http\Controllers\PayrollController::class, 'markAsPaid'])->middleware('role:superadmin,admin')->name('payrolls.mark_paid');
     Route::get('/admin/recordings', [\App\Http\Controllers\Admin\AtlasRecordingController::class, 'index'])->middleware('role:superadmin,admin')->name('admin.recordings.index');
 

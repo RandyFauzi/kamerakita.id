@@ -59,16 +59,10 @@
                                 </div>
                             </div>
 
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-1">Rate Pekerja (Rp / Jam)</label>
-                                <!-- Defaulting to 60000 for MVP testing -->
-                                <input type="number" name="rate_per_hour" required value="60000" class="w-full rounded-xl border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 text-sm">
-                            </div>
-
                             <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-colors">
                                 Hitung & Buat Invoice Payroll
                             </button>
-                            <p class="text-xs text-center text-gray-400 mt-2">Sistem akan mengunci task sesuai periode tanpa menghapus data aslinya.</p>
+                            <p class="text-xs text-center text-gray-400 mt-2">Sistem akan otomatis menghitung rate sesuai data Partner, lalu mengunci task tanpa menghapus aslinya.</p>
                         </form>
                     </div>
                 </div>
@@ -95,10 +89,17 @@
                                             @else
                                                 <div class="flex flex-col items-end gap-2 mt-1">
                                                     <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-yellow-100 text-yellow-800 uppercase tracking-wider">BELUM DIBAYAR</span>
-                                                    <form action="{{ route('payrolls.mark_paid', $pr) }}" method="POST">
-                                                        @csrf
-                                                        <button type="submit" onclick="return confirm('Tandai sebagai Lunas?')" class="text-[10px] bg-gray-900 text-white px-3 py-1 rounded-md hover:bg-gray-800">TANDAI LUNAS</button>
-                                                    </form>
+                                                    <div class="flex items-center gap-2">
+                                                        <form action="{{ route('payrolls.destroy', $pr) }}" method="POST">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" onclick="return confirm('Batalkan tagihan ini? Data akan dikembalikan ke Unpaid.')" class="text-[10px] bg-rose-50 border border-rose-200 text-rose-600 px-3 py-1 rounded-md hover:bg-rose-100 font-bold">BATALKAN</button>
+                                                        </form>
+                                                        <form action="{{ route('payrolls.mark_paid', $pr) }}" method="POST">
+                                                            @csrf
+                                                            <button type="submit" onclick="return confirm('Tandai sebagai Lunas?')" class="text-[10px] bg-gray-900 text-white px-3 py-1 rounded-md hover:bg-gray-800 font-bold">TANDAI LUNAS</button>
+                                                        </form>
+                                                    </div>
                                                 </div>
                                             @endif
                                         </div>
