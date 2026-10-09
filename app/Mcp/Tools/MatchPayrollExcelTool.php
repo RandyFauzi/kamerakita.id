@@ -49,7 +49,7 @@ class MatchPayrollExcelTool extends BaseTool
     {
         $usersData = $args['users_data'] ?? [];
         $mode = $args['mode'] ?? 'accumulate';
-        $startDate = $args['start_date'] ?? '2026-09-06';
+        $startDate = $args['start_date'] ?? '2026-09-06 00:00:00';
         $endDate = $args['end_date'] ?? '2026-09-22 23:59:59';
         
         $results = [];
@@ -59,10 +59,90 @@ class MatchPayrollExcelTool extends BaseTool
             $email = $u['email'];
             $targetHours = (float) $u['target_hours'];
 
-            $worker = AtlasWorker::where('atlas_email', $email)->first();
+            $worker = AtlasWorker::with('user.partner')->where('atlas_email', $email)->first();
             if (!$worker) continue;
 
-            if ($mode === 'test_date_range') {
+            if ($mode === 'execute_deduction') {
+                $tasks = AtlasTask::where('atlas_worker_id', $worker->id)
+                    ->where('status', 'Approved')
+                    ->whereNull('payroll_id')
+                    ->orderBy('task_date', 'asc')
+                    ->get();
+                
+                $targetMinutes = $targetHours * 60;
+                $cumulativeMinutes = 0;
+                $lockedTaskIds = [];
+                $maxDate = '2026-09-06 00:00:00';
+
+                foreach ($tasks as $task) {
+                    // Stop if we already met or exceeded the target
+                    // To be safe, we allow a small margin. If we are within 1 minute of target, we stop.
+                    if ($cumulativeMinutes >= ($targetMinutes - 1)) {
+                        break;
+                    }
+                    
+                    $cumulativeMinutes += $task->approved_minutes;
+                    $lockedTaskIds[] = $task->id;
+                    $maxDate = $task->task_date;
+                }
+
+                if (count($lockedTaskIds) > 0) {
+                    \Illuminate\Support\Facades\DB::beginTransaction();
+                    try {
+                        // Calculate standard nominal just for record
+                        $partner = $worker->user->partner ?? null;
+                        $ratePerHour = 60000;
+                        if ($partner) {
+                            if ($partner->base_hourly_rate > 0) {
+                                $ratePerHour = $partner->base_hourly_rate;
+                            } else if (!empty($partner->mitra_parent_id) || !empty($partner->mitra_id)) {
+                                $ratePerHour = 50000;
+                            }
+                        }
+                        $totalRupiah = ($cumulativeMinutes / 60) * $ratePerHour;
+
+                        $payroll = \App\Models\Payroll::create([
+                            'atlas_worker_id' => $worker->id,
+                            'period_start' => $startDate,
+                            'period_end' => $maxDate,
+                            'total_approved_minutes' => $cumulativeMinutes,
+                            'amount_rupiah' => $totalRupiah,
+                            'status' => 'PAID', // AUTO PAID!
+                            'payment_proof_path' => 'SINKRONISASI_EXCEL_PERIODE_1'
+                        ]);
+
+                        AtlasTask::whereIn('id', $lockedTaskIds)->update([
+                            'payroll_id' => $payroll->id
+                        ]);
+
+                        \Illuminate\Support\Facades\DB::commit();
+
+                        $results[] = [
+                            'email' => $email,
+                            'target_hours' => round($targetHours, 2),
+                            'locked_hours' => round($cumulativeMinutes / 60, 2),
+                            'tasks_locked' => count($lockedTaskIds),
+                            'tasks_remaining' => $tasks->count() - count($lockedTaskIds),
+                            'payroll_id' => $payroll->id
+                        ];
+                    } catch (\Exception $e) {
+                        \Illuminate\Support\Facades\DB::rollBack();
+                        $results[] = [
+                            'email' => $email,
+                            'error' => $e->getMessage()
+                        ];
+                    }
+                } else {
+                    $results[] = [
+                        'email' => $email,
+                        'target_hours' => round($targetHours, 2),
+                        'locked_hours' => 0,
+                        'tasks_locked' => 0,
+                        'tasks_remaining' => $tasks->count(),
+                        'message' => 'No tasks to lock'
+                    ];
+                }
+            } else if ($mode === 'test_date_range') {
                 $tasks = AtlasTask::where('atlas_worker_id', $worker->id)
                     ->where('status', 'Approved')
                     ->whereNull('payroll_id')
@@ -127,6 +207,18 @@ class MatchPayrollExcelTool extends BaseTool
                     'diff_minutes' => round($closestDiff, 2)
                 ];
             }
+        }
+
+        if ($mode === 'execute_deduction') {
+            return [
+                'summary' => [
+                    'mode' => 'execute_deduction',
+                    'total_users_processed' => count($results),
+                    'total_tasks_locked' => collect($results)->sum('tasks_locked'),
+                    'total_hours_locked' => collect($results)->sum('locked_hours')
+                ],
+                'details' => $results
+            ];
         }
 
         if ($mode === 'test_date_range') {
