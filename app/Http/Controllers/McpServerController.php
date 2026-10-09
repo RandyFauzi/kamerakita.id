@@ -21,6 +21,7 @@ use App\Mcp\Tools\CreateCustomUserTool;
 use App\Mcp\Tools\SoftDeleteEmailTool;
 use App\Mcp\Tools\SendWaTool;
 use App\Mcp\Tools\QuickReconcileByEmailTool;
+use App\Mcp\Tools\MatchPayrollExcelTool;
 
 class McpServerController extends Controller
 {
@@ -47,6 +48,7 @@ class McpServerController extends Controller
         $this->registry->register(new SoftDeleteEmailTool());
         $this->registry->register(new SendWaTool());
         $this->registry->register(new QuickReconcileByEmailTool());
+        $this->registry->register(new MatchPayrollExcelTool());
     }
 
     public function handle(Request $request)
