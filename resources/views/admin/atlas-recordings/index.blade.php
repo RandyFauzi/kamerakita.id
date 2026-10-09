@@ -243,7 +243,7 @@
                                         @else
                                             @if(str_ends_with($record->task_name, '(Sisa)'))
                                                 <span class="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-bold text-amber-700 border border-amber-200" title="Sisa menit dari pemotongan presisi">
-                                                    SISA
+                                                    SISA ({{ number_format($record->approved_minutes, 1) }} m)
                                                 </span>
                                             @else
                                                 <span class="inline-flex items-center gap-1 rounded-full bg-gray-50 px-2.5 py-1 text-[11px] font-bold text-gray-500 border border-gray-200">
