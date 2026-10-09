@@ -181,21 +181,22 @@ class MatchPayrollExcelTool extends BaseTool
                             'tasks_remaining' => $tasks->count() - count($lockedTaskIds),
                             'payroll_id' => $payroll->id
                         ];
-                    } catch (\Exception $e) {
+                    } else {
                         \Illuminate\Support\Facades\DB::rollBack();
                         $results[] = [
                             'email' => $email,
-                            'error' => $e->getMessage()
+                            'target_hours' => round($targetHours, 2),
+                            'locked_hours' => 0,
+                            'tasks_locked' => 0,
+                            'tasks_remaining' => $tasks->count(),
+                            'message' => 'No tasks to lock'
                         ];
                     }
-                } else {
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\DB::rollBack();
                     $results[] = [
                         'email' => $email,
-                        'target_hours' => round($targetHours, 2),
-                        'locked_hours' => 0,
-                        'tasks_locked' => 0,
-                        'tasks_remaining' => $tasks->count(),
-                        'message' => 'No tasks to lock'
+                        'error' => $e->getMessage()
                     ];
                 }
             } else if ($mode === 'test_date_range') {
