@@ -26,10 +26,10 @@ class PayrollController extends Controller
         return view('admin.payrolls.index', compact('payrolls', 'unpaidWorkers'));
     }
 
-    public function store(Request $request)
+        public function store(Request $request)
     {
         $request->validate([
-            'atlas_worker_id' => 'required|exists:atlas_workers,id',
+            'atlas_worker_id' => 'required|string', // allows 'ALL' or ID
             'period_start' => 'required|date',
             'period_end' => 'required|date|after_or_equal:period_start',
         ]);
@@ -37,57 +37,88 @@ class PayrollController extends Controller
         $workerId = $request->atlas_worker_id;
         $periodStart = $request->period_start;
         $periodEnd = $request->period_end;
-
-        // Automatically determine rate
-        $worker = AtlasWorker::with('user.partner')->find($workerId);
-        $partner = $worker->user->partner ?? null;
         
-        $ratePerHour = 60000; // Default flat rate
-        if ($partner) {
-            if ($partner->base_hourly_rate > 0) {
-                $ratePerHour = $partner->base_hourly_rate;
-            } else {
-                // If under mitra, 50k. Otherwise 60k.
-                if (!empty($partner->mitra_parent_id) || !empty($partner->mitra_id)) {
-                    $ratePerHour = 50000;
-                } else {
-                    $ratePerHour = 60000;
-                }
+        $workersToProcess = [];
+
+        if ($workerId === 'ALL') {
+            // Find all workers that have unbilled tasks before periodEnd
+            $workerIdsWithTasks = AtlasTask::whereNull('payroll_id')
+                ->where('approved_minutes', '>', 0)
+                ->where('task_date', '<=', $periodEnd)
+                ->distinct()
+                ->pluck('atlas_worker_id');
+                
+            if ($workerIdsWithTasks->isEmpty()) {
+                return back()->with('error', 'Tidak ada task approved apapun yang bisa di-generate untuk periode ini.');
             }
+            $workersToProcess = $workerIdsWithTasks->toArray();
+        } else {
+            // Must validate exists if not ALL
+            if (!AtlasWorker::find($workerId)) {
+                return back()->with('error', 'Worker tidak ditemukan.');
+            }
+            $workersToProcess = [$workerId];
         }
-
-        $tasksToLock = AtlasTask::where('atlas_worker_id', $workerId)
-            ->whereNull('payroll_id')
-            ->where('approved_minutes', '>', 0)
-            ->where('task_date', '<=', $periodEnd)
-            ->get();
-
-        if ($tasksToLock->isEmpty()) {
-            return back()->with('error', 'Tidak ada task approved yang bisa di-generate untuk periode ini.');
-        }
-
-        $totalApprovedMinutes = $tasksToLock->sum('approved_minutes');
-        $totalHours = $totalApprovedMinutes / 60;
-        $totalRupiah = $totalHours * $ratePerHour;
 
         DB::beginTransaction();
         try {
-            $payroll = Payroll::create([
-                'atlas_worker_id' => $workerId,
-                'period_start' => $periodStart,
-                'period_end' => $periodEnd,
-                'total_approved_minutes' => $totalApprovedMinutes,
-                'amount_rupiah' => $totalRupiah,
-                'status' => 'UNPAID',
-            ]);
+            $createdCount = 0;
+            $totalNominal = 0;
 
-            AtlasTask::whereIn('id', $tasksToLock->pluck('id'))->update([
-                'payroll_id' => $payroll->id,
-            ]);
+            foreach ($workersToProcess as $wId) {
+                $worker = AtlasWorker::with('user.partner')->find($wId);
+                $partner = $worker->user->partner ?? null;
+                
+                $ratePerHour = 60000; // Default flat rate
+                if ($partner) {
+                    if ($partner->base_hourly_rate > 0) {
+                        $ratePerHour = $partner->base_hourly_rate;
+                    } else {
+                        // If under mitra, 50k. Otherwise 60k.
+                        if (!empty($partner->mitra_parent_id) || !empty($partner->mitra_id)) {
+                            $ratePerHour = 50000;
+                        } else {
+                            $ratePerHour = 60000;
+                        }
+                    }
+                }
+
+                $tasksToLock = AtlasTask::where('atlas_worker_id', $wId)
+                    ->whereNull('payroll_id')
+                    ->where('approved_minutes', '>', 0)
+                    ->where('task_date', '<=', $periodEnd)
+                    ->get();
+
+                if ($tasksToLock->isEmpty()) continue;
+
+                $totalApprovedMinutes = $tasksToLock->sum('approved_minutes');
+                $totalHours = $totalApprovedMinutes / 60;
+                $totalRupiah = $totalHours * $ratePerHour;
+
+                $payroll = Payroll::create([
+                    'atlas_worker_id' => $wId,
+                    'period_start' => clone $periodStart,
+                    'period_end' => clone $periodEnd,
+                    'total_approved_minutes' => $totalApprovedMinutes,
+                    'amount_rupiah' => $totalRupiah,
+                    'status' => 'UNPAID',
+                ]);
+
+                AtlasTask::whereIn('id', $tasksToLock->pluck('id'))->update([
+                    'payroll_id' => $payroll->id,
+                ]);
+
+                $createdCount++;
+                $totalNominal += $totalRupiah;
+            }
 
             DB::commit();
 
-            return back()->with('success', 'Payroll berhasil di-generate sejumlah Rp ' . number_format($totalRupiah, 0, ',', '.') . ' (Rate: Rp '.number_format($ratePerHour, 0, ',', '.').'/jam).');
+            if ($createdCount === 0) {
+                return back()->with('error', 'Tidak ada invoice yang terbuat.');
+            }
+
+            return back()->with('success', "Berhasil men-generate $createdCount Invoice Payroll dengan total tagihan Rp " . number_format($totalNominal, 0, ',', '.') . "!");
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());

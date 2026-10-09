@@ -15,12 +15,12 @@
     <div class="py-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
             <div class="px-4 sm:px-0">
-                <div class="bg-indigo-900 rounded-3xl p-6 sm:p-8 relative overflow-hidden shadow-xl shadow-indigo-900/20">
-                    <div class="relative z-10 max-w-2xl text-white">
-                        <h3 class="text-xl sm:text-2xl font-black tracking-tight">Generator Tagihan Pekerja</h3>
-                        <p class="text-indigo-200 mt-2 text-sm sm:text-base leading-relaxed">Gunakan form di bawah untuk merangkum task yang sudah di-approve menjadi 1 invoice utuh per periode (bila perlu). Tagihan yang digenerate akan langsung masuk ke halaman antrean Payments Gaji.</p>
+                <div class="bg-white border border-indigo-100 rounded-3xl p-6 sm:p-8 relative overflow-hidden shadow-sm">
+                    <div class="relative z-10 max-w-3xl">
+                        <h3 class="text-xl sm:text-2xl font-black tracking-tight text-indigo-900">Generator Tagihan Pekerja</h3>
+                        <p class="text-slate-600 mt-2 text-sm sm:text-base leading-relaxed">Tarik semua pekerjaan yang sudah di-approve pada rentang tanggal tertentu, lalu jadikan sebagai 1 Invoice penagihan utuh per pekerja. Hasil generate akan langsung masuk otomatis ke antrean <span class="font-bold text-indigo-600">Payments Gaji</span>.</p>
                     </div>
-                    <div class="absolute -right-20 -top-20 w-64 h-64 bg-indigo-500 rounded-full blur-3xl opacity-30"></div>
+                    <div class="absolute right-0 top-0 w-64 h-full bg-gradient-to-l from-indigo-50 to-transparent opacity-60"></div>
                 </div>
             </div>
 
@@ -71,7 +71,8 @@
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                                         </div>
                                         <select name="atlas_worker_id" required class="block w-full pl-11 rounded-xl border-gray-200 bg-gray-50 py-3 text-sm font-semibold text-gray-700 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 transition-all">
-                                            <option value="">-- Pekerja Siap Cair --</option>
+                                            <option value="">-- Pilih Pekerja --</option>
+                                            <option value="ALL" class="font-black text-indigo-700">⚡ GENERATE SEMUA PEKERJA SEKALIGUS</option>
                                             @foreach($unpaidWorkers as $worker)
                                                 @if($worker->atlasWorker)
                                                     <option value="{{ $worker->atlas_worker_id }}">
@@ -95,7 +96,7 @@
                                 </div>
 
                                 <div class="pt-4 border-t border-gray-100">
-                                    <button type="submit" class="group relative w-full flex justify-center py-3.5 px-4 border border-transparent text-sm font-black rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all shadow-md shadow-indigo-600/20 overflow-hidden">
+                                    <button type="submit" onclick="return confirm('Apakah Anda yakin ingin mengunci/membuat Invoice untuk periode ini?')" class="group relative w-full flex justify-center py-3.5 px-4 border border-transparent text-sm font-black rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all shadow-md shadow-indigo-600/20 overflow-hidden">
                                         <span class="flex items-center gap-2">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
                                             Generate Invoice
