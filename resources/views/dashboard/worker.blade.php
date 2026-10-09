@@ -247,10 +247,17 @@
                 @php
                     if (isset($isAstro) && $isAstro) {
                         $mins = $astroStats['today_worked'] ?? 0;
+                        $highestMins = $astroStats['highest_daily_minutes'] ?? 360;
                     } else {
-                        $mins = $metrics['today_submitted_minutes'];
+                        $mins = $metrics['today_submitted_minutes'] ?? 0;
+                        $highestMins = $metrics['highest_daily_minutes'] ?? 360;
                     }
+                    
+                    // Always ensure target is at least 6 hours (360 mins)
+                    $targetMins = max(360, $highestMins);
+                    
                     $hours = floor($mins / 60);
+                    $remainingMins = round($mins - ($hours * 60));
                     $completedLaps = min(3, floor($mins / 120));
                     
                     if ($mins == 0) {
@@ -275,9 +282,19 @@
                         $sub = __('dashboard.worker_dashboard.msg_max_sub');
                     }
                     
-                    $percentage = min(100, round(($mins / 360) * 100));
-                    $fLeft = $hours . " " . __('dashboard.worker_dashboard.hours_completed');
-                    $fRight = __('dashboard.worker_dashboard.highest_total') . " 6 jam";
+                    $percentage = min(100, round(($mins / $targetMins) * 100));
+                    
+                    if ($hours > 0 && $remainingMins > 0) {
+                        $fLeft = "{$hours} jam {$remainingMins} menit selesai";
+                    } elseif ($hours > 0) {
+                        $fLeft = "{$hours} jam selesai";
+                    } elseif ($remainingMins > 0) {
+                        $fLeft = "{$remainingMins} menit selesai";
+                    } else {
+                        $fLeft = "0 jam selesai";
+                    }
+                    
+                    $fRight = __('dashboard.worker_dashboard.highest_total') . " " . round($targetMins / 60, 1) . " jam";
                 @endphp
 
                 <mission-card 

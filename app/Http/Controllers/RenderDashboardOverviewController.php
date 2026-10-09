@@ -69,6 +69,12 @@ class RenderDashboardOverviewController extends Controller
                                         ->whereDate('task_date', \Carbon\Carbon::today())
                                         ->sum('worked_minutes');
 
+                        $highestDailyMinutes = \App\Models\AtlasTask::where('atlas_worker_id', $atlasWorker->id)
+                                        ->selectRaw('SUM(worked_minutes) as daily_total')
+                                        ->groupBy('task_date')
+                                        ->get()
+                                        ->max('daily_total') ?? 360;
+                                        
                         $astroStats = [
                             'worked_hours' => floor($totalWorked / 60) . 'h ' . round($totalWorked % 60) . 'm',
                             'approved_hours' => floor($totalApproved / 60) . 'h ' . round($totalApproved % 60) . 'm',
@@ -77,6 +83,7 @@ class RenderDashboardOverviewController extends Controller
                             'approval_rate' => $approvalRate,
                             'total_worked' => $totalWorked,
                             'today_worked' => $todayWorked,
+                            'highest_daily_minutes' => $highestDailyMinutes,
                         ];
                     } else {
                         $astroStats = [
@@ -87,6 +94,7 @@ class RenderDashboardOverviewController extends Controller
                             'approval_rate' => 0,
                             'total_worked' => 0,
                             'today_worked' => 0,
+                            'highest_daily_minutes' => 360,
                         ];
                     }
                 }

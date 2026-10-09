@@ -35,6 +35,12 @@ class CalculatePartnerMetricsService
         $todaySubmittedMinutes = \App\Models\AtlasTask::whereIn('atlas_worker_id', $atlasWorkerIds)
             ->whereDate('task_date', now())
             ->sum('worked_minutes');
+            
+        $highestDailyMinutes = \App\Models\AtlasTask::whereIn('atlas_worker_id', $atlasWorkerIds)
+            ->selectRaw('SUM(worked_minutes) as daily_total')
+            ->groupBy('task_date')
+            ->get()
+            ->max('daily_total') ?? 360; // Fallback to 6 hours (360 mins) if no data
 
         $paidMinutes = $approvedReports->where('payment_status', 'paid')
             ->sum('approved_duration_minutes');
@@ -50,6 +56,7 @@ class CalculatePartnerMetricsService
         return [
             'total_submitted_minutes' => $totalSubmittedMinutes,
             'today_submitted_minutes' => $todaySubmittedMinutes,
+            'highest_daily_minutes' => $highestDailyMinutes,
             'all_time_minutes' => $allTimeMinutes,
             'paid_minutes' => $paidMinutes,
             'pending_minutes' => $pendingMinutes,
