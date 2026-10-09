@@ -256,6 +256,11 @@ Route::post('/onboarding', [\App\Http\Controllers\FastworkOnboardingController::
 require __DIR__.'/auth.php';
 
     Route::get('/tasks', [\App\Http\Controllers\MasterTaskController::class, 'index'])->name('tasks.index');
+    
+    // Payroll Routes (Admin)
+    Route::get('/admin/payrolls', [\App\Http\Controllers\PayrollController::class, 'index'])->middleware('role:superadmin,admin')->name('payrolls.index');
+    Route::post('/admin/payrolls', [\App\Http\Controllers\PayrollController::class, 'store'])->middleware('role:superadmin,admin')->name('payrolls.store');
+    Route::post('/admin/payrolls/{payroll}/mark-paid', [\App\Http\Controllers\PayrollController::class, 'markAsPaid'])->middleware('role:superadmin,admin')->name('payrolls.mark_paid');
     Route::get('/admin/recordings', [\App\Http\Controllers\Admin\AtlasRecordingController::class, 'index'])->middleware('role:superadmin,admin')->name('admin.recordings.index');
 
     Route::get('/astro/recording', [\App\Http\Controllers\Astro\AstroRecordingController::class, 'index'])->name('astro.recording');

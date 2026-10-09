@@ -14,4 +14,9 @@ class AtlasTask extends Model
     {
         return $this->belongsTo(AtlasWorker::class);
     }
+
+    public function payroll(): BelongsTo
+    {
+        return $this->belongsTo(Payroll::class);
+    }
 }
