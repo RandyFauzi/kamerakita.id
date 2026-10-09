@@ -113,6 +113,15 @@ class MatchPayrollExcelTool extends BaseTool
                 $targetMinutes = ($targetHours * 60) - $alreadyLocked;
                 
                 // Jika sudah terpenuhi dari run sebelumnya
+                // Hitung berapa menit yang SUDAH PAID di periode ini
+                $alreadyPaidMinutes = (float) \App\Models\AtlasTask::where('atlas_worker_id', $worker->id)
+                    ->whereNotNull('payroll_id')
+                    ->where('task_date', '<=', $endDate)
+                    ->sum('approved_minutes');
+
+                // Kurangi target dengan yang sudah dibayar, agar total mutlaknya pas dengan Excel
+                $targetMinutes = $targetMinutes - $alreadyPaidMinutes;
+
                 if ($targetMinutes <= 0) {
                     $results[] = [
                         'email' => $email,
@@ -120,7 +129,7 @@ class MatchPayrollExcelTool extends BaseTool
                         'locked_hours' => 0,
                         'tasks_locked' => 0,
                         'tasks_remaining' => $tasks->count(),
-                        'message' => 'Already fully locked'
+                        'message' => 'Already fully locked (Total paid is ' . round($alreadyPaidMinutes/60, 2) . 'h)'
                     ];
                     continue;
                 }
