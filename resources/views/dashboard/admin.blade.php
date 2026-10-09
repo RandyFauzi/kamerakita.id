@@ -199,6 +199,12 @@
             $monthlySubmittedHours = $monthlyData->pluck('submitted_minutes')->map(function($m) {
                 return round(($m ?? 0) / 60, 2); // Convert to hours
             })->toArray();
+            
+            $monthlySisaHours = [];
+            foreach ($monthlySubmittedHours as $i => $sub) {
+                $app = $monthlyApprovedHours[$i] ?? 0;
+                $monthlySisaHours[] = round($sub - $app, 2);
+            }
 
             $dailyDates = $dailyAverageData->pluck('submission_date')->map(function($d) {
                 return \Carbon\Carbon::parse($d)->format('d M');
@@ -245,42 +251,36 @@
                 const monthlyOptions = {
                     chart: {
                         type: 'bar',
+                        stacked: true,
                         height: 280,
                         toolbar: { show: false },
                         parentHeightOffset: 0
                     },
-                    colors: ['#93c5fd', '#10b981'],
-                    plotOptions: {
-                        bar: {
-                            borderRadius: 4,
-                            horizontal: false,
-                            columnWidth: '55%',
-                            endingShape: 'rounded'
-                        },
+                    colors: ['#3b82f6', '#e2e8f0'],
+                    plotOptions: { 
+                        bar: { 
+                            columnWidth: '40%', 
+                            borderRadius: 6, 
+                            borderRadiusApplication: 'end' 
+                        } 
                     },
                     dataLabels: {
                         enabled: false
                     },
                     stroke: {
-                        show: true,
-                        width: 2,
-                        colors: ['transparent']
+                        show: false
                     },
                     series: [
-                        {
-                            name: 'Total Terkirim (Jam)',
-                            data: @js($monthlySubmittedHours)
-                        },
-                        {
-                            name: 'Total Terverifikasi (Jam)',
-                            data: @js($monthlyApprovedHours)
-                        }
+                        { name: 'Approved', data: @js($monthlyApprovedHours) },
+                        { name: 'Sisa Durasi', data: @js($monthlySisaHours) }
                     ],
                     xaxis: {
                         categories: @js($monthlyMonths),
                         labels: {
                             style: { colors: '#94a3b8', fontSize: '11px', fontFamily: 'Plus Jakarta Sans, sans-serif' }
-                        }
+                        },
+                        axisBorder: { show: false }, 
+                        axisTicks: { show: false },
                     },
                     yaxis: {
                         labels: {
@@ -288,21 +288,17 @@
                             formatter: function (value) { return value + " Jam"; }
                         }
                     },
-                    plotOptions: {
-                        bar: {
-                            borderRadius: 6,
-                            columnWidth: '40%'
-                        }
-                    },
-                    dataLabels: { enabled: false },
                     grid: {
                         borderColor: '#f1f5f9',
-                        strokeDashArray: 4
+                        strokeDashArray: 4,
+                        xaxis: { lines: { show: false } },
+                        yaxis: { lines: { show: true } }
                     },
+                    legend: { show: true, position: 'top', horizontalAlign: 'right' },
                     tooltip: {
                         theme: 'light',
                         y: {
-                            formatter: function (value) { return value + " Jam Kerja"; }
+                            formatter: function (value) { return value + " Jam"; }
                         }
                     }
                 };
