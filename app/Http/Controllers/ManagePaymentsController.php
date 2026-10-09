@@ -89,6 +89,32 @@ class ManagePaymentsController extends Controller
             $workers = collect($workers)->sortByDesc(fn($w) => $w['latest_date'])->values()->all();
         }
 
+        // INJECT NEW PAYROLLS INTO QUEUE
+        $payrolls = \App\Models\Payroll::with('atlasWorker.user.partner')->where('status', 'UNPAID')->get();
+        foreach ($payrolls as $pr) {
+            $partner = $pr->atlasWorker->user->partner ?? null;
+            if (!$partner) continue;
+            
+            $rate = 0;
+            if ($pr->total_approved_minutes > 0) {
+                $rate = $pr->amount_rupiah / ($pr->total_approved_minutes / 60);
+            }
+            
+            $workers[] = [
+                'partner' => $partner,
+                'reports' => collect([]), // No VideoWorkReports
+                'total_minutes' => $pr->total_approved_minutes,
+                'hours' => $pr->total_approved_minutes / 60,
+                'rate' => $rate,
+                'total_amount' => $pr->amount_rupiah,
+                'has_custom_rate' => false,
+                'period_approval' => null,
+                'latest_date' => $pr->period_end,
+                'is_payroll' => true,
+                'payroll' => $pr
+            ];
+        }
+
         // 3. Fetch payout history (all payouts, order by date)
         $paidReportsQuery = VideoWorkReport::with('partner')
             ->where('payment_status', 'paid')
@@ -143,8 +169,41 @@ class ManagePaymentsController extends Controller
                 'has_custom_rate' => $hasCustomRate,
                 'rate' => $rate,
                 'batch_id' => base64_encode($partner->id . '|' . $first->paid_at->format('Y-m-d H:i:s') . '|' . $first->payment_reference_proof_path . '|' . $rate),
+                'is_payroll' => false,
             ];
         }
+
+        // INJECT NEW PAYROLLS INTO HISTORY
+        $paidPayrolls = \App\Models\Payroll::with('atlasWorker.user.partner')->where('status', 'PAID')->get();
+        foreach ($paidPayrolls as $pr) {
+            $partner = $pr->atlasWorker->user->partner ?? null;
+            if (!$partner) continue;
+            
+            $rate = 0;
+            if ($pr->total_approved_minutes > 0) {
+                $rate = $pr->amount_rupiah / ($pr->total_approved_minutes / 60);
+            }
+            
+            $payoutHistory[] = [
+                'paid_at' => $pr->paid_at ?? clone $pr->updated_at,
+                'proof_url' => null,
+                'proof_path' => null,
+                'partner' => $partner,
+                'reports' => collect([]),
+                'total_minutes' => $pr->total_approved_minutes,
+                'total_amount' => $pr->amount_rupiah,
+                'has_custom_rate' => false,
+                'rate' => $rate,
+                'batch_id' => 'payroll_' . $pr->id,
+                'is_payroll' => true,
+                'payroll' => $pr,
+            ];
+        }
+
+        // Sort payoutHistory desc by paid_at
+        usort($payoutHistory, function($a, $b) {
+            return $b['paid_at'] <=> $a['paid_at'];
+        });
 
         $currentPage = \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPage();
         $perPage = 50;
@@ -178,6 +237,27 @@ class ManagePaymentsController extends Controller
             'period_end_date' => 'required|string',
             'rate' => 'required|numeric',
         ]);
+
+        if ($request->has('payroll_id')) {
+            $payroll = \App\Models\Payroll::find($request->payroll_id);
+            if ($payroll) {
+                try {
+                    DB::transaction(function () use ($payroll, $request, $imageService, $backupService) {
+                        // In case we want to store proof later, we can add a column. For now just mark as paid.
+                        $uploadedPath = $imageService->store($request->file('payment_proof'), 'payment_proofs');
+                        $backupService->backup($uploadedPath);
+                        
+                        $payroll->update([
+                            'status' => 'PAID',
+                            'paid_at' => now(),
+                        ]);
+                    });
+                    return redirect()->back()->with('success', "Payroll ID #{$payroll->id} berhasil dibayar!");
+                } catch (\Exception $e) {
+                    return redirect()->back()->with('error', 'Gagal memproses pembayaran: ' . $e->getMessage());
+                }
+            }
+        }
 
         $reportsQuery = VideoWorkReport::where('partner_id', $partner->id)
             ->where('qc_status', 'approved')
@@ -369,6 +449,22 @@ class ManagePaymentsController extends Controller
         $validated = $request->validate([
             'batch_id' => 'required|string',
         ]);
+
+        if (str_starts_with($validated['batch_id'], 'payroll_')) {
+            $payrollId = str_replace('payroll_', '', $validated['batch_id']);
+            $payroll = \App\Models\Payroll::find($payrollId);
+            if ($payroll) {
+                try {
+                    DB::transaction(function() use ($payroll) {
+                        \App\Models\AtlasTask::where('payroll_id', $payroll->id)->update(['payroll_id' => null]);
+                        $payroll->delete();
+                    });
+                    return redirect()->back()->with('success', 'Tagihan Payroll berhasil dibatalkan dan Task dikembalikan ke antrean.');
+                } catch (\Exception $e) {
+                    return redirect()->back()->with('error', 'Gagal membatalkan tagihan: ' . $e->getMessage());
+                }
+            }
+        }
 
         try {
             $decoded = base64_decode($validated['batch_id']);

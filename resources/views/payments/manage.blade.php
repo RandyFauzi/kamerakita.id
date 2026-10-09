@@ -466,6 +466,9 @@
                         <input type="hidden" name="period_start_date" value="all">
                         <input type="hidden" name="period_end_date" value="all">
                         <input type="hidden" name="rate" :value="activeWorker.rate">
+                        <template x-if="activeWorker.is_payroll">
+                            <input type="hidden" name="payroll_id" :value="activeWorker.payroll?.id">
+                        </template>
                         
                         <!-- Earnings Summary Card -->
                         <div class="bg-gradient-to-br from-indigo-500 to-indigo-700 text-white rounded-2xl p-5 shadow-inner flex justify-between items-center">
