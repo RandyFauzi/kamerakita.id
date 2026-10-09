@@ -1,120 +1,182 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <h2 class="font-bold text-xl sm:text-2xl text-gray-800 leading-tight">Manajemen Payroll / Tagihan</h2>
+            <div>
+                <span class="text-[10px] font-black uppercase tracking-widest text-indigo-500">Tagihan & Rekap</span>
+                <h2 class="font-black text-2xl sm:text-3xl text-gray-900 leading-tight tracking-tight mt-1">Pembuat Tagihan</h2>
+            </div>
+            <a href="{{ route('payments.manage') }}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-sm rounded-xl transition duration-200 shadow-sm">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                Ke Payments Gaji
+            </a>
         </div>
     </x-slot>
 
-    <div class="py-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="mb-6 flex justify-between items-center px-4 sm:px-0">
-                <div>
-                    <p class="text-gray-500 text-sm mt-1">Manual approval untuk tagihan worker berdasarkan task yang sudah di-approve.</p>
+    <div class="py-8">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
+            <div class="px-4 sm:px-0">
+                <div class="bg-indigo-900 rounded-3xl p-6 sm:p-8 relative overflow-hidden shadow-xl shadow-indigo-900/20">
+                    <div class="relative z-10 max-w-2xl text-white">
+                        <h3 class="text-xl sm:text-2xl font-black tracking-tight">Generator Tagihan Pekerja</h3>
+                        <p class="text-indigo-200 mt-2 text-sm sm:text-base leading-relaxed">Gunakan form di bawah untuk merangkum task yang sudah di-approve menjadi 1 invoice utuh per periode (bila perlu). Tagihan yang digenerate akan langsung masuk ke halaman antrean Payments Gaji.</p>
+                    </div>
+                    <div class="absolute -right-20 -top-20 w-64 h-64 bg-indigo-500 rounded-full blur-3xl opacity-30"></div>
                 </div>
             </div>
 
             @if(session('success'))
-                <div class="mx-4 sm:mx-0 mb-4 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl font-medium">
-                    {{ session('success') }}
-                </div>
-            @endif
-            @if(session('error'))
-                <div class="mx-4 sm:mx-0 mb-4 p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl font-medium">
-                    {{ session('error') }}
-                </div>
-            @endif
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 px-4 sm:px-0">
-                <!-- Buat Payroll Baru (Unpaid) -->
-                <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-                    <div class="p-5 border-b border-gray-100 bg-gray-50">
-                        <h3 class="text-lg font-bold text-gray-900">Buat Payroll Baru</h3>
-                        <p class="text-sm text-gray-500">Worker yang punya task "Approved" tapi belum ditagihkan.</p>
+                <div class="mx-4 sm:mx-0 bg-emerald-50 border border-emerald-100 p-4 rounded-2xl flex items-start gap-3 shadow-sm">
+                    <div class="p-2 bg-emerald-100 rounded-xl text-emerald-600 shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                     </div>
-                    <div class="p-5">
-                        <form action="{{ route('payrolls.store') }}" method="POST" class="space-y-4">
-                            @csrf
+                    <div class="mt-1.5">
+                        <h4 class="text-sm font-black text-emerald-900">Berhasil!</h4>
+                        <p class="text-xs text-emerald-700 mt-0.5">{{ session('success') }}</p>
+                    </div>
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="mx-4 sm:mx-0 bg-rose-50 border border-rose-100 p-4 rounded-2xl flex items-start gap-3 shadow-sm">
+                    <div class="p-2 bg-rose-100 rounded-xl text-rose-600 shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </div>
+                    <div class="mt-1.5">
+                        <h4 class="text-sm font-black text-rose-900">Gagal</h4>
+                        <p class="text-xs text-rose-700 mt-0.5">{{ session('error') }}</p>
+                    </div>
+                </div>
+            @endif
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 px-4 sm:px-0">
+                <!-- Buat Payroll Baru (Unpaid) -->
+                <div class="lg:col-span-5">
+                    <div class="bg-white rounded-3xl border border-gray-150 shadow-sm overflow-hidden sticky top-6">
+                        <div class="p-6 border-b border-gray-100 flex items-center justify-between bg-slate-50/50">
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-1">Pilih Worker</label>
-                                <select name="atlas_worker_id" required class="w-full rounded-xl border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 text-sm">
-                                    <option value="">-- Pilih Worker Siap Cair --</option>
-                                    @foreach($unpaidWorkers as $worker)
-                                        @if($worker->atlasWorker)
-                                            <option value="{{ $worker->atlas_worker_id }}">
-                                                {{ $worker->atlasWorker->atlas_email }} ({{ round($worker->total_approved_minutes / 60, 1) }} Jam - {{ $worker->total_tasks }} Tasks)
-                                            </option>
-                                        @endif
-                                    @endforeach
-                                </select>
+                                <h3 class="text-lg font-black text-gray-900">Form Generator</h3>
+                                <p class="text-[11px] font-bold text-gray-400 uppercase tracking-widest mt-1">Setup Tagihan Baru</p>
                             </div>
-
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-1">Tanggal Mulai (Cutoff)</label>
-                                    <input type="date" name="period_start" required class="w-full rounded-xl border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 text-sm">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-1">Tanggal Akhir (Cutoff)</label>
-                                    <input type="date" name="period_end" required value="{{ date('Y-m-d') }}" class="w-full rounded-xl border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 text-sm">
-                                </div>
+                            <div class="w-12 h-12 bg-white border border-gray-150 rounded-2xl flex items-center justify-center text-indigo-500 shadow-sm shrink-0">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                             </div>
+                        </div>
+                        <div class="p-6">
+                            <form action="{{ route('payrolls.store') }}" method="POST" class="space-y-5">
+                                @csrf
+                                <div>
+                                    <label class="block text-[11px] font-black uppercase tracking-wider text-gray-500 mb-2">Pilih Worker</label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                        </div>
+                                        <select name="atlas_worker_id" required class="block w-full pl-11 rounded-xl border-gray-200 bg-gray-50 py-3 text-sm font-semibold text-gray-700 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 transition-all">
+                                            <option value="">-- Pekerja Siap Cair --</option>
+                                            @foreach($unpaidWorkers as $worker)
+                                                @if($worker->atlasWorker)
+                                                    <option value="{{ $worker->atlas_worker_id }}">
+                                                        {{ $worker->atlasWorker->atlas_email }} ({{ round($worker->total_approved_minutes / 60, 1) }} Jam - {{ $worker->total_tasks }} Tasks)
+                                                    </option>
+                                                @endif
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
 
-                            <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-colors">
-                                Hitung & Buat Invoice Payroll
-                            </button>
-                            <p class="text-xs text-center text-gray-400 mt-2">Sistem akan otomatis menghitung rate sesuai data Partner, lalu mengunci task tanpa menghapus aslinya.</p>
-                        </form>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-[11px] font-black uppercase tracking-wider text-gray-500 mb-2">Mulai (Cutoff)</label>
+                                        <input type="date" name="period_start" required class="block w-full rounded-xl border-gray-200 bg-gray-50 py-3 px-4 text-sm font-semibold text-gray-700 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 transition-all">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[11px] font-black uppercase tracking-wider text-gray-500 mb-2">Akhir (Cutoff)</label>
+                                        <input type="date" name="period_end" required value="{{ date('Y-m-d') }}" class="block w-full rounded-xl border-gray-200 bg-gray-50 py-3 px-4 text-sm font-semibold text-gray-700 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 transition-all">
+                                    </div>
+                                </div>
+
+                                <div class="pt-4 border-t border-gray-100">
+                                    <button type="submit" class="group relative w-full flex justify-center py-3.5 px-4 border border-transparent text-sm font-black rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all shadow-md shadow-indigo-600/20 overflow-hidden">
+                                        <span class="flex items-center gap-2">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                                            Generate Invoice
+                                        </span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Histori Payrolls -->
-                <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden flex flex-col h-[500px]">
-                    <div class="p-5 border-b border-gray-100 bg-gray-50 shrink-0">
-                        <h3 class="text-lg font-bold text-gray-900">Histori Tagihan Payroll</h3>
-                    </div>
-                    <div class="flex-1 overflow-y-auto p-0">
-                        <ul class="divide-y divide-gray-100">
-                            @forelse($payrolls as $pr)
-                                <li class="p-5 hover:bg-gray-50 transition-colors">
-                                    <div class="flex justify-between items-start">
-                                        <div>
-                                            <h4 class="text-sm font-bold text-gray-900">{{ $pr->atlasWorker->atlas_email ?? 'Unknown' }}</h4>
-                                            <p class="text-xs text-gray-500 mt-0.5">Periode: {{ $pr->period_start->format('d M Y') }} - {{ $pr->period_end->format('d M Y') }}</p>
-                                            <p class="text-xs font-semibold text-indigo-600 mt-1">{{ round($pr->total_approved_minutes / 60, 1) }} Jam Approved</p>
-                                        </div>
-                                        <div class="text-right">
-                                            <p class="text-sm font-black text-gray-900">Rp {{ number_format($pr->amount_rupiah, 0, ',', '.') }}</p>
-                                            @if($pr->status === 'PAID')
-                                                <span class="inline-flex items-center px-2 py-0.5 mt-1 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase tracking-wider">LUNAS</span>
-                                            @else
-                                                <div class="flex flex-col items-end gap-2 mt-1">
-                                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-yellow-100 text-yellow-800 uppercase tracking-wider">BELUM DIBAYAR</span>
-                                                    <div class="flex items-center gap-2">
-                                                        <form action="{{ route('payrolls.destroy', $pr) }}" method="POST">
+                <div class="lg:col-span-7">
+                    <div class="bg-white rounded-3xl border border-gray-150 shadow-sm overflow-hidden flex flex-col min-h-[500px]">
+                        <div class="p-6 border-b border-gray-100 flex items-center justify-between bg-slate-50/50">
+                            <div>
+                                <h3 class="text-lg font-black text-gray-900">Riwayat Tagihan</h3>
+                                <p class="text-[11px] font-bold text-gray-400 uppercase tracking-widest mt-1">Daftar Tagihan Yang Dibuat</p>
+                            </div>
+                        </div>
+                        <div class="flex-1 p-0">
+                            <ul class="divide-y divide-gray-100">
+                                @forelse($payrolls as $pr)
+                                    <li class="p-5 sm:p-6 hover:bg-slate-50 transition-colors group">
+                                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                            <div class="flex items-start gap-4">
+                                                <div class="w-12 h-12 rounded-xl {{ $pr->status === 'PAID' ? 'bg-emerald-50 text-emerald-500 border border-emerald-100' : 'bg-indigo-50 text-indigo-500 border border-indigo-100' }} flex items-center justify-center shrink-0">
+                                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                                    </svg>
+                                                </div>
+                                                <div>
+                                                    <h4 class="text-sm font-black text-slate-900">{{ $pr->atlasWorker->atlas_email ?? 'Unknown' }}</h4>
+                                                    <p class="text-xs font-semibold text-gray-500 mt-1">Cutoff: <span class="text-gray-700">{{ $pr->period_start->format('d M') }} - {{ $pr->period_end->format('d M Y') }}</span></p>
+                                                    <span class="inline-flex items-center gap-1.5 mt-2 text-[10px] font-black uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md">
+                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                                        {{ round($pr->total_approved_minutes / 60, 2) }} Jam Billable
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="flex flex-col items-start sm:items-end gap-3 sm:gap-2 pl-16 sm:pl-0">
+                                                <div class="text-left sm:text-right">
+                                                    <span class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Total Nominal</span>
+                                                    <p class="text-lg font-black text-slate-900 leading-tight">Rp {{ number_format($pr->amount_rupiah, 0, ',', '.') }}</p>
+                                                </div>
+                                                
+                                                @if($pr->status === 'PAID')
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded text-[10px] font-black bg-emerald-100 text-emerald-800 uppercase tracking-widest border border-emerald-200">
+                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                                        LUNAS
+                                                    </span>
+                                                @else
+                                                    <div class="flex items-center gap-2 mt-1">
+                                                        <span class="inline-flex items-center px-2.5 py-1 rounded text-[10px] font-black bg-amber-100 text-amber-800 uppercase tracking-widest border border-amber-200">
+                                                            BELUM DIBAYAR
+                                                        </span>
+                                                        <form action="{{ route('payrolls.destroy', $pr) }}" method="POST" class="inline-block">
                                                             @csrf
                                                             @method('DELETE')
-                                                            <button type="submit" onclick="return confirm('Batalkan tagihan ini? Data akan dikembalikan ke Unpaid.')" class="text-[10px] bg-rose-50 border border-rose-200 text-rose-600 px-3 py-1 rounded-md hover:bg-rose-100 font-bold">BATALKAN</button>
-                                                        </form>
-                                                        <form action="{{ route('payrolls.mark_paid', $pr) }}" method="POST">
-                                                            @csrf
-                                                            <button type="submit" onclick="return confirm('Tandai sebagai Lunas?')" class="text-[10px] bg-gray-900 text-white px-3 py-1 rounded-md hover:bg-gray-800 font-bold">TANDAI LUNAS</button>
+                                                            <button type="submit" onclick="return confirm('Batalkan tagihan ini? Task akan dikembalikan ke status Unpaid.')" class="p-1.5 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Batalkan Tagihan">
+                                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                                            </button>
                                                         </form>
                                                     </div>
-                                                </div>
-                                            @endif
+                                                @endif
+                                            </div>
                                         </div>
+                                    </li>
+                                @empty
+                                    <div class="p-12 text-center">
+                                        <div class="w-16 h-16 bg-gray-50 border border-gray-100 rounded-3xl flex items-center justify-center mx-auto text-gray-400 mb-4 shadow-sm">
+                                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>
+                                        </div>
+                                        <h4 class="text-base font-bold text-gray-900">Belum Ada Riwayat</h4>
+                                        <p class="text-sm text-gray-500 mt-1">Buat tagihan baru melalui form di sebelah kiri.</p>
                                     </div>
-                                </li>
-                            @empty
-                                <li class="p-10 text-center text-gray-500 text-sm">Belum ada histori payroll yang digenerate.</li>
-                            @endforelse
-                        </ul>
-                    </div>
-                    @if($payrolls->hasPages())
-                        <div class="p-3 border-t border-gray-100">
-                            {{ $payrolls->links() }}
+                                @endforelse
+                            </ul>
                         </div>
-                    @endif
+                    </div>
                 </div>
             </div>
         </div>
