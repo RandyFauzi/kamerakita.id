@@ -256,5 +256,6 @@ Route::post('/onboarding', [\App\Http\Controllers\FastworkOnboardingController::
 require __DIR__.'/auth.php';
 
     Route::get('/admin/recordings', [\App\Http\Controllers\Admin\AtlasRecordingController::class, 'index'])->middleware('role:superadmin,admin')->name('admin.recordings.index');
+    Route::get('/admin/tasks', [\App\Http\Controllers\Admin\MasterTaskController::class, 'index'])->middleware('role:superadmin,admin')->name('admin.tasks.index');
 
     Route::get('/astro/recording', [\App\Http\Controllers\Astro\AstroRecordingController::class, 'index'])->name('astro.recording');
