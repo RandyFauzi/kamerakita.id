@@ -23,4 +23,12 @@ class Payroll extends Model
     {
         return $this->hasMany(AtlasTask::class);
     }
+
+    public function getPaymentProofUrlAttribute()
+    {
+        if ($this->payment_proof_path) {
+            return \Illuminate\Support\Facades\Storage::disk('s3')->url($this->payment_proof_path);
+        }
+        return null;
+    }
 }
