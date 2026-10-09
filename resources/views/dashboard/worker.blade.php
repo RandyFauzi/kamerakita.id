@@ -453,27 +453,26 @@
 
             <div class="space-y-3 sm:hidden">
                 @forelse($reports as $report)
+                    @php
+                        $durationFormatted = floor($report->duration_seconds / 60) . 'm ' . ($report->duration_seconds % 60) . 's';
+                        $statusClass = $report->status === 'pending' ? 'bg-yellow-50 text-yellow-700 border-yellow-100' : 'bg-emerald-50 text-emerald-700 border-emerald-100';
+                    @endphp
                     <article class="rounded-xl border border-gray-150 p-4 space-y-3">
                         <div class="flex items-start justify-between gap-3">
                             <div>
-                                <span class="block text-xs text-gray-400">{{ __("dashboard.worker_dashboard.col_work_date") }}</span>
-                                <strong class="block text-sm text-gray-900 mt-0.5">{{ $report->submission_date->translatedFormat('d F Y') }}</strong>
+                                <span class="block text-xs text-gray-400">Tanggal Rekam</span>
+                                <strong class="block text-sm text-gray-900 mt-0.5">{{ $report->created_at->translatedFormat('d F Y, H:i') }}</strong>
                             </div>
-                            <span class="inline-flex px-2.5 py-1 rounded-full text-[10px] font-bold border {{ $qcColors[$report->qc_status] }}">
-                                {{ ucfirst(str_replace('_', ' ', $report->qc_status)) }}
+                            <span class="inline-flex px-2.5 py-1 rounded-full text-[10px] font-bold border {{ $statusClass }}">
+                                {{ ucfirst($report->status ?? 'Pending') }}
                             </span>
                         </div>
-                        <div class="grid grid-cols-2 gap-3 text-xs">
-                            <div><span class="block text-gray-400">{{ __("dashboard.worker_dashboard.col_submitted_duration") }}</span><strong class="text-gray-800">{{ $report->submitted_duration_formatted }}</strong></div>
-                            <div><span class="block text-gray-400">{{ __("dashboard.worker_dashboard.col_approved_duration") }}</span><strong class="text-gray-800">{{ $report->approved_duration_formatted }}</strong></div>
-                        </div>
-                        <div class="flex items-center justify-between pt-3 border-t border-gray-100">
-                            <span class="text-xs text-gray-400">{{ __("dashboard.worker_dashboard.col_pay_status") }}</span>
-                            <span class="inline-flex px-2.5 py-1 rounded-full text-[10px] font-bold border {{ $payColors[$report->payment_status] }}">{{ ucfirst($report->payment_status) }}</span>
+                        <div class="grid grid-cols-1 gap-3 text-xs">
+                            <div><span class="block text-gray-400">Durasi Rekaman</span><strong class="text-gray-800">{{ $durationFormatted }}</strong></div>
                         </div>
                     </article>
                 @empty
-                    <p class="py-6 text-center text-gray-450 text-xs">{{ __("dashboard.worker_dashboard.no_report_yet") }}</p>
+                    <p class="py-6 text-center text-gray-450 text-xs">Belum ada rekaman</p>
                 @endforelse
             </div>
 
@@ -481,33 +480,29 @@
                 <table class="min-w-full divide-y divide-gray-100 text-sm">
                     <thead>
                         <tr class="text-gray-500">
-                            <th class="py-3 text-left font-semibold">{{ __("dashboard.worker_dashboard.col_work_date") }}</th>
-                            <th class="py-3 text-left font-semibold">{{ __("dashboard.worker_dashboard.col_submitted_duration") }}</th>
-                            <th class="py-3 text-left font-semibold">{{ __("dashboard.worker_dashboard.col_approved_duration") }}</th>
-                            <th class="py-3 text-left font-semibold">{{ __("dashboard.worker_dashboard.col_qc_status") }}</th>
-                            <th class="py-3 text-left font-semibold">{{ __("dashboard.worker_dashboard.col_pay_status") }}</th>
+                            <th class="py-3 text-left font-semibold">Waktu Rekam</th>
+                            <th class="py-3 text-left font-semibold">Durasi Rekaman</th>
+                            <th class="py-3 text-left font-semibold">Status</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100 bg-white">
                         @forelse($reports as $report)
+                            @php
+                                $durationFormatted = floor($report->duration_seconds / 60) . 'm ' . ($report->duration_seconds % 60) . 's';
+                                $statusClass = $report->status === 'pending' ? 'bg-yellow-50 text-yellow-700 border-yellow-100' : 'bg-emerald-50 text-emerald-700 border-emerald-100';
+                            @endphp
                             <tr>
-                                <td class="py-3.5 text-gray-900 font-medium">{{ $report->submission_date->translatedFormat('d F Y') }}</td>
-                                <td class="py-3.5 text-gray-600">{{ $report->submitted_duration_formatted }}</td>
-                                <td class="py-3.5 text-slate-800 font-bold">{{ $report->approved_duration_formatted }}</td>
+                                <td class="py-3.5 text-gray-900 font-medium">{{ $report->created_at->translatedFormat('d F Y, H:i') }}</td>
+                                <td class="py-3.5 text-gray-600">{{ $durationFormatted }}</td>
                                 <td class="py-3.5">
-                                    <span class="inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold border {{ $qcColors[$report->qc_status] }}">
-                                        {{ ucfirst($report->qc_status) }}
-                                    </span>
-                                </td>
-                                <td class="py-3.5">
-                                    <span class="inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold border {{ $payColors[$report->payment_status] }}">
-                                        {{ ucfirst($report->payment_status) }}
+                                    <span class="inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold border {{ $statusClass }}">
+                                        {{ ucfirst($report->status ?? 'Pending') }}
                                     </span>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="py-8 text-center text-gray-450 text-xs">{{ __("dashboard.worker_dashboard.no_report_yet") }}</td>
+                                <td colspan="3" class="py-8 text-center text-gray-450 text-xs">Belum ada rekaman</td>
                             </tr>
                         @endforelse
                     </tbody>

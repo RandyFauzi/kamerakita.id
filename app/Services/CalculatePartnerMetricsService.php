@@ -23,13 +23,16 @@ class CalculatePartnerMetricsService
 
         $approvedReports = $allReports->where('qc_status', 'approved');
 
-        $totalSubmittedMinutes = $allReports->sum('submitted_duration_minutes');
+        $totalSubmittedMinutes = \App\Models\Recording::query()
+            ->where('partner_id', $worker->id)
+            ->sum('duration_seconds') / 60;
+        
         $allTimeMinutes = $approvedReports->sum('approved_duration_minutes');
         
-        $todayReports = $allReports->filter(function ($report) {
-            return $report->submission_date ? $report->submission_date->isSameDay(now()) : false;
-        });
-        $todaySubmittedMinutes = $todayReports->sum('submitted_duration_minutes');
+        $todaySubmittedMinutes = \App\Models\Recording::query()
+            ->where('partner_id', $worker->id)
+            ->whereDate('created_at', now())
+            ->sum('duration_seconds') / 60;
         
         $paidMinutes = $approvedReports->where('payment_status', 'paid')
             ->sum('approved_duration_minutes');
@@ -208,11 +211,12 @@ class CalculatePartnerMetricsService
             ])
             ->sum('approved_duration_minutes');
 
-        $weeklySubmittedMinutes = VideoWorkReport::whereBetween('submission_date', [
-                $weeklyPeriodStart->toDateString(),
-                $weeklyPeriodEnd->toDateString(),
+        $weeklySubmittedMinutes = \App\Models\Recording::query()
+            ->whereBetween('created_at', [
+                $weeklyPeriodStart->toDateTimeString(),
+                $weeklyPeriodEnd->toDateTimeString(),
             ])
-            ->sum('submitted_duration_minutes');
+            ->sum('duration_seconds') / 60;
 
         $weeklyTargetHours = 625;
         $weeklyTargetMinutes = $weeklyTargetHours * 60;
@@ -233,11 +237,12 @@ class CalculatePartnerMetricsService
             ])
             ->sum('approved_duration_minutes');
 
-        $monthlySubmittedMinutes = VideoWorkReport::whereBetween('submission_date', [
-                $monthlyStart->toDateString(),
-                $monthlyEnd->toDateString(),
+        $monthlySubmittedMinutes = \App\Models\Recording::query()
+            ->whereBetween('created_at', [
+                $monthlyStart->toDateTimeString(),
+                $monthlyEnd->toDateTimeString(),
             ])
-            ->sum('submitted_duration_minutes');
+            ->sum('duration_seconds') / 60;
 
         $monthlyTargetHours = 2500;
         $monthlyTargetMinutes = $monthlyTargetHours * 60;

@@ -472,43 +472,29 @@
         <div class="bg-white rounded-[32px] p-6 border border-gray-150 shadow-sm">
             <div class="flex justify-between items-center pb-4 border-b border-gray-100 mb-4">
                 <div>
-                    <span class="block text-sm font-bold text-gray-900">{{ __('dashboard.general.global_video_work_report_log_queue') }}</span>
-                    <span class="text-xs text-gray-400">{{ __('dashboard.general.10_latest_submission_data') }}</span>
+                    <span class="block text-sm font-bold text-gray-900">Antrean Log Rekaman Global</span>
+                    <span class="text-xs text-gray-400">10 data rekaman terbaru</span>
                 </div>
-                <a href="{{ route('video-submissions.qc-room') }}" class="text-xs font-bold text-indigo-650 hover:underline flex items-center gap-1">
-                    QC Room
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                    </svg>
-                </a>
             </div>
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-100 text-sm">
                     <thead>
                         <tr class="text-gray-500">
-                            <th class="py-3 text-left font-semibold">ID Laporan</th>
+                            <th class="py-3 text-left font-semibold">ID Rekaman</th>
                             <th class="py-3 text-left font-semibold">Nama Worker</th>
-                            <th class="py-3 text-left font-semibold">Tanggal Kerja</th>
-                            <th class="py-3 text-left font-semibold">Durasi Kirim</th>
-                            <th class="py-3 text-left font-semibold">Status QC</th>
-                            <th class="py-3 text-left font-semibold">Pembayaran</th>
+                            <th class="py-3 text-left font-semibold">Waktu Rekam</th>
+                            <th class="py-3 text-left font-semibold">Durasi</th>
+                            <th class="py-3 text-left font-semibold">Status</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100 bg-white">
                         @forelse($latestReports as $report)
-                            @if(!($report instanceof \App\Models\VideoWorkReport))
-                                @php
-                                    \Illuminate\Support\Facades\Log::error('Dashboard Type Mismatch: Expected VideoWorkReport, got ' . get_debug_type($report));
-                                @endphp
-                                @continue
-                            @endif
                             <tr>
                                 <td class="py-3.5 font-bold text-indigo-600">{{ substr($report->id, 0, 8) }}...</td>
                                 <td class="py-3.5">
                                     <div class="flex flex-col">
                                         @if(!$report->partner)
-                                            @php \Illuminate\Support\Facades\Log::warning('Data integrity warning: Orphaned VideoWorkReport with no partner', ['report_id' => $report->id]); @endphp
-                                            <span class="font-medium text-red-600">Unknown Partner (Orphaned)</span>
+                                            <span class="font-medium text-red-600">Unknown Partner</span>
                                             <span class="text-xs text-gray-450 font-mono">-</span>
                                         @else
                                             <span class="font-medium text-gray-900">{{ $report->partner->full_name }}</span>
@@ -516,46 +502,20 @@
                                         @endif
                                     </div>
                                 </td>
-                                <td class="py-3.5 text-gray-600">{{ $report->submission_date ? $report->submission_date->translatedFormat('d F Y') : '-' }}</td>
-                                <td class="py-3.5 text-slate-800 font-bold">{{ $report->submitted_duration_formatted }}</td>
+                                <td class="py-3.5 text-gray-600">{{ $report->created_at ? $report->created_at->translatedFormat('d F Y, H:i') : '-' }}</td>
+                                <td class="py-3.5 text-slate-800 font-bold">{{ floor($report->duration_seconds / 60) }}m {{ $report->duration_seconds % 60 }}s</td>
                                 <td class="py-3.5">
                                     @php
-                                        $qcColors = [
-                                            'pending' => 'bg-yellow-50 text-yellow-700 border-yellow-100',
-                                            'on_review' => 'bg-blue-50 text-blue-700 border-blue-100',
-                                            'approved' => 'bg-emerald-50 text-emerald-700 border-emerald-100',
-                                            'rejected' => 'bg-rose-50 text-rose-700 border-rose-100',
-                                        ];
-                                        $qcColor = $qcColors[$report->qc_status] ?? null;
-                                        if (!$qcColor) {
-                                            \Illuminate\Support\Facades\Log::warning('Unexpected qc_status enum value', ['report_id' => $report->id, 'status' => $report->qc_status]);
-                                            $qcColor = 'bg-gray-50 text-gray-600 border-gray-200';
-                                        }
+                                        $statusClass = $report->status === 'pending' ? 'bg-yellow-50 text-yellow-700 border-yellow-100' : 'bg-emerald-50 text-emerald-700 border-emerald-100';
                                     @endphp
-                                    <span class="inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold border {{ $qcColor }}">
-                                        {{ ucfirst($report->qc_status ?? 'Unknown') }}
-                                    </span>
-                                </td>
-                                <td class="py-3.5">
-                                    @php
-                                        $payColors = [
-                                            'unpaid' => 'bg-gray-50 text-gray-600 border-gray-150',
-                                            'paid' => 'bg-emerald-50 text-emerald-700 border-emerald-100',
-                                        ];
-                                        $payColor = $payColors[$report->payment_status] ?? null;
-                                        if (!$payColor) {
-                                            \Illuminate\Support\Facades\Log::warning('Unexpected payment_status enum value', ['report_id' => $report->id, 'status' => $report->payment_status]);
-                                            $payColor = 'bg-gray-50 text-gray-600 border-gray-200';
-                                        }
-                                    @endphp
-                                    <span class="inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold border {{ $payColor }}">
-                                        {{ ucfirst($report->payment_status ?? 'Unknown') }}
+                                    <span class="inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold border {{ $statusClass }}">
+                                        {{ ucfirst($report->status ?? 'Pending') }}
                                     </span>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="py-8 text-center text-gray-450 text-xs">Belum ada riwayat laporan video masuk.</td>
+                                <td colspan="5" class="py-8 text-center text-gray-450 text-xs">Belum ada riwayat rekaman masuk.</td>
                             </tr>
                         @endforelse
                     </tbody>

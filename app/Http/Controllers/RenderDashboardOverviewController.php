@@ -35,9 +35,9 @@ class RenderDashboardOverviewController extends Controller
             if ($partner->partner_role === 'worker') {
                 $metrics = $this->metricsService->getWorkerMetrics($partner);
                 
-                // Get latest submissions
-                $reports = VideoWorkReport::where('partner_id', $partner->id)
-                    ->orderBy('submission_date', 'desc')
+                // Get latest submissions from Recording
+                $reports = \App\Models\Recording::where('partner_id', $partner->id)
+                    ->orderBy('created_at', 'desc')
                     ->limit(10)
                     ->get();
                 
@@ -112,7 +112,7 @@ class RenderDashboardOverviewController extends Controller
         if ($user->hasFullAdminAccess() || $user->role === 'finance') {
             $metrics = $this->metricsService->getGlobalMetrics();
             
-            $latestReports = VideoWorkReport::with(['partner'])
+            $latestReports = \App\Models\Recording::with(['partner'])
                 ->orderBy('created_at', 'desc')
                 ->limit(10)
                 ->get();
@@ -122,27 +122,51 @@ class RenderDashboardOverviewController extends Controller
                 ->limit(5)
                 ->get();
 
-            $monthlyData = collect(\Illuminate\Support\Facades\Cache::remember('admin_monthly_data_v2', 600, function () {
+            $monthlyData = collect(\Illuminate\Support\Facades\Cache::remember('admin_monthly_data_v3', 600, function () {
                 $isMysql = \Illuminate\Support\Facades\DB::getDriverName() === 'mysql';
                 $groupByRaw = $isMysql ? "DATE_FORMAT(submission_date, '%Y-%m')" : "strftime('%Y-%m', submission_date)";
-                return VideoWorkReport::select(
+                $groupByRawRecording = $isMysql ? "DATE_FORMAT(created_at, '%Y-%m')" : "strftime('%Y-%m', created_at)";
+                
+                $approvedData = VideoWorkReport::select(
                         \Illuminate\Support\Facades\DB::raw("$groupByRaw as month"),
-                        \Illuminate\Support\Facades\DB::raw("SUM(CASE WHEN qc_status = 'approved' THEN approved_duration_minutes ELSE 0 END) as approved_minutes"),
-                        \Illuminate\Support\Facades\DB::raw("SUM(submitted_duration_minutes) as submitted_minutes")
+                        \Illuminate\Support\Facades\DB::raw("SUM(CASE WHEN qc_status = 'approved' THEN approved_duration_minutes ELSE 0 END) as approved_minutes")
                     )
                     ->where('submission_date', '>=', now()->subMonths(6)->startOfMonth())
                     ->groupBy('month')
-                    ->orderBy('month', 'asc')
                     ->get()
+                    ->keyBy('month')
                     ->toArray();
+
+                $submittedData = \App\Models\Recording::select(
+                        \Illuminate\Support\Facades\DB::raw("$groupByRawRecording as month"),
+                        \Illuminate\Support\Facades\DB::raw("SUM(duration_seconds) / 60 as submitted_minutes")
+                    )
+                    ->where('created_at', '>=', now()->subMonths(6)->startOfMonth())
+                    ->groupBy('month')
+                    ->get()
+                    ->keyBy('month')
+                    ->toArray();
+                
+                $merged = [];
+                $months = collect(array_keys($approvedData))->merge(array_keys($submittedData))->unique()->sort()->values();
+                foreach ($months as $month) {
+                    $merged[] = [
+                        'month' => $month,
+                        'approved_minutes' => $approvedData[$month]['approved_minutes'] ?? 0,
+                        'submitted_minutes' => $submittedData[$month]['submitted_minutes'] ?? 0,
+                    ];
+                }
+                return $merged;
             }));
 
-            $dailyAverageData = collect(\Illuminate\Support\Facades\Cache::remember('admin_daily_average_data', 600, function () {
-                return VideoWorkReport::select(
-                        'submission_date',
-                        \Illuminate\Support\Facades\DB::raw("AVG(submitted_duration_minutes) as avg_minutes")
+            $dailyAverageData = collect(\Illuminate\Support\Facades\Cache::remember('admin_daily_average_data_v3', 600, function () {
+                $isMysql = \Illuminate\Support\Facades\DB::getDriverName() === 'mysql';
+                $dateRaw = $isMysql ? "DATE(created_at)" : "DATE(created_at)";
+                return \App\Models\Recording::select(
+                        \Illuminate\Support\Facades\DB::raw("$dateRaw as submission_date"),
+                        \Illuminate\Support\Facades\DB::raw("AVG(duration_seconds) / 60 as avg_minutes")
                     )
-                    ->where('submission_date', '>=', now()->subDays(7)->toDateString())
+                    ->where('created_at', '>=', now()->subDays(7)->toDateString())
                     ->groupBy('submission_date')
                     ->orderBy('submission_date', 'asc')
                     ->get()
