@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\AtlasTask;
-use App\Models\MasterTask;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -11,46 +10,26 @@ class MasterTaskController extends Controller
 {
     public function index(Request $request)
     {
-        // Automatically sync new tasks from AtlasTask into MasterTask
-        $existingTaskNames = MasterTask::pluck('name')->toArray();
-        $uniqueAtlasTasks = AtlasTask::distinct('task_name')->pluck('task_name')->toArray();
-        
-        $newTasks = array_diff($uniqueAtlasTasks, $existingTaskNames);
-        if (!empty($newTasks)) {
-            $insertData = [];
-            foreach ($newTasks as $task) {
-                if (!empty($task)) {
-                    $insertData[] = [
-                        'name' => $task,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ];
-                }
-            }
-            if (count($insertData) > 0) {
-                MasterTask::insert($insertData);
-            }
-        }
-
         $sort = $request->get('sort', 'most_frequent');
         $search = $request->get('search');
 
-        // Base Query with Aggregation
-        $query = MasterTask::leftJoin('atlas_tasks', 'master_tasks.name', '=', 'atlas_tasks.task_name')
-            ->select(
-                'master_tasks.name',
-                DB::raw('COUNT(atlas_tasks.id) as total_occurrences'),
-                DB::raw('COALESCE(SUM(atlas_tasks.worked_minutes), 0) as total_worked'),
-                DB::raw('COALESCE(SUM(atlas_tasks.approved_minutes), 0) as total_approved'),
-                DB::raw('COALESCE(SUM(atlas_tasks.rejected_minutes), 0) as total_rejected'),
-                DB::raw('CASE WHEN SUM(atlas_tasks.worked_minutes) > 0 THEN (SUM(atlas_tasks.approved_minutes) / SUM(atlas_tasks.worked_minutes)) * 100 ELSE 0 END as approval_rate'),
-                DB::raw('CASE WHEN SUM(atlas_tasks.worked_minutes) > 0 THEN (SUM(atlas_tasks.rejected_minutes) / SUM(atlas_tasks.worked_minutes)) * 100 ELSE 0 END as reject_rate')
+        // Base Query with Aggregation directly on AtlasTask
+        $query = AtlasTask::select(
+                'task_name as name',
+                DB::raw('COUNT(id) as total_occurrences'),
+                DB::raw('COALESCE(SUM(worked_minutes), 0) as total_worked'),
+                DB::raw('COALESCE(SUM(approved_minutes), 0) as total_approved'),
+                DB::raw('COALESCE(SUM(rejected_minutes), 0) as total_rejected'),
+                DB::raw('CASE WHEN SUM(worked_minutes) > 0 THEN (SUM(approved_minutes) / SUM(worked_minutes)) * 100 ELSE 0 END as approval_rate'),
+                DB::raw('CASE WHEN SUM(worked_minutes) > 0 THEN (SUM(rejected_minutes) / SUM(worked_minutes)) * 100 ELSE 0 END as reject_rate')
             )
-            ->groupBy('master_tasks.name', 'master_tasks.id');
+            ->whereNotNull('task_name')
+            ->where('task_name', '!=', '')
+            ->groupBy('task_name');
 
         // Apply Search
         if ($search) {
-            $query->where('master_tasks.name', 'like', "%{$search}%");
+            $query->where('task_name', 'like', "%{$search}%");
         }
 
         // Apply Sorting
@@ -59,7 +38,7 @@ class MasterTaskController extends Controller
                 $query->orderByDesc('total_occurrences');
                 break;
             case 'least_frequent':
-                $query->orderBy('total_occurrences')->where('total_occurrences', '>', 0);
+                $query->having('total_occurrences', '>', 0)->orderBy('total_occurrences');
                 break;
             case 'highest_approval': // Paling Mudah
                 $query->orderByDesc('approval_rate')->orderByDesc('total_occurrences');
@@ -71,7 +50,7 @@ class MasterTaskController extends Controller
                 $query->orderByDesc('total_worked');
                 break;
             case 'name_asc':
-                $query->orderBy('master_tasks.name');
+                $query->orderBy('task_name');
                 break;
             default:
                 $query->orderByDesc('total_occurrences');
