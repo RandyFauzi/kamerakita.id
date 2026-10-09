@@ -110,9 +110,9 @@ class MatchPayrollExcelTool extends BaseTool
                 $maxDate = '2026-09-06 00:00:00';
 
                 foreach ($tasks as $task) {
-                    // Stop if we already met or exceeded the target
-                    // To be safe, we allow a small margin. If we are within 1 minute of target, we stop.
-                    if ($cumulativeMinutes >= ($targetMinutes - 1)) {
+                    // OPSI B: Berhenti JIKA menambahkan task ini akan membuat total melewati target Excel!
+                    // Ditambah 0.1 menit sebagai toleransi float.
+                    if (($cumulativeMinutes + $task->approved_minutes) > ($targetMinutes + 0.1)) {
                         break;
                     }
                     
