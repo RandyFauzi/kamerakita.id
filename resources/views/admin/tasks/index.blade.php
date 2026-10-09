@@ -18,11 +18,11 @@
                     <div class="space-y-3">
                         @foreach($topApproved as $idx => $task)
                             <div class="flex justify-between items-center p-3 rounded-xl bg-gray-50 border border-gray-100">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-bold">{{ $idx + 1 }}</div>
-                                    <div class="text-sm font-semibold text-gray-800 truncate max-w-[200px] sm:max-w-xs" title="{{ $task->task_name }}">{{ $task->task_name }}</div>
+                                <div class="flex items-center gap-3 min-w-0 flex-1">
+                                    <div class="w-6 h-6 shrink-0 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-bold">{{ $idx + 1 }}</div>
+                                    <div class="text-sm font-semibold text-gray-800 truncate" title="{{ $task->task_name }}">{{ $task->task_name }}</div>
                                 </div>
-                                <div class="text-right">
+                                <div class="text-right shrink-0 ml-3">
                                     <div class="text-sm font-bold text-emerald-600">{{ round($task->approval_rate, 1) }}%</div>
                                     <div class="text-[10px] text-gray-400 font-medium">{{ round($task->total_worked / 60, 1) }} jam dikerjakan</div>
                                 </div>
@@ -40,11 +40,11 @@
                     <div class="space-y-3">
                         @foreach($topRejected as $idx => $task)
                             <div class="flex justify-between items-center p-3 rounded-xl bg-gray-50 border border-gray-100">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-6 h-6 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center text-xs font-bold">{{ $idx + 1 }}</div>
-                                    <div class="text-sm font-semibold text-gray-800 truncate max-w-[200px] sm:max-w-xs" title="{{ $task->task_name }}">{{ $task->task_name }}</div>
+                                <div class="flex items-center gap-3 min-w-0 flex-1">
+                                    <div class="w-6 h-6 shrink-0 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center text-xs font-bold">{{ $idx + 1 }}</div>
+                                    <div class="text-sm font-semibold text-gray-800 truncate" title="{{ $task->task_name }}">{{ $task->task_name }}</div>
                                 </div>
-                                <div class="text-right">
+                                <div class="text-right shrink-0 ml-3">
                                     <div class="text-sm font-bold text-rose-600">{{ round($task->reject_rate, 1) }}%</div>
                                     <div class="text-[10px] text-gray-400 font-medium">{{ round($task->total_worked / 60, 1) }} jam dikerjakan</div>
                                 </div>
