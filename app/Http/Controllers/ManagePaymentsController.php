@@ -231,24 +231,49 @@ class ManagePaymentsController extends Controller
     {
         $validated = $request->validate([
             'payment_proof' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
-            'payroll_id' => 'required|exists:payrolls,id',
+            'payroll_id' => 'nullable|exists:payrolls,id',
         ]);
 
-        $payroll = Payroll::find($request->payroll_id);
-        if ($payroll && $payroll->status === 'UNPAID') {
-            try {
-                DB::transaction(function () use ($payroll, $request, $imageService, $backupService) {
-                    $uploadedPath = $imageService->store($request->file('payment_proof'), 'payment_proofs');
-                    $backupService->backup($uploadedPath);
-                    $payroll->update([
-                        'status' => 'PAID',
-                        'paid_at' => now(),
-                        'payment_proof_path' => $uploadedPath
-                    ]);
-                });
-                return redirect()->back()->with('success', "Tagihan Payroll berhasil dibayar!");
-            } catch (\Exception $e) {
-                return redirect()->back()->with('error', 'Gagal memproses pembayaran: ' . $e->getMessage());
+        if ($request->filled('payroll_id')) {
+            $payroll = Payroll::find($request->payroll_id);
+            if ($payroll && $payroll->status === 'UNPAID') {
+                try {
+                    DB::transaction(function () use ($payroll, $request, $imageService, $backupService) {
+                        $uploadedPath = $imageService->store($request->file('payment_proof'), 'payment_proofs');
+                        $backupService->backup($uploadedPath);
+                        $payroll->update([
+                            'status' => 'PAID',
+                            'paid_at' => now(),
+                            'payment_proof_path' => $uploadedPath
+                        ]);
+                    });
+                    return redirect()->back()->with('success', "Tagihan Payroll berhasil dibayar!");
+                } catch (\Exception $e) {
+                    return redirect()->back()->with('error', 'Gagal memproses pembayaran: ' . $e->getMessage());
+                }
+            }
+        } else {
+            // Legacy VideoWorkReport logic
+            $reports = VideoWorkReport::where('partner_id', $partner->id)
+                ->where('qc_status', 'approved')
+                ->where('payment_status', 'unpaid')
+                ->get();
+
+            if ($reports->isNotEmpty()) {
+                try {
+                    DB::transaction(function () use ($reports, $request, $imageService, $backupService) {
+                        $uploadedPath = $imageService->store($request->file('payment_proof'), 'evidences/payments');
+                        $backupService->backup($uploadedPath);
+                        VideoWorkReport::whereIn('id', $reports->pluck('id'))->update([
+                            'payment_status' => 'paid',
+                            'payment_reference_proof_path' => $uploadedPath,
+                            'paid_at' => now(),
+                        ]);
+                    });
+                    return redirect()->back()->with('success', "Pembayaran untuk Mitra {$partner->full_name} berhasil diproses!");
+                } catch (\Exception $e) {
+                    return redirect()->back()->with('error', 'Gagal memproses pembayaran: ' . $e->getMessage());
+                }
             }
         }
         
@@ -286,6 +311,33 @@ class ManagePaymentsController extends Controller
                 } catch (\Exception $e) {
                     return redirect()->back()->with('error', 'Gagal membatalkan tagihan: ' . $e->getMessage());
                 }
+            }
+        } else {
+            // Legacy VideoWorkReport logic
+            try {
+                $decoded = base64_decode($validated['batch_id']);
+                if (str_contains($decoded, '|')) {
+                    list($paidAtStr, $proofPath) = explode('|', $decoded);
+                    
+                    $reportsQuery = VideoWorkReport::where('payment_reference_proof_path', $proofPath);
+                    if ($paidAtStr) {
+                        $reportsQuery->where('paid_at', $paidAtStr);
+                    }
+                    $reports = $reportsQuery->get();
+
+                    if ($reports->isNotEmpty()) {
+                        DB::transaction(function() use ($reports) {
+                            VideoWorkReport::whereIn('id', $reports->pluck('id'))->update([
+                                'payment_status' => 'unpaid',
+                                'payment_reference_proof_path' => null,
+                                'paid_at' => null,
+                            ]);
+                        });
+                        return redirect()->back()->with('success', 'Riwayat pembayaran lama berhasil dihapus dan dikembalikan ke antrean.');
+                    }
+                }
+            } catch (\Exception $e) {
+                return redirect()->back()->with('error', 'Gagal membatalkan tagihan lama: ' . $e->getMessage());
             }
         }
         
