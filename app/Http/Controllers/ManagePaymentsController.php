@@ -20,69 +20,23 @@ class ManagePaymentsController extends Controller
     /**
      * Display list of workers with approved, unpaid work reports grouped by period, and payout history.
      */
-    public function index(Request $request)
+        public function index(Request $request)
     {
         $search = $request->input('search');
 
-        // 1. Fetch all unpaid approved Atlas Tasks unconditionally
-        $unpaidTasksQuery = AtlasTask::with('atlasWorker.user.partner')
-            ->where('status', 'Approved')
-            ->whereNull('payroll_id');
+        $workers = [];
 
+        // ONLY Fetch UNPAID Payrolls (already generated)
+        $unpaidPayrollsQuery = Payroll::with('atlasWorker.user.partner')->where('status', 'UNPAID');
         if ($search) {
-            $unpaidTasksQuery->whereHas('atlasWorker.user.partner', function ($q) use ($search) {
+            $unpaidPayrollsQuery->whereHas('atlasWorker.user.partner', function ($q) use ($search) {
                 $q->where('full_name', 'like', "%{$search}%")
                   ->orWhere('email', 'like', "%{$search}%")
                   ->orWhere('bank_account_number', 'like', "%{$search}%");
             });
         }
-        
-        $unpaidTasks = $unpaidTasksQuery->get();
+        $unpaidPayrolls = $unpaidPayrollsQuery->get();
 
-        $grouped = $unpaidTasks->groupBy('atlas_worker_id');
-
-        $workers = [];
-        foreach ($grouped as $workerId => $tasks) {
-            $worker = $tasks->first()->atlasWorker;
-            if (!$worker) continue;
-            
-            $partner = $worker->user->partner ?? null;
-            if (!$partner) continue;
-
-            $totalMinutes = $tasks->sum('approved_minutes');
-            $hours = $totalMinutes / 60;
-            
-            // Auto Rate Logic
-            $ratePerHour = 60000; // Default flat rate
-            if ($partner->base_hourly_rate > 0) {
-                $ratePerHour = $partner->base_hourly_rate;
-            } else {
-                $ratePerHour = $partner->mitra_id ? 50000 : 60000;
-            }
-            
-            $totalAmount = $hours * $ratePerHour;
-            $totalAmount = round($totalAmount);
-
-            // Group tasks by period_start and period_end for the view (mocking reports)
-            // Just provide the tasks as 'reports' so the view can handle them
-            $workers[] = [
-                'partner' => $partner,
-                'reports' => collect([]), // View expects this, we'll pass empty collection
-                'total_minutes' => $totalMinutes,
-                'hours' => $hours,
-                'rate' => $ratePerHour,
-                'total_amount' => $totalAmount,
-                'has_custom_rate' => false,
-                'period_approval' => null,
-                'latest_date' => $tasks->max('task_date'),
-                'is_payroll' => false, // Will become payroll on pay
-                'atlas_worker_id' => $workerId,
-                'task_count' => $tasks->count()
-            ];
-        }
-
-        // 1.5 Fetch UNPAID Payrolls (already generated)
-        $unpaidPayrolls = Payroll::with('atlasWorker.user.partner')->where('status', 'UNPAID')->get();
         foreach ($unpaidPayrolls as $pr) {
             $partner = $pr->atlasWorker->user->partner ?? null;
             if (!$partner) continue;
@@ -122,6 +76,13 @@ class ManagePaymentsController extends Controller
             ->orderBy('paid_at', 'desc');
 
         // Apply search if needed...
+        if ($search) {
+            $paidPayrollsQuery->whereHas('atlasWorker.user.partner', function ($q) use ($search) {
+                $q->where('full_name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('bank_account_number', 'like', "%{$search}%");
+            });
+        }
 
         $paidPayrolls = $paidPayrollsQuery->get();
 
@@ -137,7 +98,7 @@ class ManagePaymentsController extends Controller
             
             $payoutHistory[] = [
                 'paid_at' => $pr->paid_at ?? clone $pr->updated_at,
-                'proof_url' => $pr->payment_proof_url ?? null, // Will use accessor if we add it
+                'proof_url' => $pr->payment_proof_url ?? null,
                 'proof_path' => $pr->payment_proof_path ?? null,
                 'partner' => $partner,
                 'reports' => collect([]),
@@ -181,32 +142,33 @@ class ManagePaymentsController extends Controller
     /**
      * Process payout for a specific worker: create Payroll, attach Tasks, save transfer proof and mark as paid.
      */
-    public function processPayment(Request $request, Partner $partner, StoreEvidenceImageService $imageService, EvidenceFileBackupService $backupService)
+        public function processPayment(Request $request, Partner $partner, StoreEvidenceImageService $imageService, EvidenceFileBackupService $backupService)
     {
         $validated = $request->validate([
             'payment_proof' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
-            'atlas_worker_id' => 'required|exists:atlas_workers,id',
-            'rate' => 'required|numeric',
+            'payroll_id' => 'required|exists:payrolls,id',
         ]);
 
-        if ($request->has('payroll_id') && $request->payroll_id) {
-            $payroll = Payroll::find($request->payroll_id);
-            if ($payroll && $payroll->status === 'UNPAID') {
-                try {
-                    DB::transaction(function () use ($payroll, $request, $imageService, $backupService) {
-                        $uploadedPath = $imageService->store($request->file('payment_proof'), 'payment_proofs');
-                        $backupService->backup($uploadedPath);
-                        $payroll->update([
-                            'status' => 'PAID',
-                            'paid_at' => now(),
-                            'payment_proof_path' => $uploadedPath
-                        ]);
-                    });
-                    return redirect()->back()->with('success', "Tagihan Payroll berhasil dibayar!");
-                } catch (\Exception $e) {
-                    return redirect()->back()->with('error', 'Gagal memproses pembayaran: ' . $e->getMessage());
-                }
+        $payroll = Payroll::find($request->payroll_id);
+        if ($payroll && $payroll->status === 'UNPAID') {
+            try {
+                DB::transaction(function () use ($payroll, $request, $imageService, $backupService) {
+                    $uploadedPath = $imageService->store($request->file('payment_proof'), 'payment_proofs');
+                    $backupService->backup($uploadedPath);
+                    $payroll->update([
+                        'status' => 'PAID',
+                        'paid_at' => now(),
+                        'payment_proof_path' => $uploadedPath
+                    ]);
+                });
+                return redirect()->back()->with('success', "Tagihan Payroll berhasil dibayar!");
+            } catch (\Exception $e) {
+                return redirect()->back()->with('error', 'Gagal memproses pembayaran: ' . $e->getMessage());
             }
+        }
+        
+        return redirect()->back()->with('error', 'Tagihan tidak valid atau sudah dibayar.');
+    }
         }
 
         $tasks = AtlasTask::where('atlas_worker_id', $validated['atlas_worker_id'])
