@@ -72,6 +72,10 @@
                         <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
                             <input type="hidden" name="sort" id="sort-input" value="{{ request('sort', 'most_frequent') }}">
                             
+                            <button type="button" onclick="document.getElementById('sort-input').value='new_task'; this.form.submit();" class="whitespace-nowrap px-4 py-2 flex items-center rounded-xl text-xs font-bold transition-all {{ request('sort') === 'new_task' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200 border border-indigo-600' : 'bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100 hover:text-gray-900' }}">
+                                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+                                Task Baru
+                            </button>
                             <button type="button" onclick="document.getElementById('sort-input').value='most_frequent'; this.form.submit();" class="whitespace-nowrap px-4 py-2 flex items-center rounded-xl text-xs font-bold transition-all {{ request('sort', 'most_frequent') === 'most_frequent' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200 border border-indigo-600' : 'bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100 hover:text-gray-900' }}">
                                 <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z"></path></svg>
                                 Paling Sering

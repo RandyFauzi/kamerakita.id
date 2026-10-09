@@ -21,7 +21,8 @@ class MasterTaskController extends Controller
                 DB::raw('COALESCE(SUM(approved_minutes), 0) as total_approved'),
                 DB::raw('COALESCE(SUM(rejected_minutes), 0) as total_rejected'),
                 DB::raw('CASE WHEN SUM(worked_minutes) > 0 THEN (SUM(approved_minutes) / SUM(worked_minutes)) * 100 ELSE 0 END as approval_rate'),
-                DB::raw('CASE WHEN SUM(worked_minutes) > 0 THEN (SUM(rejected_minutes) / SUM(worked_minutes)) * 100 ELSE 0 END as reject_rate')
+                DB::raw('CASE WHEN SUM(worked_minutes) > 0 THEN (SUM(rejected_minutes) / SUM(worked_minutes)) * 100 ELSE 0 END as reject_rate'),
+                DB::raw('MIN(task_date) as first_seen_date')
             )
             ->whereNotNull('task_name')
             ->where('task_name', '!=', '')
@@ -34,6 +35,10 @@ class MasterTaskController extends Controller
 
         // Apply Sorting
         switch ($sort) {
+            case 'new_task': // Baru Muncul (<= 5 hari terakhir)
+                $query->havingRaw('MIN(task_date) >= ?', [now()->subDays(5)->toDateString()])
+                      ->orderByDesc('first_seen_date');
+                break;
             case 'most_frequent':
                 $query->orderByDesc('total_occurrences');
                 break;
