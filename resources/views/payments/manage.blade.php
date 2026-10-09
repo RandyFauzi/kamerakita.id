@@ -248,7 +248,7 @@
                                         <span class="block text-lg font-black {{ $w['has_custom_rate'] ? 'text-amber-600' : 'text-indigo-600' }} leading-tight">Rp {{ number_format($w['total_amount'], 0, ',', '.') }}</span>
                                     </div>
                                     <div class="flex items-center gap-1.5 justify-start md:justify-end mt-0.5">
-                                        <span class="text-[10px] font-medium text-gray-400">{{ __('dashboard.payments_manage.for_reports', ['count' => count($w['reports'])]) }}</span>
+                                        <span class="text-[10px] font-medium text-gray-400">{{ __('dashboard.payments_manage.for_reports', ['count' => ($w['task_count'] ?? count($w['reports']))]) }}</span>
                                         <span class="text-[10px] font-bold {{ $w['has_custom_rate'] ? 'text-amber-700 bg-amber-50 border-amber-200' : 'text-indigo-700 bg-indigo-50 border-indigo-100' }} border px-1.5 py-0.5 rounded">{{ $w['total_minutes'] }} Menit</span>
                                     </div>
                                 </div>
@@ -350,7 +350,7 @@
                                         @endif
                                         <span class="block text-lg font-black {{ $pay['has_custom_rate'] ? 'text-amber-600' : 'text-emerald-600' }} leading-tight">Rp {{ number_format($pay['total_amount'], 0, ',', '.') }}</span>
                                     </div>
-                                    <span class="block text-[10px] font-medium text-gray-400 mt-0.5">{{ __('dashboard.payments_manage.for_reports', ['count' => count($pay['reports'])]) }}</span>
+                                    <span class="block text-[10px] font-medium text-gray-400 mt-0.5">{{ __('dashboard.payments_manage.for_reports', ['count' => ($pay['task_count'] ?? count($pay['reports']))]) }}</span>
                                 </div>
 
                                 <div class="flex items-center gap-3">

@@ -141,6 +141,7 @@ class ManagePaymentsController extends Controller
                 'proof_path' => $pr->payment_proof_path ?? null,
                 'partner' => $partner,
                 'reports' => collect([]),
+                'task_count' => $pr->atlasTasks()->count(),
                 'total_minutes' => $pr->total_approved_minutes,
                 'total_amount' => $pr->amount_rupiah,
                 'has_custom_rate' => false,
