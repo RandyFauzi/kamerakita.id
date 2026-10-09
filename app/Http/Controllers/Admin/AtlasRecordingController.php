@@ -32,6 +32,29 @@ class AtlasRecordingController extends Controller
             $query->where('task_date', '<=', $request->input('end_date'));
         }
 
+        // Filter by salary status
+        if ($request->filled('status')) {
+            $status = $request->input('status');
+            if ($status === 'paid') {
+                $query->whereNotNull('payroll_id');
+            } elseif ($status === 'pending') {
+                $query->whereNull('payroll_id')
+                      ->where('task_name', 'not like', '%(Sisa)')
+                      ->where(function($q) {
+                          $q->where('approved_minutes', '>', 0)
+                            ->orWhere('review_minutes', '>', 0)
+                            ->orWhere('rejected_minutes', '=', 0); // Exclude fully rejected
+                      });
+            } elseif ($status === 'sisa') {
+                $query->whereNull('payroll_id')->where('task_name', 'like', '%(Sisa)');
+            } elseif ($status === 'rejected') {
+                $query->whereNull('payroll_id')
+                      ->where('approved_minutes', 0)
+                      ->where('review_minutes', 0)
+                      ->where('rejected_minutes', '>', 0);
+            }
+        }
+
         // Aggregate Stats
         $statsQuery = clone $query;
         $statsQuery->setEagerLoads([]);

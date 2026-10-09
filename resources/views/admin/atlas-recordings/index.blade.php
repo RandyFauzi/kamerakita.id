@@ -169,6 +169,16 @@
                         <label for="end_date" class="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-gray-400">Sampai Tanggal</label>
                         <input type="date" name="end_date" id="end_date" value="{{ request('end_date') }}" class="block w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     </div>
+                    <div class="w-full md:w-40">
+                        <label for="status" class="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-gray-400">Status Gaji</label>
+                        <select name="status" id="status" class="block w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                            <option value="">Semua</option>
+                            <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>PAID</option>
+                            <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>PENDING</option>
+                            <option value="sisa" {{ request('status') === 'sisa' ? 'selected' : '' }}>SISA</option>
+                            <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>REJECTED</option>
+                        </select>
+                    </div>
                     <div class="w-full md:w-auto">
                         <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-indigo-700 md:w-auto">
                             Filter
