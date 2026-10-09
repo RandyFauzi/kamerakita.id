@@ -54,26 +54,43 @@
                 </div>
             </div>
 
-            <!-- List of All Tasks -->
-            <div class="bg-white rounded-[24px] border border-gray-150 shadow-sm overflow-hidden">
-                <div class="p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:justify-between sm:items-center bg-white gap-4">
-                    <div>
-                        <h3 class="text-base font-bold text-gray-900">Semua Master Task</h3>
-                        <p class="text-xs text-gray-500 mt-1">Daftar task yang terdeteksi dari sistem Atlas beserta status kerjanya.</p>
-                    </div>
-                    <form method="GET" action="{{ route('tasks.index') }}" class="flex flex-col sm:flex-row gap-3">
-                        <div class="relative">
-                            <svg class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari task..." class="pl-9 pr-4 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 w-full sm:w-64 transition-all">
+                <div class="p-6 border-b border-gray-100 bg-white">
+                    <form method="GET" action="{{ route('tasks.index') }}" class="flex flex-col gap-5">
+                        <!-- Header & Search -->
+                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+                            <div>
+                                <h3 class="text-base font-bold text-gray-900">Semua Master Task</h3>
+                                <p class="text-xs text-gray-500 mt-1">Daftar task yang terdeteksi dari sistem Atlas beserta status kerjanya.</p>
+                            </div>
+                            <div class="relative w-full sm:w-72">
+                                <svg class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari task..." class="pl-9 pr-4 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 w-full transition-all">
+                            </div>
                         </div>
-                        <select name="sort" onchange="this.form.submit()" class="py-2 pl-4 pr-10 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-700 bg-white shadow-sm cursor-pointer hover:border-gray-300 transition-all">
-                            <option value="most_frequent" {{ request('sort') === 'most_frequent' ? 'selected' : '' }}>Paling Banyak Dikerjakan</option>
-                            <option value="least_frequent" {{ request('sort') === 'least_frequent' ? 'selected' : '' }}>Paling Jarang Dikerjakan</option>
-                            <option value="highest_approval" {{ request('sort') === 'highest_approval' ? 'selected' : '' }}>Approval Tertinggi (Termudah)</option>
-                            <option value="highest_reject" {{ request('sort') === 'highest_reject' ? 'selected' : '' }}>Reject Tertinggi (Tersulit)</option>
-                            <option value="most_hours" {{ request('sort') === 'most_hours' ? 'selected' : '' }}>Durasi Kerja Terlama</option>
-                            <option value="name_asc" {{ request('sort') === 'name_asc' ? 'selected' : '' }}>Abjad (A-Z)</option>
-                        </select>
+
+                        <!-- Filter Pills -->
+                        <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                            <input type="hidden" name="sort" id="sort-input" value="{{ request('sort', 'most_frequent') }}">
+                            
+                            <button type="button" onclick="document.getElementById('sort-input').value='most_frequent'; this.form.submit();" class="whitespace-nowrap px-4 py-2 rounded-xl text-xs font-bold transition-all {{ request('sort', 'most_frequent') === 'most_frequent' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200 border border-indigo-600' : 'bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100 hover:text-gray-900' }}">
+                                🔥 Paling Sering
+                            </button>
+                            <button type="button" onclick="document.getElementById('sort-input').value='least_frequent'; this.form.submit();" class="whitespace-nowrap px-4 py-2 rounded-xl text-xs font-bold transition-all {{ request('sort') === 'least_frequent' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200 border border-indigo-600' : 'bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100 hover:text-gray-900' }}">
+                                ⬇️ Paling Jarang
+                            </button>
+                            <button type="button" onclick="document.getElementById('sort-input').value='highest_approval'; this.form.submit();" class="whitespace-nowrap px-4 py-2 rounded-xl text-xs font-bold transition-all {{ request('sort') === 'highest_approval' ? 'bg-emerald-600 text-white shadow-md shadow-emerald-200 border border-emerald-600' : 'bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100 hover:text-gray-900' }}">
+                                ⭐ Termudah (Approval)
+                            </button>
+                            <button type="button" onclick="document.getElementById('sort-input').value='highest_reject'; this.form.submit();" class="whitespace-nowrap px-4 py-2 rounded-xl text-xs font-bold transition-all {{ request('sort') === 'highest_reject' ? 'bg-rose-600 text-white shadow-md shadow-rose-200 border border-rose-600' : 'bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100 hover:text-gray-900' }}">
+                                ⚠️ Tersulit (Reject)
+                            </button>
+                            <button type="button" onclick="document.getElementById('sort-input').value='most_hours'; this.form.submit();" class="whitespace-nowrap px-4 py-2 rounded-xl text-xs font-bold transition-all {{ request('sort') === 'most_hours' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200 border border-indigo-600' : 'bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100 hover:text-gray-900' }}">
+                                ⏱️ Durasi Terlama
+                            </button>
+                            <button type="button" onclick="document.getElementById('sort-input').value='name_asc'; this.form.submit();" class="whitespace-nowrap px-4 py-2 rounded-xl text-xs font-bold transition-all {{ request('sort') === 'name_asc' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200 border border-indigo-600' : 'bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100 hover:text-gray-900' }}">
+                                🔤 Abjad (A-Z)
+                            </button>
+                        </div>
                     </form>
                 </div>
                 
