@@ -100,9 +100,12 @@
                         <div class="animate-entrance delay-200" style="display: flex; flex-direction: column; align-items: center; width: 30%;">
                             <img src="${p2.avatar}" style="width: 60px; height: 60px; border-radius: 50%; border: 3px solid #cbd5e1; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
                             <span style="font-weight: 700; margin-top: 8px; font-size: 14px; text-align: center; color: ${isLight ? '#334155' : '#e2e8f0'}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">${p2.name}</span>
-                            <div style="display: flex; flex-direction: column; align-items: center; gap: 2px; margin-bottom: 8px;">
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 3px; margin-bottom: 8px;">
                                 <span style="font-size: 12px; color: ${isLight ? '#475569' : '#cbd5e1'}; font-weight: 700; text-align: center; line-height: 1.2;">${formatDuration(p2.worked_minutes ?? p2.score)}</span>
-                                <span style="font-size: 10px; color: #059669; font-weight: 700; background: rgba(16, 185, 129, 0.12); padding: 1.5px 7px; border-radius: 999px; border: 1px solid rgba(16, 185, 129, 0.25);">✓ Acc: ${formatDuration(p2.approved_minutes ?? 0)}</span>
+                                <span style="display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: ${isLight ? '#475569' : '#94a3b8'}; font-weight: 600; background: ${isLight ? '#f1f5f9' : 'rgba(255,255,255,0.06)'}; border: 1px solid ${isLight ? '#e2e8f0' : 'rgba(255,255,255,0.1)'}; padding: 2px 8px; border-radius: 999px;">
+                                    <span style="width: 5px; height: 5px; border-radius: 50%; background: #0284c7; display: inline-block;"></span>
+                                    Acc: ${formatDuration(p2.approved_minutes ?? 0)}
+                                </span>
                             </div>
                             <div style="width: 100%; max-width: 90px; height: 90px; background: linear-gradient(to bottom, #94a3b8, #cbd5e1); border-top-left-radius: 12px; border-top-right-radius: 12px; display: flex; justify-content: center; align-items: flex-start; padding-top: 15px; box-shadow: inset 0 2px 5px rgba(255,255,255,0.5);">
                                 <div style="background: rgba(255,255,255,0.4); border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; font-size: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">2</div>
@@ -118,9 +121,12 @@
                                 <img src="${p1.avatar}" style="width: 76px; height: 76px; border-radius: 50%; border: 4px solid #fbbf24; object-fit: cover; box-shadow: 0 8px 16px rgba(245, 158, 11, 0.3);">
                             </div>
                             <span style="font-weight: 800; margin-top: 8px; font-size: 16px; text-align: center; color: ${isLight ? '#1e293b' : '#f8fafc'}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">${p1.name}</span>
-                            <div style="display: flex; flex-direction: column; align-items: center; gap: 2px; margin-bottom: 8px;">
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 3px; margin-bottom: 8px;">
                                 <span style="font-size: 13px; color: #f59e0b; font-weight: 800; text-align: center; line-height: 1.2;">${formatDuration(p1.worked_minutes ?? p1.score)}</span>
-                                <span style="font-size: 11px; color: #059669; font-weight: 700; background: rgba(16, 185, 129, 0.14); padding: 2px 8px; border-radius: 999px; border: 1px solid rgba(16, 185, 129, 0.3);">✓ Acc: ${formatDuration(p1.approved_minutes ?? 0)}</span>
+                                <span style="display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: ${isLight ? '#475569' : '#94a3b8'}; font-weight: 600; background: ${isLight ? '#f1f5f9' : 'rgba(255,255,255,0.06)'}; border: 1px solid ${isLight ? '#e2e8f0' : 'rgba(255,255,255,0.1)'}; padding: 2px 9px; border-radius: 999px;">
+                                    <span style="width: 5px; height: 5px; border-radius: 50%; background: #0284c7; display: inline-block;"></span>
+                                    Acc: ${formatDuration(p1.approved_minutes ?? 0)}
+                                </span>
                             </div>
                             <div style="width: 100%; max-width: 110px; height: 130px; background: linear-gradient(to bottom, #f59e0b, #fcd34d); border-top-left-radius: 12px; border-top-right-radius: 12px; display: flex; justify-content: center; align-items: flex-start; padding-top: 15px; box-shadow: 0 -5px 15px rgba(245, 158, 11, 0.3), inset 0 2px 5px rgba(255,255,255,0.5);">
                                 <div style="background: rgba(255,255,255,0.4); border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">1</div>
@@ -133,9 +139,12 @@
                         <div class="animate-entrance delay-300" style="display: flex; flex-direction: column; align-items: center; width: 30%;">
                             <img src="${p3.avatar}" style="width: 60px; height: 60px; border-radius: 50%; border: 3px solid #fcd34d; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
                             <span style="font-weight: 700; margin-top: 8px; font-size: 14px; text-align: center; color: ${isLight ? '#334155' : '#e2e8f0'}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">${p3.name}</span>
-                            <div style="display: flex; flex-direction: column; align-items: center; gap: 2px; margin-bottom: 8px;">
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 3px; margin-bottom: 8px;">
                                 <span style="font-size: 12px; color: ${isLight ? '#475569' : '#cbd5e1'}; font-weight: 700; text-align: center; line-height: 1.2;">${formatDuration(p3.worked_minutes ?? p3.score)}</span>
-                                <span style="font-size: 10px; color: #059669; font-weight: 700; background: rgba(16, 185, 129, 0.12); padding: 1.5px 7px; border-radius: 999px; border: 1px solid rgba(16, 185, 129, 0.25);">✓ Acc: ${formatDuration(p3.approved_minutes ?? 0)}</span>
+                                <span style="display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: ${isLight ? '#475569' : '#94a3b8'}; font-weight: 600; background: ${isLight ? '#f1f5f9' : 'rgba(255,255,255,0.06)'}; border: 1px solid ${isLight ? '#e2e8f0' : 'rgba(255,255,255,0.1)'}; padding: 2px 8px; border-radius: 999px;">
+                                    <span style="width: 5px; height: 5px; border-radius: 50%; background: #0284c7; display: inline-block;"></span>
+                                    Acc: ${formatDuration(p3.approved_minutes ?? 0)}
+                                </span>
                             </div>
                             <div style="width: 100%; max-width: 90px; height: 75px; background: linear-gradient(to bottom, #d97706, #fde68a); border-top-left-radius: 12px; border-top-right-radius: 12px; display: flex; justify-content: center; align-items: flex-start; padding-top: 15px; box-shadow: inset 0 2px 5px rgba(255,255,255,0.5);">
                                 <div style="background: rgba(255,255,255,0.4); border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; font-size: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">3</div>
@@ -317,9 +326,12 @@
                         </div>
                         
                         <!-- Score & Approved -->
-                        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 2px; position: relative; z-index: 10;">
-                            <span style="font-weight: 800; font-size: 13px; color: ${scoreColor};">${formatDuration(player.worked_minutes ?? player.score)}</span>
-                            <span style="font-size: 10px; font-weight: 700; color: #059669; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 1px 7px; border-radius: 999px;">✓ Acc: ${formatDuration(player.approved_minutes ?? 0)}</span>
+                        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 3px; position: relative; z-index: 10;">
+                            <span style="font-weight: 800; font-size: 14px; color: ${scoreColor};">${formatDuration(player.worked_minutes ?? player.score)}</span>
+                            <span style="display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; color: ${isLight ? '#475569' : '#94a3b8'}; background: ${isLight ? '#f1f5f9' : 'rgba(255,255,255,0.06)'}; border: 1px solid ${isLight ? '#e2e8f0' : 'rgba(255,255,255,0.1)'}; padding: 1.5px 7px; border-radius: 999px;">
+                                <span style="width: 4px; height: 4px; border-radius: 50%; background: #0284c7; display: inline-block;"></span>
+                                Acc: ${formatDuration(player.approved_minutes ?? 0)}
+                            </span>
                         </div>
                     </div>
                 `;
