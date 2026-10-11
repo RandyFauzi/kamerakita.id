@@ -17,4 +17,8 @@ echo ========================================================
 echo   SINKRONISASI SELESAI!
 echo ========================================================
 echo.
+
+rem Hanya tunggu tombol jika dijalankan secara manual (bukan Task Scheduler)
+if "%1"=="--scheduled" goto :eof
+if "%1"=="--silent" goto :eof
 pause
