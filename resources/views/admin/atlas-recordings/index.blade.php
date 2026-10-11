@@ -154,22 +154,22 @@
 
             <div class="overflow-hidden rounded-2xl bg-white border border-gray-100 p-4 shadow-sm sm:p-6">
                 <!-- Header / Filters -->
-                <form action="{{ route('admin.recordings.index') }}" method="GET" class="flex flex-col items-end gap-4 md:flex-row mb-6">
-                    <div class="w-full flex-1">
+                <form action="{{ route('admin.recordings.index') }}" method="GET" class="flex flex-col items-end gap-3 md:flex-row mb-6">
+                    <div class="w-full" style="flex: 1 1 260px; min-width: 220px;">
                         <label for="search" class="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-gray-400">Pencarian</label>
                         <div class="relative">
                             <input type="text" name="search" id="search" value="{{ request('search') }}" placeholder="Cari email, task..." class="block w-full rounded-xl border border-gray-200 py-2.5 px-4 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                         </div>
                     </div>
-                    <div class="w-full md:w-48">
+                    <div class="w-full md:w-auto" style="flex: 0 0 auto; width: 155px;">
                         <label for="start_date" class="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-gray-400">Dari Tanggal</label>
-                        <input type="date" name="start_date" id="start_date" value="{{ request('start_date') }}" class="block w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <input type="date" name="start_date" id="start_date" value="{{ request('start_date') }}" class="block w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
                     </div>
-                    <div class="w-full md:w-48">
+                    <div class="w-full md:w-auto" style="flex: 0 0 auto; width: 155px;">
                         <label for="end_date" class="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-gray-400">Sampai Tanggal</label>
-                        <input type="date" name="end_date" id="end_date" value="{{ request('end_date') }}" class="block w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <input type="date" name="end_date" id="end_date" value="{{ request('end_date') }}" class="block w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
                     </div>
-                    <div class="w-full md:w-40">
+                    <div class="w-full md:w-auto" style="flex: 0 0 auto; width: 140px;">
                         <label for="status" class="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-gray-400">Status Gaji</label>
                         <select name="status" id="status" class="block w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
                             <option value="">Semua</option>
@@ -179,8 +179,8 @@
                             <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>REJECTED</option>
                         </select>
                     </div>
-                    <div class="w-full md:w-auto">
-                        <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-indigo-700 md:w-auto">
+                    <div class="w-full md:w-auto" style="flex: 0 0 auto;">
+                        <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-6 py-2.5 text-sm font-bold text-white transition hover:bg-indigo-700 md:w-auto shadow-sm">
                             Filter
                         </button>
                     </div>
