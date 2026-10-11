@@ -10,6 +10,11 @@ class AtlasRecordingController extends Controller
 {
     public function index(Request $request)
     {
+        // Purge any legacy duplicate records with fake fallback IDs
+        AtlasTask::where('atlas_task_id', 'LIKE', '%UTC%')
+            ->orWhere('atlas_task_id', 'LIKE', '%@%')
+            ->delete();
+
         $query = AtlasTask::with('atlasWorker');
 
         // Search by email, task_name, or notes
