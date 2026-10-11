@@ -42,9 +42,9 @@ class AtlasBotController extends Controller
 
             // Map status logic
             $approved = $rec['billable_min'] ?? ($rec['billable_hours'] * 60 ?? 0);
-            $rejected = $rec['rejected_min'] ?? ($rec['rejected_hours'] * 60 ?? 0);
             $pending = $rec['pending_min'] ?? ($rec['pending_hours'] * 60 ?? 0);
             $total = $rec['duration_min'] ?? ($rec['duration_sec'] / 60 ?? 0);
+            $rejected = isset($rec['rejected_min']) ? (float)$rec['rejected_min'] : max(0, round($total - $approved - $pending, 2));
             
             $status = 'UNDER_REVIEW';
             if ($approved > 0 && $rejected == 0 && $pending == 0) {

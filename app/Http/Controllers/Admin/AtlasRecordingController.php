@@ -15,6 +15,9 @@ class AtlasRecordingController extends Controller
             ->orWhere('atlas_task_id', 'LIKE', '%@%')
             ->delete();
 
+        // Self-heal: pastikan seluruh durasi video yang tidak diapprove/direview dialokasikan ke rejected_minutes
+        \DB::statement("UPDATE atlas_tasks SET rejected_minutes = GREATEST(0, ROUND(worked_minutes - approved_minutes - review_minutes, 2)) WHERE worked_minutes > (approved_minutes + review_minutes) AND (worked_minutes - approved_minutes - review_minutes - rejected_minutes) > 0.05");
+
         $query = AtlasTask::with('atlasWorker');
 
         // Search by email, task_name, or notes
