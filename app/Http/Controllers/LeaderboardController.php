@@ -35,12 +35,17 @@ class LeaderboardController extends Controller
     private function formatScoresForUI(array $scores): string
     {
         return collect($scores)->map(function ($score) {
-            $name = data_get($score, 'partner.full_name') ?: 'Mitra KameraKita';
+            $name = data_get($score, 'name') 
+                ?: (data_get($score, 'partner.full_name') ?: 'Mitra KameraKita');
+            $worked = (float) data_get($score, 'worked_minutes', data_get($score, 'total_score', 0));
+            $approved = (float) data_get($score, 'approved_minutes', 0);
             
             return [
-                'name'   => $name,
-                'score'  => number_format((float) data_get($score, 'total_score', 0)) . ' ' . __('dashboard.leaderboard.minutes_unit'),
-                'avatar' => 'https://ui-avatars.com/api/?name=' . urlencode($name) . '&background=3b82f6&color=fff&bold=true',
+                'name'             => $name,
+                'score'            => number_format($worked) . ' ' . __('dashboard.leaderboard.minutes_unit'),
+                'worked_minutes'   => $worked,
+                'approved_minutes' => $approved,
+                'avatar'           => 'https://ui-avatars.com/api/?name=' . urlencode($name) . '&background=3b82f6&color=fff&bold=true',
             ];
         })->toJson();
     }
