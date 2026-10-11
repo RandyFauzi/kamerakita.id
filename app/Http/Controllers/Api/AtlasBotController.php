@@ -19,6 +19,11 @@ class AtlasBotController extends Controller
             return response()->json(['error' => 'Invalid or empty JSON payload. Ensure Content-Type is application/json.'], 400);
         }
 
+        // Clean up any legacy duplicate records with fake fallback IDs
+        \App\Models\AtlasTask::where('atlas_task_id', 'LIKE', '%UTC%')
+            ->orWhere('atlas_task_id', 'LIKE', '%@%')
+            ->delete();
+
         $records = $request->input('records', []);
         
         $count = 0;
