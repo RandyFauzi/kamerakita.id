@@ -29,6 +29,7 @@
         </div>
         <div>
             <h2>{{ __('landing.footer_services') }}</h2>
+            <a href="{{ route('portfolio.index') }}">{{ __('portfolio.nav.portfolio') }}</a>
             <a href="/#keunggulan">Keunggulan Mitra</a>
             <a href="/#kalkulator">Kalkulator Komisi</a>
             <a href="/#cara-kerja">{{ __('landing.nav.how_it_works') }}</a>

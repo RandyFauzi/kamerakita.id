@@ -23,6 +23,10 @@ Route::get('/jadi-vendor', function () {
     return view('jadi-vendor');
 })->name('jadi-vendor');
 
+Route::get('/portofolio', [\App\Http\Controllers\PortfolioController::class, 'index'])->name('portfolio.index');
+Route::post('/portofolio/contact', [\App\Http\Controllers\PortfolioController::class, 'inquiry'])
+    ->middleware('throttle:10,1')->name('portfolio.inquiry');
+
 Route::get('/onboarding/success', function () {
     return view('onboarding.success');
 })->name('onboarding.success');
