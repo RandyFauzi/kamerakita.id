@@ -1,5 +1,6 @@
 """Offline tests: no Playwright launch, real database, or HTTP delivery."""
 import importlib.util
+import json
 import sqlite3
 import unittest
 from pathlib import Path
@@ -11,6 +12,37 @@ spec.loader.exec_module(bot)
 
 
 class BotTest(unittest.TestCase):
+    def test_scan_must_match_atlas_count_and_summary_before_delivery(self):
+        record = dict(duration_sec=3600, billable_hours=0.5, rejected_hours=0,
+                      pending_hours=0.2, deferred_hours=0.3)
+        metadata = dict(total=1, summary=dict(recordingCount=1, durationHours='1',
+                        billableHours='0.5', rejectedHours='0', pendingHours='0.2', deferredHours='0.3'))
+        bot.validate_source_totals([record], metadata)
+        with self.assertRaises(ValueError):
+            bot.validate_source_totals([], metadata)
+        record['rejected_hours'] = 0.3
+        with self.assertRaises(ValueError):
+            bot.validate_source_totals([record], metadata)
+
+    def test_raw_source_preserves_precision_and_rejects_stale_table(self):
+        source = dict(userTaskId='a' * 24, taskTitle='Task', participantEmail='WORKER@example.com',
+                      recordedAt='2026-10-15T16:57:17.150Z', durationSeconds='1215.43',
+                      processingStatus='processing', reconciliationStatus='ok',
+                      tileBillableHours='0.123456', tileRejectedHours='0',
+                      tilePendingHours='0', tileDeferredHours='0.214163')
+        flight = '0:' + json.dumps(['$', {'recordings': [source]}]) + '\n'
+        html = '<script>self.__next_f.push(' + json.dumps([1, flight]) + ')</script>'
+        rec = bot.process_source_html(html, ['a' * 24])[0]
+        self.assertEqual(1215.43, rec['duration_sec'])
+        self.assertEqual(0.123456, rec['billable_hours'])
+        self.assertEqual(0.214163, rec['deferred_hours'])
+        self.assertEqual(0, rec['rejected_hours'])
+        self.assertEqual('2026-10-15T16:57:17.150000+00:00', rec['recorded_utc'])
+        with self.assertRaises(ValueError):
+            bot.process_source_html(html, ['b' * 24])
+        with self.assertRaises(ValueError):
+            bot.process_source_html('<html>Login</html>', ['a' * 24])
+
     def setUp(self):
         self.conn = sqlite3.connect(':memory:')
         self.conn.execute('''CREATE TABLE recordings (

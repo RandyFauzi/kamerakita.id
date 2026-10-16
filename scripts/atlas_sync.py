@@ -6,6 +6,7 @@ import json
 import time
 import math
 import argparse
+from html.parser import HTMLParser
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 from datetime import datetime
@@ -172,6 +173,78 @@ def process_table_rows(page):
     return results
 
 
+def process_source_html(html, visible_ids, metadata=None):
+    """Read precise Atlas props; table text rounds hours and hides timestamp seconds."""
+    class Scripts(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.inside = False
+            self.parts = []
+        def handle_starttag(self, tag, attrs):
+            if tag == 'script': self.inside = True
+        def handle_endtag(self, tag):
+            if tag == 'script': self.inside = False
+        def handle_data(self, data):
+            if self.inside and data.startswith('self.__next_f.push('):
+                self.parts.extend(x for x in json.loads(data[len('self.__next_f.push('):-1]) if isinstance(x, str))
+    parser = Scripts()
+    parser.feed(html)
+    def find(value):
+        if isinstance(value, dict):
+            if isinstance(value.get('recordings'), list): return value
+            children = value.values()
+        elif isinstance(value, list): children = value
+        else: return None
+        for child in children:
+            result = find(child)
+            if result is not None: return result
+        return None
+    props = None
+    for line in ''.join(parser.parts).splitlines():
+        try: value = json.loads(line.split(':', 1)[1])
+        except (ValueError, IndexError): continue
+        props = find(value)
+        if props is not None: break
+    if props is None:
+        raise ValueError('Missing precise Atlas source props; no rounded fallback allowed')
+    if metadata is not None:
+        metadata.update(total=props['total'], summary=props['summary'])
+    records = []
+    for source in props['recordings']:
+        rec = {'record_id': source['userTaskId'].lower(), 'task': source['taskTitle'],
+               'participant': source['participantEmail'].strip().lower(),
+               'recorded_utc': normalize_timestamp(source['recordedAt']),
+               'duration_sec': float(source['durationSeconds']),
+               'status': source['processingStatus'], 'reconciliation': source['reconciliationStatus']}
+        for label in ['Billable', 'Rejected', 'Pending', 'Deferred']:
+            rec[label.lower() + '_hours'] = float(source['tile' + label + 'Hours'])
+        if any(not math.isfinite(rec[key]) or rec[key] < 0 for key in ['duration_sec', 'billable_hours', 'rejected_hours', 'pending_hours', 'deferred_hours']):
+            raise ValueError('Invalid precise source duration')
+        if not re.fullmatch(r'[a-f0-9]{24}', rec['record_id']) or not rec['task'] or not re.fullmatch(r'[^\s@]+@[^\s@]+\.[^\s@]+', rec['participant']):
+            raise ValueError('Invalid precise source metadata')
+        records.append(rec)
+    ids = [r['record_id'] for r in records]
+    if len(ids) != len(set(ids)) or set(ids) != set(visible_ids):
+        raise ValueError('Raw Atlas rows differ from visible table; source changed during scan')
+    return records
+
+
+def validate_source_totals(records, metadata):
+    summary = metadata['summary']
+    if len(records) != int(metadata['total']) or len(records) != int(summary['recordingCount']):
+        raise ValueError('Atlas recording count changed or scan is incomplete; no data sent')
+    for key, summary_key, factor in [
+        ('duration_sec', 'durationHours', 1 / 3600),
+        ('billable_hours', 'billableHours', 1),
+        ('rejected_hours', 'rejectedHours', 1),
+        ('pending_hours', 'pendingHours', 1),
+        ('deferred_hours', 'deferredHours', 1),
+    ]:
+        expected = float(summary[summary_key])
+        if not math.isfinite(expected) or abs(math.fsum(r[key] for r in records) * factor - expected) > 0.0001:
+            raise ValueError(f'Atlas {summary_key} differs from scanned rows; retry full sync')
+
+
 def sync_atlas(email=None, password=None, max_pages=None, disable_smart_stop=True, no_push=False):
     print("[*] Menginisialisasi Bot Atlas (Murni Sinkronisasi ke Web KameraKita)...")
     if not no_push and not os.environ.get("ATLAS_BOT_TOKEN"):
@@ -182,6 +255,8 @@ def sync_atlas(email=None, password=None, max_pages=None, disable_smart_stop=Tru
     conn = init_db()
     seen_ids = set()
     visited_pages = set()
+    all_records = []
+    source_metadata = {}
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
@@ -246,6 +321,11 @@ def sync_atlas(email=None, password=None, max_pages=None, disable_smart_stop=Tru
                     pass
 
             rows_data = process_table_rows(page)
+            response = context.request.get(BASE_URL + f'/recordings?page={i}&sort=recordedAt&direction=desc')
+            if not response.ok:
+                raise RuntimeError('Cannot read precise Atlas source')
+            rows_data = process_source_html(response.text(), [r['record_id'] for r in rows_data], source_metadata)
+            all_records.extend(rows_data)
             print(f'Length of rows_data: {len(rows_data)}')
             if not rows_data:
                 break
@@ -308,6 +388,7 @@ def sync_atlas(email=None, password=None, max_pages=None, disable_smart_stop=Tru
         else:
             raise RuntimeError("Page limit reached before final page; no data sent")
 
+        validate_source_totals(all_records, source_metadata)
         browser.close()
 
     print("\n[V] SINKRONISASI DARI ATLAS SELESAI!")
