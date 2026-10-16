@@ -20,5 +20,5 @@ Schedule::command('app:pull-mailbox-emails')
 Schedule::command('app:clean-expired-emails')->daily();
 Schedule::command('mailbox:prune-quarantine')->daily();
 
-// Sinkronisasi otomatis data task dari Atlas Dashboard setiap 3 jam
-Schedule::command('atlas:sync')->cron('0 */3 * * *');
+// Atlas is synchronized by the versioned Playwright bot on its Windows host.
+// Do not schedule the legacy HTTP scraper, which targets the obsolete schema.

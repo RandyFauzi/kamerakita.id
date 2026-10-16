@@ -241,6 +241,7 @@
                                             $taskPctApproved = ($task->approved_minutes / $taskTotal) * 100;
                                             $taskPctRejected = ($task->rejected_minutes / $taskTotal) * 100;
                                             $taskPctReview = ($task->review_minutes / $taskTotal) * 100;
+                                            $taskPctDeferred = ($task->deferred_minutes / $taskTotal) * 100;
                                             
                                             // Determine timeline node color
                                             $nodeColor = 'bg-indigo-400';
@@ -252,7 +253,7 @@
                                             } elseif ($task->review_minutes > 0 && $task->approved_minutes == 0) {
                                                 $nodeColor = 'bg-amber-400';
                                                 $nodeRing = 'ring-amber-50';
-                                            } elseif ($task->approved_minutes > 0 && $task->rejected_minutes == 0) {
+                                            } elseif ($task->approved_minutes > 0 && $task->rejected_minutes == 0 && $task->deferred_minutes == 0 && $task->review_minutes == 0) {
                                                 $nodeColor = 'bg-emerald-500';
                                                 $nodeRing = 'ring-emerald-50';
                                             }
@@ -282,6 +283,9 @@
                                                     @if($task->review_minutes > 0)
                                                         <div class="h-full" style="width: {{ $taskPctReview }}%; background-color: #fbbf24;"></div>
                                                     @endif
+                                                    @if($task->deferred_minutes > 0)
+                                                        <div class="h-full bg-violet-500" style="width: {{ $taskPctDeferred }}%;"></div>
+                                                    @endif
                                                     @if($task->rejected_minutes > 0)
                                                         <div class="h-full" style="width: {{ $taskPctRejected }}%; background-color: #f43f5e;"></div>
                                                     @endif
@@ -300,6 +304,9 @@
                                                             <div class="w-1.5 h-1.5 rounded-full bg-amber-400"></div>
                                                             {{ number_format($task->review_minutes, 1) }} {{ $t['min'] }} Rev
                                                         </div>
+                                                    @endif
+                                                    @if($task->deferred_minutes > 0)
+                                                        <div class="text-violet-700">{{ number_format($task->deferred_minutes, 2) }} {{ $t['min'] }} Deferred</div>
                                                     @endif
                                                     @if($task->rejected_minutes > 0)
                                                         <div class="text-rose-700 flex items-center gap-1.5">

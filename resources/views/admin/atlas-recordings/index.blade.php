@@ -186,6 +186,7 @@
                     </div>
                 </form>
 
+                <p class="text-sm text-violet-700">Deferred: {{ number_format($stats['total_deferred'], 2) }} menit. Ditampilkan terpisah dari pending dan rejected.</p>
                 <!-- Data Table -->
                 <div class="overflow-x-auto rounded-xl border border-gray-200">
                     <table class="w-full text-left text-sm text-gray-600">
@@ -198,6 +199,7 @@
                                 <th scope="col" class="px-6 py-4 font-bold tracking-wider text-center">Approve</th>
                                 <th scope="col" class="px-6 py-4 font-bold tracking-wider text-center">Reject</th>
                                 <th scope="col" class="px-6 py-4 font-bold tracking-wider text-center">Pending</th>
+                                <th scope="col" class="px-6 py-4 font-bold tracking-wider text-center">Deferred</th>
                                 <th scope="col" class="px-6 py-4 font-bold tracking-wider text-center">Status Gaji</th>
                             </tr>
                         </thead>
@@ -211,6 +213,9 @@
                                     <td class="px-6 py-4 font-medium text-gray-900">{{ $record->atlasWorker->atlas_email ?? '-' }}</td>
                                     <td class="px-6 py-4">
                                         <div class="font-semibold text-gray-800 line-clamp-2" title="{{ $record->task_name }}">{{ $record->task_name }}</div>
+                                        @if($record->source_status)
+                                            <div class="text-xs text-gray-600">Atlas: {{ $record->source_status }}</div>
+                                        @endif
                                         @if($record->notes)
                                             <div class="text-[10px] text-amber-600 mt-1 line-clamp-1" title="{{ $record->notes }}"><span class="font-bold">Note:</span> {{ $record->notes }}</div>
                                         @endif
@@ -245,12 +250,15 @@
                                             <span class="text-gray-300">-</span>
                                         @endif
                                     </td>
+                                    <td class="whitespace-nowrap px-6 py-4 text-center text-violet-700">
+                                        {{ number_format($record->deferred_minutes, 2) }} m
+                                    </td>
                                     <td class="whitespace-nowrap px-6 py-4 text-center">
                                         @if($record->payroll_id)
                                             <span class="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-1 text-[11px] font-bold text-blue-700 border border-blue-200">
                                                 PAID
                                             </span>
-                                        @elseif($record->approved_minutes == 0 && $record->review_minutes == 0 && $record->rejected_minutes > 0)
+                                        @elseif($record->approved_minutes == 0 && $record->review_minutes == 0 && $record->deferred_minutes == 0 && $record->rejected_minutes > 0)
                                             <span class="inline-flex items-center gap-1 rounded-full bg-red-50 px-2.5 py-1 text-[11px] font-bold text-red-700 border border-red-200">
                                                 REJECTED
                                             </span>
@@ -268,7 +276,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="px-6 py-12 text-center text-gray-500">
+                                    <td colspan="9" class="px-6 py-12 text-center text-gray-500">
                                         <div class="flex flex-col items-center justify-center space-y-3">
                                             <svg class="h-10 w-10 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />

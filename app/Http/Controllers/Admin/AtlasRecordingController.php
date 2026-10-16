@@ -10,14 +10,6 @@ class AtlasRecordingController extends Controller
 {
     public function index(Request $request)
     {
-        // Purge any legacy duplicate records with fake fallback IDs
-        AtlasTask::where('atlas_task_id', 'LIKE', '%UTC%')
-            ->orWhere('atlas_task_id', 'LIKE', '%@%')
-            ->delete();
-
-        // Self-heal: pastikan seluruh durasi video yang tidak diapprove/direview dialokasikan ke rejected_minutes
-        \DB::statement("UPDATE atlas_tasks SET rejected_minutes = GREATEST(0, ROUND(worked_minutes - approved_minutes - review_minutes, 2)) WHERE worked_minutes > (approved_minutes + review_minutes) AND (worked_minutes - approved_minutes - review_minutes - rejected_minutes) > 0.05");
-
         $query = AtlasTask::with('atlasWorker');
 
         // Search by email, task_name, or notes
@@ -51,6 +43,7 @@ class AtlasRecordingController extends Controller
                       ->where(function($q) {
                           $q->where('approved_minutes', '>', 0)
                             ->orWhere('review_minutes', '>', 0)
+                            ->orWhere('deferred_minutes', '>', 0)
                             ->orWhere('rejected_minutes', '=', 0); // Exclude fully rejected
                       });
             } elseif ($status === 'sisa') {
@@ -59,6 +52,7 @@ class AtlasRecordingController extends Controller
                 $query->whereNull('payroll_id')
                       ->where('approved_minutes', 0)
                       ->where('review_minutes', 0)
+                      ->where('deferred_minutes', 0)
                       ->where('rejected_minutes', '>', 0);
             }
         }
@@ -72,6 +66,7 @@ class AtlasRecordingController extends Controller
             'total_paid' => (clone $statsQuery)->whereNotNull('payroll_id')->sum('approved_minutes'),
             'total_unpaid' => (clone $statsQuery)->whereNull('payroll_id')->sum('approved_minutes'),
             'total_review' => $statsQuery->sum('review_minutes'),
+            'total_deferred' => $statsQuery->sum('deferred_minutes'),
             'total_rejected' => $statsQuery->sum('rejected_minutes'),
         ];
 

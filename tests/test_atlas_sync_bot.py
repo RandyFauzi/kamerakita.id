@@ -1,0 +1,107 @@
+"""Offline tests: no Playwright launch, real database, or HTTP delivery."""
+import importlib.util
+import sqlite3
+import unittest
+from pathlib import Path
+from unittest.mock import Mock, patch
+
+spec = importlib.util.spec_from_file_location('atlas_sync', Path(__file__).parents[1] / 'scripts' / 'atlas_sync.py')
+bot = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(bot)
+
+
+class BotTest(unittest.TestCase):
+    def setUp(self):
+        self.conn = sqlite3.connect(':memory:')
+        self.conn.execute('''CREATE TABLE recordings (
+            record_id TEXT PRIMARY KEY, task TEXT, participant TEXT, recorded_utc TEXT,
+            duration_sec REAL, status TEXT, billable_hours REAL, rejected_hours REAL,
+            pending_hours REAL, deferred_hours REAL, reconciliation TEXT,
+            first_scraped_at TEXT, last_updated_at TEXT)''')
+        self.record = dict(record_id='a' * 24, task='Original', participant='worker@example.com',
+                           recorded_utc='2026-10-15T00:00:00+00:00', duration_sec=3600, status='Review',
+                           billable_hours=0.5, rejected_hours=0, pending_hours=0,
+                           deferred_hours=0.5, reconciliation='')
+
+    def tearDown(self):
+        self.conn.close()
+
+    def test_metadata_and_small_changes_update(self):
+        self.assertEqual((True, False), bot.save_or_update_record(self.conn, self.record, 1))
+        self.record.update(task='Corrected', participant='other@example.com', duration_sec=3660,
+                           recorded_utc='2026-10-16T00:00:00+00:00', billable_hours=0.504)
+        self.assertEqual((False, True), bot.save_or_update_record(self.conn, self.record, 1))
+        actual = bot.build_payload_records(self.conn, {self.record['record_id']})[0]
+        self.assertEqual('Corrected', actual['task'])
+        self.assertEqual(61, actual['duration_min'])
+        self.assertEqual(30.24, actual['billable_min'])
+        self.assertEqual('other@example.com', actual['participant'])
+        self.assertEqual((False, False), bot.save_or_update_record(self.conn, self.record, 1))
+
+    def test_deferred_and_unallocated_duration_are_never_rejected(self):
+        bot.save_or_update_record(self.conn, self.record, 1)
+        actual = bot.build_payload_records(self.conn, {self.record['record_id']})[0]
+        self.assertEqual(0, actual['rejected_min'])
+        self.assertEqual(30, actual['deferred_min'])
+        self.record['deferred_hours'] = 0
+        bot.save_or_update_record(self.conn, self.record, 1)
+        self.assertEqual(0, bot.build_payload_records(self.conn, {self.record['record_id']})[0]['rejected_min'])
+
+    def test_only_current_scan_records_are_sent(self):
+        bot.save_or_update_record(self.conn, self.record, 1)
+        self.assertEqual([], bot.build_payload_records(self.conn, set()))
+
+    def test_hours_parse_preserves_precision_and_rejects_bad_values(self):
+        self.assertEqual(0.504, bot.parse_hours('Billable 0.504 h Deferred 0,5 h', 'Billable'))
+        self.assertEqual(0.5, bot.parse_hours('Billable 0.504 h Deferred 0,5 h', 'Deferred'))
+        with self.assertRaises(ValueError):
+            bot.parse_hours('Billable -- h', 'Billable')
+
+    def test_bad_acknowledgement_fails_instead_of_reporting_success(self):
+        bot.save_or_update_record(self.conn, self.record, 1)
+        with patch.dict(bot.os.environ, {'ATLAS_BOT_TOKEN': 'offline-test'}), patch.object(bot.urllib.request, 'urlopen') as request:
+            request.return_value.__enter__.return_value.read.return_value = b'{"status":"success","count":0}'
+            with self.assertRaises(RuntimeError):
+                bot.push_to_laravel_api(self.conn, {self.record['record_id']})
+
+    def test_main_returns_nonzero_on_failure(self):
+        with patch.object(bot.sys, 'argv', ['atlas_sync.py']), patch.object(bot, 'sync_atlas', side_effect=RuntimeError('offline test')):
+            self.assertEqual(1, bot.main())
+
+    def test_timestamp_formats_match_cached_atlas_display_and_explicit_offsets(self):
+        self.assertEqual('2026-10-02T14:50:00+00:00', bot.normalize_timestamp('Oct 2, 2026, 2:50 PM UTC'))
+        self.assertEqual('2026-10-14T18:00:00+00:00', bot.normalize_timestamp('2026-10-15T01:00:00+07:00'))
+        with self.assertRaises(ValueError):
+            bot.normalize_timestamp('invalid time')
+
+    def test_scraper_extracts_actual_display_format_without_converting_deferred_to_rejected(self):
+        values = ['Task', 'WORKER@example.com', 'Oct 2, 2026, 2:50 PM UTC', '3600',
+                  'Review', '-', 'Billable 0.504 h Deferred 0.496 h', '-', 'Awaiting review']
+        cells = []
+        for value in values:
+            cell = Mock()
+            cell.inner_text.return_value = value
+            cells.append(cell)
+        row = Mock()
+        row.get_attribute.return_value = 'a' * 24
+        row.locator.return_value.all.return_value = cells
+        page = Mock()
+        page.locator.return_value.all.return_value = [row]
+        actual = bot.process_table_rows(page)[0]
+        self.assertEqual('worker@example.com', actual['participant'])
+        self.assertEqual(0.496, actual['deferred_hours'])
+        self.assertEqual(0, actual['rejected_hours'])
+        self.assertEqual('2026-10-02T14:50:00+00:00', actual['recorded_utc'])
+        cells[6].inner_text.return_value = 'Loading...'
+        with self.assertRaises(ValueError):
+            bot.process_table_rows(page)
+
+    def test_empty_table_aborts_instead_of_sending_cached_records(self):
+        page = Mock()
+        page.locator.return_value.all.return_value = []
+        with self.assertRaises(RuntimeError):
+            bot.process_table_rows(page)
+
+
+if __name__ == '__main__':
+    unittest.main()
