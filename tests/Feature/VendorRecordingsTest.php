@@ -44,10 +44,15 @@ class VendorRecordingsTest extends TestCase
         $this->recording($worker->user_id, 'atlas-own@example.com', 'OWN-LINKED');
         $this->recording(null, 'own@example.com', 'OWN-EMAIL');
         $other = $this->worker($this->vendor(), 'other@example.com');
-        $this->recording($other->user_id, 'other@example.com', 'FOREIGN-RECORDING');
+        $foreign = $this->recording($other->user_id, 'other@example.com', 'FOREIGN-RECORDING');
+        $foreign->atlasWorker->update(['last_synced_at' => '2026-10-17 12:00:00']);
         $this->actingAs($vendor->user)->get(route('vendor.recordings.index'))->assertOk()
             ->assertSee('OWN-LINKED')->assertSee('OWN-EMAIL')->assertDontSee('FOREIGN-RECORDING')
-            ->assertDontSee('other@example.com')->assertSee('16 Oct 2026 12:34:56')
+            ->assertDontSee('other@example.com')->assertSee('2026-10-16T12:34:56.000000Z')
+            ->assertSee('Performance Overview')->assertSee('Total Jam Kerja')->assertSee('Dalam Ulasan')
+            ->assertDontSee('Status Gaji')->assertDontSee('Semua recording, satu tampilan.')
+            ->assertViewHas('trend', fn ($trend) => (float) $trend->sum('worked') === 120.0)
+            ->assertViewHas('lastSync', null)
             ->assertViewHas('stats', fn ($stats) => $stats->recordings === 2 && (float) $stats->worked === 120.0
                 && (float) $stats->rejected === 10.0 && (float) $stats->deferred === 30.0);
     }
@@ -104,7 +109,7 @@ class VendorRecordingsTest extends TestCase
         $vendor = $this->vendor();
         $this->recording(null, 'outside@example.com', 'PRIVATE');
         $this->actingAs($vendor->user)->get(route('vendor.recordings.index'))->assertOk()
-            ->assertSee('Belum ada recording yang sesuai')->assertDontSee('PRIVATE');
+            ->assertSee('Belum ada data rekaman Atlas yang tersinkronisasi.')->assertDontSee('PRIVATE');
         $this->get(route('vendor.recordings.index', ['start_date' => 'invalid']))->assertSessionHasErrors('start_date');
         $this->get(route('vendor.recordings.index', ['start_date' => '2026-10-17', 'end_date' => '2026-10-16']))->assertSessionHasErrors('end_date');
     }

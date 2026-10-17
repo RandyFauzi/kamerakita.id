@@ -1,9 +1,10 @@
 <x-app-layout>
+    @php $isVendorView = $isVendorView ?? false; @endphp
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <h2 class="font-bold text-xl sm:text-2xl text-gray-800 leading-tight">Atlas Recordings</h2>
+            <h2 class="font-bold text-xl sm:text-2xl text-gray-800 leading-tight">{{ $isVendorView ? 'Recording Tim' : 'Atlas Recordings' }}</h2>
             @php
-                $lastSync = \App\Models\AtlasWorker::max('last_synced_at');
+                $lastSync = $isVendorView ? $lastSync : \App\Models\AtlasWorker::max('last_synced_at');
             @endphp
             <div class="inline-flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-gray-100 shadow-sm text-sm font-medium text-gray-600">
                 <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -39,7 +40,7 @@
                         
                         <div class="mt-6 flex items-center gap-2">
                             <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-bold bg-white/15 text-white border border-white/10 tracking-wide uppercase">
-                                Seluruh Pekerja
+                                {{ $isVendorView ? 'Seluruh Worker Tim' : 'Seluruh Pekerja' }}
                             </span>
                             <span class="text-[11px] font-medium text-blue-200/80">Durasi Atlas V.2</span>
                         </div>
@@ -66,6 +67,7 @@
                             <span class="px-2 py-1 rounded text-[11px] font-bold" style="background-color: #ecfdf5; color: #10b981;">{{ $pctApp }}%</span>
                             <span class="text-[11px] font-semibold text-gray-400">dari total durasi</span>
                         </div>
+                        @unless($isVendorView)
                         <div class="mt-4 flex flex-col gap-2 border-t border-gray-100 pt-3">
                             <div class="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider">
                                 <span class="text-blue-500">PAID (Lunas)</span>
@@ -76,6 +78,7 @@
                                 <span class="text-gray-700 bg-gray-50 border border-gray-200 px-2 py-0.5 rounded">{{ floor($stats['total_unpaid'] / 60) }}h {{ round($stats['total_unpaid'] % 60) }}m</span>
                             </div>
                         </div>
+                        @endunless
                     </div>
                 </div>
 
@@ -154,7 +157,7 @@
 
             <div class="overflow-hidden rounded-2xl bg-white border border-gray-100 p-4 shadow-sm sm:p-6">
                 <!-- Header / Filters -->
-                <form action="{{ route('admin.recordings.index') }}" method="GET" class="flex flex-col items-end gap-3 md:flex-row mb-6">
+                <form action="{{ route($isVendorView ? 'vendor.recordings.index' : 'admin.recordings.index') }}" method="GET" class="flex flex-col items-end gap-3 md:flex-row mb-6">
                     <div class="w-full" style="flex: 1 1 260px; min-width: 220px;">
                         <label for="search" class="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-gray-400">Pencarian</label>
                         <div class="relative">
@@ -170,6 +173,13 @@
                         <input type="date" name="end_date" id="end_date" value="{{ request('end_date') }}" class="block w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
                     </div>
                     <div class="w-full md:w-auto" style="flex: 0 0 auto; width: 140px;">
+                        @if($isVendorView)
+                        <label for="worker_id" class="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-gray-400">Akun Worker</label>
+                        <select name="worker_id" id="worker_id" class="block w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                            <option value="">Semua akun tim</option>
+                            @foreach($workers as $worker)<option value="{{ $worker->id }}" @selected(request('worker_id') == $worker->id)>{{ $worker->atlas_email }}</option>@endforeach
+                        </select>
+                        @else
                         <label for="status" class="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-gray-400">Status Gaji</label>
                         <select name="status" id="status" class="block w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
                             <option value="">Semua</option>
@@ -178,6 +188,7 @@
                             <option value="sisa" {{ request('status') === 'sisa' ? 'selected' : '' }}>SISA</option>
                             <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>REJECTED</option>
                         </select>
+                        @endif
                     </div>
                     <div class="w-full md:w-auto" style="flex: 0 0 auto;">
                         <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-6 py-2.5 text-sm font-bold text-white transition hover:bg-indigo-700 md:w-auto shadow-sm">
@@ -200,7 +211,7 @@
                                 <th scope="col" class="px-6 py-4 font-bold tracking-wider text-center">Reject</th>
                                 <th scope="col" class="px-6 py-4 font-bold tracking-wider text-center">Pending</th>
                                 <th scope="col" class="px-6 py-4 font-bold tracking-wider text-center">Deferred</th>
-                                <th scope="col" class="px-6 py-4 font-bold tracking-wider text-center">Status Gaji</th>
+                                @unless($isVendorView)<th scope="col" class="px-6 py-4 font-bold tracking-wider text-center">Status Gaji</th>@endunless
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100 bg-white">
@@ -253,6 +264,7 @@
                                     <td class="whitespace-nowrap px-6 py-4 text-center text-violet-700">
                                         {{ number_format($record->deferred_minutes, 2) }} m
                                     </td>
+                                    @unless($isVendorView)
                                     <td class="whitespace-nowrap px-6 py-4 text-center">
                                         @if($record->payroll_id)
                                             <span class="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-1 text-[11px] font-bold text-blue-700 border border-blue-200">
@@ -273,10 +285,11 @@
                                             </span>
                                         @endif
                                     </td>
+                                    @endunless
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="9" class="px-6 py-12 text-center text-gray-500">
+                                    <td colspan="{{ $isVendorView ? 8 : 9 }}" class="px-6 py-12 text-center text-gray-500">
                                         <div class="flex flex-col items-center justify-center space-y-3">
                                             <svg class="h-10 w-10 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
