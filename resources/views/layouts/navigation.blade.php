@@ -28,6 +28,7 @@
                         {{ __('Data Mitra') }}
                     </x-nav-link>
                     @if(Auth::user()->role === 'mitra')
+                    <x-nav-link :href="route('vendor.recordings.index')" :active="request()->routeIs('vendor.recordings.*')">Recording Tim</x-nav-link>
                     <x-nav-link :href="route('vendor.reports.index')" :active="request()->routeIs('vendor.reports.*')">
                         {{ __('QC Tracker') }}
                     </x-nav-link>
@@ -121,6 +122,7 @@
                 {{ __('Data Mitra') }}
             </x-responsive-nav-link>
             @if(Auth::user()->role === 'mitra')
+            <x-responsive-nav-link :href="route('vendor.recordings.index')" :active="request()->routeIs('vendor.recordings.*')">Recording Tim</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('vendor.reports.index')" :active="request()->routeIs('vendor.reports.*')">
                 {{ __('QC Tracker') }}
             </x-responsive-nav-link>

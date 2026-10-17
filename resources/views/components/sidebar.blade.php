@@ -211,7 +211,7 @@
             <!-- GROUP 3: VENDOR / MITRA -->
             @if($partner && $partner->partner_role === 'mitra')
             @php
-                $isVendorActive = request()->routeIs('vendor.workers.*', 'vendor.reports.*', 'vendor.payments.*');
+                $isVendorActive = request()->routeIs('vendor.workers.*', 'vendor.reports.*', 'vendor.payments.*', 'vendor.recordings.*');
             @endphp
             <details name="sidebar-menu" class="group border-t border-gray-100 pt-3" {{ $isVendorActive ? 'open' : '' }}>
                 <summary class="flex items-center justify-between px-3 py-2 cursor-pointer rounded-xl text-[10px] font-bold text-gray-400 uppercase tracking-wider hover:bg-gray-50 transition-colors">
@@ -224,6 +224,10 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                         </svg>
                         {{ __('dashboard.sidebar.team_worker_data') }}
+                    </a>
+                    <a href="{{ route('vendor.recordings.index') }}" @if(request()->routeIs('vendor.recordings.*')) aria-current="page" @endif class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('vendor.recordings.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
+                        <svg aria-hidden="true" class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l5-3v10l-5-3M4 6h9a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2z"/></svg>
+                        Recording Tim
                     </a>
                     <a href="{{ route('vendor.reports.index') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('vendor.reports.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
                         <svg class="w-5 h-5 mr-3 {{ request()->routeIs('vendor.reports.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
