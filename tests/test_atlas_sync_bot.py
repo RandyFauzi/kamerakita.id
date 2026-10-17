@@ -2,6 +2,7 @@
 import importlib.util
 import json
 import sqlite3
+import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import Mock, patch
@@ -12,6 +13,41 @@ spec.loader.exec_module(bot)
 
 
 class BotTest(unittest.TestCase):
+    def test_simultaneous_sync_is_blocked_and_lock_releases_after_failure(self):
+        with tempfile.TemporaryDirectory() as directory, patch.object(bot, 'DB_PATH', str(Path(directory) / 'sync.db')):
+            with self.assertRaisesRegex(RuntimeError, 'test failure'):
+                with bot.single_run_lock():
+                    with self.assertRaisesRegex(RuntimeError, 'masih berjalan'):
+                        with bot.single_run_lock():
+                            self.fail('Second sync entered the lock')
+                    raise RuntimeError('test failure')
+            with bot.single_run_lock():
+                pass
+
+    def test_cache_is_separate_from_excel_and_reader_does_not_block_save(self):
+        self.assertEqual('atlas_sync_cache.db', Path(bot.DB_PATH).name)
+        with tempfile.TemporaryDirectory() as directory, patch.object(bot, 'DB_PATH', str(Path(directory) / 'sync.db')):
+            with bot.closing(bot.init_db()) as writer, bot.closing(sqlite3.connect(bot.DB_PATH)) as reader:
+                self.assertEqual('wal', writer.execute('PRAGMA journal_mode').fetchone()[0])
+                self.assertEqual(60000, writer.execute('PRAGMA busy_timeout').fetchone()[0])
+                bot.save_or_update_record(writer, self.record, 1)
+                reader.execute('BEGIN')
+                reader.execute('SELECT * FROM recordings').fetchall()
+                changed = dict(self.record, duration_sec=4000)
+                self.assertEqual((False, True), bot.save_or_update_record(writer, changed, 1))
+                reader.rollback()
+
+    def test_sync_failure_closes_database_and_releases_lock(self):
+        with tempfile.TemporaryDirectory() as directory, patch.object(bot, 'DB_PATH', str(Path(directory) / 'sync.db')):
+            connection = bot.init_db()
+            with patch.object(bot, 'init_db', return_value=connection), patch.object(bot, '_sync_atlas', side_effect=RuntimeError('scan failed')):
+                with self.assertRaisesRegex(RuntimeError, 'scan failed'):
+                    bot.sync_atlas(no_push=True)
+            with self.assertRaises(sqlite3.ProgrammingError):
+                connection.execute('SELECT 1')
+            with bot.single_run_lock():
+                pass
+
     def test_scan_must_match_atlas_count_and_summary_before_delivery(self):
         record = dict(duration_sec=3600, billable_hours=0.5, rejected_hours=0,
                       pending_hours=0.2, deferred_hours=0.3)

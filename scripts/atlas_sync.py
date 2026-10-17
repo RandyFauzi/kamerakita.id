@@ -6,6 +6,7 @@ import json
 import time
 import math
 import argparse
+from contextlib import closing, contextmanager
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.error import HTTPError, URLError
@@ -15,10 +16,43 @@ import urllib.request
 BASE_URL = "https://atlasdashboard.vtlabs.dev"
 SCRIPT_DIR = os.environ.get("ATLAS_SYNC_DATA_DIR", str(Path.home() / ".gemini" / "antigravity" / "scratch"))
 STATE_FILE = os.path.join(SCRIPT_DIR, "session_state.json")
-DB_PATH = os.path.join(SCRIPT_DIR, "atlas_master.db")
+# The Excel exporter writes payment overrides to atlas_master.db and can hold
+# its write lock for minutes. Recording sync must never share that database.
+DB_PATH = os.path.join(SCRIPT_DIR, "atlas_sync_cache.db")
+
+
+@contextmanager
+def single_run_lock():
+    """OS lock releases automatically even if Python is stopped or crashes."""
+    path = Path(DB_PATH + '.sync.lock')
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open('a+b') as handle:
+        if path.stat().st_size == 0:
+            handle.write(b'0')
+            handle.flush()
+        handle.seek(0)
+        try:
+            if os.name == 'nt':
+                import msvcrt
+                msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+            else:
+                import fcntl
+                fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError as error:
+            raise RuntimeError('Bot Atlas masih berjalan. Tunggu sync sebelumnya selesai sebelum menjalankan lagi.') from error
+        try:
+            yield
+        finally:
+            handle.seek(0)
+            if os.name == 'nt':
+                msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+            else:
+                fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
 
 def init_db():
-    conn = sqlite3.connect(DB_PATH)
+    Path(DB_PATH).parent.mkdir(parents=True, exist_ok=True)
+    conn = sqlite3.connect(DB_PATH, timeout=60)
+    conn.execute('PRAGMA journal_mode=WAL')
     cur = conn.cursor()
     cur.execute("""
         CREATE TABLE IF NOT EXISTS recordings (
@@ -246,13 +280,18 @@ def validate_source_totals(records, metadata):
 
 
 def sync_atlas(email=None, password=None, max_pages=None, disable_smart_stop=True, no_push=False):
+    with single_run_lock():
+        with closing(init_db()) as conn:
+            return _sync_atlas(conn, email, password, max_pages, disable_smart_stop, no_push)
+
+
+def _sync_atlas(conn, email, password, max_pages, disable_smart_stop, no_push):
     print("[*] Menginisialisasi Bot Atlas (Murni Sinkronisasi ke Web KameraKita)...")
     if not no_push and not os.environ.get("ATLAS_BOT_TOKEN"):
         raise RuntimeError("Set ATLAS_BOT_TOKEN before enabling API delivery")
     from playwright.sync_api import sync_playwright
     email = email or os.environ.get("ATLAS_EMAIL")
     password = password or os.environ.get("ATLAS_PASSWORD")
-    conn = init_db()
     seen_ids = set()
     visited_pages = set()
     all_records = []
@@ -396,7 +435,6 @@ def sync_atlas(email=None, password=None, max_pages=None, disable_smart_stop=Tru
         print(f"[DRY RUN] {len(seen_ids)} recordings read; no API requests sent")
     else:
         push_to_laravel_api(conn, seen_ids)
-    conn.close()
 
 def main():
     parser = argparse.ArgumentParser(description='Read Atlas recordings and sync explicitly reported durations')
