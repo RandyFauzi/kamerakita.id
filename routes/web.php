@@ -111,20 +111,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware('role:superadmin,admin')
         ->name('admin.onboardings.destroy');
 
-    // Unit Procurements (Pengadaan Unit Baru)
-    Route::middleware('role:superadmin,admin')->prefix('admin')->name('admin.')->group(function () {
-        Route::get('/unit-procurements', [\App\Http\Controllers\Admin\UnitProcurementController::class, 'index'])
-            ->name('unit-procurements.index');
-        Route::post('/unit-procurements', [\App\Http\Controllers\Admin\UnitProcurementController::class, 'store'])
-            ->name('unit-procurements.store');
-        Route::put('/unit-procurements/{unitProcurement}', [\App\Http\Controllers\Admin\UnitProcurementController::class, 'update'])
-            ->name('unit-procurements.update');
-        Route::patch('/unit-procurements/{unitProcurement}/status', [\App\Http\Controllers\Admin\UnitProcurementController::class, 'updateStatus'])
-            ->name('unit-procurements.status');
-        Route::delete('/unit-procurements/{unitProcurement}', [\App\Http\Controllers\Admin\UnitProcurementController::class, 'destroy'])
-            ->name('unit-procurements.destroy');
-    });
-
     // Internal Admin Account CRUD
     Route::resource('admin-users', ManageAdminUsersController::class)
         ->parameters(['admin-users' => 'adminUser'])
