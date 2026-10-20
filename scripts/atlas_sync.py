@@ -21,6 +21,19 @@ STATE_FILE = os.path.join(SCRIPT_DIR, "session_state.json")
 DB_PATH = os.path.join(SCRIPT_DIR, "atlas_sync_cache.db")
 
 
+def setting(name):
+    value = os.environ.get(name)
+    if value or os.name != 'nt':
+        return value
+    # Task Scheduler may retain the environment from before credentials were set.
+    import winreg
+    try:
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, 'Environment') as key:
+            return winreg.QueryValueEx(key, name)[0]
+    except FileNotFoundError:
+        return None
+
+
 @contextmanager
 def single_run_lock():
     """OS lock releases automatically even if Python is stopped or crashes."""
@@ -96,7 +109,9 @@ def build_payload_records(conn, record_ids):
 def push_to_laravel_api(conn, record_ids):
     records = build_payload_records(conn, record_ids)
     url = os.environ.get('ATLAS_SYNC_URL', 'https://kamerakitaid.site/api/bot/atlas/sync')
-    token = os.environ['ATLAS_BOT_TOKEN']
+    token = setting('ATLAS_BOT_TOKEN')
+    if not token:
+        raise RuntimeError('Set ATLAS_BOT_TOKEN before enabling API delivery')
     for i in range(0, len(records), 500):
         batch = records[i:i + 500]
         data = json.dumps({'bot_token': token, 'records': batch}, allow_nan=False).encode('utf-8')
@@ -287,11 +302,11 @@ def sync_atlas(email=None, password=None, max_pages=None, disable_smart_stop=Tru
 
 def _sync_atlas(conn, email, password, max_pages, disable_smart_stop, no_push):
     print("[*] Menginisialisasi Bot Atlas (Murni Sinkronisasi ke Web KameraKita)...")
-    if not no_push and not os.environ.get("ATLAS_BOT_TOKEN"):
+    if not no_push and not setting("ATLAS_BOT_TOKEN"):
         raise RuntimeError("Set ATLAS_BOT_TOKEN before enabling API delivery")
     from playwright.sync_api import sync_playwright
-    email = email or os.environ.get("ATLAS_EMAIL")
-    password = password or os.environ.get("ATLAS_PASSWORD")
+    email = email or setting("ATLAS_EMAIL")
+    password = password or setting("ATLAS_PASSWORD")
     seen_ids = set()
     visited_pages = set()
     all_records = []

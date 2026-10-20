@@ -13,6 +13,19 @@ spec.loader.exec_module(bot)
 
 
 class BotTest(unittest.TestCase):
+    def test_explicit_process_setting_has_priority(self):
+        with patch.dict(bot.os.environ, {'ATLAS_TEST_SETTING': 'process-value'}):
+            self.assertEqual('process-value', bot.setting('ATLAS_TEST_SETTING'))
+
+    @unittest.skipUnless(bot.os.name == 'nt', 'Windows Task Scheduler configuration')
+    def test_windows_saved_setting_is_available_to_stale_scheduler_environment(self):
+        import winreg
+        with patch.dict(bot.os.environ, {'ATLAS_TEST_SETTING': ''}):
+            with patch.object(winreg, 'QueryValueEx', return_value=('saved-value', winreg.REG_SZ)):
+                self.assertEqual('saved-value', bot.setting('ATLAS_TEST_SETTING'))
+            with patch.object(winreg, 'QueryValueEx', side_effect=FileNotFoundError):
+                self.assertIsNone(bot.setting('ATLAS_TEST_SETTING'))
+
     def test_simultaneous_sync_is_blocked_and_lock_releases_after_failure(self):
         with tempfile.TemporaryDirectory() as directory, patch.object(bot, 'DB_PATH', str(Path(directory) / 'sync.db')):
             with self.assertRaisesRegex(RuntimeError, 'test failure'):
