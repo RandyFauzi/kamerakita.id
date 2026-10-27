@@ -6,10 +6,9 @@ import json
 import time
 import math
 import argparse
-import csv
-import io
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from collections import defaultdict
+import hashlib
+import codecs
+from concurrent.futures import ThreadPoolExecutor, wait, FIRST_COMPLETED
 from contextlib import closing, contextmanager
 from html.parser import HTMLParser
 from pathlib import Path
@@ -23,6 +22,10 @@ STATE_FILE = os.path.join(SCRIPT_DIR, "session_state.json")
 # The Excel exporter writes payment overrides to atlas_master.db and can hold
 # its write lock for minutes. Recording sync must never share that database.
 DB_PATH = os.path.join(SCRIPT_DIR, "atlas_sync_cache.db")
+
+
+class AtlasSessionExpired(RuntimeError):
+    pass
 
 
 def setting(name):
@@ -89,6 +92,10 @@ def init_db():
         )
     """)
     conn.commit()
+    conn.execute('''CREATE TABLE IF NOT EXISTS recording_deliveries (
+        record_id TEXT NOT NULL, destination_key TEXT NOT NULL, payload_hash TEXT NOT NULL,
+        PRIMARY KEY (record_id, destination_key))''')
+    conn.commit()
     return conn
 
 def build_payload_records(conn, record_ids):
@@ -110,9 +117,20 @@ def build_payload_records(conn, record_ids):
     return output
 
 
-def push_to_laravel_api(conn, record_ids):
+def push_to_laravel_api(conn, record_ids, force=False):
     records = build_payload_records(conn, record_ids)
     url = os.environ.get('ATLAS_SYNC_URL', 'https://kamerakitaid.site/api/bot/atlas/sync')
+    destination = hashlib.sha256(url.encode()).hexdigest()
+    acknowledged = dict(conn.execute('SELECT record_id, payload_hash FROM recording_deliveries WHERE destination_key = ?', (destination,)))
+    def fingerprint(record):
+        payload = {key: value for key, value in record.items() if key not in ('first_scraped_at', 'last_updated_at')}
+        return hashlib.sha256(json.dumps(payload, sort_keys=True, allow_nan=False).encode()).hexdigest()
+    hashes = {record['record_id']: fingerprint(record) for record in records}
+    records = [record for record in records if force or acknowledged.get(record['record_id']) != hashes[record['record_id']]]
+    print(f'[*] Upload: {len(records)} baru/berubah dari {len(record_ids)} recording tervalidasi.', flush=True)
+    if not records:
+        print('[V] Tidak ada perubahan; seluruh recording sudah dikonfirmasi server sebelumnya.', flush=True)
+        return 0
     token = setting('ATLAS_BOT_TOKEN')
     if not token:
         raise RuntimeError('Set ATLAS_BOT_TOKEN before enabling API delivery')
@@ -126,6 +144,9 @@ def push_to_laravel_api(conn, record_ids):
                     result = json.loads(resp.read().decode('utf-8'))
                     if result.get('status') != 'success' or result.get('count') != len(batch):
                         raise RuntimeError('API did not acknowledge the complete batch; stop sync.')
+                with conn:
+                    conn.executemany('INSERT INTO recording_deliveries VALUES (?, ?, ?) ON CONFLICT(record_id, destination_key) DO UPDATE SET payload_hash=excluded.payload_hash',
+                        [(record['record_id'], destination, hashes[record['record_id']]) for record in batch])
                 print(f'    - Chunk {i}-{i + len(batch)} acknowledged')
                 break
             except HTTPError as error:
@@ -135,6 +156,7 @@ def push_to_laravel_api(conn, record_ids):
                 if attempt == 2:
                     raise
             time.sleep(2 ** attempt)
+    return len(records)
 
 
 def save_or_update_record(conn, rec, page_number):
@@ -241,7 +263,12 @@ def process_source_html(html, visible_ids=None, metadata=None):
             if self.inside and data.startswith('self.__next_f.push('):
                 self.parts.extend(x for x in json.loads(data[len('self.__next_f.push('):-1]) if isinstance(x, str))
     parser = Scripts()
-    parser.feed(html)
+    if isinstance(html, str):
+        parser.feed(html)
+    else:
+        for chunk in html:
+            parser.feed(chunk)
+    parser.close()
     def find(value):
         if isinstance(value, dict):
             if isinstance(value.get('recordings'), list): return value
@@ -282,55 +309,29 @@ def process_source_html(html, visible_ids=None, metadata=None):
     return records
 
 
-def parse_participant_export(payload):
-    """Atlas Participants CSV contains rounded account totals, not recording rows."""
-    reader = csv.DictReader(io.StringIO(payload.decode('utf-8-sig'), newline=''))
-    required = {'Email', 'Recordings', 'Duration (h)', 'Billable (h)', 'Rejected (h)', 'Pending (h)'}
-    if not required.issubset(reader.fieldnames or []):
-        raise ValueError('Atlas export columns changed; cannot verify account totals')
-    accounts = {}
-    for row in reader:
-        email = row['Email'].strip().lower()
-        if not re.fullmatch(r'[^\s@]+@[^\s@]+\.[^\s@]+', email) or email in accounts:
-            raise ValueError('Invalid or duplicate email in Atlas export')
-        # Atlas exports completely blank metrics for registered accounts that
-        # have never recorded. Partial/malformed metrics still fail validation.
-        metric_columns = ['Recordings', 'Duration (h)', 'Billable (h)', 'Rejected (h)', 'Pending (h)']
-        if all(row[column] == '' for column in metric_columns):
-            accounts[email] = dict(count=0, duration_sec=0.0, billable_hours=0.0, rejected_hours=0.0, pending_hours=0.0)
-            continue
-        count = int(row['Recordings'])
-        totals = {key: float(row[column]) for key, column in [
-            ('duration_sec', 'Duration (h)'), ('billable_hours', 'Billable (h)'),
-            ('rejected_hours', 'Rejected (h)'), ('pending_hours', 'Pending (h)')]}
-        if count < 0 or any(not math.isfinite(value) or value < 0 for value in totals.values()):
-            raise ValueError('Invalid numeric value in Atlas export')
-        accounts[email] = dict(count=count, **totals)
-    if not accounts:
-        raise ValueError('Empty Atlas export; no data sent')
-    return accounts
-
-
-def validate_account_export(records, accounts):
-    grouped = defaultdict(list)
-    for record in records:
-        grouped[record['participant']].append(record)
-    if set(grouped) != {email for email, account in accounts.items() if account['count'] > 0}:
-        raise ValueError('Atlas export account list differs from recording details; retry sync')
-    for email, rows in grouped.items():
-        account = accounts[email]
-        if len(rows) != account['count']:
-            raise ValueError('Atlas export recording count differs from details; retry sync')
-        for key in ['duration_sec', 'billable_hours', 'rejected_hours', 'pending_hours']:
-            hours = math.fsum(row[key] for row in rows) / (3600 if key == 'duration_sec' else 1)
-            # CSV rounds each account to hundredths of an hour; precise source
-            # props remain authoritative for database values.
-            if abs(hours - account[key]) > 0.00501:
-                raise ValueError(f'Atlas export {key} differs from recording details; retry sync')
-
-
-def capture_recordings_fast(cookies, max_pages=None, expected_count=None):
-    """Read authenticated SSR data with three HTTP workers; no UI pagination."""
+def capture_recordings_fast(cookies, max_pages=None):
+    """Read precise source data using bounded HTTP workers; no UI pagination."""
+    workers = int(setting('ATLAS_SYNC_WORKERS') or '4')
+    if not 1 <= workers <= 8:
+        raise ValueError('ATLAS_SYNC_WORKERS must be between 1 and 8')
+    if os.name == 'nt':
+        import ctypes
+        class MemoryStatus(ctypes.Structure):
+            _fields_ = [('length', ctypes.c_ulong), ('load', ctypes.c_ulong)] + [(name, ctypes.c_ulonglong) for name in
+                ('total_phys', 'avail_phys', 'total_commit', 'avail_commit', 'total_virtual', 'avail_virtual', 'extended')]
+        status = MemoryStatus()
+        status.length = ctypes.sizeof(status)
+        if ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(status)):
+            available = min(status.avail_phys, status.avail_commit)
+            workers = min(workers, 1 if available < 512 * 1024**2 else 2 if available < 1024**3 else 8)
+    def chunks(response):
+        decoder = codecs.getincrementaldecoder('utf-8')()
+        while True:
+            chunk = response.read(65536)
+            if not chunk:
+                break
+            yield decoder.decode(chunk)
+        yield decoder.decode(b'', final=True)
     def fetch(number):
         url = BASE_URL + f'/recordings?page={number}&sort=recordedAt&direction=desc'
         for attempt in range(3):
@@ -338,37 +339,55 @@ def capture_recordings_fast(cookies, max_pages=None, expected_count=None):
                 request = urllib.request.Request(url, headers={'Cookie': cookies, 'Accept': 'text/html', 'User-Agent': 'Mozilla/5.0'})
                 with urllib.request.urlopen(request, timeout=45) as response:
                     if '/login' in response.url:
-                        raise RuntimeError('Atlas session expired during capture; no data sent')
-                    html = response.read().decode('utf-8')
-                metadata = {}
-                rows = process_source_html(html, metadata=metadata)
+                        raise AtlasSessionExpired('Atlas session expired during capture; no data sent')
+                    metadata = {}
+                    rows = process_source_html(chunks(response), metadata=metadata)
                 if metadata['page'] != number or not isinstance(metadata['page_size'], int) or metadata['page_size'] <= 0:
                     raise ValueError('Atlas returned an unexpected data page')
                 expected = min(metadata['page_size'], max(0, metadata['total'] - (number - 1) * metadata['page_size']))
                 if len(rows) != expected:
                     raise ValueError('Incomplete Atlas data page')
                 return rows, metadata
+            except HTTPError as error:
+                if (error.code != 429 and error.code < 500) or attempt == 2:
+                    raise
+                delay = error.headers.get('Retry-After', '') if error.headers else ''
+                time.sleep(min(15, int(delay)) if delay.isdigit() else 2 ** attempt)
             except (URLError, TimeoutError, OSError):
                 if attempt == 2: raise
                 time.sleep(2 ** attempt)
 
     first_rows, first = fetch(1)
-    if expected_count is not None and first['total'] != expected_count:
-        raise ValueError('Atlas export total differs from recording count; retry sync')
     total_pages = max(1, math.ceil(first['total'] / first['page_size']))
     if max_pages and total_pages > max_pages:
         raise RuntimeError('Page limit would produce an incomplete capture; no data sent')
     pages = {1: first_rows}
-    print(f'[*] Mengambil detail {first["total"]} recording via HTTP paralel ({total_pages} data pages; tanpa klik browser).', flush=True)
-    with ThreadPoolExecutor(max_workers=3) as executor:
-        futures = {executor.submit(fetch, number): number for number in range(2, total_pages + 1)}
-        for future in as_completed(futures):
-            rows, metadata = future.result()
-            if metadata['total'] != first['total'] or metadata['page_size'] != first['page_size']:
-                raise RuntimeError('Atlas dataset changed during capture; retry sync')
-            pages[futures[future]] = rows
-            if len(pages) % 25 == 0 or len(pages) == total_pages:
-                print(f' - Data dibaca: {len(pages)}/{total_pages}', flush=True)
+    print(f'[*] Mengambil detail {first["total"]} recording via HTTP paralel ({total_pages} data pages, {workers} koneksi; tanpa klik browser).', flush=True)
+    with ThreadPoolExecutor(max_workers=workers) as executor:
+        numbers = iter(range(2, total_pages + 1))
+        futures = {}
+        def schedule():
+            number = next(numbers, None)
+            if number is not None:
+                futures[executor.submit(fetch, number)] = number
+        for _ in range(workers * 2):
+            schedule()
+        try:
+            while futures:
+                done, _ = wait(futures, return_when=FIRST_COMPLETED)
+                for future in done:
+                    number = futures.pop(future)
+                    rows, metadata = future.result()
+                    if metadata['total'] != first['total'] or metadata['page_size'] != first['page_size']:
+                        raise RuntimeError('Atlas dataset changed during capture; retry sync')
+                    pages[number] = rows
+                    if len(pages) % 25 == 0 or len(pages) == total_pages:
+                        print(f' - Data dibaca: {len(pages)}/{total_pages}', flush=True)
+                    schedule()
+        except BaseException:
+            for future in futures:
+                future.cancel()
+            raise
     check_rows, check = fetch(1)
     if [r['record_id'] for r in check_rows] != [r['record_id'] for r in first_rows] or check['summary'] != first['summary']:
         raise RuntimeError('Atlas data changed during capture; retry sync')
@@ -395,16 +414,48 @@ def validate_source_totals(records, metadata):
             raise ValueError(f'Atlas {summary_key} differs from scanned rows; retry full sync')
 
 
-def sync_atlas(email=None, password=None, max_pages=None, disable_smart_stop=True, no_push=False):
+def sync_atlas(email=None, password=None, max_pages=None, disable_smart_stop=True, no_push=False, force=False):
     with single_run_lock():
         with closing(init_db()) as conn:
-            return _sync_atlas(conn, email, password, max_pages, disable_smart_stop, no_push)
+            return _sync_atlas(conn, email, password, max_pages, disable_smart_stop, no_push, force)
 
 
-def _sync_atlas(conn, email, password, max_pages, disable_smart_stop, no_push):
-    print("[*] Bot Atlas: export akun + detail recording via HTTP paralel.")
+def _sync_atlas(conn, email, password, max_pages, disable_smart_stop, no_push, force):
+    print("[*] Bot Atlas: detail recording langsung via HTTP paralel (tanpa CSV).")
     if not no_push and not setting('ATLAS_BOT_TOKEN'):
         raise RuntimeError('Set ATLAS_BOT_TOKEN before enabling API delivery')
+    email = email or setting('ATLAS_EMAIL')
+    password = password or setting('ATLAS_PASSWORD')
+    cookies = ''
+    if os.path.exists(STATE_FILE):
+        try:
+            with open(STATE_FILE, encoding='utf-8') as handle:
+                state = json.load(handle)
+            host = BASE_URL.split('://', 1)[1]
+            cookies = '; '.join(cookie['name'] + '=' + cookie['value'] for cookie in state.get('cookies', [])
+                if host == cookie['domain'].lstrip('.') or host.endswith('.' + cookie['domain'].lstrip('.')))
+        except (ValueError, KeyError):
+            cookies = ''
+    if not cookies:
+        cookies = refresh_atlas_session(email, password)
+    try:
+        records = capture_recordings_fast(cookies, max_pages=max_pages)
+    except AtlasSessionExpired:
+        cookies = refresh_atlas_session(email, password)
+        records = capture_recordings_fast(cookies, max_pages=max_pages)
+    seen_ids = {record['record_id'] for record in records}
+    for record in records:
+        save_or_update_record(conn, record, 0)
+    print(f'[V] {len(records)} recording tervalidasi dengan ringkasan recording Atlas.', flush=True)
+    if no_push:
+        print(f'[DRY RUN] {len(records)} recordings validated; no API requests sent')
+    else:
+        sent = push_to_laravel_api(conn, seen_ids, force=force)
+        print(f'[V] SYNC SELESAI: {len(records)} tervalidasi, {sent} dikirim; sisanya tidak berubah dan sudah dikonfirmasi sebelumnya.', flush=True)
+
+
+
+def refresh_atlas_session(email, password):
     from playwright.sync_api import sync_playwright, Error as PlaywrightError
     email = email or setting('ATLAS_EMAIL')
     password = password or setting('ATLAS_PASSWORD')
@@ -430,41 +481,21 @@ def _sync_atlas(conn, email, password, max_pages, disable_smart_stop, no_push):
             page.wait_for_selector('table tbody tr.ant-table-row', timeout=30000)
             context.storage_state(path=STATE_FILE)
 
-            page.goto(BASE_URL + '/participants')
-            export_link = page.get_by_role('link', name='Export CSV', exact=True)
-            export_link.wait_for(timeout=30000)
-            href = export_link.get_attribute('href')
-            if href != '/participants/export':
-                raise RuntimeError('Atlas export URL changed; inspect before downloading')
-            response = context.request.get(BASE_URL + href, timeout=120000)
-            if not response.ok or 'text/csv' not in response.headers.get('content-type', ''):
-                raise RuntimeError('Atlas CSV export failed; no data sent')
-            accounts = parse_participant_export(response.body())
-            print(f'[*] CSV berhasil diunduh: {len(accounts)} akun. Validasi detail recording...', flush=True)
             cookies = '; '.join(cookie['name'] + '=' + cookie['value'] for cookie in context.cookies(BASE_URL))
         finally:
             browser.close()
 
-    records = capture_recordings_fast(cookies, max_pages=max_pages, expected_count=sum(a['count'] for a in accounts.values()))
-    validate_account_export(records, accounts)
-    seen_ids = {record['record_id'] for record in records}
-    for record in records:
-        save_or_update_record(conn, record, 0)
-    print(f'[V] {len(records)} recording tervalidasi dengan ringkasan Atlas dan CSV per email.', flush=True)
-    if no_push:
-        print(f'[DRY RUN] {len(records)} recordings validated; no API requests sent')
-    else:
-        push_to_laravel_api(conn, seen_ids)
-        print(f'[V] SYNC SELESAI: {len(records)} recording dikonfirmasi server.', flush=True)
+    return cookies
 
 
 def main():
     parser = argparse.ArgumentParser(description='Read Atlas recordings and sync explicitly reported durations')
     parser.add_argument('--all', '-a', action='store_true', help='Compatibility flag; all scans now read every page')
     parser.add_argument('--no-push', action='store_true', help='Read/cache Atlas without sending to KameraKita')
+    parser.add_argument('--force', action='store_true', help='Resend every validated recording, ignoring delivery acknowledgements')
     args = parser.parse_args()
     try:
-        sync_atlas(no_push=args.no_push)
+        sync_atlas(no_push=args.no_push, force=args.force)
         return 0
     except Exception as error:
         print(f'[ERROR] Sync failed: {error}', file=sys.stderr)

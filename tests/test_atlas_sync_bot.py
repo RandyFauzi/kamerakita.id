@@ -5,7 +5,7 @@ import sqlite3
 import tempfile
 import unittest
 from pathlib import Path
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, patch, mock_open
 
 spec = importlib.util.spec_from_file_location('atlas_sync', Path(__file__).parents[1] / 'scripts' / 'atlas_sync.py')
 bot = importlib.util.module_from_spec(spec)
@@ -13,36 +13,17 @@ spec.loader.exec_module(bot)
 
 
 class BotTest(unittest.TestCase):
-    def export_csv(self, rows):
-        import csv, io
-        output = io.StringIO(newline='')
-        writer = csv.writer(output)
-        writer.writerow(['Email', 'Recordings', 'Duration (h)', 'Billable (h)', 'Rejected (h)', 'Pending (h)'])
-        writer.writerows(rows)
-        return ('\ufeff' + output.getvalue()).encode('utf-8')
-
-    def test_export_matches_email_counts_and_rounded_hours_without_replacing_details(self):
-        accounts = bot.parse_participant_export(self.export_csv([
-            ['WORKER@example.com', '1', '1.00', '0.50', '0.00', '0.00'],
-            ['inactive@example.com', '', '', '', '', '']]))
-        original = dict(self.record)
-        bot.validate_account_export([self.record], accounts)
-        self.assertEqual(original, self.record)
-        self.assertEqual(0.5, self.record['deferred_hours'])
-        with self.assertRaises(ValueError):
-            bot.validate_account_export([dict(self.record, duration_sec=3660)], accounts)
-        with self.assertRaises(ValueError):
-            bot.validate_account_export([dict(self.record, participant='outside@example.com')], accounts)
-        with self.assertRaises(ValueError):
-            bot.validate_account_export([self.record, self.record], accounts)
-
-    def test_invalid_or_partial_export_never_passes_validation(self):
-        for payload in [b'<html>Login</html>', self.export_csv([]),
-                        self.export_csv([['worker@example.com', '1', 'nan', '0', '0', '0']]),
-                        self.export_csv([['worker@example.com', '-1', '1', '0', '0', '0']]),
-                        self.export_csv([['worker@example.com', '1', '1', '0', '0', '0']] * 2)]:
-            with self.subTest(payload=payload[:60]), self.assertRaises(ValueError):
-                bot.parse_participant_export(payload)
+    def test_valid_saved_session_avoids_browser_and_expired_session_refreshes(self):
+        state = json.dumps({'cookies': [{'name': 'session', 'value': 'offline', 'domain': 'atlasdashboard.vtlabs.dev'}]})
+        with patch.object(bot.os.path, 'exists', return_value=True), patch('builtins.open', mock_open(read_data=state)), \
+             patch.object(bot, 'capture_recordings_fast', return_value=[self.record]) as capture, \
+             patch.object(bot, 'refresh_atlas_session', return_value='refreshed-cookie') as refresh:
+            bot._sync_atlas(self.conn, 'offline@example.com', 'offline', None, True, True, False)
+            refresh.assert_not_called()
+            capture.side_effect = [bot.AtlasSessionExpired('expired'), [self.record]]
+            bot._sync_atlas(self.conn, 'offline@example.com', 'offline', None, True, True, False)
+            refresh.assert_called_once_with('offline@example.com', 'offline')
+            self.assertEqual('refreshed-cookie', capture.call_args.args[0])
 
     def test_http_capture_rejects_partial_page_before_delivery(self):
         response = Mock()
@@ -57,25 +38,25 @@ class BotTest(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'Incomplete Atlas data page'):
                 bot.capture_recordings_fast('offline-test-cookie')
 
-    def test_parallel_http_capture_reads_all_rows_and_checks_export_total(self):
+    def test_parallel_http_capture_reads_all_rows_and_checks_source_totals(self):
         from urllib.parse import urlparse, parse_qs
         summary = dict(recordingCount=3, durationHours='3', billableHours='1.5', rejectedHours='0', pendingHours='0', deferredHours='1.5')
         records = [dict(self.record, record_id=str(i) * 24) for i in range(1, 4)]
         def urlopen(request, timeout):
             number = int(parse_qs(urlparse(request.full_url).query)['page'][0])
             response = Mock(url=request.full_url)
-            response.read.return_value = str(number).encode()
+            response.read.side_effect = [str(number).encode(), b'']
             response.__enter__ = Mock(return_value=response)
             response.__exit__ = Mock(return_value=False)
             return response
         def parse(html, visible_ids=None, metadata=None):
-            number = int(html)
+            number = int(html if isinstance(html, str) else ''.join(html))
             metadata.update(total=3, page=number, page_size=2, summary=summary)
             return records[(number-1)*2:number*2]
         with patch.object(bot.urllib.request, 'urlopen', side_effect=urlopen), patch.object(bot, 'process_source_html', side_effect=parse):
-            self.assertEqual(records, bot.capture_recordings_fast('offline', expected_count=3))
-            with self.assertRaisesRegex(ValueError, 'export total'):
-                bot.capture_recordings_fast('offline', expected_count=4)
+            self.assertEqual(records, bot.capture_recordings_fast('offline'))
+            with patch.dict(bot.os.environ, {'ATLAS_SYNC_WORKERS': '0'}), self.assertRaises(ValueError):
+                bot.capture_recordings_fast('offline')
 
     def test_explicit_process_setting_has_priority(self):
         with patch.dict(bot.os.environ, {'ATLAS_TEST_SETTING': 'process-value'}):
@@ -146,6 +127,8 @@ class BotTest(unittest.TestCase):
         flight = '0:' + json.dumps(['$', {'recordings': [source]}]) + '\n'
         html = '<script>self.__next_f.push(' + json.dumps([1, flight]) + ')</script>'
         rec = bot.process_source_html(html, ['a' * 24])[0]
+        streamed = (html[i:i+7] for i in range(0, len(html), 7))
+        self.assertEqual(rec, bot.process_source_html(streamed, ['a' * 24])[0])
         self.assertEqual(1215.43, rec['duration_sec'])
         self.assertEqual(0.123456, rec['billable_hours'])
         self.assertEqual(0.214163, rec['deferred_hours'])
@@ -158,6 +141,7 @@ class BotTest(unittest.TestCase):
 
     def setUp(self):
         self.conn = sqlite3.connect(':memory:')
+        self.conn.execute('CREATE TABLE recording_deliveries (record_id TEXT, destination_key TEXT, payload_hash TEXT, PRIMARY KEY(record_id, destination_key))')
         self.conn.execute('''CREATE TABLE recordings (
             record_id TEXT PRIMARY KEY, task TEXT, participant TEXT, recorded_utc TEXT,
             duration_sec REAL, status TEXT, billable_hours REAL, rejected_hours REAL,
@@ -170,6 +154,48 @@ class BotTest(unittest.TestCase):
 
     def tearDown(self):
         self.conn.close()
+
+    def test_acknowledged_rows_are_skipped_but_changes_and_force_are_sent(self):
+        bot.save_or_update_record(self.conn, self.record, 1)
+        ids = {self.record['record_id']}
+        with patch.dict(bot.os.environ, {'ATLAS_BOT_TOKEN': 'offline-test'}), patch.object(bot.urllib.request, 'urlopen') as request:
+            request.return_value.__enter__.return_value.read.return_value = b'{"status":"success","count":1}'
+            self.assertEqual(1, bot.push_to_laravel_api(self.conn, ids))
+            self.assertEqual(0, bot.push_to_laravel_api(self.conn, ids))
+            self.record['rejected_hours'] = 0.1
+            bot.save_or_update_record(self.conn, self.record, 1)
+            self.assertEqual(1, bot.push_to_laravel_api(self.conn, ids))
+            self.assertEqual(1, bot.push_to_laravel_api(self.conn, ids, force=True))
+            with patch.dict(bot.os.environ, {'ATLAS_SYNC_URL': 'https://example.test/other-server'}):
+                self.assertEqual(1, bot.push_to_laravel_api(self.conn, ids))
+            self.assertEqual(4, request.call_count)
+
+    def test_bad_acknowledgement_is_not_marked_delivered_and_is_retried_next_run(self):
+        bot.save_or_update_record(self.conn, self.record, 1)
+        ids = {self.record['record_id']}
+        with patch.dict(bot.os.environ, {'ATLAS_BOT_TOKEN': 'offline-test'}), patch.object(bot.urllib.request, 'urlopen') as request:
+            request.return_value.__enter__.return_value.read.return_value = b'{"status":"success","count":0}'
+            with self.assertRaises(RuntimeError):
+                bot.push_to_laravel_api(self.conn, ids)
+            self.assertEqual(0, self.conn.execute('SELECT COUNT(*) FROM recording_deliveries').fetchone()[0])
+            request.return_value.__enter__.return_value.read.return_value = b'{"status":"success","count":1}'
+            self.assertEqual(1, bot.push_to_laravel_api(self.conn, ids))
+
+    def test_partial_delivery_keeps_only_successful_batch_acknowledgements(self):
+        ids = set()
+        for i in range(501):
+            record = dict(self.record, record_id=format(i, '024x'))
+            bot.save_or_update_record(self.conn, record, 1)
+            ids.add(record['record_id'])
+        with patch.dict(bot.os.environ, {'ATLAS_BOT_TOKEN': 'offline-test'}), patch.object(bot.urllib.request, 'urlopen') as request:
+            read = request.return_value.__enter__.return_value.read
+            read.side_effect = [b'{"status":"success","count":500}', b'{"status":"success","count":0}']
+            with self.assertRaises(RuntimeError):
+                bot.push_to_laravel_api(self.conn, ids)
+            self.assertEqual(500, self.conn.execute('SELECT COUNT(*) FROM recording_deliveries').fetchone()[0])
+            read.side_effect = None
+            read.return_value = b'{"status":"success","count":1}'
+            self.assertEqual(1, bot.push_to_laravel_api(self.conn, ids))
 
     def test_metadata_and_small_changes_update(self):
         self.assertEqual((True, False), bot.save_or_update_record(self.conn, self.record, 1))

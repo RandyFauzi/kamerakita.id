@@ -5,7 +5,7 @@ echo   KAMERAKITA - SINKRONISASI OTOMATIS DATA ATLAS
 echo ========================================================
 echo.
 echo [*] Memulai proses sinkronisasi dari Atlas Dashboard ke Web...
-echo [*] Mode: Export CSV akun Atlas + detail recording via HTTP paralel
+echo [*] Mode: Recording langsung via HTTP paralel, upload hanya data baru/berubah
 echo.
 
 cd /d "C:\laragon\www\kamerakita.id-main"

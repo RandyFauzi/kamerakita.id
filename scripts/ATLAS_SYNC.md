@@ -2,20 +2,24 @@
 
 Canonical bot: `scripts/atlas_sync.py`. `auto_sync.bat` calls this versioned script. The previous script in the Antigravity scratch directory is a compatibility launcher pointing here. Session state and the dedicated `atlas_sync_cache.db` stay in that scratch directory; `ATLAS_SYNC_DATA_DIR` overrides it. The Excel exporter's `atlas_master.db` is not used by the bot. An OS file lock prevents overlapping scheduled/manual syncs.
 
-## Fast capture and CSV export
+## Direct recording capture and incremental delivery
 
-The Export CSV link currently exposed to this Atlas account is `/participants/export`. It contains **rounded totals per participant**, not individual recordings. It lacks recording IDs, task names, timestamps, and a Deferred column. Importing those rows as recordings would invent data and lose the existing recording history.
+The bot reads Recordings directly. It does not open Participants or download/parse CSV files. A valid saved session goes straight to HTTP without launching any browser. The browser only opens when login needs to be refreshed, then closes before recording capture.
 
-The bot therefore logs in once, downloads the unfiltered Participants CSV, then closes the browser. Three concurrent authenticated HTTP workers read the precise server-rendered recording props; there are no browser Next clicks or per-page browser waits. It checks every page's row count, unique IDs, first-page stability, and exact overall source totals. It then checks account counts and totals against the CSV by normalized email, allowing only the CSV's 0.01-hour rounding. Blank CSV metrics are accepted only when all account metrics are blank (an account with no recordings).
+Authenticated HTTP workers read precise server-rendered recording props; there are no browser Next clicks or per-page browser waits. Responses are decoded incrementally in 64 KiB chunks instead of retaining the complete HTML body. Default concurrency is 4, configurable using `ATLAS_SYNC_WORKERS` (1–8), capped to 1–2 under low Windows physical/commit memory. At most twice the worker count is queued at a time, independently of dataset size. Transient failures and HTTP 429/5xx retry with bounded backoff. Every page count, unique recording ID, first-page stability, and overall duration summary is verified before delivery.
 
-The CSV verifies the result; **precise per-record source values** remain the database input. No rounded account totals are distributed or guessed across recordings. Any validation failure stops API delivery. The existing API and web pages remain unchanged; no new server migration is needed for this capture change.
+All recordings are still checked on each run, since old QA results, participant emails, or task names may be corrected. Without an authoritative changed-since feed, reading only new recording dates would miss corrections. Reading cost therefore grows with source size; bounded parallel HTTP removes browser pagination overhead.
+
+Uploads are incremental: the local `recording_deliveries` table stores a content hash only after the destination API acknowledges a complete batch. Unchanged acknowledged records are not resent. Changed metadata or durations, new IDs, and unacknowledged/failed batches are sent on the next run. Destination changes have independent acknowledgements. A first run after installing this delivery tracking sends all records once, even when the recording cache already exists. `--no-push` never creates acknowledgements.
+
+After restoring/resetting the server database or changing backend semantics, run `python scripts/atlas_sync.py --force` to resend every validated recording. This flag bypasses delivery hashes, not capture validation. The existing API and web pages remain unchanged; no server migration is needed. The local SQLite tracking table is created automatically.
 
 ## Changes
 
-- Read every data page over HTTP and verify the complete source count before declaring a complete scan. Unexpected page numbers, incomplete rows, duplicate IDs, changed totals, or mismatched CSV account totals abort delivery.
+- Read every data page over HTTP and verify the complete source count before declaring a complete scan. Unexpected page numbers, incomplete rows, duplicate IDs, or changed totals abort delivery.
 - Update all recording metadata and duration fields, including corrections to email, task, timestamp, total seconds, and small changes in hours.
 - Send only IDs observed in the current complete scan, not every historical cache entry. Source deletions are not propagated automatically, because visibility/filter changes do not prove deletion.
-- Preserve explicit Billable, Rejected, Pending, and Deferred values from precise source props. Never classify the remainder of total duration as rejected. Six decimal places are retained in minute conversion; rounded visible table values and account CSV values never replace precise recording durations.
+- Preserve explicit Billable, Rejected, Pending, and Deferred values from precise source props. Never classify the remainder of total duration as rejected. Six decimal places are retained in minute conversion; rounded visible table values never replace precise recording durations.
 - Accept Atlas's displayed UTC dates and ISO timestamps; normalize to UTC explicitly.
 - API validates each batch before writing and wraps it in one transaction. Missing duration categories are rejected rather than guessed. Source status is stored separately from the internal summary status. Recording ID identifies the same recording even if participant email is corrected; existing duplicate IDs fail for manual reconciliation rather than silently picking one.
 - Acknowledgement count must match the batch. Transient transport/server failures retry up to three attempts. Any unacknowledged batch causes a nonzero exit; earlier acknowledged batches remain saved and can safely be retried.
