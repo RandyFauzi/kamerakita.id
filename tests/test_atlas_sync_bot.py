@@ -58,6 +58,47 @@ class BotTest(unittest.TestCase):
             with patch.dict(bot.os.environ, {'ATLAS_SYNC_WORKERS': '0'}), self.assertRaises(ValueError):
                 bot.capture_recordings_fast('offline')
 
+    def test_next_run_discovers_new_pages_and_new_account_from_live_source_count(self):
+        from urllib.parse import urlparse, parse_qs
+        rows = [dict(self.record)]
+        def urlopen(request, timeout):
+            number = int(parse_qs(urlparse(request.full_url).query)['page'][0])
+            response = Mock(url=request.full_url)
+            response.read.side_effect = [str(number).encode(), b'']
+            response.__enter__ = Mock(return_value=response)
+            response.__exit__ = Mock(return_value=False)
+            return response
+        def parse(html, visible_ids=None, metadata=None):
+            number = int(''.join(html))
+            count = len(rows)
+            metadata.update(total=count, page=number, page_size=2, summary=dict(recordingCount=count,
+                durationHours=str(count), billableHours=str(count * 0.5), rejectedHours='0', pendingHours='0', deferredHours=str(count * 0.5)))
+            return rows[(number-1)*2:number*2]
+        with patch.object(bot.urllib.request, 'urlopen', side_effect=urlopen), patch.object(bot, 'process_source_html', side_effect=parse):
+            self.assertEqual(1, len(bot.capture_recordings_fast('offline')))
+            rows.extend([dict(self.record, record_id='b'*24),
+                         dict(self.record, record_id='c'*24, participant='new-account@example.com')])
+            actual = bot.capture_recordings_fast('offline')
+            self.assertEqual(3, len(actual))
+            self.assertIn('new-account@example.com', {r['participant'] for r in actual})
+
+    def test_daily_upload_sends_new_records_and_new_email_after_existing_acknowledgement(self):
+        bot.save_or_update_record(self.conn, self.record, 1)
+        ids = {self.record['record_id']}
+        with patch.dict(bot.os.environ, {'ATLAS_BOT_TOKEN': 'offline-test'}), patch.object(bot.urllib.request, 'urlopen') as request:
+            read = request.return_value.__enter__.return_value.read
+            read.return_value = b'{"status":"success","count":1}'
+            bot.push_to_laravel_api(self.conn, ids)
+            for record in [dict(self.record, record_id='b'*24),
+                           dict(self.record, record_id='c'*24, participant='new-account@example.com')]:
+                bot.save_or_update_record(self.conn, record, 1)
+                ids.add(record['record_id'])
+            read.return_value = b'{"status":"success","count":2}'
+            self.assertEqual(2, bot.push_to_laravel_api(self.conn, ids))
+            sent = json.loads(request.call_args.args[0].data)['records']
+            self.assertEqual({'b'*24, 'c'*24}, {r['record_id'] for r in sent})
+            self.assertIn('new-account@example.com', {r['participant'] for r in sent})
+
     def test_explicit_process_setting_has_priority(self):
         with patch.dict(bot.os.environ, {'ATLAS_TEST_SETTING': 'process-value'}):
             self.assertEqual('process-value', bot.setting('ATLAS_TEST_SETTING'))
