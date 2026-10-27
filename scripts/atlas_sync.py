@@ -6,6 +6,10 @@ import json
 import time
 import math
 import argparse
+import csv
+import io
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from collections import defaultdict
 from contextlib import closing, contextmanager
 from html.parser import HTMLParser
 from pathlib import Path
@@ -222,7 +226,7 @@ def process_table_rows(page):
     return results
 
 
-def process_source_html(html, visible_ids, metadata=None):
+def process_source_html(html, visible_ids=None, metadata=None):
     """Read precise Atlas props; table text rounds hours and hides timestamp seconds."""
     class Scripts(HTMLParser):
         def __init__(self):
@@ -257,7 +261,7 @@ def process_source_html(html, visible_ids, metadata=None):
     if props is None:
         raise ValueError('Missing precise Atlas source props; no rounded fallback allowed')
     if metadata is not None:
-        metadata.update(total=props['total'], summary=props['summary'])
+        metadata.update(total=props['total'], summary=props['summary'], page=props.get('page'), page_size=props.get('pageSize'))
     records = []
     for source in props['recordings']:
         rec = {'record_id': source['userTaskId'].lower(), 'task': source['taskTitle'],
@@ -273,8 +277,105 @@ def process_source_html(html, visible_ids, metadata=None):
             raise ValueError('Invalid precise source metadata')
         records.append(rec)
     ids = [r['record_id'] for r in records]
-    if len(ids) != len(set(ids)) or set(ids) != set(visible_ids):
+    if len(ids) != len(set(ids)) or (visible_ids is not None and set(ids) != set(visible_ids)):
         raise ValueError('Raw Atlas rows differ from visible table; source changed during scan')
+    return records
+
+
+def parse_participant_export(payload):
+    """Atlas Participants CSV contains rounded account totals, not recording rows."""
+    reader = csv.DictReader(io.StringIO(payload.decode('utf-8-sig'), newline=''))
+    required = {'Email', 'Recordings', 'Duration (h)', 'Billable (h)', 'Rejected (h)', 'Pending (h)'}
+    if not required.issubset(reader.fieldnames or []):
+        raise ValueError('Atlas export columns changed; cannot verify account totals')
+    accounts = {}
+    for row in reader:
+        email = row['Email'].strip().lower()
+        if not re.fullmatch(r'[^\s@]+@[^\s@]+\.[^\s@]+', email) or email in accounts:
+            raise ValueError('Invalid or duplicate email in Atlas export')
+        # Atlas exports completely blank metrics for registered accounts that
+        # have never recorded. Partial/malformed metrics still fail validation.
+        metric_columns = ['Recordings', 'Duration (h)', 'Billable (h)', 'Rejected (h)', 'Pending (h)']
+        if all(row[column] == '' for column in metric_columns):
+            accounts[email] = dict(count=0, duration_sec=0.0, billable_hours=0.0, rejected_hours=0.0, pending_hours=0.0)
+            continue
+        count = int(row['Recordings'])
+        totals = {key: float(row[column]) for key, column in [
+            ('duration_sec', 'Duration (h)'), ('billable_hours', 'Billable (h)'),
+            ('rejected_hours', 'Rejected (h)'), ('pending_hours', 'Pending (h)')]}
+        if count < 0 or any(not math.isfinite(value) or value < 0 for value in totals.values()):
+            raise ValueError('Invalid numeric value in Atlas export')
+        accounts[email] = dict(count=count, **totals)
+    if not accounts:
+        raise ValueError('Empty Atlas export; no data sent')
+    return accounts
+
+
+def validate_account_export(records, accounts):
+    grouped = defaultdict(list)
+    for record in records:
+        grouped[record['participant']].append(record)
+    if set(grouped) != {email for email, account in accounts.items() if account['count'] > 0}:
+        raise ValueError('Atlas export account list differs from recording details; retry sync')
+    for email, rows in grouped.items():
+        account = accounts[email]
+        if len(rows) != account['count']:
+            raise ValueError('Atlas export recording count differs from details; retry sync')
+        for key in ['duration_sec', 'billable_hours', 'rejected_hours', 'pending_hours']:
+            hours = math.fsum(row[key] for row in rows) / (3600 if key == 'duration_sec' else 1)
+            # CSV rounds each account to hundredths of an hour; precise source
+            # props remain authoritative for database values.
+            if abs(hours - account[key]) > 0.00501:
+                raise ValueError(f'Atlas export {key} differs from recording details; retry sync')
+
+
+def capture_recordings_fast(cookies, max_pages=None, expected_count=None):
+    """Read authenticated SSR data with three HTTP workers; no UI pagination."""
+    def fetch(number):
+        url = BASE_URL + f'/recordings?page={number}&sort=recordedAt&direction=desc'
+        for attempt in range(3):
+            try:
+                request = urllib.request.Request(url, headers={'Cookie': cookies, 'Accept': 'text/html', 'User-Agent': 'Mozilla/5.0'})
+                with urllib.request.urlopen(request, timeout=45) as response:
+                    if '/login' in response.url:
+                        raise RuntimeError('Atlas session expired during capture; no data sent')
+                    html = response.read().decode('utf-8')
+                metadata = {}
+                rows = process_source_html(html, metadata=metadata)
+                if metadata['page'] != number or not isinstance(metadata['page_size'], int) or metadata['page_size'] <= 0:
+                    raise ValueError('Atlas returned an unexpected data page')
+                expected = min(metadata['page_size'], max(0, metadata['total'] - (number - 1) * metadata['page_size']))
+                if len(rows) != expected:
+                    raise ValueError('Incomplete Atlas data page')
+                return rows, metadata
+            except (URLError, TimeoutError, OSError):
+                if attempt == 2: raise
+                time.sleep(2 ** attempt)
+
+    first_rows, first = fetch(1)
+    if expected_count is not None and first['total'] != expected_count:
+        raise ValueError('Atlas export total differs from recording count; retry sync')
+    total_pages = max(1, math.ceil(first['total'] / first['page_size']))
+    if max_pages and total_pages > max_pages:
+        raise RuntimeError('Page limit would produce an incomplete capture; no data sent')
+    pages = {1: first_rows}
+    print(f'[*] Mengambil detail {first["total"]} recording via HTTP paralel ({total_pages} data pages; tanpa klik browser).', flush=True)
+    with ThreadPoolExecutor(max_workers=3) as executor:
+        futures = {executor.submit(fetch, number): number for number in range(2, total_pages + 1)}
+        for future in as_completed(futures):
+            rows, metadata = future.result()
+            if metadata['total'] != first['total'] or metadata['page_size'] != first['page_size']:
+                raise RuntimeError('Atlas dataset changed during capture; retry sync')
+            pages[futures[future]] = rows
+            if len(pages) % 25 == 0 or len(pages) == total_pages:
+                print(f' - Data dibaca: {len(pages)}/{total_pages}', flush=True)
+    check_rows, check = fetch(1)
+    if [r['record_id'] for r in check_rows] != [r['record_id'] for r in first_rows] or check['summary'] != first['summary']:
+        raise RuntimeError('Atlas data changed during capture; retry sync')
+    records = [row for number in range(1, total_pages + 1) for row in pages[number]]
+    if len({r['record_id'] for r in records}) != len(records):
+        raise ValueError('Duplicate recording IDs in Atlas capture; no data sent')
+    validate_source_totals(records, first)
     return records
 
 
@@ -301,155 +402,61 @@ def sync_atlas(email=None, password=None, max_pages=None, disable_smart_stop=Tru
 
 
 def _sync_atlas(conn, email, password, max_pages, disable_smart_stop, no_push):
-    print("[*] Menginisialisasi Bot Atlas (Murni Sinkronisasi ke Web KameraKita)...")
-    if not no_push and not setting("ATLAS_BOT_TOKEN"):
-        raise RuntimeError("Set ATLAS_BOT_TOKEN before enabling API delivery")
-    from playwright.sync_api import sync_playwright
-    email = email or setting("ATLAS_EMAIL")
-    password = password or setting("ATLAS_PASSWORD")
-    seen_ids = set()
-    visited_pages = set()
-    all_records = []
-    source_metadata = {}
-
+    print("[*] Bot Atlas: export akun + detail recording via HTTP paralel.")
+    if not no_push and not setting('ATLAS_BOT_TOKEN'):
+        raise RuntimeError('Set ATLAS_BOT_TOKEN before enabling API delivery')
+    from playwright.sync_api import sync_playwright, Error as PlaywrightError
+    email = email or setting('ATLAS_EMAIL')
+    password = password or setting('ATLAS_PASSWORD')
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        context = browser.new_context()
-        page = context.new_page()
-
-        if os.path.exists(STATE_FILE):
-            print("[*] Menggunakan session login tersimpan...")
-            context = browser.new_context(storage_state=STATE_FILE)
+        try:
+            browser = p.chromium.launch(headless=True)
+        except PlaywrightError as error:
+            if "Executable doesn't exist" not in str(error): raise
+            browser = p.chromium.launch(headless=True, channel='chrome')
+        try:
+            context = browser.new_context(storage_state=STATE_FILE if os.path.exists(STATE_FILE) else None)
             page = context.new_page()
-            page.goto(BASE_URL + "/recordings")
-
-            if "login" in page.url:
-                print("[!] Session kedaluwarsa. Login ulang...")
+            page.goto(BASE_URL + '/recordings')
+            if '/login' in page.url:
                 if not email or not password:
-                    raise RuntimeError("Session expired: set ATLAS_EMAIL and ATLAS_PASSWORD")
+                    raise RuntimeError('Set ATLAS_EMAIL and ATLAS_PASSWORD for Atlas login')
+                print('[*] Memperbarui login Atlas...')
                 page.fill("input[name='email']", email)
                 page.fill("input[name='password']", password)
                 page.click("button[type='submit']")
-                # Wait for dashboard page to load after login
-                page.wait_for_selector("text=Overview", timeout=20000)
-                page.goto(BASE_URL + "/recordings")
-                context.storage_state(path=STATE_FILE)
-        else:
-            print("[*] Login baru...")
-            page.goto(BASE_URL + "/login")
-            if not email or not password:
-                raise RuntimeError("Set ATLAS_EMAIL and ATLAS_PASSWORD for initial login")
-            page.fill("input[name='email']", email)
-            page.fill("input[name='password']", password)
-            page.click("button[type='submit']")
-            # Wait for dashboard page to load after login
-            page.wait_for_selector("text=Overview", timeout=20000)
-            page.goto(BASE_URL + "/recordings")
+                page.wait_for_selector('text=Overview', timeout=30000)
+                page.goto(BASE_URL + '/recordings')
+            page.wait_for_selector('table tbody tr.ant-table-row', timeout=30000)
             context.storage_state(path=STATE_FILE)
 
-        print("[*] Membaca halaman recordings...")
-        # Wait until table actually has data rows
-        page.wait_for_selector("table tbody tr.ant-table-row", timeout=15000)
+            page.goto(BASE_URL + '/participants')
+            export_link = page.get_by_role('link', name='Export CSV', exact=True)
+            export_link.wait_for(timeout=30000)
+            href = export_link.get_attribute('href')
+            if href != '/participants/export':
+                raise RuntimeError('Atlas export URL changed; inspect before downloading')
+            response = context.request.get(BASE_URL + href, timeout=120000)
+            if not response.ok or 'text/csv' not in response.headers.get('content-type', ''):
+                raise RuntimeError('Atlas CSV export failed; no data sent')
+            accounts = parse_participant_export(response.body())
+            print(f'[*] CSV berhasil diunduh: {len(accounts)} akun. Validasi detail recording...', flush=True)
+            cookies = '; '.join(cookie['name'] + '=' + cookie['value'] for cookie in context.cookies(BASE_URL))
+        finally:
+            browser.close()
 
-        limit = max_pages if max_pages else 1000
-        total_pages = "?"
-        try:
-            pages_items = page.locator("li.ant-pagination-item").all()
-            if pages_items:
-                total_pages = pages_items[-1].inner_text().strip()
-        except:
-            pass
-
-        print(f"[*] Total halaman terdeteksi di Atlas: {total_pages} halaman.")
-
-        for i in range(1, limit + 1):
-            time.sleep(1.5)
-
-            # Update total_pages if discovered later
-            if total_pages == "?":
-                try:
-                    pages_items = page.locator("li.ant-pagination-item").all()
-                    if pages_items:
-                        total_pages = pages_items[-1].inner_text().strip()
-                except:
-                    pass
-
-            rows_data = process_table_rows(page)
-            response = context.request.get(BASE_URL + f'/recordings?page={i}&sort=recordedAt&direction=desc')
-            if not response.ok:
-                raise RuntimeError('Cannot read precise Atlas source')
-            rows_data = process_source_html(response.text(), [r['record_id'] for r in rows_data], source_metadata)
-            all_records.extend(rows_data)
-            print(f'Length of rows_data: {len(rows_data)}')
-            if not rows_data:
-                break
-
-            page_new = 0
-            page_updated = 0
-
-            signature = tuple(rec['record_id'] for rec in rows_data)
-            if signature in visited_pages:
-                raise RuntimeError('Repeated page detected; refusing incomplete sync')
-            visited_pages.add(signature)
-            for rec in rows_data:
-                if rec['record_id'] in seen_ids:
-                    raise RuntimeError('Duplicate recording across pages; Atlas data changed during scan')
-                seen_ids.add(rec['record_id'])
-                is_new, is_updated = save_or_update_record(conn, rec, i)
-                if is_new: page_new += 1
-                if is_updated: page_updated += 1
-
-            print(f" - Halaman {i}/{total_pages}: {page_new} Baru, {page_updated} Diupdate")
-
-            # Stop only when Atlas explicitly marks the next page disabled.
-            next_item = page.locator('li.ant-pagination-next')
-            if next_item.count() != 1:
-                raise RuntimeError('Cannot verify final page: pagination control missing')
-            next_btn = next_item.locator('button')
-            if next_btn.count() != 1:
-                raise RuntimeError('Cannot identify next page button')
-            if ('ant-pagination-disabled' in (next_item.get_attribute('class') or '')
-                    or next_item.get_attribute('aria-disabled') == 'true'
-                    or next_btn.get_attribute('disabled') is not None):
-                print('[*] Final page confirmed.')
-                break
-
-            try:
-                first_row = page.locator("table tbody tr.ant-table-row").first
-                first_id = first_row.get_attribute("data-row-key") if first_row.count() > 0 else ""
-
-                next_btn2 = page.locator("li.ant-pagination-next button")
-                if next_btn2.count() > 0:
-                    next_btn2.first.click(timeout=5000, force=True)
-                else:
-                    next_btn.first.click(timeout=5000, force=True)
-
-                changed = False
-                for w in range(15):
-                    time.sleep(1)
-                    curr_first = page.locator("table tbody tr.ant-table-row").first
-                    new_id = curr_first.get_attribute("data-row-key") if curr_first.count() > 0 else ""
-                    if new_id != first_id:
-                        changed = True
-                        break
-
-                if not changed:
-                    raise RuntimeError("Page did not change after next; refusing incomplete sync")
-
-            except Exception as e:
-                raise RuntimeError("Pagination failed; no data sent") from e
-
-        else:
-            raise RuntimeError("Page limit reached before final page; no data sent")
-
-        validate_source_totals(all_records, source_metadata)
-        browser.close()
-
-    print("\n[V] SINKRONISASI DARI ATLAS SELESAI!")
+    records = capture_recordings_fast(cookies, max_pages=max_pages, expected_count=sum(a['count'] for a in accounts.values()))
+    validate_account_export(records, accounts)
+    seen_ids = {record['record_id'] for record in records}
+    for record in records:
+        save_or_update_record(conn, record, 0)
+    print(f'[V] {len(records)} recording tervalidasi dengan ringkasan Atlas dan CSV per email.', flush=True)
     if no_push:
-        print(f"[DRY RUN] {len(seen_ids)} recordings read; no API requests sent")
+        print(f'[DRY RUN] {len(records)} recordings validated; no API requests sent')
     else:
         push_to_laravel_api(conn, seen_ids)
+        print(f'[V] SYNC SELESAI: {len(records)} recording dikonfirmasi server.', flush=True)
+
 
 def main():
     parser = argparse.ArgumentParser(description='Read Atlas recordings and sync explicitly reported durations')

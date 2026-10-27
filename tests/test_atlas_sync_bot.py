@@ -13,6 +13,70 @@ spec.loader.exec_module(bot)
 
 
 class BotTest(unittest.TestCase):
+    def export_csv(self, rows):
+        import csv, io
+        output = io.StringIO(newline='')
+        writer = csv.writer(output)
+        writer.writerow(['Email', 'Recordings', 'Duration (h)', 'Billable (h)', 'Rejected (h)', 'Pending (h)'])
+        writer.writerows(rows)
+        return ('\ufeff' + output.getvalue()).encode('utf-8')
+
+    def test_export_matches_email_counts_and_rounded_hours_without_replacing_details(self):
+        accounts = bot.parse_participant_export(self.export_csv([
+            ['WORKER@example.com', '1', '1.00', '0.50', '0.00', '0.00'],
+            ['inactive@example.com', '', '', '', '', '']]))
+        original = dict(self.record)
+        bot.validate_account_export([self.record], accounts)
+        self.assertEqual(original, self.record)
+        self.assertEqual(0.5, self.record['deferred_hours'])
+        with self.assertRaises(ValueError):
+            bot.validate_account_export([dict(self.record, duration_sec=3660)], accounts)
+        with self.assertRaises(ValueError):
+            bot.validate_account_export([dict(self.record, participant='outside@example.com')], accounts)
+        with self.assertRaises(ValueError):
+            bot.validate_account_export([self.record, self.record], accounts)
+
+    def test_invalid_or_partial_export_never_passes_validation(self):
+        for payload in [b'<html>Login</html>', self.export_csv([]),
+                        self.export_csv([['worker@example.com', '1', 'nan', '0', '0', '0']]),
+                        self.export_csv([['worker@example.com', '-1', '1', '0', '0', '0']]),
+                        self.export_csv([['worker@example.com', '1', '1', '0', '0', '0']] * 2)]:
+            with self.subTest(payload=payload[:60]), self.assertRaises(ValueError):
+                bot.parse_participant_export(payload)
+
+    def test_http_capture_rejects_partial_page_before_delivery(self):
+        response = Mock()
+        response.url = bot.BASE_URL + '/recordings'
+        response.read.return_value = b'placeholder'
+        metadata = dict(total=3, page=1, page_size=2, summary={})
+        def parse(html, visible_ids=None, metadata=None):
+            metadata.update(total=3, page=1, page_size=2, summary={})
+            return [self.record]  # Two records required on this page.
+        with patch.object(bot.urllib.request, 'urlopen') as request, patch.object(bot, 'process_source_html', side_effect=parse):
+            request.return_value.__enter__.return_value = response
+            with self.assertRaisesRegex(ValueError, 'Incomplete Atlas data page'):
+                bot.capture_recordings_fast('offline-test-cookie')
+
+    def test_parallel_http_capture_reads_all_rows_and_checks_export_total(self):
+        from urllib.parse import urlparse, parse_qs
+        summary = dict(recordingCount=3, durationHours='3', billableHours='1.5', rejectedHours='0', pendingHours='0', deferredHours='1.5')
+        records = [dict(self.record, record_id=str(i) * 24) for i in range(1, 4)]
+        def urlopen(request, timeout):
+            number = int(parse_qs(urlparse(request.full_url).query)['page'][0])
+            response = Mock(url=request.full_url)
+            response.read.return_value = str(number).encode()
+            response.__enter__ = Mock(return_value=response)
+            response.__exit__ = Mock(return_value=False)
+            return response
+        def parse(html, visible_ids=None, metadata=None):
+            number = int(html)
+            metadata.update(total=3, page=number, page_size=2, summary=summary)
+            return records[(number-1)*2:number*2]
+        with patch.object(bot.urllib.request, 'urlopen', side_effect=urlopen), patch.object(bot, 'process_source_html', side_effect=parse):
+            self.assertEqual(records, bot.capture_recordings_fast('offline', expected_count=3))
+            with self.assertRaisesRegex(ValueError, 'export total'):
+                bot.capture_recordings_fast('offline', expected_count=4)
+
     def test_explicit_process_setting_has_priority(self):
         with patch.dict(bot.os.environ, {'ATLAS_TEST_SETTING': 'process-value'}):
             self.assertEqual('process-value', bot.setting('ATLAS_TEST_SETTING'))

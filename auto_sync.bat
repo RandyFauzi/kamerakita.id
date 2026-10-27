@@ -5,7 +5,7 @@ echo   KAMERAKITA - SINKRONISASI OTOMATIS DATA ATLAS
 echo ========================================================
 echo.
 echo [*] Memulai proses sinkronisasi dari Atlas Dashboard ke Web...
-echo [*] Mode: Murni Sync Dashboard Web (Tanpa Ekspor Excel AIKu Studio)
+echo [*] Mode: Export CSV akun Atlas + detail recording via HTTP paralel
 echo.
 
 cd /d "C:\laragon\www\kamerakita.id-main"
