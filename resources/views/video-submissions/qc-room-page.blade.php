@@ -9,7 +9,7 @@
         expandedPartners: [],
         showImageModal: false,
         showDetailModal: false,
-        showCreateModal: false,
+        showCreateModal: {{ $errors->hasAny(['partner_id', 'project_name', 'submission_date', 'submitted_duration_minutes', 'evidence_email_image_path', 'evidence_app_quality_image_path', 'evidence_submitted_image_paths', 'worker_notes']) ? 'true' : 'false' }},
         openReconcile: false,
         previewImageUrl: '',
         activeDailyReport: {},
@@ -934,11 +934,11 @@
                 });
             }
         </script>
-        </        <!-- Create Report by Admin Modal -->
+        <!-- Create Report by Admin Modal -->
         <div x-show="showCreateModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" x-cloak style="display: none;">
-            <div class="bg-white rounded-[32px] max-w-3xl w-full shadow-2xl overflow-hidden border border-gray-150 animate-in fade-in zoom-in-95 duration-200 flex flex-col my-8 max-h-[90vh]">
+            <div class="bg-white rounded-[32px] max-w-3xl w-full shadow-2xl border border-gray-150 animate-in fade-in zoom-in-95 duration-200 flex flex-col my-8 max-h-[90vh]">
                 <!-- Modal Header -->
-                <div class="px-6 py-4 bg-slate-950 text-white flex justify-between items-center shrink-0">
+                <div class="px-6 py-4 bg-slate-950 text-white flex justify-between items-center shrink-0 rounded-t-[32px]">
                     <div>
                         <span class="text-[9px] uppercase font-bold text-indigo-400 tracking-widest font-mono">{{ __('dashboard.qc_room.admin_help') }}</span>
                         <h3 class="text-base font-black leading-tight">{{ __('dashboard.qc_room.create_report_for_partner') }}</h3>
@@ -952,14 +952,40 @@
 
                 <!-- Modal Body -->
                 <div class="p-6 overflow-y-auto w-full">
-                    <form x-data="{ project_name: 'atlas' }" action="{{ route('video-submissions.create-by-admin') }}" method="POST" enctype="multipart/form-data" class="space-y-6 text-left">
+                    @php
+                        $oldAdminPartnerId = old('partner_id', '');
+                        $oldAdminPartner = $oldAdminPartnerId ? $allWorkers->firstWhere('id', $oldAdminPartnerId) : null;
+                        $oldAdminPartnerName = $oldAdminPartner ? ($oldAdminPartner->full_name . ' (' . ($oldAdminPartner->email ?: 'Email App Belum Diset') . ')') : '';
+                    @endphp
+
+                    <form x-data="{ 
+                              project_name: '{{ old('project_name', 'atlas') }}' 
+                          }" 
+                          action="{{ route('video-submissions.create-by-admin') }}" 
+                          method="POST" 
+                          enctype="multipart/form-data" 
+                          class="space-y-6 text-left"
+                          onsubmit="
+                              const pInput = document.getElementById('admin_partner_id_input');
+                              if (!pInput || !pInput.value) {
+                                  alert('Silakan pilih akun mitra terlebih dahulu.');
+                                  return false;
+                              }
+                              const durInput = document.getElementById('admin_submitted_duration_input');
+                              const mins = parseInt(durInput ? durInput.value : 0) || 0;
+                              if (mins <= 0) {
+                                  alert('Total durasi kerja minimal 1 menit.');
+                                  return false;
+                              }
+                              return true;
+                          ">
                         @csrf
 
                         <div x-data="{
                             open: false,
                             search: '',
-                            selectedId: '',
-                            selectedName: '',
+                            selectedId: '{{ $oldAdminPartnerId }}',
+                            selectedName: '{{ addslashes($oldAdminPartnerName) }}',
                             workers: [
                                 @foreach($allWorkers as $worker)
                                     { id: '{{ $worker->id }}', name: '{{ addslashes($worker->full_name) }} ({{ addslashes($worker->email ?: 'Email App Belum Diset') }})' },
@@ -978,7 +1004,7 @@
                         }" class="relative">
                             <label class="block text-sm font-semibold text-gray-700 mb-1">{{ __('dashboard.qc_room.select_partner_account') }} <span class="text-red-500">*</span></label>
                             
-                            <input type="hidden" name="partner_id" :value="selectedId" required>
+                            <input type="hidden" name="partner_id" id="admin_partner_id_input" :value="selectedId" required>
                             
                             <button type="button" @click="open = !open" @click.away="open = false" class="relative w-full bg-white border border-gray-200 rounded-xl pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm min-h-11 shadow-sm transition-shadow">
                                 <span class="block truncate" x-text="selectedName || '{{ __('dashboard.qc_room.choose_partner') }}'" :class="{ 'text-gray-400': !selectedName, 'text-gray-900': selectedName }"></span>
@@ -1028,6 +1054,10 @@
                                     </div>
                                 </ul>
                             </div>
+
+                            @error('partner_id')
+                                <p class="mt-1 text-xs text-red-600 font-medium">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <div>
@@ -1036,15 +1066,24 @@
                                 <option value="atlas">Atlas</option>
                                 <option value="minutes_data">Minutes Data</option>
                             </select>
+                            @error('project_name')
+                                <p class="mt-1 text-xs text-red-600 font-medium">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
                             <div>
                                 <label for="submission_date_admin" class="block text-sm font-semibold text-gray-700 mb-1">{{ __('dashboard.qc_room.data_collection_date') }} <span class="text-red-500">*</span></label>
-                                <input type="date" name="submission_date" id="submission_date_admin" value="{{ date('Y-m-d') }}" max="{{ date('Y-m-d') }}" required class="block w-full min-h-11 px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                <input type="date" name="submission_date" id="submission_date_admin" value="{{ old('submission_date', date('Y-m-d')) }}" max="{{ date('Y-m-d') }}" required class="block w-full min-h-11 px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                @error('submission_date')
+                                    <p class="mt-1 text-xs text-red-600 font-medium">{{ $message }}</p>
+                                @enderror
                             </div>
 
-                            <div x-data="{ hours: '', minutes: '' }">
+                            <div x-data="{ 
+                                hours: '{{ old('submitted_duration_minutes') ? intdiv((int)old('submitted_duration_minutes'), 60) : '' }}', 
+                                minutes: '{{ old('submitted_duration_minutes') ? ((int)old('submitted_duration_minutes') % 60) : '' }}' 
+                            }">
                                 <label class="block text-sm font-semibold text-gray-700 mb-1">{{ __('dashboard.qc_room.total_work_duration') }} <span class="text-red-500">*</span></label>
                                 <div class="grid grid-cols-2 gap-3">
                                     <div class="relative">
@@ -1056,7 +1095,10 @@
                                         <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-400 pointer-events-none">Menit</span>
                                     </div>
                                 </div>
-                                <input type="hidden" name="submitted_duration_minutes" :value="(parseInt(hours) || 0) * 60 + (parseInt(minutes) || 0)">
+                                <input type="hidden" name="submitted_duration_minutes" id="admin_submitted_duration_input" :value="(parseInt(hours) || 0) * 60 + (parseInt(minutes) || 0)">
+                                @error('submitted_duration_minutes')
+                                    <p class="mt-1 text-xs text-red-600 font-medium">{{ $message }}</p>
+                                @enderror
                             </div>
                         </div>
 
@@ -1082,20 +1124,32 @@
                                 </span>
                             </div>
                             <input type="file" accept="image/jpeg,image/png,image/webp" name="evidence_email_image_path" required class="block w-full text-xs text-gray-500 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700">
+                            @error('evidence_email_image_path')
+                                <p class="mt-1 text-xs text-red-600 font-medium">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <div class="bg-slate-50 border border-gray-100 rounded-xl p-4 space-y-3" x-cloak x-show="project_name === 'minutes_data'">
                             <div class="flex justify-between items-center border-b border-gray-200/50 pb-2">
                                 <span class="text-sm font-bold text-slate-800">2. Screenshot Bagian Kualitas <span class="text-red-500">*</span></span>
                             </div>
-                            <input type="file" accept="image/jpeg,image/png,image/webp" name="evidence_app_quality_image_path" :required="project_name === 'minutes_data'" class="block w-full text-xs text-gray-500 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700">
+                            <input type="file" accept="image/jpeg,image/png,image/webp" name="evidence_app_quality_image_path" :required="project_name === 'minutes_data'" :disabled="project_name !== 'minutes_data'" class="block w-full text-xs text-gray-500 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700">
+                            @error('evidence_app_quality_image_path')
+                                <p class="mt-1 text-xs text-red-600 font-medium">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <div class="bg-slate-50 border border-gray-100 rounded-xl p-4 space-y-3" x-show="project_name === 'atlas'">
                             <div class="flex justify-between items-center border-b border-gray-200/50 pb-2">
                                 <span class="text-sm font-bold text-slate-800">2. Screenshot Bagian Unggahan/Submitted <span class="text-red-500">*</span></span>
                             </div>
-                            <input type="file" accept="image/jpeg,image/png,image/webp" name="evidence_submitted_image_paths[]" multiple :required="project_name === 'atlas'" class="block w-full text-xs text-gray-500 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700">
+                            <input type="file" accept="image/jpeg,image/png,image/webp" name="evidence_submitted_image_paths[]" multiple :required="project_name === 'atlas'" :disabled="project_name !== 'atlas'" class="block w-full text-xs text-gray-500 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700">
+                            @error('evidence_submitted_image_paths')
+                                <p class="mt-1 text-xs text-red-600 font-medium">{{ $message }}</p>
+                            @enderror
+                            @error('evidence_submitted_image_paths.*')
+                                <p class="mt-1 text-xs text-red-600 font-medium">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-4 border-t border-gray-100">

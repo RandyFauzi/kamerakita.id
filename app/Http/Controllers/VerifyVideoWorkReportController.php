@@ -204,17 +204,23 @@ class VerifyVideoWorkReportController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
+        $rules = [
             'partner_id' => 'required|exists:partners,id',
             'project_name' => 'required|in:atlas,minutes_data',
-            'submission_date' => 'required|date|before_or_equal:today',
+            'submission_date' => 'required|date|before_or_equal:' . now('Asia/Jakarta')->addDay()->format('Y-m-d'),
             'submitted_duration_minutes' => 'required|integer|min:1|max:1440',
             'worker_notes' => 'nullable|string|max:1000',
             'evidence_email_image_path' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'evidence_app_quality_image_path' => 'required_if:project_name,minutes_data|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'evidence_submitted_image_paths' => 'required_if:project_name,atlas|array|min:1',
-            'evidence_submitted_image_paths.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-        ]);
+        ];
+
+        if ($request->input('project_name') === 'minutes_data') {
+            $rules['evidence_app_quality_image_path'] = 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048';
+        } elseif ($request->input('project_name') === 'atlas') {
+            $rules['evidence_submitted_image_paths'] = 'required|array|min:1';
+            $rules['evidence_submitted_image_paths.*'] = 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048';
+        }
+
+        $validated = $request->validate($rules);
 
         $partner = Partner::findOrFail($validated['partner_id']);
 
@@ -226,13 +232,15 @@ class VerifyVideoWorkReportController extends Controller
             $imageStorage = app(\App\Services\StoreEvidenceImageService::class);
             $emailPath = $imageStorage->store($request->file('evidence_email_image_path'), 'evidences/email');
 
-            if ($request->hasFile('evidence_app_quality_image_path')) {
+            if ($validated['project_name'] === 'minutes_data' && $request->hasFile('evidence_app_quality_image_path')) {
                 $qualityPath = $imageStorage->store($request->file('evidence_app_quality_image_path'), 'evidences/quality');
             }
 
-            if ($request->hasFile('evidence_submitted_image_paths')) {
+            if ($validated['project_name'] === 'atlas' && $request->hasFile('evidence_submitted_image_paths')) {
                 foreach ($request->file('evidence_submitted_image_paths') as $file) {
-                    $submittedPaths[] = $imageStorage->store($file, 'evidences/submitted');
+                    if ($file && $file->isValid()) {
+                        $submittedPaths[] = $imageStorage->store($file, 'evidences/submitted');
+                    }
                 }
             }
 
