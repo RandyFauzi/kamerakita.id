@@ -226,6 +226,8 @@ return array (
     'data_collection_date' => 'Tanggal Pengambilan Data',
     'total_work_duration' => 'Total Durasi Kerja',
     'hours_unit' => 'Jam',
+    'report_notes' => 'Catatan Laporan',
+    'report_notes_placeholder' => 'Tambahkan catatan khusus untuk tim QC jika ada... (Maks 1000 karakter)',
     'screenshot_total_duration_quality' => 'Screenshot Total Durasi & Kualitas',
     'screenshot_total_duration' => 'Screenshot Total Durasi',
     'screenshot_quality' => 'Screenshot Bagian Kualitas',

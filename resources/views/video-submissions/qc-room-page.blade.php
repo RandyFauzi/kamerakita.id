@@ -1060,6 +1060,19 @@
                             </div>
                         </div>
 
+                        <!-- Catatan Laporan (Noted) -->
+                        <div>
+                            <label for="worker_notes_admin" class="block text-sm font-semibold text-gray-700 mb-1">
+                                {{ __('dashboard.qc_room.report_notes') }} <span class="text-gray-400 font-normal text-xs">(Opsional)</span>
+                            </label>
+                            <textarea name="worker_notes" id="worker_notes_admin" rows="2"
+                                      class="block w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-gray-50 focus:bg-white transition-colors"
+                                      placeholder="{{ __('dashboard.qc_room.report_notes_placeholder') }}">{{ old('worker_notes') }}</textarea>
+                            @error('worker_notes')
+                                <p class="mt-1 text-xs text-red-600 font-medium">{{ $message }}</p>
+                            @enderror
+                        </div>
+
                         <div class="bg-slate-50 border border-gray-100 rounded-xl p-4 space-y-3">
                             <div class="flex justify-between items-center border-b border-gray-200/50 pb-2">
                                 <span class="text-sm font-bold text-slate-800">

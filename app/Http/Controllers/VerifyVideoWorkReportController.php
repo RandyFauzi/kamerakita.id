@@ -209,6 +209,7 @@ class VerifyVideoWorkReportController extends Controller
             'project_name' => 'required|in:atlas,minutes_data',
             'submission_date' => 'required|date|before_or_equal:today',
             'submitted_duration_minutes' => 'required|integer|min:1|max:1440',
+            'worker_notes' => 'nullable|string|max:1000',
             'evidence_email_image_path' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'evidence_app_quality_image_path' => 'required_if:project_name,minutes_data|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'evidence_submitted_image_paths' => 'required_if:project_name,atlas|array|min:1',
@@ -247,6 +248,7 @@ class VerifyVideoWorkReportController extends Controller
                     'approved_duration_minutes' => 0,
                     'qc_status' => 'pending',
                     'payment_status' => 'unpaid',
+                    'worker_notes' => $validated['worker_notes'] ?? null,
                 ]);
 
                 $backup = app(\App\Services\EvidenceFileBackupService::class);
@@ -263,7 +265,8 @@ class VerifyVideoWorkReportController extends Controller
                 app(\App\Services\PartnerActivityStatusService::class)->markActiveAfterReport($partner);
             });
 
-            \App\Services\ActivityLogger::log('report.admin_create', "Admin membuatkan laporan harian untuk mitra {$partner->full_name} tanggal {$validated['submission_date']} dengan durasi {$validated['submitted_duration_minutes']} menit.");
+            $noteSuffix = !empty($validated['worker_notes']) ? " (Catatan: {$validated['worker_notes']})" : "";
+            \App\Services\ActivityLogger::log('report.admin_create', "Admin membuatkan laporan harian untuk mitra {$partner->full_name} tanggal {$validated['submission_date']} dengan durasi {$validated['submitted_duration_minutes']} menit.{$noteSuffix}");
         } catch (\Throwable $exception) {
             $pathsToDelete = array_filter(array_merge([$emailPath, $qualityPath], $submittedPaths));
             foreach ($pathsToDelete as $path) {

@@ -226,6 +226,8 @@ return array (
     'data_collection_date' => 'Data Collection Date',
     'total_work_duration' => 'Total Work Duration',
     'hours_unit' => 'Hours',
+    'report_notes' => 'Report Notes',
+    'report_notes_placeholder' => 'Add special notes for the QC team if any... (Max 1000 characters)',
     'screenshot_total_duration_quality' => 'Screenshot of Total Duration & Quality',
     'screenshot_total_duration' => 'Screenshot of Total Duration',
     'screenshot_quality' => 'Screenshot of Quality Section',
