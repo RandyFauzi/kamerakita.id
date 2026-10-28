@@ -30,7 +30,11 @@
                 }
             },
             copyData: '',
+            copyFormat: 'email',
+            rawContacts: [],
             fetchingContacts: false,
+            copyFeedback: false,
+            copyDropdown: false,
             openDeleteModal(target) {
                 this.deleteTarget = target;
                 this.deleting = false;
@@ -41,15 +45,18 @@
                 this.deleteTarget = {};
                 this.deleting = false;
             },
-            openCopyModal() {
+            openCopyModal(defaultFormat = 'email') {
+                this.copyFormat = defaultFormat;
                 this.showCopyModal = true;
                 this.fetchingContacts = true;
+                this.copyFeedback = false;
+                this.copyDropdown = false;
                 this.copyData = 'Sedang memuat data kontak...';
                 
-                const search = document.getElementById('search').value || '';
-                const role = document.getElementById('role').value || '';
-                const status = document.getElementById('status').value || '';
-                const group = document.getElementById('group').value || '';
+                const search = document.getElementById('search')?.value || '';
+                const role = document.getElementById('role')?.value || '';
+                const status = document.getElementById('status')?.value || '';
+                const group = document.getElementById('group')?.value || '';
                 
                 const mitra_id = document.getElementById('mitra_id')?.value || '';
                 const full_name = document.getElementById('full_name')?.value || '';
@@ -61,28 +68,105 @@
                 
                 const params = new URLSearchParams({ 
                     search, role, status, group,
-                    mitra_id, full_name, hourly_rate, headstrap, whatsapp, mitra_parent, client_registered
+                    mitra_id, full_name, hourly_rate, headstrap, whatsapp, mitra_parent, client_registered,
+                    format: 'json'
                 });
                 
-                fetch('{{ route('partners.export-contacts') }}?' + params.toString())
-                    .then(res => res.text())
-                    .then(text => {
-                        this.copyData = text || 'Tidak ada data.';
+                fetch('{{ route('partners.export-contacts') }}?' + params.toString(), {
+                    headers: { 'Accept': 'application/json' }
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        this.rawContacts = Array.isArray(data) ? data : [];
                         this.fetchingContacts = false;
+                        this.renderCopyData();
                     })
                     .catch(err => {
+                        console.error('Gagal memuat kontak:', err);
                         this.copyData = 'Gagal memuat data kontak.';
                         this.fetchingContacts = false;
                     });
             },
+            setCopyFormat(format) {
+                this.copyFormat = format;
+                this.copyFeedback = false;
+                this.renderCopyData();
+            },
+            renderCopyData() {
+                if (!this.rawContacts || this.rawContacts.length === 0) {
+                    this.copyData = 'Tidak ada data kontak pada hasil filter ini.';
+                    return;
+                }
+
+                if (this.copyFormat === 'email') {
+                    // 1. Salin email : randyfauzi@kamerakiaid.site, riswan@kamerakiaid.site, ...
+                    const emails = this.rawContacts
+                        .map(c => c.email ? c.email.trim() : '')
+                        .filter(e => e && e !== 'Tidak ada email');
+                    const uniqueEmails = [...new Set(emails)];
+                    this.copyData = uniqueEmails.length > 0 ? uniqueEmails.join(', ') : 'Tidak ada email valid.';
+                } else if (this.copyFormat === 'whatsapp') {
+                    // 2. Salin no WA : berurutan per baris
+                    const phones = this.rawContacts
+                        .map(c => c.whatsapp ? c.whatsapp.trim() : '')
+                        .filter(w => w && w !== '-');
+                    this.copyData = phones.length > 0 ? phones.join('\n') : 'Tidak ada nomor WhatsApp.';
+                } else if (this.copyFormat === 'bank_account') {
+                    // 3. Salin No rek : hanya norek saja berurutan per baris
+                    const accounts = this.rawContacts
+                        .map(c => c.bank_account ? c.bank_account.trim() : '')
+                        .filter(a => a && a !== '-' && a.toLowerCase() !== 'n/a');
+                    this.copyData = accounts.length > 0 ? accounts.join('\n') : 'Tidak ada nomor rekening.';
+                } else if (this.copyFormat === 'name') {
+                    // 4. Salin Nama : hanya nama saja berurutan per baris
+                    const names = this.rawContacts
+                        .map(c => c.name ? c.name.trim() : '')
+                        .filter(n => n);
+                    this.copyData = names.length > 0 ? names.join('\n') : 'Tidak ada nama.';
+                } else if (this.copyFormat === 'full') {
+                    // Format Lengkap : Nama (Email)
+                    const full = this.rawContacts
+                        .map(c => `${c.name} (${c.email || 'Tidak ada email'})`);
+                    this.copyData = full.join('\n');
+                }
+            },
+            getCopyCount() {
+                if (!this.rawContacts) return 0;
+                if (this.copyFormat === 'email') {
+                    return [...new Set(this.rawContacts.map(c => c.email ? c.email.trim() : '').filter(e => e && e !== 'Tidak ada email'))].length;
+                } else if (this.copyFormat === 'whatsapp') {
+                    return this.rawContacts.map(c => c.whatsapp ? c.whatsapp.trim() : '').filter(w => w && w !== '-').length;
+                } else if (this.copyFormat === 'bank_account') {
+                    return this.rawContacts.map(c => c.bank_account ? c.bank_account.trim() : '').filter(a => a && a !== '-' && a.toLowerCase() !== 'n/a').length;
+                } else if (this.copyFormat === 'name') {
+                    return this.rawContacts.map(c => c.name ? c.name.trim() : '').filter(n => n).length;
+                }
+                return this.rawContacts.length;
+            },
+            getCopyButtonLabel() {
+                if (this.fetchingContacts) return 'Memuat...';
+                if (this.copyFeedback) return 'Tersalin ke Clipboard! ✓';
+                
+                const count = this.getCopyCount();
+                if (this.copyFormat === 'email') return `Salin Email (${count})`;
+                if (this.copyFormat === 'whatsapp') return `Salin No WA (${count})`;
+                if (this.copyFormat === 'bank_account') return `Salin No Rek (${count})`;
+                if (this.copyFormat === 'name') return `Salin Nama (${count})`;
+                return `Salin Data (${count})`;
+            },
             closeCopyModal() {
                 this.showCopyModal = false;
+                this.copyFeedback = false;
             },
             copyToClipboard() {
+                if (!this.copyData || this.fetchingContacts) return;
                 navigator.clipboard.writeText(this.copyData).then(() => {
-                    alert('Data berhasil disalin!');
+                    this.copyFeedback = true;
+                    setTimeout(() => {
+                        this.copyFeedback = false;
+                    }, 2500);
                 }).catch(err => {
-                    alert('Gagal menyalin, silakan block text dan copy manual.');
+                    alert('Gagal menyalin otomatis, silakan blok teks di atas lalu copy manual.');
                 });
             }
         }"
@@ -276,12 +360,56 @@
                             <button type="submit" class="flex-1 md:flex-none justify-center inline-flex items-center px-6 py-2.5 bg-gray-900 border border-transparent rounded-xl font-semibold text-sm text-white hover:bg-gray-800 transition shadow-sm">
                                 Cari
                             </button>
-                            <button type="button" @click="openCopyModal()" class="flex-none justify-center inline-flex items-center px-4 py-2.5 bg-white border border-gray-200 rounded-xl font-semibold text-sm text-gray-700 hover:bg-gray-50 hover:text-indigo-600 transition shadow-sm" title="Salin Kontak dari Hasil Filter">
-                                <svg class="w-4 h-4 md:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-                                </svg>
-                                <span class="hidden md:inline">{{ __('dashboard.partners.copy_btn') }}</span>
-                            </button>
+                            <!-- Dropdown Salin Data Kontak -->
+                            <div class="relative flex-none" x-data="{ copyDropOpen: false }" @click.away="copyDropOpen = false">
+                                <div class="inline-flex rounded-xl shadow-sm">
+                                    <button type="button" @click="openCopyModal('email')" class="justify-center inline-flex items-center px-4 py-2.5 bg-white border border-gray-200 rounded-l-xl font-semibold text-sm text-gray-700 hover:bg-gray-50 hover:text-indigo-600 transition" title="Salin Kontak dari Hasil Filter">
+                                        <svg class="w-4 h-4 md:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                        </svg>
+                                        <span class="hidden md:inline">{{ __('dashboard.partners.copy_btn') }}</span>
+                                    </button>
+                                    <button type="button" @click="copyDropOpen = !copyDropOpen" class="inline-flex items-center px-2.5 py-2.5 bg-white border border-l-0 border-gray-200 rounded-r-xl text-gray-500 hover:bg-gray-50 hover:text-indigo-600 transition" title="Pilihan Format Salin">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                    </button>
+                                </div>
+
+                                <!-- Dropdown Quick Options -->
+                                <div x-show="copyDropOpen" 
+                                     x-transition:enter="transition ease-out duration-100"
+                                     x-transition:enter-start="transform opacity-0 scale-95"
+                                     x-transition:enter-end="transform opacity-100 scale-100"
+                                     x-transition:leave="transition ease-in duration-75"
+                                     x-transition:leave-start="transform opacity-100 scale-100"
+                                     x-transition:leave-end="transform opacity-0 scale-95"
+                                     class="absolute right-0 mt-2 w-56 rounded-xl shadow-xl bg-white border border-gray-100 z-30 py-1.5 divide-y divide-gray-100 text-xs"
+                                     style="display: none;">
+                                    <div class="py-1">
+                                        <button type="button" @click="openCopyModal('email'); copyDropOpen = false" class="w-full text-left px-3.5 py-2 hover:bg-indigo-50 hover:text-indigo-700 flex items-center gap-2 font-medium transition">
+                                            <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                                            <span>1. Salin Email (Dipisah Koma)</span>
+                                        </button>
+                                        <button type="button" @click="openCopyModal('whatsapp'); copyDropOpen = false" class="w-full text-left px-3.5 py-2 hover:bg-emerald-50 hover:text-emerald-700 flex items-center gap-2 font-medium transition">
+                                            <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                                            <span>2. Salin No WA (Berurutan)</span>
+                                        </button>
+                                        <button type="button" @click="openCopyModal('bank_account'); copyDropOpen = false" class="w-full text-left px-3.5 py-2 hover:bg-amber-50 hover:text-amber-700 flex items-center gap-2 font-medium transition">
+                                            <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                                            <span>3. Salin No Rek (Hanya Norek)</span>
+                                        </button>
+                                        <button type="button" @click="openCopyModal('name'); copyDropOpen = false" class="w-full text-left px-3.5 py-2 hover:bg-blue-50 hover:text-blue-700 flex items-center gap-2 font-medium transition">
+                                            <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                            <span>4. Salin Nama (Berurutan)</span>
+                                        </button>
+                                    </div>
+                                    <div class="py-1">
+                                        <button type="button" @click="openCopyModal('full'); copyDropOpen = false" class="w-full text-left px-3.5 py-2 hover:bg-gray-50 text-gray-600 flex items-center gap-2 transition">
+                                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                            <span>Format Lengkap (Nama + Email)</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                             @if($search || $role || $status || (isset($group) && $group) || $mitraId || $fullName || $hourlyRate || $headstrap || $whatsapp || $mitraParent || $clientRegistered)
                                 <a href="{{ route('partners.index') }}" class="flex-none justify-center inline-flex items-center px-4 py-2.5 bg-gray-55 border border-gray-200 rounded-xl font-semibold text-sm text-gray-700 hover:bg-gray-100 transition shadow-sm" title="Reset Filter">
                                     <svg class="w-4 h-4 md:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -711,26 +839,133 @@
                                     </svg>
                                 </div>
                                 <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                                    <h3 class="text-lg leading-6 font-bold text-gray-900" id="modal-title">
-                                        Salin Data Kontak
-                                    </h3>
-                                    <div class="mt-2">
-                                        <p class="text-sm text-gray-500 mb-4">
-                                            Berikut adalah daftar kontak hasil filter. Klik tombol Salin untuk mengcopy seluruh teks ini.
-                                        </p>
-                                        <textarea x-model="copyData" class="w-full h-64 p-3 border-gray-300 rounded-lg shadow-sm text-sm focus:ring-indigo-500 focus:border-indigo-500 font-mono" readonly></textarea>
+                                    <div class="flex items-center justify-between">
+                                        <h3 class="text-lg leading-6 font-bold text-gray-900" id="modal-title">
+                                            Salin Data Kontak
+                                        </h3>
+                                        <span class="text-xs px-2.5 py-1 bg-gray-100 text-gray-600 rounded-lg font-medium font-mono" x-show="!fetchingContacts">
+                                            <span x-text="rawContacts.length"></span> total baris
+                                        </span>
+                                    </div>
+                                    <p class="text-xs sm:text-sm text-gray-500 mt-1 mb-3">
+                                        Pilih format data yang ingin disalin dari daftar hasil filter saat ini:
+                                    </p>
+
+                                    <!-- 4 Pilihan Format Utama Sesuai Request -->
+                                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
+                                        <!-- 1. Salin Email -->
+                                        <button type="button" 
+                                                @click="setCopyFormat('email')" 
+                                                :class="copyFormat === 'email' ? 'bg-indigo-600 text-white font-bold ring-2 ring-indigo-500 shadow-xs' : 'bg-gray-50 text-gray-700 hover:bg-gray-100 font-medium border border-gray-200'"
+                                                class="px-2.5 py-2 rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all text-center">
+                                            <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                                            <span>1. Salin Email</span>
+                                        </button>
+
+                                        <!-- 2. Salin No WA -->
+                                        <button type="button" 
+                                                @click="setCopyFormat('whatsapp')" 
+                                                :class="copyFormat === 'whatsapp' ? 'bg-indigo-600 text-white font-bold ring-2 ring-indigo-500 shadow-xs' : 'bg-gray-50 text-gray-700 hover:bg-gray-100 font-medium border border-gray-200'"
+                                                class="px-2.5 py-2 rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all text-center">
+                                            <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                                            <span>2. Salin No WA</span>
+                                        </button>
+
+                                        <!-- 3. Salin No Rek -->
+                                        <button type="button" 
+                                                @click="setCopyFormat('bank_account')" 
+                                                :class="copyFormat === 'bank_account' ? 'bg-indigo-600 text-white font-bold ring-2 ring-indigo-500 shadow-xs' : 'bg-gray-50 text-gray-700 hover:bg-gray-100 font-medium border border-gray-200'"
+                                                class="px-2.5 py-2 rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all text-center">
+                                            <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                                            <span>3. Salin No Rek</span>
+                                        </button>
+
+                                        <!-- 4. Salin Nama -->
+                                        <button type="button" 
+                                                @click="setCopyFormat('name')" 
+                                                :class="copyFormat === 'name' ? 'bg-indigo-600 text-white font-bold ring-2 ring-indigo-500 shadow-xs' : 'bg-gray-50 text-gray-700 hover:bg-gray-100 font-medium border border-gray-200'"
+                                                class="px-2.5 py-2 rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all text-center">
+                                            <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                            <span>4. Salin Nama</span>
+                                        </button>
+                                    </div>
+
+                                    <!-- Keterangan format aktif & counter -->
+                                    <div class="flex items-center justify-between text-xs px-3 py-2 rounded-xl mb-2.5 font-medium border"
+                                         :class="{
+                                            'bg-indigo-50/80 border-indigo-100 text-indigo-900': copyFormat === 'email',
+                                            'bg-emerald-50/80 border-emerald-100 text-emerald-900': copyFormat === 'whatsapp',
+                                            'bg-amber-50/80 border-amber-100 text-amber-900': copyFormat === 'bank_account',
+                                            'bg-blue-50/80 border-blue-100 text-blue-900': copyFormat === 'name',
+                                            'bg-gray-50 border-gray-200 text-gray-800': copyFormat === 'full'
+                                         }">
+                                        <div class="flex items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
+                                            <span class="w-2 h-2 rounded-full flex-shrink-0" 
+                                                  :class="{
+                                                    'bg-indigo-500': copyFormat === 'email',
+                                                    'bg-emerald-500': copyFormat === 'whatsapp',
+                                                    'bg-amber-500': copyFormat === 'bank_account',
+                                                    'bg-blue-500': copyFormat === 'name',
+                                                    'bg-gray-500': copyFormat === 'full'
+                                                  }"></span>
+                                            <span x-show="copyFormat === 'email'">Format: <strong>Email dipisah koma</strong> (<code>randy@.., riswan@..</code>)</span>
+                                            <span x-show="copyFormat === 'whatsapp'">Format: <strong>Nomor WhatsApp berurutan</strong> (1 nomor per baris)</span>
+                                            <span x-show="copyFormat === 'bank_account'">Format: <strong>Hanya nomor rekening berurutan</strong> (1 nomor per baris)</span>
+                                            <span x-show="copyFormat === 'name'">Format: <strong>Hanya nama pekerja berurutan</strong> (1 nama per baris)</span>
+                                            <span x-show="copyFormat === 'full'">Format: <strong>Nama (Email)</strong> per baris</span>
+                                        </div>
+                                        <div class="font-bold flex items-center gap-1 flex-shrink-0 pl-2">
+                                            <span x-text="getCopyCount()"></span> data
+                                        </div>
+                                    </div>
+
+                                    <!-- Textarea Preview -->
+                                    <div class="relative">
+                                        <textarea x-model="copyData" 
+                                                  class="w-full h-56 p-3.5 border-gray-300 rounded-xl shadow-xs text-xs sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 font-mono bg-gray-50/50" 
+                                                  placeholder="Memuat data..." 
+                                                  readonly></textarea>
+                                        
+                                        <div class="mt-1 flex justify-between items-center text-[11px] text-gray-400">
+                                            <span>*Teks di atas dapat Anda blok & salin secara manual jika dibutuhkan.</span>
+                                            <button type="button" 
+                                                    @click="setCopyFormat(copyFormat === 'full' ? 'email' : 'full')" 
+                                                    class="text-indigo-600 hover:text-indigo-800 underline">
+                                                <span x-show="copyFormat !== 'full'">Format Lengkap (Nama + Email)</span>
+                                                <span x-show="copyFormat === 'full'">Kembali ke Pilihan Format</span>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-2xl">
-                            <button type="button" @click="copyToClipboard()" :disabled="fetchingContacts" class="w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm transition disabled:opacity-50">
-                                <span x-show="!fetchingContacts">Salin (Copy)</span>
-                                <span x-show="fetchingContacts">Memuat...</span>
-                            </button>
-                            <button type="button" @click="closeCopyModal()" class="mt-3 w-full inline-flex justify-center rounded-xl border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition">
-                                Tutup
-                            </button>
+                        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-2xl items-center justify-between">
+                            <div class="flex gap-2 w-full sm:w-auto">
+                                <button type="button" 
+                                        @click="copyToClipboard()" 
+                                        :disabled="fetchingContacts || !copyData || copyData.startsWith('Sedang') || copyData.startsWith('Gagal')" 
+                                        :class="copyFeedback ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-indigo-600 hover:bg-indigo-700 text-white'"
+                                        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl shadow-sm px-5 py-2.5 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all disabled:opacity-50">
+                                    <template x-if="fetchingContacts">
+                                        <span>Memuat...</span>
+                                    </template>
+                                    <template x-if="!fetchingContacts && !copyFeedback">
+                                        <span class="inline-flex items-center gap-1.5">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 002-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg>
+                                            <span x-text="getCopyButtonLabel()">Salin</span>
+                                        </span>
+                                    </template>
+                                    <template x-if="!fetchingContacts && copyFeedback">
+                                        <span class="inline-flex items-center gap-1.5">
+                                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                            <span>Tersalin ke Clipboard!</span>
+                                        </span>
+                                    </template>
+                                </button>
+                                <button type="button" @click="closeCopyModal()" class="w-full sm:w-auto inline-flex justify-center rounded-xl border border-gray-300 shadow-xs px-4 py-2.5 bg-white text-sm font-semibold text-gray-700 hover:bg-gray-50 focus:outline-none transition">
+                                    Tutup
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

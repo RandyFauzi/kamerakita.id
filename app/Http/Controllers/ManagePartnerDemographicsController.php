@@ -374,9 +374,54 @@ class ManagePartnerDemographicsController extends Controller
             ->orderBy('mitra_id', 'asc')
             ->get();
 
+        if ($request->wantsJson() || $request->input('format') === 'json') {
+            $data = $partners->map(function ($partner) {
+                $email = !empty($partner->user?->email) ? $partner->user->email : (!empty($partner->email) ? $partner->email : '');
+                $bankAccount = $partner->bank_account_number ?: ($partner->account_number ?: '');
+
+                return [
+                    'id' => $partner->id,
+                    'name' => trim((string)$partner->full_name),
+                    'email' => trim((string)$email),
+                    'whatsapp' => trim((string)($partner->whatsapp_number ?? '')),
+                    'bank_account' => trim((string)$bankAccount),
+                    'bank_name' => trim((string)($partner->bank_name ?? '')),
+                ];
+            });
+
+            return response()->json($data);
+        }
+
+        $type = $request->input('type');
+        if ($type === 'email') {
+            $emails = $partners->map(function ($p) {
+                return !empty($p->user?->email) ? $p->user->email : (!empty($p->email) ? $p->email : null);
+            })->filter(fn($e) => !empty($e) && $e !== 'Tidak ada email')->unique()->values();
+
+            return response($emails->implode(', '), 200)->header('Content-Type', 'text/plain');
+        } elseif ($type === 'whatsapp') {
+            $numbers = $partners->map(function ($p) {
+                return trim((string)$p->whatsapp_number);
+            })->filter(fn($w) => !empty($w) && $w !== '-')->values();
+
+            return response($numbers->implode("\n"), 200)->header('Content-Type', 'text/plain');
+        } elseif ($type === 'bank_account') {
+            $accounts = $partners->map(function ($p) {
+                return trim((string)($p->bank_account_number ?: $p->account_number));
+            })->filter(fn($a) => !empty($a) && $a !== '-' && strtolower($a) !== 'n/a')->values();
+
+            return response($accounts->implode("\n"), 200)->header('Content-Type', 'text/plain');
+        } elseif ($type === 'name') {
+            $names = $partners->map(function ($p) {
+                return trim((string)$p->full_name);
+            })->filter(fn($n) => !empty($n))->values();
+
+            return response($names->implode("\n"), 200)->header('Content-Type', 'text/plain');
+        }
+
         $output = "";
         foreach ($partners as $partner) {
-            $email = $partner->user?->email ?? 'Tidak ada email';
+            $email = $partner->user?->email ?? $partner->email ?? 'Tidak ada email';
             $output .= "{$partner->full_name} ({$email})\n";
         }
 
