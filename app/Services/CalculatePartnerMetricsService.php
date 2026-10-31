@@ -79,6 +79,7 @@ class CalculatePartnerMetricsService
         $workers = Partner::query()
             ->where('mitra_parent_id', $mitra->id)
             ->where('partner_role', 'worker')
+            ->with('user')
             ->get();
 
         $workersData = [];
