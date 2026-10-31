@@ -147,6 +147,8 @@ class VendorController extends Controller
             'password' => \Illuminate\Support\Facades\Hash::make($request->password),
             'role' => 'worker',
             'email_verified_at' => now(),
+            'has_completed_onboarding' => true,
+            'tos_accepted_at' => now(),
         ]);
 
         $latestPartner = \App\Models\Partner::orderBy('mitra_id', 'desc')->first();
@@ -170,6 +172,11 @@ class VendorController extends Controller
             'user_id' => $newUser->id,
             'mitra_parent_id' => $partner->id,
             'recruiter_partner_id' => $partner->id,
+            'bank_name' => $partner->bank_name,
+            'bank_account_number' => $partner->bank_account_number,
+            'bank_account_owner' => $partner->bank_account_owner,
+            'payment_method' => $partner->payment_method ?: 'bank_transfer',
+            'airtm_username' => $partner->airtm_username,
         ]);
 
         return redirect()->back()->with('success', 'Worker baru berhasil didaftarkan dengan Email: ' . $generatedEmail . ' dan masuk ke tim Anda!');

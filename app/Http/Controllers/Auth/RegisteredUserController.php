@@ -64,6 +64,8 @@ class RegisteredUserController extends Controller
             $recruiterPartner = Partner::where('referral_code', $request->referral_code)->first();
         }
 
+        $isUnderMitra = ($recruiterPartner && $recruiterPartner->partner_role === 'mitra');
+
         // Construct the internal email address
         $internalEmail = $request->username . '@kamerakitaid.site';
 
@@ -72,6 +74,8 @@ class RegisteredUserController extends Controller
             'email' => $internalEmail,
             'password' => Hash::make($request->password),
             'role' => 'worker', // Default role
+            'has_completed_onboarding' => $isUnderMitra,
+            'tos_accepted_at' => $isUnderMitra ? now() : null,
         ]);
 
         // Auto-generate next KMK-XXX code
@@ -97,8 +101,14 @@ class RegisteredUserController extends Controller
             'user_id' => $user->id,
             // Link to recruiter if a valid referral code was provided
             'recruiter_partner_id' => $recruiterPartner ? $recruiterPartner->id : null,
-            // Jika yang mengundang adalah Vendor, otomatis jadikan Vendor tersebut sebagai atasannya
-            'mitra_parent_id' => ($recruiterPartner && $recruiterPartner->partner_role === 'mitra') ? $recruiterPartner->id : null,
+            // Jika yang mengundang adalah Mitra, otomatis jadikan Mitra tersebut sebagai atasannya
+            'mitra_parent_id' => $isUnderMitra ? $recruiterPartner->id : null,
+            // Otomatis isi rekening dari Mitra jika mendaftar dengan kode Mitra (karena pembayaran worker via Mitra)
+            'bank_name' => $isUnderMitra ? $recruiterPartner->bank_name : null,
+            'bank_account_number' => $isUnderMitra ? $recruiterPartner->bank_account_number : null,
+            'bank_account_owner' => $isUnderMitra ? $recruiterPartner->bank_account_owner : null,
+            'payment_method' => $isUnderMitra ? ($recruiterPartner->payment_method ?: 'bank_transfer') : null,
+            'airtm_username' => $isUnderMitra ? $recruiterPartner->airtm_username : null,
         ]);
 
         event(new Registered($user));
