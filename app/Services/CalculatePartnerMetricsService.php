@@ -161,35 +161,89 @@ class CalculatePartnerMetricsService
             ->with('worker')
             ->get();
 
-        $pendingCommissions = $commissions->where('status', 'pending');
-        $paidCommissions = $commissions->where('status', 'paid');
-
         $workersData = [];
+        $totalApprovedVideosAll = 0;
+        $totalApprovedMinutesAll = 0;
+
         foreach ($recruitedWorkers as $worker) {
-            $reportedMinutes = $worker->videoWorkReports->sum('duration_minutes');
-            $approvedMinutes = $worker->videoWorkReports->where('qc_status', 'approved')->sum('approved_duration_minutes');
-            
-            $reportedHours = round($reportedMinutes / 60, 1);
-            $approvedHours = round($approvedMinutes / 60, 1);
+            // 1. VideoWorkReport counts & minutes
+            $qcApprovedReports = $worker->videoWorkReports->where('qc_status', 'approved');
+            $qcApprovedVideosCount = $qcApprovedReports->count();
+            $qcApprovedMinutes = (float) $qcApprovedReports->sum('approved_duration_minutes');
+            $qcReportedMinutes = (float) $worker->videoWorkReports->sum(function ($r) {
+                return $r->submitted_duration_minutes ?? $r->duration_minutes ?? 0;
+            });
+            $qcTotalVideosCount = $worker->videoWorkReports->count();
+
+            // 2. AtlasTask counts & minutes (Atlas Worker recordings)
+            $atlasWorkerIds = \App\Models\AtlasWorker::where(function ($q) use ($worker) {
+                $q->where('user_id', $worker->user_id)
+                  ->orWhere('atlas_email', $worker->email);
+            })->pluck('id');
+
+            $atlasTasksQuery = \App\Models\AtlasTask::whereIn('atlas_worker_id', $atlasWorkerIds);
+            $atlasApprovedTasks = (clone $atlasTasksQuery)->where('approved_minutes', '>', 0);
+            $atlasApprovedVideosCount = (clone $atlasApprovedTasks)->count();
+            $atlasApprovedMinutes = (float) (clone $atlasApprovedTasks)->sum('approved_minutes');
+            $atlasReportedMinutes = (float) (clone $atlasTasksQuery)->sum('worked_minutes');
+            $atlasTotalVideosCount = (clone $atlasTasksQuery)->count();
+
+            // Combined metrics
+            $totalApprovedVideos = $qcApprovedVideosCount + $atlasApprovedVideosCount;
+            $totalApprovedMinutes = $qcApprovedMinutes + $atlasApprovedMinutes;
+            $totalReportedVideos = $qcTotalVideosCount + $atlasTotalVideosCount;
+            $totalReportedMinutes = $qcReportedMinutes + $atlasReportedMinutes;
+
+            $reportedHours = round($totalReportedMinutes / 60, 1);
+            $approvedHours = round($totalApprovedMinutes / 60, 1);
+
+            $totalApprovedVideosAll += $totalApprovedVideos;
+            $totalApprovedMinutesAll += $totalApprovedMinutes;
+
+            // Check milestone and auto-create commission record if reached but not yet recorded
             $workerCommission = $commissions->firstWhere('worker_partner_id', $worker->id);
+            if ($rekruter->partner_role === \App\Models\Partner::ROLE_REKRUTER && !$workerCommission && ($totalApprovedMinutes / 60) >= \App\Services\CheckRecruiterMilestone::MILESTONE_HOURS) {
+                $workerCommission = \App\Models\RecruiterCommission::create([
+                    'recruiter_partner_id' => $rekruter->id,
+                    'worker_partner_id' => $worker->id,
+                    'approved_hours_at_milestone' => round($totalApprovedMinutes / 60, 2),
+                    'commission_amount' => \App\Services\CheckRecruiterMilestone::COMMISSION_AMOUNT,
+                    'status' => 'pending',
+                ]);
+                $commissions->push($workerCommission);
+            }
 
             $workersData[] = [
                 'worker' => $worker,
                 'reported_hours' => $reportedHours,
+                'reported_hours_formatted' => $this->formatMinutes((int)$totalReportedMinutes),
+                'reported_videos_count' => $totalReportedVideos,
                 'approved_hours' => $approvedHours,
+                'approved_hours_formatted' => $this->formatMinutes((int)$totalApprovedMinutes),
+                'approved_videos_count' => $totalApprovedVideos,
+                'approved_minutes' => (int)$totalApprovedMinutes,
                 'milestone_reached' => $workerCommission !== null,
                 'milestone_status' => $workerCommission?->status,
+                'commission_amount' => $workerCommission ? (int)$workerCommission->commission_amount : \App\Services\CheckRecruiterMilestone::COMMISSION_AMOUNT,
+                'commission' => $workerCommission,
             ];
         }
 
+        $pendingCommissions = $commissions->where('status', 'pending');
+        $paidCommissions = $commissions->where('status', 'paid');
+
         return [
             'recruited_workers_count' => $recruitedWorkers->count(),
+            'total_approved_videos_count' => $totalApprovedVideosAll,
+            'total_approved_minutes' => (int)$totalApprovedMinutesAll,
+            'total_approved_hours_formatted' => $this->formatMinutes((int)$totalApprovedMinutesAll),
             'workers_data' => $workersData,
             'pending_commission_count' => $pendingCommissions->count(),
             'paid_commission_count' => $paidCommissions->count(),
             'pending_commission_amount' => $pendingCommissions->sum('commission_amount'),
             'paid_commission_amount' => $paidCommissions->sum('commission_amount'),
             'total_commission_amount' => $commissions->sum('commission_amount'),
+            'claimable_workers' => collect($workersData)->filter(fn($w) => $w['milestone_reached'] && $w['milestone_status'] === 'pending')->values(),
         ];
     }
 

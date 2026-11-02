@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\AtlasTask;
+use App\Models\AtlasWorker;
 use App\Models\Partner;
 use App\Models\RecruiterCommission;
 
@@ -47,11 +49,19 @@ class CheckRecruiterMilestone
             return null;
         }
 
-        // Calculate total approved hours for this worker (all time)
-        $totalApprovedMinutes = $worker->videoWorkReports()
+        // Calculate total approved hours for this worker (all time from AtlasTask & VideoWorkReport)
+        $atlasWorkerIds = AtlasWorker::where(function ($q) use ($worker) {
+            $q->where('user_id', $worker->user_id)
+              ->orWhere('atlas_email', $worker->email);
+        })->pluck('id');
+
+        $atlasApprovedMinutes = AtlasTask::whereIn('atlas_worker_id', $atlasWorkerIds)->sum('approved_minutes');
+
+        $qcApprovedMinutes = $worker->videoWorkReports()
             ->where('qc_status', 'approved')
             ->sum('approved_duration_minutes');
 
+        $totalApprovedMinutes = $atlasApprovedMinutes + $qcApprovedMinutes;
         $totalApprovedHours = $totalApprovedMinutes / 60;
 
         // Create commission record only if milestone is reached
