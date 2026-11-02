@@ -65,6 +65,7 @@ class RegisteredUserController extends Controller
         }
 
         $isUnderMitra = ($recruiterPartner && $recruiterPartner->partner_role === 'mitra');
+        $bypassBank = $isUnderMitra && $recruiterPartner->bypassesWorkerBankOnboarding();
 
         // Construct the internal email address
         $internalEmail = $request->username . '@kamerakitaid.site';
@@ -74,8 +75,8 @@ class RegisteredUserController extends Controller
             'email' => $internalEmail,
             'password' => Hash::make($request->password),
             'role' => 'worker', // Default role
-            'has_completed_onboarding' => $isUnderMitra,
-            'tos_accepted_at' => $isUnderMitra ? now() : null,
+            'has_completed_onboarding' => $bypassBank,
+            'tos_accepted_at' => $bypassBank ? now() : null,
         ]);
 
         // Auto-generate next KMK-XXX code
@@ -103,12 +104,12 @@ class RegisteredUserController extends Controller
             'recruiter_partner_id' => $recruiterPartner ? $recruiterPartner->id : null,
             // Jika yang mengundang adalah Mitra, otomatis jadikan Mitra tersebut sebagai atasannya
             'mitra_parent_id' => $isUnderMitra ? $recruiterPartner->id : null,
-            // Otomatis isi rekening dari Mitra jika mendaftar dengan kode Mitra (karena pembayaran worker via Mitra)
-            'bank_name' => $isUnderMitra ? $recruiterPartner->bank_name : null,
-            'bank_account_number' => $isUnderMitra ? $recruiterPartner->bank_account_number : null,
-            'bank_account_owner' => $isUnderMitra ? $recruiterPartner->bank_account_owner : null,
-            'payment_method' => $isUnderMitra ? ($recruiterPartner->payment_method ?: 'bank_transfer') : null,
-            'airtm_username' => $isUnderMitra ? $recruiterPartner->airtm_username : null,
+            // Otomatis isi rekening dari Mitra jika Mitra mengaktifkan bypass onboarding rekening
+            'bank_name' => $bypassBank ? $recruiterPartner->bank_name : null,
+            'bank_account_number' => $bypassBank ? $recruiterPartner->bank_account_number : null,
+            'bank_account_owner' => $bypassBank ? $recruiterPartner->bank_account_owner : null,
+            'payment_method' => $bypassBank ? ($recruiterPartner->payment_method ?: 'bank_transfer') : null,
+            'airtm_username' => $bypassBank ? $recruiterPartner->airtm_username : null,
         ]);
 
         event(new Registered($user));

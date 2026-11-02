@@ -184,6 +184,7 @@ class ManagePartnerDemographicsController extends Controller
             'is_client_registered' => 'required|boolean',
             'base_hourly_rate' => 'required|numeric|min:0',
             'is_vip' => 'nullable|boolean',
+            'bypass_worker_bank_onboarding' => 'nullable|boolean',
         ]);
 
         // Keep fallback support for older migration fields
@@ -204,6 +205,7 @@ class ManagePartnerDemographicsController extends Controller
             Partner::create([
                 ...$validated,
                 'is_vip' => $validated['is_vip'] ?? false,
+                'bypass_worker_bank_onboarding' => isset($validated['bypass_worker_bank_onboarding']) ? (bool)$validated['bypass_worker_bank_onboarding'] : true,
                 'user_id' => $user->id,
             ]);
         });
@@ -255,6 +257,7 @@ class ManagePartnerDemographicsController extends Controller
             'is_client_registered' => 'required|boolean',
             'base_hourly_rate' => 'required|numeric|min:0',
             'is_vip' => 'nullable|boolean',
+            'bypass_worker_bank_onboarding' => 'nullable|boolean',
         ]);
 
         // Keep fallback support for older migration fields
@@ -291,6 +294,7 @@ class ManagePartnerDemographicsController extends Controller
             $partner->update([
                 ...$validated,
                 'is_vip' => $validated['is_vip'] ?? false,
+                'bypass_worker_bank_onboarding' => isset($validated['bypass_worker_bank_onboarding']) ? (bool)$validated['bypass_worker_bank_onboarding'] : $partner->bypassesWorkerBankOnboarding(),
                 'user_id' => $user->id,
             ]);
         });
@@ -298,6 +302,28 @@ class ManagePartnerDemographicsController extends Controller
         \App\Services\ActivityLogger::log('partner.update', "Memperbarui data mitra/worker: {$validated['full_name']} (ID: {$partner->mitra_id})");
 
         return redirect()->route('partners.index')->with('success', 'Data mitra/worker dan akun login berhasil diperbarui!');
+    }
+
+    public function toggleWorkerBankBypass(Request $request, Partner $partner)
+    {
+        if ($partner->partner_role !== 'mitra') {
+            return redirect()->back()->with('error', 'Hanya mitra yang dapat memiliki pengaturan rekening worker tim.');
+        }
+
+        $currentStatus = $partner->bypassesWorkerBankOnboarding();
+        $newStatus = $request->has('bypass') ? $request->boolean('bypass') : !$currentStatus;
+
+        $partner->update([
+            'bypass_worker_bank_onboarding' => $newStatus,
+        ]);
+
+        $statusText = $newStatus 
+            ? 'Aktif (Pencairan worker via rekening Mitra, onboarding rekening dibypass)' 
+            : 'Nonaktif (Worker tim wajib mengisi data rekening pribadi masing-masing saat onboarding)';
+
+        \App\Services\ActivityLogger::log('partner.update', "Mengubah pengaturan sistem rekening worker Mitra {$partner->full_name} ({$partner->mitra_id}) menjadi: {$statusText}");
+
+        return redirect()->back()->with('success', "Pengaturan rekening worker untuk Mitra {$partner->full_name} berhasil diperbarui: {$statusText}");
     }
 
     public function destroy(Partner $partner)

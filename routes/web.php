@@ -58,6 +58,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/partners/bulk-update', [\App\Http\Controllers\ManagePartnerDemographicsController::class, 'bulkUpdate'])
         ->middleware('role:superadmin,admin')
         ->name('partners.bulk-update');
+    Route::post('/partners/{partner}/toggle-bank-bypass', [\App\Http\Controllers\ManagePartnerDemographicsController::class, 'toggleWorkerBankBypass'])
+        ->middleware('role:superadmin,admin')
+        ->name('partners.toggle-bank-bypass');
     Route::resource('partners', ManagePartnerDemographicsController::class)
         ->middleware('role:superadmin,admin');
 
@@ -215,6 +218,7 @@ Route::middleware(['auth'])->prefix('vendor')->name('vendor.')->group(function (
     Route::get('/payments', [\App\Http\Controllers\VendorController::class, 'payments'])->name('payments.index');
     Route::get('/workers', [\App\Http\Controllers\VendorController::class, 'workers'])->name('workers.index');
     Route::post('/workers', [\App\Http\Controllers\VendorController::class, 'storeWorker'])->name('workers.store');
+    Route::post('/workers/toggle-bank-bypass', [\App\Http\Controllers\VendorController::class, 'toggleWorkerBankBypass'])->name('workers.toggle-bank-bypass');
     Route::put('/workers/{id}', [\App\Http\Controllers\VendorController::class, 'updateWorker'])->name('workers.update');
 });
 

@@ -141,14 +141,16 @@ class VendorController extends Controller
             return redirect()->back()->withErrors(['username' => 'Username ini sudah digunakan, silakan pilih yang lain.'])->withInput();
         }
 
+        $bypassBank = $partner->bypassesWorkerBankOnboarding();
+
         $newUser = \App\Models\User::create([
             'name' => $request->name,
             'email' => $generatedEmail,
             'password' => \Illuminate\Support\Facades\Hash::make($request->password),
             'role' => 'worker',
             'email_verified_at' => now(),
-            'has_completed_onboarding' => true,
-            'tos_accepted_at' => now(),
+            'has_completed_onboarding' => $bypassBank,
+            'tos_accepted_at' => $bypassBank ? now() : null,
         ]);
 
         $latestPartner = \App\Models\Partner::orderBy('mitra_id', 'desc')->first();
@@ -172,11 +174,11 @@ class VendorController extends Controller
             'user_id' => $newUser->id,
             'mitra_parent_id' => $partner->id,
             'recruiter_partner_id' => $partner->id,
-            'bank_name' => $partner->bank_name,
-            'bank_account_number' => $partner->bank_account_number,
-            'bank_account_owner' => $partner->bank_account_owner,
-            'payment_method' => $partner->payment_method ?: 'bank_transfer',
-            'airtm_username' => $partner->airtm_username,
+            'bank_name' => $bypassBank ? $partner->bank_name : null,
+            'bank_account_number' => $bypassBank ? $partner->bank_account_number : null,
+            'bank_account_owner' => $bypassBank ? $partner->bank_account_owner : null,
+            'payment_method' => $bypassBank ? ($partner->payment_method ?: 'bank_transfer') : null,
+            'airtm_username' => $bypassBank ? $partner->airtm_username : null,
         ]);
 
         return redirect()->back()->with('success', 'Worker baru berhasil didaftarkan dengan Email: ' . $generatedEmail . ' dan masuk ke tim Anda!');
@@ -237,5 +239,28 @@ class VendorController extends Controller
         $workerPartner->save();
 
         return redirect()->back()->with('success', 'Data worker ' . $workerUser->name . ' berhasil diperbarui!');
+    }
+
+    public function toggleWorkerBankBypass(Request $request)
+    {
+        $user = Auth::user();
+        $partner = $user->partner;
+
+        if (!$partner || $partner->partner_role !== 'mitra') {
+            abort(403, 'Unauthorized access.');
+        }
+
+        $currentStatus = $partner->bypassesWorkerBankOnboarding();
+        $newStatus = $request->has('bypass') ? $request->boolean('bypass') : !$currentStatus;
+
+        $partner->update([
+            'bypass_worker_bank_onboarding' => $newStatus,
+        ]);
+
+        $statusText = $newStatus 
+            ? 'Aktif (Pencairan worker disalurkan terpusat via rekening Mitra, onboarding rekening worker dibypass)' 
+            : 'Nonaktif (Worker tim wajib mengisi data rekening pribadi masing-masing saat proses onboarding)';
+
+        return redirect()->back()->with('success', 'Pengaturan sistem rekening worker berhasil diperbarui: ' . $statusText);
     }
 }

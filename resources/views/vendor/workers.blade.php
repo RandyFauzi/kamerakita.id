@@ -285,7 +285,7 @@
                 </div>
 
                 <!-- Referral Info Box -->
-                <div class="mb-6 bg-gradient-to-br from-indigo-50/80 to-blue-50/80 border border-indigo-100 rounded-xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div class="mb-4 bg-gradient-to-br from-indigo-50/80 to-blue-50/80 border border-indigo-100 rounded-xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div>
                         <h4 class="font-bold text-indigo-900 text-sm">Undang Worker secara Mandiri</h4>
                         <p class="text-xs text-indigo-700 mt-1">Bagikan link ini agar worker bisa mendaftar sendiri dan <b>langsung masuk</b> ke tim Anda.</p>
@@ -311,6 +311,41 @@
                             Salin Link
                         </button>
                     </div>
+                </div>
+
+                <!-- Setting Rekening Worker Tim Toggle -->
+                <div class="mb-6 bg-white border border-gray-200/80 rounded-xl p-4 sm:p-5 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold {{ $partner->bypassesWorkerBankOnboarding() ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200' }}">
+                                {{ $partner->bypassesWorkerBankOnboarding() ? '● Rekening Mitra Terpusat (Aktif)' : '○ Rekening Mandiri Worker' }}
+                            </span>
+                            <span class="text-xs font-bold text-gray-800">Sistem Pencairan & Rekening Tim</span>
+                        </div>
+                        <p class="text-xs text-gray-500 leading-relaxed max-w-2xl">
+                            @if($partner->bypassesWorkerBankOnboarding())
+                                Worker di tim Anda <b>otomatis menggunakan rekening Anda</b> untuk pencairan gaji. Worker langsung aktif dan tidak perlu mengisi nomor rekening saat pertama kali login (onboarding dibypass).
+                            @else
+                                Worker di tim Anda <b>wajib mengisi rekening pribadi masing-masing</b> saat pertama kali login. Pencairan gaji dikirim langsung ke rekening masing-masing worker.
+                            @endif
+                        </p>
+                    </div>
+
+                    <form method="POST" action="{{ route('vendor.workers.toggle-bank-bypass') }}" class="shrink-0 w-full md:w-auto">
+                        @csrf
+                        <input type="hidden" name="bypass" value="{{ $partner->bypassesWorkerBankOnboarding() ? '0' : '1' }}">
+                        <button type="submit" 
+                                onclick="return confirm('Apakah Anda yakin ingin mengubah sistem rekening worker tim menjadi: {{ $partner->bypassesWorkerBankOnboarding() ? 'Rekening Mandiri Worker' : 'Rekening Mitra Terpusat' }}?')"
+                                class="w-full md:w-auto inline-flex items-center justify-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-xl border transition shadow-2xs {{ $partner->bypassesWorkerBankOnboarding() ? 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50' : 'bg-indigo-600 border-indigo-600 text-white hover:bg-indigo-700' }}">
+                            @if($partner->bypassesWorkerBankOnboarding())
+                                <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                                <span>Ubah ke Rekening Mandiri</span>
+                            @else
+                                <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                <span>Aktifkan Rekening Mitra Terpusat</span>
+                            @endif
+                        </button>
+                    </form>
                 </div>
 
                 <!-- Toolbar Pencarian, Filter & Tombol Salin Kontak -->

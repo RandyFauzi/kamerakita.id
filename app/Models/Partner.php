@@ -50,6 +50,7 @@ class Partner extends Model
         'base_hourly_rate',
         'user_id',
         'is_vip',
+        'bypass_worker_bank_onboarding',
     ];
 
     /**
@@ -77,7 +78,13 @@ class Partner extends Model
         'has_headstrap' => 'boolean',
         'is_client_registered' => 'boolean',
         'is_vip' => 'boolean',
+        'bypass_worker_bank_onboarding' => 'boolean',
     ];
+
+    public function bypassesWorkerBankOnboarding(): bool
+    {
+        return (bool) ($this->bypass_worker_bank_onboarding ?? true);
+    }
 
     public function statusLabel(): string
     {

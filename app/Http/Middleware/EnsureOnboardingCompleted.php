@@ -26,22 +26,25 @@ class EnsureOnboardingCompleted
                 if ($partner && $partner->mitra_parent_id && $partner->mitraParent) {
                     $mitra = $partner->mitraParent;
                     
-                    if (empty($partner->bank_account_number) && !empty($mitra->bank_account_number)) {
-                        $partner->update([
-                            'bank_name' => $mitra->bank_name,
-                            'bank_account_number' => $mitra->bank_account_number,
-                            'bank_account_owner' => $mitra->bank_account_owner,
-                            'payment_method' => $mitra->payment_method ?: 'bank_transfer',
-                            'airtm_username' => $mitra->airtm_username,
+                    // Cek apakah Mitra mengaktifkan fitur bypass onboarding rekening
+                    if ($mitra->bypassesWorkerBankOnboarding()) {
+                        if (empty($partner->bank_account_number) && !empty($mitra->bank_account_number)) {
+                            $partner->update([
+                                'bank_name' => $mitra->bank_name,
+                                'bank_account_number' => $mitra->bank_account_number,
+                                'bank_account_owner' => $mitra->bank_account_owner,
+                                'payment_method' => $mitra->payment_method ?: 'bank_transfer',
+                                'airtm_username' => $mitra->airtm_username,
+                            ]);
+                        }
+
+                        $user->update([
+                            'has_completed_onboarding' => true,
+                            'tos_accepted_at' => $user->tos_accepted_at ?: now(),
                         ]);
+
+                        return $next($request);
                     }
-
-                    $user->update([
-                        'has_completed_onboarding' => true,
-                        'tos_accepted_at' => $user->tos_accepted_at ?: now(),
-                    ]);
-
-                    return $next($request);
                 }
 
                 // Hindari infinite redirect jika sudah berada di halaman onboarding

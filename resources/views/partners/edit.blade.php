@@ -324,6 +324,33 @@
                                                 </select>
                                                 @error('is_vip') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                                             </div>
+
+                                            @if($partner->partner_role === 'mitra')
+                                            <!-- Sistem Rekening Worker Tim (Khusus Mitra) -->
+                                            <div class="sm:col-span-2 bg-blue-50/70 border border-blue-200 rounded-2xl p-4">
+                                                <div class="flex items-start justify-between gap-4">
+                                                    <div>
+                                                        <label for="bypass_worker_bank_onboarding" class="block text-sm font-bold text-blue-900 mb-1">
+                                                            Sistem Rekening Worker Tim
+                                                        </label>
+                                                        <p class="text-xs text-blue-700 leading-relaxed">
+                                                            Atur apakah worker di bawah naungan Mitra ini otomatis disalurkan pencairannya lewat rekening Mitra (tanpa perlu mengisi formulir rekening saat onboarding) atau wajib mengisi rekening pribadi masing-masing.
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div class="mt-3">
+                                                    <select name="bypass_worker_bank_onboarding" id="bypass_worker_bank_onboarding" class="block w-full px-3.5 py-2.5 border border-blue-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white font-medium text-slate-800">
+                                                        <option value="1" {{ old('bypass_worker_bank_onboarding', $partner->bypassesWorkerBankOnboarding() ? '1' : '0') === '1' ? 'selected' : '' }}>
+                                                            🟢 AKTIF: Rekening Terpusat Mitra (Bypass Onboarding Rekening Worker)
+                                                        </option>
+                                                        <option value="0" {{ old('bypass_worker_bank_onboarding', $partner->bypassesWorkerBankOnboarding() ? '1' : '0') === '0' ? 'selected' : '' }}>
+                                                            ⚪ NONAKTIF: Rekening Mandiri Worker (Worker Wajib Isi Rekening Sendiri)
+                                                        </option>
+                                                    </select>
+                                                </div>
+                                                @error('bypass_worker_bank_onboarding') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                                            </div>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>

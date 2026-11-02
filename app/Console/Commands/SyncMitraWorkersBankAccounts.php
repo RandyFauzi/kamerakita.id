@@ -43,6 +43,11 @@ class SyncMitraWorkersBankAccounts extends Command
                 continue;
             }
 
+            // Skip if Mitra has disabled worker bank bypass, unless --force is given
+            if (!$force && !$mitra->bypassesWorkerBankOnboarding()) {
+                continue;
+            }
+
             // Sync bank account from Mitra if empty or --force is passed
             $shouldUpdateBank = $force || empty($worker->bank_account_number);
             if ($shouldUpdateBank && !empty($mitra->bank_account_number)) {

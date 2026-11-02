@@ -17,7 +17,7 @@ class OnboardingController extends Controller
         }
         
         $partner = Partner::where('user_id', $user->id)->first();
-        if ($partner && $partner->mitra_parent_id && $partner->mitraParent) {
+        if ($partner && $partner->mitra_parent_id && $partner->mitraParent && $partner->mitraParent->bypassesWorkerBankOnboarding()) {
             $mitra = $partner->mitraParent;
             if (empty($partner->bank_account_number) && !empty($mitra->bank_account_number)) {
                 $partner->update([
@@ -47,7 +47,7 @@ class OnboardingController extends Controller
         }
 
         $partner = Partner::where('user_id', $user->id)->first();
-        if ($partner && $partner->mitra_parent_id && $partner->mitraParent) {
+        if ($partner && $partner->mitra_parent_id && $partner->mitraParent && $partner->mitraParent->bypassesWorkerBankOnboarding()) {
             $mitra = $partner->mitraParent;
             if (empty($partner->bank_account_number) && !empty($mitra->bank_account_number)) {
                 $partner->update([
