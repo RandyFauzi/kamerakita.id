@@ -106,18 +106,13 @@ class AtlasRecordingSyncTest extends TestCase
         $this->assertDatabaseCount('atlas_tasks', 0);
     }
 
-    public function test_ambiguous_existing_id_rolls_back_the_entire_batch(): void
+    public function test_global_identity_constraint_blocks_duplicate_id_under_another_worker(): void
     {
         $this->sync([$this->record()])->assertOk();
         $worker = AtlasWorker::create(['atlas_email' => 'duplicate@example.com']);
         $duplicate = AtlasTask::first()->replicate();
         $duplicate->atlas_worker_id = $worker->id;
+        $this->expectException(\Illuminate\Database\UniqueConstraintViolationException::class);
         $duplicate->save();
-        $this->sync([
-            $this->record(['record_id' => str_repeat('c', 24), 'task' => 'Must roll back']),
-            $this->record(),
-        ])->assertUnprocessable();
-        $this->assertDatabaseCount('atlas_tasks', 2);
-        $this->assertDatabaseMissing('atlas_tasks', ['task_name' => 'Must roll back']);
     }
 }

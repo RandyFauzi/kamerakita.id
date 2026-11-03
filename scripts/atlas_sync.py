@@ -13,7 +13,7 @@ from contextlib import closing, contextmanager
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.error import HTTPError, URLError
-from datetime import datetime
+from datetime import datetime, timezone
 import urllib.request
 
 BASE_URL = "https://atlasdashboard.vtlabs.dev"
@@ -136,7 +136,7 @@ def push_to_laravel_api(conn, record_ids, force=False):
         raise RuntimeError('Set ATLAS_BOT_TOKEN before enabling API delivery')
     for i in range(0, len(records), 500):
         batch = records[i:i + 500]
-        data = json.dumps({'bot_token': token, 'records': batch}, allow_nan=False).encode('utf-8')
+        data = json.dumps({'bot_token': token, 'observed_at': datetime.now(timezone.utc).isoformat(), 'records': batch}, allow_nan=False).encode('utf-8')
         for attempt in range(3):
             req = urllib.request.Request(url, data=data, headers={'Content-Type': 'application/json', 'Accept': 'application/json'})
             try:

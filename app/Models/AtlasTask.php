@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class AtlasTask extends Model
 {
     protected $guarded = [];
+    protected $casts = ['source_observed_at' => 'datetime', 'source_details' => 'array'];
 
     public function atlasWorker(): BelongsTo
     {

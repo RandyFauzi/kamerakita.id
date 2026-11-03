@@ -42,3 +42,4 @@ Route::prefix('mobile')->group(function () {
 // ATLAS BOT WEBHOOK
 // ==========================================
 Route::post('/bot/atlas/sync', [\App\Http\Controllers\Api\AtlasBotController::class, 'sync']);
+Route::post('/bot/1618/sync', [\App\Http\Controllers\Api\AtlasBotController::class, 'sync1618'])->middleware('throttle:60,1');

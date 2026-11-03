@@ -226,6 +226,9 @@
                                         <div class="font-semibold text-gray-800 line-clamp-2" title="{{ $record->task_name }}">{{ $record->task_name }}</div>
                                         @if($record->source_status)
                                             <div class="text-xs text-gray-600">Atlas: {{ $record->source_status }}</div>
+                                            @if($record->ingest_source === '1618')
+                                                <div class="text-[10px] text-indigo-600 mt-1">Sumber: 1618 · data {{ $record->source_observed_at?->utc()->format('d M Y H:i') }} UTC</div>
+                                            @endif
                                         @endif
                                         @if($record->notes)
                                             <div class="text-[10px] text-amber-600 mt-1 line-clamp-1" title="{{ $record->notes }}"><span class="font-bold">Note:</span> {{ $record->notes }}</div>

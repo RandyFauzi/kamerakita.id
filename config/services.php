@@ -17,6 +17,9 @@ return [
     'atlas' => [
         'bot_token' => env('ATLAS_BOT_TOKEN'),
     ],
+    'robotics1618' => [
+        'bot_token' => env('ROBOTICS_1618_BOT_TOKEN'),
+    ],
 
     'postmark' => [
         'key' => env('POSTMARK_API_KEY'),
