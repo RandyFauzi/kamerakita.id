@@ -227,7 +227,7 @@
                                         @if($record->source_status)
                                             <div class="text-xs text-gray-600">Atlas: {{ $record->source_status }}</div>
                                             @if($record->ingest_source === '1618')
-                                                <div class="text-[10px] text-indigo-600 mt-1">Sumber: 1618 · data {{ $record->source_observed_at?->utc()->format('d M Y H:i') }} UTC</div>
+                                                <div class="text-[10px] text-indigo-600 mt-1">Sumber: 1618</div>
                                             @endif
                                         @endif
                                         @if($record->notes)
