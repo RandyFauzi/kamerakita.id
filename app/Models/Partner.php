@@ -81,6 +81,19 @@ class Partner extends Model
         'bypass_worker_bank_onboarding' => 'boolean',
     ];
 
+    public static function nextMitraId(): string
+    {
+        $highest = 0;
+
+        foreach (static::query()->where('mitra_id', 'like', 'KMK-%')->pluck('mitra_id') as $mitraId) {
+            if (preg_match('/^KMK-(\d+)$/D', $mitraId, $matches)) {
+                $highest = max($highest, (int) $matches[1]);
+            }
+        }
+
+        return 'KMK-'.str_pad($highest + 1, 3, '0', STR_PAD_LEFT);
+    }
+
     public function bypassesWorkerBankOnboarding(): bool
     {
         return (bool) ($this->bypass_worker_bank_onboarding ?? true);

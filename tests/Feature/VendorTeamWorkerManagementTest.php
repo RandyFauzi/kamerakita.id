@@ -11,6 +11,58 @@ class VendorTeamWorkerManagementTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_worker_creation_uses_numeric_id_and_retries_a_collision_without_orphan_users(): void
+    {
+        $mitraUser = User::factory()->create();
+        $mitra = Partner::factory()->create([
+            'user_id' => $mitraUser->id,
+            'partner_role' => 'mitra',
+            'mitra_id' => 'KMK-999',
+        ]);
+        Partner::factory()->create(['mitra_id' => 'KMK-1000']);
+        Partner::factory()->create(['mitra_id' => 'OTHER-99999']);
+        $userCount = User::count();
+        $attempts = 0;
+        $dispatcher = clone Partner::getEventDispatcher();
+        Partner::creating(function (Partner $worker) use (&$attempts) {
+            if ($worker->email === 'newworker@kamerakitaid.site' && ++$attempts === 1) {
+                // Simulate another request taking our allocated ID before the insert.
+                $worker->mitra_id = 'KMK-1000';
+            }
+        });
+
+        try {
+            $response = $this->actingAs($mitraUser)->post(route('vendor.workers.store'), [
+                'name' => 'New Worker',
+                'username' => 'newworker',
+                'whatsapp_number' => '08123456789',
+                'password' => 'password123',
+                'password_confirmation' => 'password123',
+            ]);
+        } finally {
+            Partner::setEventDispatcher($dispatcher);
+        }
+
+        $response->assertSessionHasNoErrors()->assertSessionHas('success');
+        $this->assertSame(2, $attempts);
+        $this->assertSame($userCount + 1, User::count());
+        $this->assertDatabaseHas('partners', [
+            'email' => 'newworker@kamerakitaid.site',
+            'mitra_id' => 'KMK-1001',
+            'mitra_parent_id' => $mitra->id,
+        ]);
+    }
+
+    public function test_next_mitra_id_handles_empty_table_and_five_digit_numbers(): void
+    {
+        $this->assertSame('KMK-001', Partner::nextMitraId());
+        Partner::factory()->create(['mitra_id' => 'KMK-9999']);
+        Partner::factory()->create(['mitra_id' => 'KMK-10000']);
+        Partner::factory()->create(['mitra_id' => 'KMK-99999-invalid']);
+
+        $this->assertSame('KMK-10001', Partner::nextMitraId());
+    }
+
     public function test_mitra_can_access_workers_management_page_and_see_team()
     {
         $mitraUser = User::factory()->create(['role' => 'user']);

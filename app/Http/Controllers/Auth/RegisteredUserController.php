@@ -80,13 +80,7 @@ class RegisteredUserController extends Controller
         ]);
 
         // Auto-generate next KMK-XXX code
-        $latestPartner = \App\Models\Partner::orderBy('mitra_id', 'desc')->first();
-        if ($latestPartner && preg_match('/KMK-(\d+)/', $latestPartner->mitra_id, $matches)) {
-            $nextNumber = intval($matches[1]) + 1;
-        } else {
-            $nextNumber = 1;
-        }
-        $nextMitraId = 'KMK-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+        $nextMitraId = \App\Models\Partner::nextMitraId();
 
         // Auto-create a Worker partner profile for the new user so they can use dashboard immediately
         \App\Models\Partner::create([

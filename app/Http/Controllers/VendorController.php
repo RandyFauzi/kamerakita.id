@@ -3,6 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\VideoWorkReport;
+use App\Models\User;
+use Illuminate\Database\UniqueConstraintViolationException;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 use App\Models\Partner;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -121,7 +126,7 @@ class VendorController extends Controller
         $user = Auth::user();
         $partner = $user->partner;
 
-        if (!$partner || $partner->partner_role !== 'mitra') {
+        if (! $partner || $partner->partner_role !== 'mitra') {
             abort(403, 'Unauthorized access.');
         }
 
@@ -129,59 +134,65 @@ class VendorController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9._-]+$/'],
             'whatsapp_number' => ['required', 'string', 'max:20'],
-            'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::min(8)],
+            'password' => ['required', 'confirmed', Password::min(8)],
         ], [
-            'username.regex' => 'Username hanya boleh berisi huruf, angka, titik, strip, atau underscore tanpa spasi.'
+            'username.regex' => 'Username hanya boleh berisi huruf, angka, titik, strip, atau underscore tanpa spasi.',
         ]);
 
-        $generatedEmail = strtolower(trim($request->username)) . '@kamerakitaid.site';
+        $generatedEmail = strtolower(trim($request->username)).'@kamerakitaid.site';
 
         // Check if the generated email already exists (just to be safe)
-        if (\App\Models\User::where('email', $generatedEmail)->exists()) {
+        if (User::where('email', $generatedEmail)->exists()) {
             return redirect()->back()->withErrors(['username' => 'Username ini sudah digunakan, silakan pilih yang lain.'])->withInput();
         }
 
         $bypassBank = $partner->bypassesWorkerBankOnboarding();
 
-        $newUser = \App\Models\User::create([
-            'name' => $request->name,
-            'email' => $generatedEmail,
-            'password' => \Illuminate\Support\Facades\Hash::make($request->password),
-            'role' => 'worker',
-            'email_verified_at' => now(),
-            'has_completed_onboarding' => $bypassBank,
-            'tos_accepted_at' => $bypassBank ? now() : null,
-        ]);
+        for ($attempt = 1; $attempt <= 5; $attempt++) {
+            try {
+                DB::transaction(function () use ($request, $generatedEmail, $bypassBank, $partner) {
+                    $newUser = User::create([
+                        'name' => $request->name,
+                        'email' => $generatedEmail,
+                        'password' => Hash::make($request->password),
+                        'role' => 'worker',
+                        'email_verified_at' => now(),
+                        'has_completed_onboarding' => $bypassBank,
+                        'tos_accepted_at' => $bypassBank ? now() : null,
+                    ]);
 
-        $latestPartner = \App\Models\Partner::orderBy('mitra_id', 'desc')->first();
-        if ($latestPartner && preg_match('/KMK-(\d+)/', $latestPartner->mitra_id, $matches)) {
-            $nextNumber = intval($matches[1]) + 1;
-        } else {
-            $nextNumber = 1;
+                    $nextMitraId = Partner::nextMitraId();
+
+                    Partner::create([
+                        'partner_role' => 'worker',
+                        'mitra_id' => $nextMitraId,
+                        'full_name' => $newUser->name,
+                        'whatsapp_number' => $request->whatsapp_number,
+                        'email' => $generatedEmail,
+                        'has_headstrap' => false,
+                        'status' => 'active',
+                        'group_name' => $partner->group_name ?? 'Group A',
+                        'base_hourly_rate' => 50000,
+                        'user_id' => $newUser->id,
+                        'mitra_parent_id' => $partner->id,
+                        'recruiter_partner_id' => $partner->id,
+                        'bank_name' => $bypassBank ? $partner->bank_name : null,
+                        'bank_account_number' => $bypassBank ? $partner->bank_account_number : null,
+                        'bank_account_owner' => $bypassBank ? $partner->bank_account_owner : null,
+                        'payment_method' => $bypassBank ? ($partner->payment_method ?: 'bank_transfer') : null,
+                        'airtm_username' => $bypassBank ? $partner->airtm_username : null,
+                    ]);
+                });
+                break;
+            } catch (UniqueConstraintViolationException $exception) {
+                // Retry only ID collisions; the transaction also rolls back the new user.
+                if ($attempt === 5 || ! str_contains($exception->getMessage(), 'partners_mitra_id_unique') && ! str_contains($exception->getMessage(), 'partners.mitra_id')) {
+                    throw $exception;
+                }
+            }
         }
-        $nextMitraId = 'KMK-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
 
-        \App\Models\Partner::create([
-            'partner_role' => 'worker',
-            'mitra_id' => $nextMitraId,
-            'full_name' => $newUser->name,
-            'whatsapp_number' => $request->whatsapp_number,
-            'email' => $generatedEmail,
-            'has_headstrap' => false,
-            'status' => 'active',
-            'group_name' => $partner->group_name ?? 'Group A',
-            'base_hourly_rate' => 50000,
-            'user_id' => $newUser->id,
-            'mitra_parent_id' => $partner->id,
-            'recruiter_partner_id' => $partner->id,
-            'bank_name' => $bypassBank ? $partner->bank_name : null,
-            'bank_account_number' => $bypassBank ? $partner->bank_account_number : null,
-            'bank_account_owner' => $bypassBank ? $partner->bank_account_owner : null,
-            'payment_method' => $bypassBank ? ($partner->payment_method ?: 'bank_transfer') : null,
-            'airtm_username' => $bypassBank ? $partner->airtm_username : null,
-        ]);
-
-        return redirect()->back()->with('success', 'Worker baru berhasil didaftarkan dengan Email: ' . $generatedEmail . ' dan masuk ke tim Anda!');
+        return redirect()->back()->with('success', 'Worker baru berhasil didaftarkan dengan Email: '.$generatedEmail.' dan masuk ke tim Anda!');
     }
 
     public function updateWorker(Request $request, $id)

@@ -63,13 +63,7 @@ class CreateWorkerTool extends BaseTool
         ]);
 
         // Auto-generate next KMK-XXX code
-        $latestPartner = Partner::orderBy('mitra_id', 'desc')->first();
-        if ($latestPartner && preg_match('/KMK-(\d+)/', $latestPartner->mitra_id, $matches)) {
-            $nextNumber = intval($matches[1]) + 1;
-        } else {
-            $nextNumber = 1;
-        }
-        $nextMitraId = 'KMK-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+        $nextMitraId = \App\Models\Partner::nextMitraId();
 
         if (!$whatsapp) {
             $whatsapp = '08' . rand(100000000, 999999999);
