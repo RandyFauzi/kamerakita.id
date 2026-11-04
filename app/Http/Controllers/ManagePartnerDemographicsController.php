@@ -452,9 +452,9 @@ class ManagePartnerDemographicsController extends Controller
     public function bulkUpdate(Request $request)
     {
         $validated = $request->validate([
-            'ids' => 'required|array',
-            'ids.*' => 'exists:partners,id',
-            'group_name' => 'nullable|string|in:no_change,clear,Group A,Group B',
+            'ids' => 'required|array|min:1',
+            'ids.*' => 'required|distinct|exists:partners,id',
+            'group_name' => 'nullable|string|max:50',
             'status' => 'nullable|string|in:no_change,active,inactive,suspended',
             'has_headstrap' => 'nullable|string|in:no_change,yes,no',
             'is_client_registered' => 'nullable|string|in:no_change,yes,no',
