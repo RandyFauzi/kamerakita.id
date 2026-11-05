@@ -1,7 +1,7 @@
 # Graph Report - kamerakita.id-main  (2026-11-05)
 
 ## Corpus Check
-- 518 files · ~1,014,046 words
+- 518 files · ~1,013,847 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 29 file(s) not represented in the graph (top: (none) 18, .css 4, .example 2)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `8df40583`
+- Built from commit: `5c29e7c1`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 

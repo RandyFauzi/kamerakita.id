@@ -276,9 +276,9 @@
     "semantic_hash": "41eb7d21ed4b7daa68945bf77674324b"
   },
   "app/Http/Controllers/LeaderboardController.php": {
-    "mtime": 1793839941.134857,
-    "seen": 1793840171.5612936,
-    "ast_hash": "4a1a07cc99698ecb1bfe3ccb83e96948",
+    "mtime": 1793840605.6110754,
+    "seen": 1793840663.8168662,
+    "ast_hash": "8dc78a99de4abdaaceb6e0975cb66a66",
     "semantic_hash": ""
   },
   "app/Http/Controllers/ListActivityLogsController.php": {
@@ -2112,9 +2112,9 @@
     "semantic_hash": ""
   },
   "resources/views/leaderboard/index.blade.php": {
-    "mtime": 1793839996.874841,
-    "seen": 1793840171.562042,
-    "ast_hash": "89b0b45ce0c23d5aeb8d3ceaf000003c",
+    "mtime": 1793840563.7391374,
+    "seen": 1793840663.8178425,
+    "ast_hash": "0c4e240d7d02f4e033ecb841654bfaa3",
     "semantic_hash": ""
   },
   "resources/views/mailbox/index.blade.php": {
@@ -3558,9 +3558,9 @@
     "semantic_hash": ""
   },
   "tests/Feature/LeaderboardMitraAggregationTest.php": {
-    "mtime": 1793840053.4023507,
-    "seen": 1793840171.5622442,
-    "ast_hash": "4b5386635e7faba02b1ed7e6ca2fc35e",
+    "mtime": 1793840583.8303566,
+    "seen": 1793840663.8179898,
+    "ast_hash": "15d4e5c135e363ba097067bd59f410c2",
     "semantic_hash": ""
   }
 }

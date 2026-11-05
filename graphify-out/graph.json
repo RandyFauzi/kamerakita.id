@@ -9006,14 +9006,14 @@
       "source_location": "L25"
     },
     {
-      "id": "tests_feature_leaderboardmitraaggregationtest_leaderboardmitraaggregationtest_test_leaderboard_page_renders_with_team_and_solo_badges",
-      "label": ".test_leaderboard_page_renders_with_team_and_solo_badges()",
+      "id": "tests_feature_leaderboardmitraaggregationtest_leaderboardmitraaggregationtest_test_leaderboard_page_renders_clean_without_team_or_solo_badge_labels",
+      "label": ".test_leaderboard_page_renders_clean_without_team_or_solo_badge_labels()",
       "_callable": true,
       "_origin": "ast",
       "community": 3,
       "community_name": "TestCase",
       "file_type": "code",
-      "norm_label": ".test_leaderboard_page_renders_with_team_and_solo_badges()",
+      "norm_label": ".test_leaderboard_page_renders_clean_without_team_or_solo_badge_labels()",
       "source_file": "tests/Feature/LeaderboardMitraAggregationTest.php",
       "source_location": "L147"
     },
@@ -34791,7 +34791,7 @@
       "weight": 1.0
     },
     {
-      "source": "tests_feature_leaderboardmitraaggregationtest_leaderboardmitraaggregationtest_test_leaderboard_page_renders_with_team_and_solo_badges",
+      "source": "tests_feature_leaderboardmitraaggregationtest_leaderboardmitraaggregationtest_test_leaderboard_page_renders_clean_without_team_or_solo_badge_labels",
       "target": "app_models_user_user",
       "relation": "calls",
       "_origin": "ast",
@@ -34803,7 +34803,7 @@
       "weight": 1.0
     },
     {
-      "source": "tests_feature_leaderboardmitraaggregationtest_leaderboardmitraaggregationtest_test_leaderboard_page_renders_with_team_and_solo_badges",
+      "source": "tests_feature_leaderboardmitraaggregationtest_leaderboardmitraaggregationtest_test_leaderboard_page_renders_clean_without_team_or_solo_badge_labels",
       "target": "app_models_partner_partner",
       "relation": "calls",
       "_origin": "ast",
@@ -34815,7 +34815,7 @@
       "weight": 1.0
     },
     {
-      "source": "tests_feature_leaderboardmitraaggregationtest_leaderboardmitraaggregationtest_test_leaderboard_page_renders_with_team_and_solo_badges",
+      "source": "tests_feature_leaderboardmitraaggregationtest_leaderboardmitraaggregationtest_test_leaderboard_page_renders_clean_without_team_or_solo_badge_labels",
       "target": "app_models_atlasworker_atlasworker",
       "relation": "calls",
       "_origin": "ast",
@@ -34827,7 +34827,7 @@
       "weight": 1.0
     },
     {
-      "source": "tests_feature_leaderboardmitraaggregationtest_leaderboardmitraaggregationtest_test_leaderboard_page_renders_with_team_and_solo_badges",
+      "source": "tests_feature_leaderboardmitraaggregationtest_leaderboardmitraaggregationtest_test_leaderboard_page_renders_clean_without_team_or_solo_badge_labels",
       "target": "app_models_atlastask_atlastask",
       "relation": "calls",
       "_origin": "ast",
@@ -76292,7 +76292,7 @@
     },
     {
       "source": "tests_feature_leaderboardmitraaggregationtest_leaderboardmitraaggregationtest",
-      "target": "tests_feature_leaderboardmitraaggregationtest_leaderboardmitraaggregationtest_test_leaderboard_page_renders_with_team_and_solo_badges",
+      "target": "tests_feature_leaderboardmitraaggregationtest_leaderboardmitraaggregationtest_test_leaderboard_page_renders_clean_without_team_or_solo_badge_labels",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -81013,5 +81013,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "8df40583e7e4ca62cfece9fbe777f870a8f6b0f9"
+  "built_at_commit": "5c29e7c17f99618436a6bc1c02abab82aab590a6"
 }

@@ -144,7 +144,7 @@ class LeaderboardMitraAggregationTest extends TestCase
         $this->assertEquals(2, $service->getPartnerWeeklyRank($soloWorker->id, 3));
     }
 
-    public function test_leaderboard_page_renders_with_team_and_solo_badges(): void
+    public function test_leaderboard_page_renders_clean_without_team_or_solo_badge_labels(): void
     {
         $mitraUser = User::factory()->create(['name' => 'Mitra User']);
         $mitra = Partner::factory()->create([
@@ -183,7 +183,8 @@ class LeaderboardMitraAggregationTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('Agensi Juara');
-        $response->assertSee('Tim Mitra');
+        $response->assertDontSee('Tim Mitra');
+        $response->assertDontSee('Worker Mandiri');
         $response->assertDontSee('Worker Under Mitra'); // Worker under mitra must NOT be displayed on its own
     }
 }
