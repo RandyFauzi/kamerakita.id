@@ -104,8 +104,9 @@ class RenderDashboardOverviewController extends Controller
 
             if ($partner->partner_role === 'mitra') {
                 $metrics = $this->metricsService->getMitraMetrics($partner);
+                $userRank = $this->leaderboardService->getPartnerWeeklyRank($partner->id, 3);
 
-                return view('dashboard.mitra', compact('partner', 'metrics'));
+                return view('dashboard.mitra', compact('partner', 'metrics', 'userRank'));
             }
 
             if ($partner->partner_role === 'rekruter') {

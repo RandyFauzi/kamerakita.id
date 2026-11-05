@@ -4,6 +4,58 @@
 
     <div class="space-y-4 sm:space-y-6" x-data="{ showBanner: true }">
         
+        @if(isset($userRank))
+            @if($userRank === 1)
+            <!-- Top 1 Banner (Gold) -->
+            <div class="rounded-2xl p-4 sm:p-5 shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-4 animate-in fade-in slide-in-from-top-4 duration-500" style="background: linear-gradient(135deg, #f59e0b, #fbbf24); color: #ffffff; border: 1px solid #fcd34d;">
+                <div class="flex gap-3 sm:gap-4 items-center">
+                    <div class="flex items-center justify-center shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full shadow-sm" style="background-color: rgba(255, 255, 255, 0.25);">
+                        <span style="font-size: 1.25rem;">🏆</span>
+                    </div>
+                    <div>
+                        <span class="block text-sm sm:text-base font-extrabold tracking-wide uppercase drop-shadow-sm">Tim Anda Peringkat 1 Minggu Ini!</span>
+                        <p class="text-xs sm:text-sm font-medium opacity-95">Luar biasa! Seluruh akumulasi durasi tim Anda memimpin posisi teratas di KameraKita!</p>
+                    </div>
+                </div>
+                <a href="{{ url('/leaderboard') }}" class="w-full md:w-auto px-5 py-2 sm:py-2.5 rounded-xl text-xs font-bold shadow-sm transition-transform hover:-translate-y-0.5 text-center whitespace-nowrap" style="background-color: #ffffff; color: #b45309;">
+                    Cek Leaderboard
+                </a>
+            </div>
+            @elseif($userRank === 2)
+            <!-- Top 2 Banner (Silver) -->
+            <div class="rounded-2xl p-4 sm:p-5 shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-4 animate-in fade-in slide-in-from-top-4 duration-500" style="background: linear-gradient(135deg, #94a3b8, #cbd5e1); color: #ffffff; border: 1px solid #e2e8f0;">
+                <div class="flex gap-3 sm:gap-4 items-center">
+                    <div class="flex items-center justify-center shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full shadow-sm" style="background-color: rgba(255, 255, 255, 0.25);">
+                        <span style="font-size: 1.25rem;">🥈</span>
+                    </div>
+                    <div>
+                        <span class="block text-sm sm:text-base font-extrabold tracking-wide uppercase drop-shadow-sm">Tim Anda Peringkat 2 Minggu Ini!</span>
+                        <p class="text-xs sm:text-sm font-medium opacity-95">Sedikit lagi posisi 1, terus dorong worker Anda untuk merekam!</p>
+                    </div>
+                </div>
+                <a href="{{ url('/leaderboard') }}" class="w-full md:w-auto px-5 py-2 sm:py-2.5 rounded-xl text-xs font-bold shadow-sm transition-transform hover:-translate-y-0.5 text-center whitespace-nowrap" style="background-color: #ffffff; color: #475569;">
+                    Cek Leaderboard
+                </a>
+            </div>
+            @elseif($userRank === 3)
+            <!-- Top 3 Banner (Bronze) -->
+            <div class="rounded-2xl p-4 sm:p-5 shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-4 animate-in fade-in slide-in-from-top-4 duration-500" style="background: linear-gradient(135deg, #d97706, #fcd34d); color: #ffffff; border: 1px solid #fde68a;">
+                <div class="flex gap-3 sm:gap-4 items-center">
+                    <div class="flex items-center justify-center shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full shadow-sm" style="background-color: rgba(255, 255, 255, 0.25);">
+                        <span style="font-size: 1.25rem;">🥉</span>
+                    </div>
+                    <div>
+                        <span class="block text-sm sm:text-base font-extrabold tracking-wide uppercase drop-shadow-sm">Tim Anda Peringkat 3 Minggu Ini!</span>
+                        <p class="text-xs sm:text-sm font-medium opacity-95">Tim Anda masuk 3 besar se-KameraKita! Terus pertahankan!</p>
+                    </div>
+                </div>
+                <a href="{{ url('/leaderboard') }}" class="w-full md:w-auto px-5 py-2 sm:py-2.5 rounded-xl text-xs font-bold shadow-sm transition-transform hover:-translate-y-0.5 text-center whitespace-nowrap" style="background-color: #ffffff; color: #92400e;">
+                    Cek Leaderboard
+                </a>
+            </div>
+            @endif
+        @endif
+
         <!-- Top Banner: YOUR ACCOUNT IS ACTIVE -->
         <template x-if="showBanner">
             <div class="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-gray-150 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative animate-in fade-in slide-in-from-top-4 duration-300">

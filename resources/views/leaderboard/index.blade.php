@@ -9,7 +9,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-3xl p-8 max-w-lg mx-auto">
                 <div class="text-center mb-8">
-                    <h3 class="text-2xl font-extrabold text-slate-800 tracking-tight">KameraKita <span class="text-sky-600">Top Workers</span></h3>
+                    <h3 class="text-2xl font-extrabold text-slate-800 tracking-tight">KameraKita <span class="text-sky-600">Top Performers</span></h3>
                     <p class="text-sm text-slate-500 max-w-sm mx-auto" x-text="currentTab === 'weekly' ? '{{ addslashes(__('dashboard.leaderboard.subtitle_weekly')) }}' : '{{ addslashes(__('dashboard.leaderboard.subtitle_all_time')) }}'"></p>
                 </div>
 
@@ -29,13 +29,16 @@
                         <div class="w-full flex flex-col items-center">
                             <interactive-leaderboard theme="light" players="{{ $weeklyData }}"></interactive-leaderboard>
                             <p class="mt-8 text-xs text-slate-400 italic text-center max-w-xs leading-relaxed">
-                                {{ __('dashboard.leaderboard.note') }}
+                                * Catatan: Jam kerja worker di bawah naungan Mitra diakumulasikan ke akun Tim Mitra terkait.
                             </p>
                         </div>
                     </template>
                     <template x-if="currentTab === 'allTime'">
-                        <div class="w-full flex justify-center">
+                        <div class="w-full flex flex-col items-center">
                             <interactive-leaderboard theme="light" players="{{ $allTimeData }}"></interactive-leaderboard>
+                            <p class="mt-8 text-xs text-slate-400 italic text-center max-w-xs leading-relaxed">
+                                * Peringkat akumulasi sepanjang masa untuk Tim Mitra dan Worker Mandiri.
+                            </p>
                         </div>
                     </template>
                 </div>
@@ -73,25 +76,36 @@
                 const top3 = players.slice(0, 3);
                 const others = players.slice(3);
                 
+                const getBadgeHtml = (p) => {
+                    if (!p) return '';
+                    const isTeam = !!p.is_team;
+                    const label = p.badge_label || (isTeam ? 'Tim Mitra' : 'Worker Mandiri');
+                    const color = isTeam ? '#4338ca' : '#0369a1';
+                    const bg = isTeam ? '#eef2ff' : '#f0f9ff';
+                    const border = isTeam ? '#c7d2fe' : '#bae6fd';
+                    const icon = isTeam ? '🏢' : '👤';
+                    return `<span style="display: inline-flex; align-items: center; gap: 3px; font-size: 10px; font-weight: 700; color: ${color}; background: ${bg}; border: 1px solid ${border}; padding: 1px 7px; border-radius: 999px; line-height: 1.2; margin-top: 3px; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${icon} ${label}</span>`;
+                };
+
+                const formatDuration = (val) => {
+                    let raw = 0;
+                    if (typeof val === 'number') {
+                        raw = Math.round(val);
+                    } else {
+                        raw = parseInt(String(val).replace(/[^0-9]/g, '')) || 0;
+                    }
+                    const h = Math.floor(raw / 60);
+                    const m = raw % 60;
+                    if (h > 0 && m > 0) return `${h} Jam ${m} Menit`;
+                    if (h > 0) return `${h} Jam`;
+                    return `${m} Menit`;
+                };
+
                 let podiumHtml = '';
                 if (top3.length > 0) {
                     const p1 = top3[0];
                     const p2 = top3[1];
                     const p3 = top3[2];
-
-                    const formatDuration = (val) => {
-                        let raw = 0;
-                        if (typeof val === 'number') {
-                            raw = Math.round(val);
-                        } else {
-                            raw = parseInt(String(val).replace(/[^0-9]/g, '')) || 0;
-                        }
-                        const h = Math.floor(raw / 60);
-                        const m = raw % 60;
-                        if (h > 0 && m > 0) return `${h} Jam ${m} Menit`;
-                        if (h > 0) return `${h} Jam`;
-                        return `${m} Menit`;
-                    };
 
                     podiumHtml = `
                     <div style="display: flex; justify-content: center; align-items: flex-end; gap: 10px; margin: 40px 0 50px;">
@@ -100,7 +114,8 @@
                         <div class="animate-entrance delay-200" style="display: flex; flex-direction: column; align-items: center; width: 30%;">
                             <img src="${p2.avatar}" style="width: 60px; height: 60px; border-radius: 50%; border: 3px solid #cbd5e1; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
                             <span style="font-weight: 700; margin-top: 8px; font-size: 14px; text-align: center; color: ${isLight ? '#334155' : '#e2e8f0'}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">${p2.name}</span>
-                            <div style="display: flex; flex-direction: column; align-items: center; gap: 3px; margin-bottom: 8px;">
+                            ${getBadgeHtml(p2)}
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 3px; margin: 6px 0 8px;">
                                 <span style="font-size: 12px; color: ${isLight ? '#475569' : '#cbd5e1'}; font-weight: 700; text-align: center; line-height: 1.2;">${formatDuration(p2.worked_minutes ?? p2.score)}</span>
                                 <span style="display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: ${isLight ? '#475569' : '#94a3b8'}; font-weight: 600; background: ${isLight ? '#f1f5f9' : 'rgba(255,255,255,0.06)'}; border: 1px solid ${isLight ? '#e2e8f0' : 'rgba(255,255,255,0.1)'}; padding: 2px 8px; border-radius: 999px;">
                                     <span style="width: 5px; height: 5px; border-radius: 50%; background: #0284c7; display: inline-block;"></span>
@@ -121,7 +136,8 @@
                                 <img src="${p1.avatar}" style="width: 76px; height: 76px; border-radius: 50%; border: 4px solid #fbbf24; object-fit: cover; box-shadow: 0 8px 16px rgba(245, 158, 11, 0.3);">
                             </div>
                             <span style="font-weight: 800; margin-top: 8px; font-size: 16px; text-align: center; color: ${isLight ? '#1e293b' : '#f8fafc'}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">${p1.name}</span>
-                            <div style="display: flex; flex-direction: column; align-items: center; gap: 3px; margin-bottom: 8px;">
+                            ${getBadgeHtml(p1)}
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 3px; margin: 6px 0 8px;">
                                 <span style="font-size: 13px; color: #f59e0b; font-weight: 800; text-align: center; line-height: 1.2;">${formatDuration(p1.worked_minutes ?? p1.score)}</span>
                                 <span style="display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: ${isLight ? '#475569' : '#94a3b8'}; font-weight: 600; background: ${isLight ? '#f1f5f9' : 'rgba(255,255,255,0.06)'}; border: 1px solid ${isLight ? '#e2e8f0' : 'rgba(255,255,255,0.1)'}; padding: 2px 9px; border-radius: 999px;">
                                     <span style="width: 5px; height: 5px; border-radius: 50%; background: #0284c7; display: inline-block;"></span>
@@ -139,7 +155,8 @@
                         <div class="animate-entrance delay-300" style="display: flex; flex-direction: column; align-items: center; width: 30%;">
                             <img src="${p3.avatar}" style="width: 60px; height: 60px; border-radius: 50%; border: 3px solid #fcd34d; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
                             <span style="font-weight: 700; margin-top: 8px; font-size: 14px; text-align: center; color: ${isLight ? '#334155' : '#e2e8f0'}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">${p3.name}</span>
-                            <div style="display: flex; flex-direction: column; align-items: center; gap: 3px; margin-bottom: 8px;">
+                            ${getBadgeHtml(p3)}
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 3px; margin: 6px 0 8px;">
                                 <span style="font-size: 12px; color: ${isLight ? '#475569' : '#cbd5e1'}; font-weight: 700; text-align: center; line-height: 1.2;">${formatDuration(p3.worked_minutes ?? p3.score)}</span>
                                 <span style="display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: ${isLight ? '#475569' : '#94a3b8'}; font-weight: 600; background: ${isLight ? '#f1f5f9' : 'rgba(255,255,255,0.06)'}; border: 1px solid ${isLight ? '#e2e8f0' : 'rgba(255,255,255,0.1)'}; padding: 2px 8px; border-radius: 999px;">
                                     <span style="width: 5px; height: 5px; border-radius: 50%; background: #0284c7; display: inline-block;"></span>
@@ -209,8 +226,6 @@
                         }
 
                         /* --- SPECIFIC CARD STYLES --- */
-                        
-                        /* Rank 1: The Golden Glow */
                         .rank-1 {
                             background: linear-gradient(135deg, #FFD000 0%, #FF8A00 100%);
                             box-shadow: 
@@ -274,16 +289,14 @@
                     <div class="lb-container-${theme} theme-${theme}">
                         ${podiumHtml}
                         <div class="leaderboard-wrapper w-full">
-                            ${others.map((player, index) => this.generatePlayerCard(player, index + 3, isLight)).join('')}
+                            ${others.map((player, index) => this.generatePlayerCard(player, index + 3, isLight, getBadgeHtml, formatDuration)).join('')}
                         </div>
                     </div>
                 `;
             }
 
-            generatePlayerCard(player, index, isLight) {
-                const rank = index + 1; // since index passed is 3 for rank 4
-                // We no longer have rank 1 in this list, but we'll keep the logic generic just in case
-                const isFirst = rank === 1;
+            generatePlayerCard(player, index, isLight, getBadgeHtml, formatDuration) {
+                const rank = index + 1;
                 const delayClass = `delay-${Math.min((index + 1) * 50, 1000)}`;
                 
                 let textColor = isLight ? '#1f2937' : '#f3f4f6';
@@ -291,28 +304,12 @@
                 let badgeBg = isLight ? '#f1f5f9' : 'rgba(255,255,255,0.05)';
                 let badgeBorder = isLight ? '#e2e8f0' : 'rgba(255,255,255,0.1)';
                 let badgeText = isLight ? '#64748b' : '#9ca3af';
-                let scoreBg = 'transparent';
-                let scoreBorder = 'none';
 
                 let cardOpacity = rank <= 10 ? '1' : (rank <= 20 ? '0.8' : '0.6');
-                
-                const formatDuration = (val) => {
-                    let raw = 0;
-                    if (typeof val === 'number') {
-                        raw = Math.round(val);
-                    } else {
-                        raw = parseInt(String(val).replace(/[^0-9]/g, '')) || 0;
-                    }
-                    const h = Math.floor(raw / 60);
-                    const m = raw % 60;
-                    if (h > 0 && m > 0) return `${h} Jam ${m} Menit`;
-                    if (h > 0) return `${h} Jam`;
-                    return `${m} Menit`;
-                };
 
                 return `
                     <div class="rank-card rank-other animate-entrance ${delayClass}" style="opacity: ${cardOpacity}">
-                        <div class="flex-center" style="gap: 16px; position: relative; z-index: 10;">
+                        <div class="flex-center" style="gap: 14px; position: relative; z-index: 10;">
                             <!-- Rank Badge -->
                             <div style="width: 32px; height: 32px; border-radius: 50%; background: ${badgeBg}; border: 1px solid ${badgeBorder}; color: ${badgeText}; font-size: 14px; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);">
                                 ${rank}
@@ -321,8 +318,11 @@
                             <!-- Avatar -->
                             <img src="${player.avatar}" alt="${player.name}" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid ${isLight ? '#e2e8f0' : 'rgba(255,255,255,0.1)'}; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
                             
-                            <!-- Name -->
-                            <span style="font-weight: 700; font-size: 18px; letter-spacing: -0.02em; color: ${textColor};">${player.name}</span>
+                            <!-- Name & Badge -->
+                            <div style="display: flex; flex-direction: column; align-items: flex-start; max-width: 170px;">
+                                <span style="font-weight: 700; font-size: 15px; letter-spacing: -0.02em; color: ${textColor}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">${player.name}</span>
+                                ${getBadgeHtml(player)}
+                            </div>
                         </div>
                         
                         <!-- Score & Approved -->
