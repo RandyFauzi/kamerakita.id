@@ -35,7 +35,16 @@
                         
                         <!-- Nama & Kontak -->
                         <h2 class="text-[20px] font-bold text-gray-900 mb-1 text-center relative z-10">{{ $partner->full_name ?? $user->name }}</h2>
-                        <p class="text-[11px] text-gray-500 mb-4 font-medium text-center relative z-10">{{ $user->email }} @if($partner) | {{ $partner->whatsapp_number }} @endif</p>
+                        <p class="text-[11px] text-gray-500 mb-2 font-medium text-center relative z-10">{{ $user->email }} @if($partner) | {{ $partner->whatsapp_number }} @endif</p>
+                        
+                        <!-- Tanggal Pendaftaran Akun -->
+                        @php
+                            $userRegDate = $partner?->registration_date ?? $partner?->created_at ?? $user->created_at;
+                        @endphp
+                        <p class="text-[11px] text-gray-400 mb-4 font-medium text-center relative z-10 flex items-center justify-center gap-1.5">
+                            <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            <span>Terdaftar sejak: <strong class="text-gray-700 font-semibold">{{ $userRegDate ? \Carbon\Carbon::parse($userRegDate)->translatedFormat('d F Y') : '-' }}</strong></span>
+                        </p>
                         
                         <!-- Badge Status -->
                         <div class="flex items-center justify-center gap-2 relative z-10">

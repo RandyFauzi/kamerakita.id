@@ -14,6 +14,8 @@
             }
             $progress = min(100, (int) round(($item['approved_hours'] / 20) * 100));
             $remaining = max(0, round(20 - $item['approved_hours'], 1));
+            $regDate = $w->registration_date ?? $w->created_at ?? $w->user?->created_at;
+            $regDateFormatted = $regDate ? \Carbon\Carbon::parse($regDate)->translatedFormat('d M Y') : '-';
 
             return [
                 'id' => $w->id,
@@ -22,6 +24,7 @@
                 'email' => $w->email ?? '-',
                 'whatsapp_number' => $w->whatsapp_number ?? '-',
                 'whatsapp_clean' => $cleanPhone,
+                'registered_at' => $regDateFormatted,
                 'bank_name' => $w->bank_name ?? '-',
                 'bank_account_number' => $w->bank_account_number ?? '-',
                 'bank_account_owner' => $w->bank_account_owner ?? '-',
@@ -201,7 +204,16 @@
                         </svg>
                     </div>
                     <div class="space-y-1">
-                        <span class="block text-xs font-black tracking-widest text-violet-600 uppercase">REKRUTER — PROGRAM KOMISI REWARD</span>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="block text-xs font-black tracking-widest text-violet-600 uppercase">REKRUTER — PROGRAM KOMISI REWARD</span>
+                            @php
+                                $rekruterRegDate = $partner->registration_date ?? $partner->created_at ?? Auth::user()->created_at;
+                            @endphp
+                            <span class="inline-flex items-center gap-1 text-[11px] text-gray-500 font-medium bg-gray-50 px-2 py-0.5 rounded-full border border-gray-200">
+                                <svg class="w-3 h-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                <span>Terdaftar: <strong class="text-gray-700">{{ $rekruterRegDate ? \Carbon\Carbon::parse($rekruterRegDate)->translatedFormat('d M Y') : '-' }}</strong></span>
+                            </span>
+                        </div>
                         <p class="text-sm text-gray-600 max-w-xl">
                             Setiap Worker yang Anda rekrut berhasil mencapai <strong>20 jam video approved</strong>, Anda otomatis berhak mendapatkan bonus reward <strong>Rp 100.000</strong> per worker.
                         </p>
@@ -680,6 +692,10 @@
                                     <td class="py-3.5 px-4">
                                         <div class="font-semibold text-gray-900" x-text="item.full_name"></div>
                                         <div class="text-xs text-gray-400" x-text="item.email"></div>
+                                        <div class="text-[11px] text-gray-400 mt-0.5 flex items-center gap-1">
+                                            <svg class="w-3 h-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                            <span>Daftar: <span class="font-medium text-gray-600" x-text="item.registered_at"></span></span>
+                                        </div>
                                         <template x-if="item.whatsapp_clean">
                                             <a :href="'https://wa.me/' + item.whatsapp_clean" target="_blank" class="inline-flex items-center gap-1 text-[11px] text-emerald-600 hover:text-emerald-800 font-medium mt-0.5">
                                                 <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.299.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.353.101.174.449.741.964 1.2.662.591 1.221.774 1.394.86.173.086.275.073.376-.044.101-.116.433-.506.549-.68.116-.173.231-.144.39-.086s1.011.477 1.184.564.289.13.332.203c.043.072.043.419-.101.824z"/></svg>

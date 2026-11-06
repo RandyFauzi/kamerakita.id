@@ -546,6 +546,13 @@
                                             <div class="flex flex-col">
                                                 <span>{{ $partner->full_name }}</span>
                                                 <span class="text-xs text-gray-400 font-normal">{{ $partner->user?->email ?? 'Belum punya akun login' }}</span>
+                                                @php
+                                                    $partnerRegDate = $partner->registration_date ?? $partner->created_at ?? $partner->user?->created_at;
+                                                @endphp
+                                                <span class="text-[11px] text-gray-400 font-normal flex items-center gap-1 mt-0.5">
+                                                    <svg class="w-3 h-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                                    <span>Daftar: <strong class="text-gray-600 font-medium">{{ $partnerRegDate ? \Carbon\Carbon::parse($partnerRegDate)->translatedFormat('d M Y') : '-' }}</strong></span>
+                                                </span>
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 uppercase font-mono text-xs">
@@ -660,6 +667,13 @@
                                                                         <div class="flex flex-col">
                                                                             <span>{{ $child->full_name }}</span>
                                                                             <span class="text-[10px] text-gray-400 font-normal">{{ $child->user?->email ?? 'Belum punya akun login' }}</span>
+                                                                            @php
+                                                                                $childRegDate = $child->registration_date ?? $child->created_at ?? $child->user?->created_at;
+                                                                            @endphp
+                                                                            <span class="text-[10px] text-gray-400 font-normal flex items-center gap-1 mt-0.5">
+                                                                                <svg class="w-3 h-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                                                                <span>Daftar: <strong class="text-gray-600 font-medium">{{ $childRegDate ? \Carbon\Carbon::parse($childRegDate)->translatedFormat('d M Y') : '-' }}</strong></span>
+                                                                            </span>
                                                                         </div>
                                                                     </td>
                                                                     <td class="px-6 py-3.5 whitespace-nowrap text-xs text-gray-700">Rp{{ number_format($child->base_hourly_rate ?? 0, 0, ',', '.') }}</td>

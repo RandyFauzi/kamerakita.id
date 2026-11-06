@@ -14,6 +14,9 @@
             if (str_starts_with($cleanWa, '0')) {
                 $cleanWa = '62' . substr($cleanWa, 1);
             }
+            $regDate = $worker->registration_date ?? $worker->created_at ?? $worker->user?->created_at;
+            $regDateFormatted = $regDate ? \Carbon\Carbon::parse($regDate)->translatedFormat('d M Y') : '-';
+            $regDateRaw = $regDate ? \Carbon\Carbon::parse($regDate)->timestamp : 0;
 
             return [
                 'id' => $worker->id,
@@ -22,6 +25,8 @@
                 'email' => $email,
                 'whatsapp_number' => $worker->whatsapp_number ?? '-',
                 'whatsapp_clean' => $cleanWa,
+                'registered_at' => $regDateFormatted,
+                'registered_at_raw' => $regDateRaw,
                 'bank_name' => $worker->bank_name ?? '',
                 'bank_account_number' => $worker->bank_account_number ?? '',
                 'bank_account_owner' => $worker->bank_account_owner ?? '',
@@ -76,7 +81,8 @@
                                (w.mitra_id && w.mitra_id.toLowerCase().includes(q)) ||
                                (w.whatsapp_number && w.whatsapp_number.toLowerCase().includes(q)) ||
                                (w.bank_name && w.bank_name.toLowerCase().includes(q)) ||
-                               (w.bank_account_number && w.bank_account_number.toLowerCase().includes(q));
+                               (w.bank_account_number && w.bank_account_number.toLowerCase().includes(q)) ||
+                               (w.registered_at && w.registered_at.toLowerCase().includes(q));
                     });
                 }
 
@@ -102,6 +108,10 @@
                     list.sort((a, b) => (a.full_name || '').localeCompare(b.full_name || ''));
                 } else if (this.sortBy === 'name_desc') {
                     list.sort((a, b) => (b.full_name || '').localeCompare(a.full_name || ''));
+                } else if (this.sortBy === 'registered_desc') {
+                    list.sort((a, b) => (b.registered_at_raw || 0) - (a.registered_at_raw || 0));
+                } else if (this.sortBy === 'registered_asc') {
+                    list.sort((a, b) => (a.registered_at_raw || 0) - (b.registered_at_raw || 0));
                 } else if (this.sortBy === 'all_time_desc') {
                     list.sort((a, b) => (b.all_time_minutes || 0) - (a.all_time_minutes || 0));
                 } else if (this.sortBy === 'pending_desc') {
@@ -143,6 +153,8 @@
                 this.editingWorker = worker;
                 this.editForm = {
                     id: worker.id,
+                    mitra_id: worker.mitra_id || '',
+                    registered_at: worker.registered_at || '-',
                     name: worker.full_name || '',
                     whatsapp_number: worker.whatsapp_number && worker.whatsapp_number !== '-' ? worker.whatsapp_number : '',
                     bank_name: worker.bank_name || '',
@@ -403,6 +415,8 @@
                                         @change="currentPage = 1"
                                         class="w-full sm:w-auto py-2.5 pl-3 pr-8 border border-gray-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white shadow-xs font-medium text-gray-700">
                                     <option value="default">Urutan Default</option>
+                                    <option value="registered_desc">Pendaftaran Terbaru</option>
+                                    <option value="registered_asc">Pendaftaran Terlama</option>
                                     <option value="name_asc">Nama (A - Z)</option>
                                     <option value="name_desc">Nama (Z - A)</option>
                                     <option value="all_time_desc">Jam All Time Tertinggi</option>
@@ -514,13 +528,17 @@
                                     <td class="py-3.5 px-2 font-bold text-indigo-600 whitespace-nowrap" x-text="item.mitra_id"></td>
                                     <td class="py-3.5 px-2 whitespace-nowrap">
                                         <div class="font-semibold text-gray-900" x-text="item.full_name"></div>
-                                        <div class="text-xs text-gray-500 flex items-center gap-1.5">
+                                        <div class="text-xs text-gray-500 flex items-center gap-1.5 flex-wrap">
                                             <span x-text="item.email || '-'"></span>
                                             <template x-if="item.bank_account_number">
                                                 <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200" :title="'Rek: ' + item.bank_name + ' ' + item.bank_account_number">
                                                     Bank Terisi
                                                 </span>
                                             </template>
+                                        </div>
+                                        <div class="text-[11px] text-gray-400 mt-0.5 flex items-center gap-1">
+                                            <svg class="w-3 h-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                            <span>Daftar: <span class="font-medium text-gray-600" x-text="item.registered_at"></span></span>
                                         </div>
                                     </td>
                                     <td class="py-3.5 px-2 text-gray-600 whitespace-nowrap" x-text="item.all_time_hours"></td>
@@ -672,9 +690,17 @@
                                     <div class="sm:flex sm:items-start">
                                         <div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
                                             <div class="flex justify-between items-center mb-4 pb-3 border-b border-gray-100">
-                                                <h3 class="text-base sm:text-lg font-bold text-gray-900" id="modal-edit-title">
-                                                    Edit Worker: <span class="text-indigo-600" x-text="editForm.name"></span>
-                                                </h3>
+                                                <div>
+                                                    <h3 class="text-base sm:text-lg font-bold text-gray-900" id="modal-edit-title">
+                                                        Edit Worker: <span class="text-indigo-600" x-text="editForm.name"></span>
+                                                    </h3>
+                                                    <p class="text-[11px] text-gray-400 mt-0.5 flex items-center gap-1.5">
+                                                        <span class="font-mono font-semibold text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded" x-text="editForm.mitra_id"></span>
+                                                        <span>•</span>
+                                                        <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                                        <span>Terdaftar: <strong class="font-medium text-gray-600" x-text="editForm.registered_at"></strong></span>
+                                                    </p>
+                                                </div>
                                                 <button type="button" @click="showEditModal = false" class="text-gray-400 hover:text-gray-600 p-1">
                                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                                                 </button>

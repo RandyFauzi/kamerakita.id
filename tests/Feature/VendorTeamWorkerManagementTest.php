@@ -172,4 +172,30 @@ class VendorTeamWorkerManagementTest extends TestCase
         $response = $this->get(route('vendor.workers.index'));
         $response->assertStatus(403);
     }
+
+    public function test_vendor_workers_page_displays_registration_date(): void
+    {
+        $mitraUser = User::factory()->create(['role' => 'mitra']);
+        $mitra = Partner::factory()->create([
+            'user_id' => $mitraUser->id,
+            'partner_role' => 'mitra',
+            'mitra_id' => 'KMK-001',
+        ]);
+
+        $workerUser = User::factory()->create();
+        $worker = Partner::factory()->create([
+            'user_id' => $workerUser->id,
+            'partner_role' => 'worker',
+            'mitra_parent_id' => $mitra->id,
+            'mitra_id' => 'KMK-002',
+            'full_name' => 'Worker Uji Tanggal',
+            'registration_date' => '2026-10-15',
+        ]);
+
+        $response = $this->actingAs($mitraUser)->get(route('vendor.workers.index'));
+        $response->assertStatus(200);
+        $response->assertSee('15 Okt 2026');
+        $response->assertSee('registered_at');
+        $response->assertSee('Pendaftaran Terbaru');
+    }
 }

@@ -4,17 +4,11 @@
         @csrf
         @method('patch')
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
             <div>
                 <label for="name" class="block text-sm font-semibold text-gray-700 mb-1">Nama Tampilan <span class="text-red-500">*</span></label>
                 <input id="name" name="name" type="text" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" value="{{ old('name', $user->name) }}" required autocomplete="name">
                 <x-input-error class="mt-2" :messages="$errors->get('name')" />
-            </div>
-
-            <div class="md:col-span-2">
-                <label for="avatar" class="block text-sm font-semibold text-gray-700 mb-1">Foto Profil (Max 200KB)</label>
-                <input id="avatar" name="avatar" type="file" accept="image/*" class="block w-full px-3.5 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
-                <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
             </div>
 
             <div>
@@ -35,6 +29,23 @@
                         @endif
                     </span>
                 </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Tanggal Pendaftaran</label>
+                @php
+                    $formRegDate = $partner?->registration_date ?? $partner?->created_at ?? $user->created_at;
+                @endphp
+                <div class="flex items-center h-[42px] px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-700 font-medium">
+                    <svg class="w-4 h-4 text-gray-400 mr-2 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    <span>{{ $formRegDate ? \Carbon\Carbon::parse($formRegDate)->translatedFormat('d F Y') : '-' }}</span>
+                </div>
+            </div>
+
+            <div class="sm:col-span-2 md:col-span-4">
+                <label for="avatar" class="block text-sm font-semibold text-gray-700 mb-1">Foto Profil (Max 200KB)</label>
+                <input id="avatar" name="avatar" type="file" accept="image/*" class="block w-full px-3.5 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
             </div>
         </div>
 

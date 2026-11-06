@@ -27,7 +27,10 @@
                             {{ $partner->id_mitra }}
                         </span>
                     </div>
-                    <p class="text-sm text-blue-100 mt-1">Bergabung sejak {{ $partner->tanggal_bergabung?->translatedFormat('d F Y') }} ({{ $partner->tanggal_bergabung?->diffForHumans() }})</p>
+                    @php
+                        $showRegDate = $partner->registration_date ?? $partner->tanggal_bergabung ?? $partner->created_at ?? $partner->user?->created_at;
+                    @endphp
+                    <p class="text-sm text-blue-100 mt-1">Bergabung sejak {{ $showRegDate ? \Carbon\Carbon::parse($showRegDate)->translatedFormat('d F Y') : '-' }} @if($showRegDate) ({{ \Carbon\Carbon::parse($showRegDate)->diffForHumans() }}) @endif</p>
                 </div>
                 <div class="flex gap-4">
                     <div class="bg-white/10 backdrop-blur-md px-4 py-3 rounded-xl">
@@ -79,6 +82,10 @@
                             <div>
                                 <dt class="text-xs font-semibold text-gray-400 uppercase">Email Aktif</dt>
                                 <dd class="text-sm font-medium text-gray-900 mt-1">{{ $partner->email }}</dd>
+                            </div>
+                            <div>
+                                <dt class="text-xs font-semibold text-gray-400 uppercase">Tanggal Registrasi</dt>
+                                <dd class="text-sm font-medium text-gray-900 mt-1">{{ $showRegDate ? \Carbon\Carbon::parse($showRegDate)->translatedFormat('d F Y') : '-' }}</dd>
                             </div>
                             <div class="md:col-span-2">
                                 <dt class="text-xs font-semibold text-gray-400 uppercase">Alamat Lengkap</dt>

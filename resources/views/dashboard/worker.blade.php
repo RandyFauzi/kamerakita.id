@@ -65,7 +65,17 @@
                         </svg>
                     </div>
                     <div class="space-y-1">
-                        <span class="block text-xs font-black tracking-widest text-blue-600 uppercase">{{ __('dashboard.general.worker_account_active') }}</span>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="block text-xs font-black tracking-widest text-blue-600 uppercase">{{ __('dashboard.general.worker_account_active') }}</span>
+                            @php
+                                $workerPartner = Auth::user()->partner;
+                                $workerRegDate = $workerPartner?->registration_date ?? $workerPartner?->created_at ?? Auth::user()->created_at;
+                            @endphp
+                            <span class="inline-flex items-center gap-1 text-[11px] text-gray-500 font-medium bg-gray-50 px-2 py-0.5 rounded-full border border-gray-200">
+                                <svg class="w-3 h-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                <span>Terdaftar: <strong class="text-gray-700">{{ $workerRegDate ? \Carbon\Carbon::parse($workerRegDate)->translatedFormat('d M Y') : '-' }}</strong></span>
+                            </span>
+                        </div>
                         <p class="text-sm leading-5 text-gray-500 max-w-xl">{{ __('dashboard.general.worker_account_desc') }}</p>
                         <!-- Progress bar -->
                         <div class="w-full bg-blue-100 h-2 rounded-full mt-3 overflow-hidden">
