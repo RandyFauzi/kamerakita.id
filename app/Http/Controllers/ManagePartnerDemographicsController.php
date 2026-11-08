@@ -15,6 +15,9 @@ class ManagePartnerDemographicsController extends Controller
 {
     public function index(Request $request)
     {
+        $perPage = $request->validate([
+            'per_page' => ['nullable', Rule::in(['15', '50', '100', 'all'])],
+        ])['per_page'] ?? '15';
         app(PartnerActivityStatusService::class)->syncAllIfDue();
 
         $search = $request->input('search');
@@ -129,8 +132,11 @@ class ManagePartnerDemographicsController extends Controller
             ->when($clientRegistered !== null && $clientRegistered !== '', function ($query) use ($clientRegistered) {
                 $query->where('is_client_registered', $clientRegistered === 'yes' ? 1 : 0);
             })
-            ->orderBy('mitra_id', 'asc')
-            ->paginate(15)
+            ->orderBy('mitra_id', 'asc');
+
+        $partners = $partners
+            ->paginate($perPage === 'all' ? max(1, (clone $partners)->count()) : (int) $perPage,
+                ['*'], 'page', $perPage === 'all' ? 1 : null)
             ->withQueryString();
 
         $mitraList = Partner::where('partner_role', 'mitra')->get();

@@ -355,6 +355,15 @@
                             </div>
                         </div>
                         
+                        <div class="w-full md:w-auto flex-none">
+                            <label for="per_page" class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 font-mono">{{ app()->getLocale() === 'en' ? 'Show rows' : 'Tampilkan baris' }}</label>
+                            <select id="per_page" name="per_page" onchange="this.form.submit()" class="block w-full py-2.5 px-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                                @foreach(['15' => '15', '50' => '50', '100' => '100', 'all' => (app()->getLocale() === 'en' ? 'Show all' : 'Tampilkan semua')] as $value => $label)
+                                    <option value="{{ $value }}" @selected((string) request('per_page', '15') === (string) $value)>{{ $label }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
                         <!-- Action Buttons -->
                         <div class="flex gap-2 w-full md:w-auto flex-none">
                             <button type="submit" class="flex-1 md:flex-none justify-center inline-flex items-center px-6 py-2.5 bg-gray-900 border border-transparent rounded-xl font-semibold text-sm text-white hover:bg-gray-800 transition shadow-sm">

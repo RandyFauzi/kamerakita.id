@@ -1,0 +1,30 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Models\Partner;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+class PartnerListPaginationTest extends TestCase
+{
+    use RefreshDatabase;
+
+    public function test_show_all_keeps_filters_and_ignores_previous_page(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        Partner::factory()->count(16)->create(['full_name' => 'Matching worker', 'partner_role' => 'worker']);
+        Partner::factory()->create(['full_name' => 'Excluded person', 'partner_role' => 'mitra']);
+
+        $this->actingAs($admin)->get(route('partners.index', ['search' => 'Matching']))
+            ->assertOk()->assertViewHas('partners', fn ($rows) => $rows->count() === 15 && $rows->total() === 16);
+
+        $this->get(route('partners.index', ['search' => 'Matching', 'per_page' => 'all', 'page' => 2]))
+            ->assertOk()->assertViewHas('partners', fn ($rows) => $rows->count() === 16 && !$rows->hasPages()
+                && $rows->currentPage() === 1 && $rows->every(fn ($row) => $row->full_name === 'Matching worker'));
+
+        $this->get(route('partners.index', ['search' => 'No match', 'per_page' => 'all']))
+            ->assertOk()->assertViewHas('partners', fn ($rows) => $rows->isEmpty());
+    }
+}
