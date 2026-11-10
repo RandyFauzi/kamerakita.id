@@ -56,4 +56,45 @@ class PartnerListPaginationTest extends TestCase
             ->assertJsonCount(1)
             ->assertJsonFragment(['name' => 'Budi Santoso']);
     }
+
+    public function test_filter_by_bank_account_number_and_export_buttons_rendered(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $partnerA = Partner::factory()->create([
+            'full_name' => 'Budi Santoso',
+            'bank_account_number' => '5420198821',
+            'bank_name' => 'BCA',
+        ]);
+        $partnerB = Partner::factory()->create([
+            'full_name' => 'Siti Nurhaliza',
+            'bank_account_number' => '1234567890',
+            'bank_name' => 'Mandiri',
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('partners.index', ['bank_account_number' => '5420198821']));
+        $response->assertOk();
+        $response->assertViewHas('partners', fn ($rows) => $rows->count() === 1 && $rows->first()->id === $partnerA->id);
+        $response->assertSee('5420198821');
+        $response->assertSee('partners/export');
+    }
+
+    public function test_export_partners_as_excel_and_csv(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        Partner::factory()->create([
+            'full_name' => 'Budi Santoso',
+            'bank_account_number' => '5420198821',
+            'bank_name' => 'BCA',
+        ]);
+
+        // Test Excel (.xlsx) export
+        $excelResponse = $this->actingAs($admin)->get(route('partners.export', ['format' => 'xlsx']));
+        $excelResponse->assertOk();
+        $this->assertStringContainsString('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', $excelResponse->headers->get('Content-Type'));
+
+        // Test CSV (.csv) export
+        $csvResponse = $this->actingAs($admin)->get(route('partners.export', ['format' => 'csv']));
+        $csvResponse->assertOk();
+        $this->assertStringContainsString('text/csv', $csvResponse->headers->get('Content-Type'));
+    }
 }

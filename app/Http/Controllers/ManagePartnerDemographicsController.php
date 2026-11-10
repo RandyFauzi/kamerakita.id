@@ -31,6 +31,7 @@ class ManagePartnerDemographicsController extends Controller
         $hourlyRate = $request->input('hourly_rate');
         $headstrap = $request->input('headstrap');
         $whatsapp = $request->input('whatsapp');
+        $bankAccountNumber = $request->input('bank_account_number');
         $mitraParent = $request->input('mitra_parent');
         $recruiterParent = $request->input('recruiter_parent');
         $clientRegistered = $request->input('client_registered');
@@ -70,76 +71,7 @@ class ManagePartnerDemographicsController extends Controller
             ->orderBy('group_name')
             ->pluck('group_name');
 
-        $partners = Partner::query()
-            ->with(['mitraParent', 'user', 'workers.user', 'recruitedWorkers.user'])
-            ->withMax('videoWorkReports', 'submission_date')
-            ->when($search, function ($query, $search) {
-                $numericSearch = preg_replace('/[^0-9]/', '', $search);
-                $query->where(function ($q) use ($search, $numericSearch) {
-                    $q->where('full_name', 'like', "%{$search}%")
-                        ->orWhere('mitra_id', 'like', "%{$search}%")
-                        ->orWhere('whatsapp_number', 'like', "%{$search}%")
-                        ->orWhere('email', 'like', "%{$search}%")
-                        ->orWhere('bank_account_number', 'like', "%{$search}%");
-
-                    if (!empty($numericSearch) && strlen($numericSearch) >= 4) {
-                        $q->orWhere('bank_account_number', 'like', "%{$numericSearch}%")
-                          ->orWhereRaw("REPLACE(REPLACE(bank_account_number, '-', ''), ' ', '') LIKE ?", ["%{$numericSearch}%"]);
-                    }
-                });
-            })
-            ->when($role, function ($query, $role) {
-                $query->where('partner_role', $role);
-            })
-            ->when($workerType, function ($query, $workerType) {
-                if ($workerType === 'langsung') {
-                    $query->whereNull('mitra_parent_id')
-                          ->whereNull('recruiter_partner_id');
-                } elseif ($workerType === 'mitra') {
-                    $query->whereNotNull('mitra_parent_id');
-                } elseif ($workerType === 'rekruter') {
-                    $query->whereNotNull('recruiter_partner_id');
-                }
-            })
-            ->when($status, function ($query, $status) {
-                if ($status === 'active') {
-                    // Pernah aktif = pernah kirim laporan (sepanjang waktu)
-                    $query->whereHas('videoWorkReports');
-                } elseif ($status === 'inactive') {
-                    // Belum pernah aktif = belum pernah kirim laporan
-                    $query->whereDoesntHave('videoWorkReports');
-                } else {
-                    $query->where('status', $status);
-                }
-            })
-            ->when($group, function ($query, $group) {
-                $query->where('group_name', $group);
-            })
-            ->when($mitraId, function ($query, $mitraId) {
-                $query->where('mitra_id', 'like', "%{$mitraId}%");
-            })
-            ->when($fullName, function ($query, $fullName) {
-                $query->where('full_name', 'like', "%{$fullName}%");
-            })
-            ->when($hourlyRate, function ($query, $hourlyRate) {
-                $query->where('base_hourly_rate', $hourlyRate);
-            })
-            ->when($headstrap !== null && $headstrap !== '', function ($query) use ($headstrap) {
-                $query->where('has_headstrap', $headstrap === 'yes' ? 1 : 0);
-            })
-            ->when($whatsapp, function ($query, $whatsapp) {
-                $query->where('whatsapp_number', 'like', "%{$whatsapp}%");
-            })
-            ->when($mitraParent, function ($query, $mitraParent) {
-                $query->where('mitra_parent_id', $mitraParent);
-            })
-            ->when($recruiterParent, function ($query, $recruiterParent) {
-                $query->where('recruiter_partner_id', $recruiterParent);
-            })
-            ->when($clientRegistered !== null && $clientRegistered !== '', function ($query) use ($clientRegistered) {
-                $query->where('is_client_registered', $clientRegistered === 'yes' ? 1 : 0);
-            })
-            ->orderBy('mitra_id', 'asc');
+        $partners = $this->buildFilteredPartnersQuery($request);
 
         $partners = $partners
             ->paginate($perPage === 'all' ? max(1, (clone $partners)->count()) : (int) $perPage,
@@ -150,7 +82,8 @@ class ManagePartnerDemographicsController extends Controller
 
         return view('partners.index', compact(
             'partners', 'search', 'role', 'status', 'group', 'summary',
-            'mitraId', 'fullName', 'hourlyRate', 'headstrap', 'whatsapp', 'mitraParent', 'clientRegistered', 'mitraList', 'activationGroups'
+            'mitraId', 'fullName', 'hourlyRate', 'headstrap', 'whatsapp', 'bankAccountNumber',
+            'mitraParent', 'recruiterParent', 'clientRegistered', 'mitraList', 'activationGroups'
         ));
     }
 
@@ -351,68 +284,7 @@ class ManagePartnerDemographicsController extends Controller
 
     public function exportContacts(Request $request)
     {
-        $search = $request->input('search');
-        $role = $request->input('role');
-        $status = $request->input('status');
-        $group = $request->input('group');
-        
-        $mitraId = $request->input('mitra_id');
-        $fullName = $request->input('full_name');
-        $hourlyRate = $request->input('hourly_rate');
-        $headstrap = $request->input('headstrap');
-        $whatsapp = $request->input('whatsapp');
-        $mitraParent = $request->input('mitra_parent');
-        $clientRegistered = $request->input('client_registered');
-
-        $partners = Partner::query()
-            ->with(['user'])
-            ->when($search, function ($query, $search) {
-                $numericSearch = preg_replace('/[^0-9]/', '', $search);
-                $query->where(function ($q) use ($search, $numericSearch) {
-                    $q->where('full_name', 'like', "%{$search}%")
-                        ->orWhere('mitra_id', 'like', "%{$search}%")
-                        ->orWhere('whatsapp_number', 'like', "%{$search}%")
-                        ->orWhere('email', 'like', "%{$search}%")
-                        ->orWhere('bank_account_number', 'like', "%{$search}%");
-
-                    if (!empty($numericSearch) && strlen($numericSearch) >= 4) {
-                        $q->orWhere('bank_account_number', 'like', "%{$numericSearch}%")
-                          ->orWhereRaw("REPLACE(REPLACE(bank_account_number, '-', ''), ' ', '') LIKE ?", ["%{$numericSearch}%"]);
-                    }
-                });
-            })
-            ->when($role, function ($query, $role) {
-                $query->where('partner_role', $role);
-            })
-            ->when($status, function ($query, $status) {
-                $query->where('status', $status);
-            })
-            ->when($group, function ($query, $group) {
-                $query->where('group_name', $group);
-            })
-            ->when($mitraId, function ($query, $mitraId) {
-                $query->where('mitra_id', 'like', "%{$mitraId}%");
-            })
-            ->when($fullName, function ($query, $fullName) {
-                $query->where('full_name', 'like', "%{$fullName}%");
-            })
-            ->when($hourlyRate, function ($query, $hourlyRate) {
-                $query->where('base_hourly_rate', $hourlyRate);
-            })
-            ->when($headstrap !== null && $headstrap !== '', function ($query) use ($headstrap) {
-                $query->where('has_headstrap', $headstrap === 'yes' ? 1 : 0);
-            })
-            ->when($whatsapp, function ($query, $whatsapp) {
-                $query->where('whatsapp_number', 'like', "%{$whatsapp}%");
-            })
-            ->when($mitraParent, function ($query, $mitraParent) {
-                $query->where('mitra_parent_id', $mitraParent);
-            })
-            ->when($clientRegistered !== null && $clientRegistered !== '', function ($query) use ($clientRegistered) {
-                $query->where('is_client_registered', $clientRegistered === 'yes' ? 1 : 0);
-            })
-            ->orderBy('mitra_id', 'asc')
-            ->get();
+        $partners = $this->buildFilteredPartnersQuery($request)->get();
 
         if ($request->wantsJson() || $request->input('format') === 'json') {
             $data = $partners->map(function ($partner) {
@@ -523,5 +395,252 @@ class ManagePartnerDemographicsController extends Controller
         \App\Services\ActivityLogger::log('partner.bulk_update', "Melakukan sunting massal untuk {$count} mitra/worker. Kolom yang diubah: {$changedFields}");
 
         return redirect()->back()->with('success', count($ids) . ' akun kemitraan berhasil disunting secara massal!');
+    }
+
+    /**
+     * Export filtered partners/workers into Excel (.xlsx) or CSV format.
+     */
+    public function export(Request $request)
+    {
+        $partners = $this->buildFilteredPartnersQuery($request)->get();
+        $format = strtolower((string)$request->input('format', 'xlsx'));
+
+        \App\Services\ActivityLogger::log('partner.export', "Mengekspor data mitra/worker ({$format}) sebanyak {$partners->count()} baris.");
+
+        if ($format === 'csv') {
+            $filename = 'data_mitra_worker_' . date('Y-m-d_H-i-s') . '.csv';
+
+            return response()->streamDownload(function () use ($partners) {
+                $file = fopen('php://output', 'w');
+                // UTF-8 BOM for Excel compatibility
+                fputs($file, "\xEF\xBB\xBF");
+                fputcsv($file, [
+                    'No',
+                    'ID Vendor',
+                    'Nama Lengkap',
+                    'Email',
+                    'Peran',
+                    'Grup',
+                    'Tarif per Jam (IDR)',
+                    'Headstrap',
+                    'No WhatsApp',
+                    'Nama Bank',
+                    'Nomor Rekening',
+                    'Nama Pemilik Rekening',
+                    'Vendor Atasan',
+                    'Rekruter',
+                    'Registrasi Klien',
+                    'Tanggal Daftar',
+                    'Status',
+                ]);
+
+                foreach ($partners as $index => $p) {
+                    $regDate = $p->registration_date 
+                        ? \Carbon\Carbon::parse($p->registration_date)->format('Y-m-d') 
+                        : ($p->created_at ? $p->created_at->format('Y-m-d') : '-');
+
+                    fputcsv($file, [
+                        $index + 1,
+                        $p->mitra_id,
+                        $p->full_name,
+                        $p->user?->email ?? $p->email ?? '-',
+                        strtoupper($p->partner_role),
+                        $p->group_name ?? '-',
+                        $p->base_hourly_rate ?? 0,
+                        $p->has_headstrap ? 'Sudah' : 'Belum',
+                        $p->whatsapp_number ? "'" . $p->whatsapp_number : '-',
+                        $p->bank_name ?? '-',
+                        $p->bank_account_number ? "'" . $p->bank_account_number : '-',
+                        $p->bank_account_owner ?? '-',
+                        $p->mitraParent?->full_name ?? '-',
+                        $p->recruiter?->full_name ?? '-',
+                        $p->is_client_registered ? 'Registered' : 'Unregistered',
+                        $regDate,
+                        strtoupper($p->status),
+                    ]);
+                }
+                fclose($file);
+            }, $filename, [
+                'Content-Type' => 'text/csv; charset=UTF-8',
+                'Cache-Control' => 'no-store, no-cache',
+            ]);
+        }
+
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Data Mitra & Worker');
+
+        $headers = [
+            'No',
+            'ID Vendor',
+            'Nama Lengkap',
+            'Email',
+            'Peran',
+            'Grup',
+            'Tarif per Jam (IDR)',
+            'Headstrap',
+            'No WhatsApp',
+            'Nama Bank',
+            'Nomor Rekening',
+            'Nama Pemilik Rekening',
+            'Vendor Atasan',
+            'Rekruter',
+            'Registrasi Klien',
+            'Tanggal Daftar',
+            'Status',
+        ];
+
+        $sheet->fromArray($headers, null, 'A1');
+
+        $headerRange = 'A1:Q1';
+        $sheet->getStyle($headerRange)->getFont()->setBold(true);
+        $sheet->getStyle($headerRange)->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setARGB('FFF1F5F9');
+
+        $row = 2;
+        foreach ($partners as $index => $p) {
+            $regDate = $p->registration_date 
+                ? \Carbon\Carbon::parse($p->registration_date)->format('Y-m-d') 
+                : ($p->created_at ? $p->created_at->format('Y-m-d') : '-');
+
+            $sheet->setCellValue("A{$row}", $index + 1);
+            $sheet->setCellValue("B{$row}", $p->mitra_id);
+            $sheet->setCellValue("C{$row}", $p->full_name);
+            $sheet->setCellValue("D{$row}", $p->user?->email ?? $p->email ?? '-');
+            $sheet->setCellValue("E{$row}", strtoupper($p->partner_role));
+            $sheet->setCellValue("F{$row}", $p->group_name ?? '-');
+            $sheet->setCellValue("G{$row}", (float)($p->base_hourly_rate ?? 0));
+            $sheet->setCellValue("H{$row}", $p->has_headstrap ? 'Sudah' : 'Belum');
+            $sheet->setCellValueExplicit("I{$row}", (string)($p->whatsapp_number ?? '-'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheet->setCellValue("J{$row}", $p->bank_name ?? '-');
+            $sheet->setCellValueExplicit("K{$row}", (string)($p->bank_account_number ?? '-'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheet->setCellValue("L{$row}", $p->bank_account_owner ?? '-');
+            $sheet->setCellValue("M{$row}", $p->mitraParent?->full_name ?? '-');
+            $sheet->setCellValue("N{$row}", $p->recruiter?->full_name ?? '-');
+            $sheet->setCellValue("O{$row}", $p->is_client_registered ? 'Registered' : 'Unregistered');
+            $sheet->setCellValue("P{$row}", $regDate);
+            $sheet->setCellValue("Q{$row}", strtoupper($p->status));
+
+            $row++;
+        }
+
+        foreach (range('A', 'Q') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $filename = 'data_mitra_worker_' . date('Y-m-d_H-i-s') . '.xlsx';
+
+        return response()->streamDownload(function () use ($writer) {
+            $writer->save('php://output');
+        }, $filename, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Cache-Control' => 'max-age=0',
+        ]);
+    }
+
+    /**
+     * Build query for partners/workers list using all active request filters.
+     */
+    protected function buildFilteredPartnersQuery(Request $request)
+    {
+        $search = $request->input('search');
+        $role = $request->input('role');
+        $status = $request->input('status');
+        $group = $request->input('group');
+        $workerType = $request->input('worker_type');
+
+        // Column-Specific Filters
+        $mitraId = $request->input('mitra_id');
+        $fullName = $request->input('full_name');
+        $hourlyRate = $request->input('hourly_rate');
+        $headstrap = $request->input('headstrap');
+        $whatsapp = $request->input('whatsapp');
+        $bankAccountNumber = $request->input('bank_account_number');
+        $mitraParent = $request->input('mitra_parent');
+        $recruiterParent = $request->input('recruiter_parent');
+        $clientRegistered = $request->input('client_registered');
+
+        return Partner::query()
+            ->with(['mitraParent', 'recruiter', 'user', 'workers.user', 'recruitedWorkers.user'])
+            ->withMax('videoWorkReports', 'submission_date')
+            ->when($search, function ($query, $search) {
+                $numericSearch = preg_replace('/[^0-9]/', '', $search);
+                $query->where(function ($q) use ($search, $numericSearch) {
+                    $q->where('full_name', 'like', "%{$search}%")
+                        ->orWhere('mitra_id', 'like', "%{$search}%")
+                        ->orWhere('whatsapp_number', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('bank_account_number', 'like', "%{$search}%");
+
+                    if (!empty($numericSearch) && strlen($numericSearch) >= 4) {
+                        $q->orWhere('bank_account_number', 'like', "%{$numericSearch}%")
+                          ->orWhereRaw("REPLACE(REPLACE(bank_account_number, '-', ''), ' ', '') LIKE ?", ["%{$numericSearch}%"]);
+                    }
+                });
+            })
+            ->when($role, function ($query, $role) {
+                $query->where('partner_role', $role);
+            })
+            ->when($workerType, function ($query, $workerType) {
+                if ($workerType === 'langsung') {
+                    $query->whereNull('mitra_parent_id')
+                          ->whereNull('recruiter_partner_id');
+                } elseif ($workerType === 'mitra') {
+                    $query->whereNotNull('mitra_parent_id');
+                } elseif ($workerType === 'rekruter') {
+                    $query->whereNotNull('recruiter_partner_id');
+                }
+            })
+            ->when($status, function ($query, $status) {
+                if ($status === 'active') {
+                    // Pernah aktif = pernah kirim laporan (sepanjang waktu)
+                    $query->whereHas('videoWorkReports');
+                } elseif ($status === 'inactive') {
+                    // Belum pernah aktif = belum pernah kirim laporan
+                    $query->whereDoesntHave('videoWorkReports');
+                } else {
+                    $query->where('status', $status);
+                }
+            })
+            ->when($group, function ($query, $group) {
+                $query->where('group_name', $group);
+            })
+            ->when($mitraId, function ($query, $mitraId) {
+                $query->where('mitra_id', 'like', "%{$mitraId}%");
+            })
+            ->when($fullName, function ($query, $fullName) {
+                $query->where('full_name', 'like', "%{$fullName}%");
+            })
+            ->when($hourlyRate, function ($query, $hourlyRate) {
+                $query->where('base_hourly_rate', $hourlyRate);
+            })
+            ->when($headstrap !== null && $headstrap !== '', function ($query) use ($headstrap) {
+                $query->where('has_headstrap', $headstrap === 'yes' ? 1 : 0);
+            })
+            ->when($whatsapp, function ($query, $whatsapp) {
+                $query->where('whatsapp_number', 'like', "%{$whatsapp}%");
+            })
+            ->when($bankAccountNumber, function ($query, $bankAccountNumber) {
+                $clean = preg_replace('/[^0-9]/', '', $bankAccountNumber);
+                $query->where(function ($q) use ($bankAccountNumber, $clean) {
+                    $q->where('bank_account_number', 'like', "%{$bankAccountNumber}%");
+                    if (!empty($clean) && strlen($clean) >= 3) {
+                        $q->orWhere('bank_account_number', 'like', "%{$clean}%")
+                          ->orWhereRaw("REPLACE(REPLACE(bank_account_number, '-', ''), ' ', '') LIKE ?", ["%{$clean}%"]);
+                    }
+                });
+            })
+            ->when($mitraParent, function ($query, $mitraParent) {
+                $query->where('mitra_parent_id', $mitraParent);
+            })
+            ->when($recruiterParent, function ($query, $recruiterParent) {
+                $query->where('recruiter_partner_id', $recruiterParent);
+            })
+            ->when($clientRegistered !== null && $clientRegistered !== '', function ($query) use ($clientRegistered) {
+                $query->where('is_client_registered', $clientRegistered === 'yes' ? 1 : 0);
+            })
+            ->orderBy('mitra_id', 'asc');
     }
 }
