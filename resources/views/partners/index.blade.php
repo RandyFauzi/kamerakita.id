@@ -546,6 +546,12 @@
                                             <div class="flex flex-col">
                                                 <span>{{ $partner->full_name }}</span>
                                                 <span class="text-xs text-gray-400 font-normal">{{ $partner->user?->email ?? 'Belum punya akun login' }}</span>
+                                                @if($partner->bank_account_number)
+                                                    <span class="text-[11px] text-gray-500 font-normal flex items-center gap-1 mt-0.5">
+                                                        <svg class="w-3 h-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                                                        <span>{{ $partner->bank_name ? $partner->bank_name . ': ' : '' }}<strong class="font-mono text-gray-700">{{ $partner->bank_account_number }}</strong></span>
+                                                    </span>
+                                                @endif
                                                 @php
                                                     $partnerRegDate = $partner->registration_date ?? $partner->created_at ?? $partner->user?->created_at;
                                                 @endphp
@@ -667,6 +673,12 @@
                                                                         <div class="flex flex-col">
                                                                             <span>{{ $child->full_name }}</span>
                                                                             <span class="text-[10px] text-gray-400 font-normal">{{ $child->user?->email ?? 'Belum punya akun login' }}</span>
+                                                                            @if($child->bank_account_number)
+                                                                                <span class="text-[10px] text-gray-500 font-normal flex items-center gap-1 mt-0.5">
+                                                                                    <svg class="w-2.5 h-2.5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                                                                                    <span>{{ $child->bank_name ? $child->bank_name . ': ' : '' }}<strong class="font-mono text-gray-700">{{ $child->bank_account_number }}</strong></span>
+                                                                                </span>
+                                                                            @endif
                                                                             @php
                                                                                 $childRegDate = $child->registration_date ?? $child->created_at ?? $child->user?->created_at;
                                                                             @endphp

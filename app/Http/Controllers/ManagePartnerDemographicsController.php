@@ -74,11 +74,18 @@ class ManagePartnerDemographicsController extends Controller
             ->with(['mitraParent', 'user', 'workers.user', 'recruitedWorkers.user'])
             ->withMax('videoWorkReports', 'submission_date')
             ->when($search, function ($query, $search) {
-                $query->where(function ($q) use ($search) {
+                $numericSearch = preg_replace('/[^0-9]/', '', $search);
+                $query->where(function ($q) use ($search, $numericSearch) {
                     $q->where('full_name', 'like', "%{$search}%")
                         ->orWhere('mitra_id', 'like', "%{$search}%")
                         ->orWhere('whatsapp_number', 'like', "%{$search}%")
-                        ->orWhere('email', 'like', "%{$search}%");
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('bank_account_number', 'like', "%{$search}%");
+
+                    if (!empty($numericSearch) && strlen($numericSearch) >= 4) {
+                        $q->orWhere('bank_account_number', 'like', "%{$numericSearch}%")
+                          ->orWhereRaw("REPLACE(REPLACE(bank_account_number, '-', ''), ' ', '') LIKE ?", ["%{$numericSearch}%"]);
+                    }
                 });
             })
             ->when($role, function ($query, $role) {
@@ -360,11 +367,18 @@ class ManagePartnerDemographicsController extends Controller
         $partners = Partner::query()
             ->with(['user'])
             ->when($search, function ($query, $search) {
-                $query->where(function ($q) use ($search) {
+                $numericSearch = preg_replace('/[^0-9]/', '', $search);
+                $query->where(function ($q) use ($search, $numericSearch) {
                     $q->where('full_name', 'like', "%{$search}%")
                         ->orWhere('mitra_id', 'like', "%{$search}%")
                         ->orWhere('whatsapp_number', 'like', "%{$search}%")
-                        ->orWhere('email', 'like', "%{$search}%");
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('bank_account_number', 'like', "%{$search}%");
+
+                    if (!empty($numericSearch) && strlen($numericSearch) >= 4) {
+                        $q->orWhere('bank_account_number', 'like', "%{$numericSearch}%")
+                          ->orWhereRaw("REPLACE(REPLACE(bank_account_number, '-', ''), ' ', '') LIKE ?", ["%{$numericSearch}%"]);
+                    }
                 });
             })
             ->when($role, function ($query, $role) {
