@@ -364,14 +364,14 @@
                             <!-- Dropdown / Tombol Export -->
                             <div class="relative flex-none" x-data="{ exportDropOpen: false }" @click.away="exportDropOpen = false">
                                 <div class="inline-flex rounded-xl shadow-sm">
-                                    <a href="{{ route('partners.export', array_merge(request()->all(), ['format' => 'xlsx'])) }}" class="justify-center inline-flex items-center px-4 py-2.5 bg-emerald-600 border border-transparent rounded-l-xl font-semibold text-sm text-white hover:bg-emerald-700 transition" title="Export Data Mitra/Worker (Excel .xlsx)">
-                                        <svg class="w-4 h-4 md:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <a href="{{ route('partners.export', array_merge(request()->all(), ['format' => 'xlsx'])) }}" class="justify-center inline-flex items-center px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 border border-transparent rounded-l-xl font-semibold text-sm text-white transition" title="Export Data Mitra/Worker (Excel .xlsx)">
+                                        <svg class="w-4 h-4 md:mr-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                         </svg>
                                         <span class="hidden md:inline">{{ __('dashboard.partners.export_btn') ?? 'Export' }}</span>
                                     </a>
-                                    <button type="button" @click="exportDropOpen = !exportDropOpen" class="inline-flex items-center px-2.5 py-2.5 bg-emerald-700 border border-l border-emerald-800 rounded-r-xl text-white hover:bg-emerald-800 transition" title="Pilihan Format Export">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                    <button type="button" @click="exportDropOpen = !exportDropOpen" class="inline-flex items-center px-2.5 py-2.5 bg-emerald-600 hover:bg-emerald-700 border border-l border-transparent border-l-emerald-500 rounded-r-xl text-white transition" style="background-color: #059669;" title="Pilihan Format Export">
+                                        <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                     </button>
                                 </div>
 
