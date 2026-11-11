@@ -52,6 +52,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('video-submissions.evidence.show');
 
     // Phase 1: Partner Demographics CRUD
+    Route::get('/partners/export', [\App\Http\Controllers\ManagePartnerDemographicsController::class, 'export'])
+        ->middleware('role:superadmin,admin')
+        ->name('partners.export');
     Route::get('/partners/export-contacts', [\App\Http\Controllers\ManagePartnerDemographicsController::class, 'exportContacts'])
         ->middleware('role:superadmin,admin')
         ->name('partners.export-contacts');

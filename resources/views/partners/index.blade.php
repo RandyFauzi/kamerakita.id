@@ -63,12 +63,13 @@
                 const hourly_rate = document.getElementById('hourly_rate')?.value || '';
                 const headstrap = document.getElementById('headstrap')?.value || '';
                 const whatsapp = document.getElementById('whatsapp')?.value || '';
+                const bank_account_number = document.getElementById('bank_account_number')?.value || '';
                 const mitra_parent = document.getElementById('mitra_parent')?.value || '';
                 const client_registered = document.getElementById('client_registered')?.value || '';
                 
                 const params = new URLSearchParams({ 
                     search, role, status, group,
-                    mitra_id, full_name, hourly_rate, headstrap, whatsapp, mitra_parent, client_registered,
+                    mitra_id, full_name, hourly_rate, headstrap, whatsapp, bank_account_number, mitra_parent, client_registered,
                     format: 'json'
                 });
                 
@@ -360,6 +361,42 @@
                             <button type="submit" class="flex-1 md:flex-none justify-center inline-flex items-center px-6 py-2.5 bg-gray-900 border border-transparent rounded-xl font-semibold text-sm text-white hover:bg-gray-800 transition shadow-sm">
                                 Cari
                             </button>
+                            <!-- Dropdown / Tombol Export -->
+                            <div class="relative flex-none" x-data="{ exportDropOpen: false }" @click.away="exportDropOpen = false">
+                                <div class="inline-flex rounded-xl shadow-sm">
+                                    <a href="{{ route('partners.export', array_merge(request()->all(), ['format' => 'xlsx'])) }}" class="justify-center inline-flex items-center px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 border border-transparent rounded-l-xl font-semibold text-sm text-white transition" title="Export Data Mitra/Worker (Excel .xlsx)">
+                                        <svg class="w-4 h-4 md:mr-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                        </svg>
+                                        <span class="hidden md:inline">{{ __('dashboard.partners.export_btn') ?? 'Export' }}</span>
+                                    </a>
+                                    <button type="button" @click="exportDropOpen = !exportDropOpen" class="inline-flex items-center px-2.5 py-2.5 bg-emerald-600 hover:bg-emerald-700 border border-l border-transparent border-l-emerald-500 rounded-r-xl text-white transition" style="background-color: #059669;" title="Pilihan Format Export">
+                                        <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                    </button>
+                                </div>
+
+                                <!-- Dropdown Format Export -->
+                                <div x-show="exportDropOpen" 
+                                     x-transition:enter="transition ease-out duration-100"
+                                     x-transition:enter-start="transform opacity-0 scale-95"
+                                     x-transition:enter-end="transform opacity-100 scale-100"
+                                     x-transition:leave="transition ease-in duration-75"
+                                     x-transition:leave-start="transform opacity-100 scale-100"
+                                     x-transition:leave-end="transform opacity-0 scale-95"
+                                     class="absolute right-0 mt-2 w-48 rounded-xl shadow-xl bg-white border border-gray-100 z-30 py-1.5 divide-y divide-gray-100 text-xs"
+                                     style="display: none;">
+                                    <div class="py-1">
+                                        <a href="{{ route('partners.export', array_merge(request()->all(), ['format' => 'xlsx'])) }}" @click="exportDropOpen = false" class="w-full text-left px-3.5 py-2 hover:bg-emerald-50 hover:text-emerald-700 flex items-center gap-2 font-medium transition">
+                                            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                            <span>Export Excel (.xlsx)</span>
+                                        </a>
+                                        <a href="{{ route('partners.export', array_merge(request()->all(), ['format' => 'csv'])) }}" @click="exportDropOpen = false" class="w-full text-left px-3.5 py-2 hover:bg-blue-50 hover:text-blue-700 flex items-center gap-2 font-medium transition">
+                                            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                            <span>Export CSV (.csv)</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
                             <!-- Dropdown Salin Data Kontak -->
                             <div class="relative flex-none" x-data="{ copyDropOpen: false }" @click.away="copyDropOpen = false">
                                 <div class="inline-flex rounded-xl shadow-sm">
@@ -410,7 +447,7 @@
                                     </div>
                                 </div>
                             </div>
-                            @if($search || $role || $status || (isset($group) && $group) || $mitraId || $fullName || $hourlyRate || $headstrap || $whatsapp || $mitraParent || $clientRegistered)
+                            @if($search || $role || $status || (isset($group) && $group) || $mitraId || $fullName || $hourlyRate || $headstrap || $whatsapp || $bankAccountNumber || $mitraParent || $clientRegistered)
                                 <a href="{{ route('partners.index') }}" class="flex-none justify-center inline-flex items-center px-4 py-2.5 bg-gray-55 border border-gray-200 rounded-xl font-semibold text-sm text-gray-700 hover:bg-gray-100 transition shadow-sm" title="Reset Filter">
                                     <svg class="w-4 h-4 md:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -439,6 +476,7 @@
                                     <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('dashboard.partners.col_rate') }}</th>
                                     <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('dashboard.partners.col_headstrap') }}</th>
                                     <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('dashboard.partners.col_whatsapp') }}</th>
+                                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('dashboard.partners.col_bank_account') }}</th>
                                     <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('dashboard.partners.col_parent_vendor') }}</th>
                                     <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('dashboard.partners.col_client_reg') }}</th>
                                     <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('dashboard.partners.col_status') }}</th>
@@ -487,6 +525,10 @@
                                     <!-- WhatsApp Filter -->
                                     <th class="px-3 py-2 min-w-[140px]">
                                         <input type="text" name="whatsapp" id="whatsapp" value="{{ $whatsapp }}" onchange="this.form.submit()" placeholder="Cari WA..." class="block w-full py-1.5 px-2.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700 transition shadow-sm">
+                                    </th>
+                                    <!-- No. Rekening Filter -->
+                                    <th class="px-3 py-2 min-w-[150px]">
+                                        <input type="text" name="bank_account_number" id="bank_account_number" value="{{ $bankAccountNumber }}" onchange="this.form.submit()" placeholder="Cari Rekening..." class="block w-full py-1.5 px-2.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-gray-700 transition shadow-sm">
                                     </th>
                                     <!-- Vendor Atasan Filter -->
                                     <th class="px-3 py-2 min-w-[150px]">
@@ -586,6 +628,21 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-650">
                                             {{ $partner->whatsapp_number }}
                                         </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                            @if($partner->bank_account_number)
+                                                <div class="flex flex-col">
+                                                    <span class="font-mono font-semibold text-gray-900 text-xs">{{ $partner->bank_account_number }}</span>
+                                                    <span class="text-[11px] text-gray-500 font-normal">
+                                                        {{ $partner->bank_name ?? '-' }}
+                                                        @if($partner->bank_account_owner)
+                                                            <span class="text-gray-400">({{ $partner->bank_account_owner }})</span>
+                                                        @endif
+                                                    </span>
+                                                </div>
+                                            @else
+                                                <span class="text-xs text-gray-400 italic">-</span>
+                                            @endif
+                                        </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                             {{ $partner->mitraParent->full_name ?? '-' }}
                                         </td>
@@ -637,20 +694,21 @@
                                     <!-- Expanded Content -->
                                     @if($hasChildren)
                                     <tr x-show="expanded" x-cloak class="bg-gray-50/50">
-                                        <td colspan="13" class="px-0 py-0 border-t border-gray-100">
+                                        <td colspan="14" class="px-0 py-0 border-t border-gray-100">
                                             <div x-show="expanded" x-collapse>
                                                 <div class="px-8 py-5 border-l-4 border-indigo-500">
                                                     <h4 class="text-xs font-black text-gray-500 uppercase tracking-widest mb-3">Daftar Bawahan ({{ $children->count() }} Orang)</h4>
                                                     @if($children->count() > 0)
                                                     <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
                                                         <table class="min-w-full divide-y divide-gray-100">
-                                                            <thead class="bg-gray-50">
+                                                             <thead class="bg-gray-50">
                                                                 <tr>
                                                                     <th scope="col" class="w-10 px-6 py-3.5 text-center">
                                                                         <!-- Optional: Select All for this group could be added here, but keeping it empty for now to match main style -->
                                                                     </th>
                                                                     <th scope="col" class="px-6 py-3.5 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider">ID Vendor</th>
                                                                     <th scope="col" class="px-6 py-3.5 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Nama Lengkap</th>
+                                                                    <th scope="col" class="px-6 py-3.5 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider">No. Rekening</th>
                                                                     <th scope="col" class="px-6 py-3.5 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Tarif/Jam</th>
                                                                     <th scope="col" class="px-6 py-3.5 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Status</th>
                                                                     <th scope="col" class="px-6 py-3.5 text-right text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Aksi</th>
@@ -675,6 +733,21 @@
                                                                                 <span>Daftar: <strong class="text-gray-600 font-medium">{{ $childRegDate ? \Carbon\Carbon::parse($childRegDate)->translatedFormat('d M Y') : '-' }}</strong></span>
                                                                             </span>
                                                                         </div>
+                                                                    </td>
+                                                                    <td class="px-6 py-3.5 whitespace-nowrap text-xs text-gray-700">
+                                                                        @if($child->bank_account_number)
+                                                                            <div class="flex flex-col">
+                                                                                <span class="font-mono font-semibold text-gray-900 text-[11px]">{{ $child->bank_account_number }}</span>
+                                                                                <span class="text-[10px] text-gray-500 font-normal">
+                                                                                    {{ $child->bank_name ?? '-' }}
+                                                                                    @if($child->bank_account_owner)
+                                                                                        <span class="text-gray-400">({{ $child->bank_account_owner }})</span>
+                                                                                    @endif
+                                                                                </span>
+                                                                            </div>
+                                                                        @else
+                                                                            <span class="text-gray-400 italic">-</span>
+                                                                        @endif
                                                                     </td>
                                                                     <td class="px-6 py-3.5 whitespace-nowrap text-xs text-gray-700">Rp{{ number_format($child->base_hourly_rate ?? 0, 0, ',', '.') }}</td>
                                                                     <td class="px-6 py-3.5 whitespace-nowrap">
@@ -705,7 +778,7 @@
                             @empty
                                 <tbody>
                                     <tr>
-                                        <td colspan="13" class="px-6 py-12 text-center text-gray-500">
+                                        <td colspan="14" class="px-6 py-12 text-center text-gray-500">
                                             <span class="text-sm">Tidak ada Data Vendor atau worker ditemukan.</span>
                                         </td>
                                     </tr>
