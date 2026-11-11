@@ -439,7 +439,7 @@
                         toolbar: { show: false },
                         animations: { enabled: true, easing: 'easeinout', speed: 800 }
                     },
-                    colors: ['#10b981', '#ef4444', '#f59e0b', '#8b5cf6'],
+                    colors: ['#3b82f6', '#ef4444', '#f59e0b', '#8b5cf6'],
                     plotOptions: { bar: { columnWidth: '40%', borderRadius: 6, borderRadiusApplication: 'end' } },
                     dataLabels: { enabled: false },
                     stroke: { show: false },
