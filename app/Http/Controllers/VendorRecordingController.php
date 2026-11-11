@@ -15,6 +15,7 @@ class VendorRecordingController extends Controller
         abort_unless($partner && $partner->partner_role === Partner::ROLE_MITRA, 403);
 
         $filters = $request->validate([
+            'source' => ['nullable', 'in:atlas,1618'],
             'search' => ['nullable', 'string', 'max:255'],
             'worker_id' => ['nullable', 'integer', 'min:1'],
             'start_date' => ['nullable', 'date_format:Y-m-d'],
@@ -33,6 +34,10 @@ class VendorRecordingController extends Controller
         });
         $workers = (clone $workersQuery)->with('user:id,name')->orderBy('atlas_email')->get();
         $query = AtlasTask::whereIn('atlas_worker_id', (clone $workersQuery)->select('id'));
+
+        if ($request->filled('source')) {
+            $query->where('ingest_source', $filters['source']);
+        }
 
         if ($request->filled('worker_id')) {
             $query->where('atlas_worker_id', $filters['worker_id']);

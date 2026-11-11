@@ -165,6 +165,14 @@
                         </div>
                     </div>
                     <div class="w-full md:w-auto" style="flex: 0 0 auto; width: 155px;">
+                        <label for="source" class="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-gray-400">{{ app()->getLocale() === 'en' ? 'Data source' : 'Sumber Data' }}</label>
+                        <select name="source" id="source" class="block w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                            <option value="">{{ app()->getLocale() === 'en' ? 'All sources' : 'Semua sumber' }}</option>
+                            <option value="atlas" @selected(request('source') === 'atlas')>Atlas</option>
+                            <option value="1618" @selected(request('source') === '1618')>1618</option>
+                        </select>
+                    </div>
+                    <div class="w-full md:w-auto" style="flex: 0 0 auto; width: 155px;">
                         <label for="start_date" class="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-gray-400">Dari Tanggal</label>
                         <input type="date" name="start_date" id="start_date" value="{{ request('start_date') }}" class="block w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
                     </div>

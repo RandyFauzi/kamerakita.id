@@ -10,7 +10,12 @@ class AtlasRecordingController extends Controller
 {
     public function index(Request $request)
     {
+        $request->validate(['source' => ['nullable', 'in:atlas,1618']]);
         $query = AtlasTask::with('atlasWorker');
+
+        if ($request->filled('source')) {
+            $query->where('ingest_source', $request->input('source'));
+        }
 
         // Search by email, task_name, or notes
         if ($request->filled('search')) {

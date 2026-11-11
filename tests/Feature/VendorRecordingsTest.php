@@ -59,6 +59,29 @@ class VendorRecordingsTest extends TestCase
                 && (float) $stats->rejected === 10.0 && (float) $stats->deferred === 30.0);
     }
 
+    public function test_source_filter_applies_to_admin_and_team_tables_totals_and_charts(): void
+    {
+        $vendor = $this->vendor();
+        $worker = $this->worker($vendor, 'source-worker@example.com');
+        $this->recording($worker->user_id, 'atlas-source@example.com', 'SOURCE-ATLAS')->update(['ingest_source' => 'atlas']);
+        $this->recording($worker->user_id, '1618-source@example.com', 'SOURCE-1618')->update(['ingest_source' => '1618']);
+        $foreign = $this->worker($this->vendor(), 'foreign-source@example.com');
+        $this->recording($foreign->user_id, 'foreign-source@example.com', 'SOURCE-FOREIGN')->update(['ingest_source' => '1618']);
+
+        $filters = ['source' => '1618', 'search' => 'SOURCE', 'start_date' => '2026-10-16', 'end_date' => '2026-10-16'];
+        $this->actingAs($vendor->user)->get(route('vendor.recordings.index', $filters))->assertOk()
+            ->assertSee('SOURCE-1618')->assertDontSee('SOURCE-ATLAS')->assertDontSee('SOURCE-FOREIGN')
+            ->assertViewHas('stats', fn ($stats) => (float) $stats->worked === 60.0)
+            ->assertViewHas('trend', fn ($trend) => (float) $trend->sum('worked') === 60.0);
+
+        $this->actingAs(User::factory()->create(['role' => 'admin']))
+            ->get(route('admin.recordings.index', array_replace($filters, ['source' => 'atlas'])))->assertOk()
+            ->assertSee('SOURCE-ATLAS')->assertDontSee('SOURCE-1618')->assertDontSee('SOURCE-FOREIGN')
+            ->assertViewHas('stats', fn ($stats) => (float) $stats['total_worked'] === 60.0)
+            ->assertViewHas('trend', fn ($trend) => (float) $trend->sum('worked') === 60.0);
+        $this->get(route('admin.recordings.index', ['source' => 'invalid']))->assertRedirect()->assertSessionHasErrors('source');
+    }
+
     public function test_explicit_foreign_link_cannot_be_claimed_by_matching_team_email(): void
     {
         $vendor = $this->vendor();
