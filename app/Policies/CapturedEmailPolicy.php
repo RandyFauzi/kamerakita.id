@@ -21,7 +21,7 @@ class CapturedEmailPolicy
      */
     public function view(User $user, CapturedEmail $capturedEmail): bool
     {
-        return $user->id === $capturedEmail->user_id || in_array($user->role, ['superadmin', 'admin']);
+        return CapturedEmail::visibleTo($user)->whereKey($capturedEmail->id)->exists();
     }
 
     /**

@@ -17,11 +17,7 @@ class MailboxController extends Controller
 
     public function fetchEmails(Request $request)
     {
-        $query = CapturedEmail::query();
-        
-        if (!in_array(Auth::user()->role, ['superadmin', 'admin'])) {
-            $query->where('user_id', Auth::id());
-        }
+        $query = CapturedEmail::visibleTo($request->user())->with('user:id,email,name');
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -45,6 +41,11 @@ class MailboxController extends Controller
         $emails = $query->select(['id', 'user_id', 'sender_address', 'subject', 'received_at', 'is_read', 'is_starred'])
             ->orderBy('received_at', 'desc')
             ->paginate(50);
+
+        $emails->getCollection()->each(function ($email) use ($request) {
+            $email->setAttribute('can_update', $request->user()->can('update', $email));
+            $email->setAttribute('can_delete', $request->user()->can('delete', $email));
+        });
             
         return response()->json($emails);
     }
@@ -59,6 +60,9 @@ class MailboxController extends Controller
             'sender_address' => mb_convert_encoding((string) $email->sender_address, 'UTF-8', 'UTF-8'),
             'received_at' => $email->received_at,
             'sanitized_content' => $email->sanitized_content,
+            'can_update' => Auth::user()->can('update', $email),
+            'can_delete' => Auth::user()->can('delete', $email),
+            'recipient_address' => $email->user?->email,
         ]);
     }
 

@@ -111,7 +111,7 @@
                              :class="selectedEmailId === email.id ? 'bg-indigo-50/50 border-indigo-600' : (email.is_read ? 'bg-white border-transparent hover:bg-slate-50' : 'bg-white border-transparent hover:bg-slate-50')">
                             
                             <!-- Star Action -->
-                            <button @click.stop="toggleStar(email.id)" class="pt-1 text-slate-300 hover:text-yellow-400 transition-colors" :class="{'text-yellow-400': email.is_starred}">
+                            <button x-show="email.can_update" @click.stop="toggleStar(email.id)" class="pt-1 text-slate-300 hover:text-yellow-400 transition-colors" :class="{'text-yellow-400': email.is_starred}">
                                 <svg class="w-5 h-5" :fill="email.is_starred ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
                             </button>
 
@@ -120,6 +120,7 @@
                                     <h3 class="text-[14px] truncate" :class="email.is_read ? 'text-slate-700' : 'text-slate-900 font-bold'" x-text="email.sender_address"></h3>
                                     <span class="text-[11px] whitespace-nowrap shrink-0" :class="email.is_read ? 'text-slate-400' : 'text-indigo-600 font-semibold'" x-text="formatDate(email.received_at)"></span>
                                 </div>
+                                <p class="text-xs text-slate-500 truncate" x-text="email.user ? email.user.email : ''"></p>
                                 <p class="text-[13px] truncate" :class="email.is_read ? 'text-slate-500' : 'text-slate-800 font-medium'" x-text="email.subject || '(No Subject)'"></p>
                             </div>
                         </div>
@@ -168,7 +169,7 @@
                             <h2 class="text-xl font-bold text-slate-800 truncate" x-text="selectedEmailData ? (selectedEmailData.subject || '(No Subject)') : 'Loading...'"></h2>
                         </div>
                         <div class="flex items-center gap-2 shrink-0">
-                            <button @click="deleteEmail(selectedEmailId)" x-show="selectedEmailId" class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Hapus Email">
+                            <button @click="deleteEmail(selectedEmailId)" x-show="selectedEmailData && selectedEmailData.can_delete" class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Hapus Email">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                             </button>
                         </div>
@@ -294,7 +295,7 @@
                         // Mark as read ONLY after successful detail fetch
                         let emailObj = this.emails.find(e => e.id === id);
                         if (emailObj && !emailObj.is_read) {
-                            this.toggleRead(id, true);
+                            if (data.can_update) this.toggleRead(id, true);
                         }
                     })
                     .catch(err => {

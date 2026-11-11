@@ -28,6 +28,22 @@ class CapturedEmail extends Model
         'is_starred' => 'boolean',
     ];
 
+    public function scopeVisibleTo(\Illuminate\Database\Eloquent\Builder $query, User $viewer): void
+    {
+        if (in_array($viewer->role, ['superadmin', 'admin'], true)) {
+            return;
+        }
+
+        $query->where(function ($visible) use ($viewer) {
+            $visible->where('user_id', $viewer->id)
+                ->orWhereIn('user_id', Partner::query()
+                    ->select('user_id')->whereNotNull('user_id')
+                    ->where('partner_role', Partner::ROLE_WORKER)
+                    ->whereIn('mitra_parent_id', Partner::query()->select('id')
+                        ->where('user_id', $viewer->id)->where('partner_role', Partner::ROLE_MITRA)));
+        });
+    }
+
     public function getSanitizedContentAttribute()
     {
         if (!$this->message_content) {
