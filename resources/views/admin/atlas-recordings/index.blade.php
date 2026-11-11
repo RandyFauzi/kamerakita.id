@@ -134,7 +134,7 @@
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                     <div>
                         <h3 class="text-base font-bold text-gray-900">Performance Overview</h3>
-                        <p class="text-xs font-medium text-gray-400 mt-1">Total Durasi & Approved (Dalam Menit)</p>
+                        <p class="text-xs font-medium text-gray-400 mt-1">Approved, Rejected, Pending & Deferred (Dalam Menit)</p>
                     </div>
                     @if(count($trend) > 0)
                     <div class="inline-flex bg-gray-100/80 p-1 rounded-xl items-center shadow-inner">
@@ -319,6 +319,10 @@
         window.adminTrendChart = null;
         window.rawTrendData = [];
         window.currentWorkedSeries = [];
+        window.recordingStatusSeries = function(rows) {
+            return [['Approved', 'approved'], ['Rejected', 'rejected'], ['Pending', 'pending'], ['Deferred', 'deferred']]
+                .map(function(status) { return { name: status[0], data: rows.map(function(row) { return row[status[1]] || 0; }) }; });
+        };
 
         window.updateChartTimeframe = function(tf) {
             if(!window.adminTrendChart || !window.rawTrendData.length) return;
@@ -342,7 +346,10 @@
                     return {
                         label: d.getDate() + ' ' + months[d.getMonth()],
                         worked: parseFloat(item.worked) || 0,
-                        approved: parseFloat(item.approved) || 0
+                        approved: parseFloat(item.approved) || 0,
+                        rejected: parseFloat(item.rejected) || 0,
+                        pending: parseFloat(item.review) || 0,
+                        deferred: parseFloat(item.deferred) || 0
                     };
                 });
             } else if (tf === 'weekly') {
@@ -353,12 +360,15 @@
                     var diff = d.getDate() - day + (day === 0 ? -6 : 1); 
                     var monday = new Date(d.setDate(diff));
                     var key = monday.getDate() + ' ' + months[monday.getMonth()];
-                    if(!weeksMap[key]) weeksMap[key] = { worked: 0, approved: 0 };
+                    if(!weeksMap[key]) weeksMap[key] = { worked: 0, approved: 0, rejected: 0, pending: 0, deferred: 0 };
                     weeksMap[key].worked += (parseFloat(item.worked) || 0);
                     weeksMap[key].approved += (parseFloat(item.approved) || 0);
+                    weeksMap[key].rejected += (parseFloat(item.rejected) || 0);
+                    weeksMap[key].pending += (parseFloat(item.review) || 0);
+                    weeksMap[key].deferred += (parseFloat(item.deferred) || 0);
                 });
                 for(var k in weeksMap) {
-                    grouped.push({ label: 'Mgg ' + k, worked: weeksMap[k].worked, approved: weeksMap[k].approved });
+                    grouped.push({ label: 'Mgg ' + k, worked: weeksMap[k].worked, approved: weeksMap[k].approved, rejected: weeksMap[k].rejected, pending: weeksMap[k].pending, deferred: weeksMap[k].deferred });
                 }
                 grouped = grouped.slice(-12);
             } else if (tf === 'monthly') {
@@ -366,28 +376,27 @@
                 window.rawTrendData.forEach(item => {
                     var d = new Date(item.task_date);
                     var key = months[d.getMonth()] + ' ' + d.getFullYear();
-                    if(!mthsMap[key]) mthsMap[key] = { worked: 0, approved: 0 };
+                    if(!mthsMap[key]) mthsMap[key] = { worked: 0, approved: 0, rejected: 0, pending: 0, deferred: 0 };
                     mthsMap[key].worked += (parseFloat(item.worked) || 0);
                     mthsMap[key].approved += (parseFloat(item.approved) || 0);
+                    mthsMap[key].rejected += (parseFloat(item.rejected) || 0);
+                    mthsMap[key].pending += (parseFloat(item.review) || 0);
+                    mthsMap[key].deferred += (parseFloat(item.deferred) || 0);
                 });
                 for(var k in mthsMap) {
-                    grouped.push({ label: k, worked: mthsMap[k].worked, approved: mthsMap[k].approved });
+                    grouped.push({ label: k, worked: mthsMap[k].worked, approved: mthsMap[k].approved, rejected: mthsMap[k].rejected, pending: mthsMap[k].pending, deferred: mthsMap[k].deferred });
                 }
             }
 
             var cats = grouped.map(item => item.label);
-            var appS = grouped.map(item => item.approved);
-            var sisaS = grouped.map(item => item.worked - item.approved);
+
             window.currentWorkedSeries = grouped.map(item => item.worked);
 
             var minW = Math.max(800, cats.length * 60);
             document.getElementById('admin-trend-chart').style.minWidth = minW + 'px';
 
             window.adminTrendChart.updateOptions({ xaxis: { categories: cats } });
-            window.adminTrendChart.updateSeries([
-                { name: 'Approved', data: appS },
-                { name: 'Sisa Durasi', data: sisaS }
-            ]);
+            window.adminTrendChart.updateSeries(window.recordingStatusSeries(grouped));
         };
 
         document.addEventListener("DOMContentLoaded", function() {
@@ -402,17 +411,19 @@
                     return {
                         label: d.getDate() + ' ' + months[d.getMonth()],
                         worked: parseFloat(item.worked) || 0,
-                        approved: parseFloat(item.approved) || 0
+                        approved: parseFloat(item.approved) || 0,
+                        rejected: parseFloat(item.rejected) || 0,
+                        pending: parseFloat(item.review) || 0,
+                        deferred: parseFloat(item.deferred) || 0
                     };
                 });
 
                 var categories = initialData.map(i => i.label);
                 window.currentWorkedSeries = initialData.map(i => i.worked);
-                var approvedSeries = initialData.map(i => i.approved);
-                var sisaSeries = initialData.map(i => i.worked - i.approved);
+
                 
                 var options = {
-                    series: [{ name: 'Approved', data: approvedSeries }, { name: 'Sisa Durasi', data: sisaSeries }],
+                    series: window.recordingStatusSeries(initialData),
                     chart: {
                         type: 'bar',
                         stacked: true,
@@ -420,7 +431,7 @@
                         toolbar: { show: false },
                         animations: { enabled: true, easing: 'easeinout', speed: 800 }
                     },
-                    colors: ['#3b82f6', '#e2e8f0'],
+                    colors: ['#10b981', '#ef4444', '#f59e0b', '#8b5cf6'],
                     plotOptions: { bar: { columnWidth: '40%', borderRadius: 6, borderRadiusApplication: 'end' } },
                     dataLabels: { enabled: false },
                     stroke: { show: false },
@@ -440,13 +451,16 @@
                     legend: { show: true, position: 'top', horizontalAlign: 'right' },
                     tooltip: {
                         custom: function({series, seriesIndex, dataPointIndex, w}) {
-                            var approved = series[0][dataPointIndex];
-                            var total = window.currentWorkedSeries[dataPointIndex];
-                            return '<div class="p-3 bg-white shadow-xl rounded-xl border border-gray-100 min-w-[140px]">' +
-                                '<div class="font-bold text-gray-800 mb-2 border-b border-gray-100 pb-2">' + w.globals.labels[dataPointIndex] + '</div>' +
-                                '<div class="flex items-center justify-between gap-4 mb-1.5"><span class="text-gray-500 text-xs font-semibold flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>Approved</span> <span class="font-bold text-gray-900">' + (approved||0).toFixed(1) + ' mnt</span></div>' +
-                                '<div class="flex items-center justify-between gap-4"><span class="text-gray-500 text-xs font-semibold flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-gray-300"></span>Total Durasi</span> <span class="font-bold text-gray-900">' + (total||0).toFixed(1) + ' mnt</span></div>' +
-                                '</div>';
+                            var rows = w.config.series.map(function(status, index) {
+                                var value = (series[index] || [])[dataPointIndex] || 0;
+                                return '<div style="display:flex;justify-content:space-between;gap:16px;margin-top:6px">' +
+                                    '<span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;background:' + w.config.colors[index] + '"></span>' + status.name + '</span>' +
+                                    '<strong>' + value.toFixed(1) + ' mnt</strong></div>';
+                            }).join('');
+                            return '<div style="padding:12px;background:white;border:1px solid #e2e8f0;border-radius:12px;color:#0f172a">' +
+                                '<strong>' + w.globals.labels[dataPointIndex] + '</strong>' + rows +
+                                '<div style="margin-top:8px;border-top:1px solid #e2e8f0;padding-top:8px">Total Durasi: <strong>' +
+                                (window.currentWorkedSeries[dataPointIndex] || 0).toFixed(1) + ' mnt</strong></div></div>';
                         }
                     }
                 };

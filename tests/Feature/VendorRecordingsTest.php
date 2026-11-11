@@ -51,7 +51,9 @@ class VendorRecordingsTest extends TestCase
             ->assertDontSee('other@example.com')->assertSee('2026-10-16T12:34:56.000000Z')
             ->assertSee('Performance Overview')->assertSee('Total Jam Kerja')->assertSee('Dalam Ulasan')
             ->assertDontSee('Status Gaji')->assertDontSee('Semua recording, satu tampilan.')
-            ->assertViewHas('trend', fn ($trend) => (float) $trend->sum('worked') === 120.0)
+            ->assertViewHas('trend', fn ($trend) => (float) $trend->sum('worked') === 120.0
+                && (float) $trend->sum('rejected') === 10.0 && (float) $trend->sum('review') === 20.0
+                && (float) $trend->sum('deferred') === 30.0)
             ->assertViewHas('lastSync', null)
             ->assertViewHas('stats', fn ($stats) => $stats->recordings === 2 && (float) $stats->worked === 120.0
                 && (float) $stats->rejected === 10.0 && (float) $stats->deferred === 30.0);

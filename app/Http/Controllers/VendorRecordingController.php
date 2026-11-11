@@ -56,7 +56,7 @@ class VendorRecordingController extends Controller
             COALESCE(SUM(rejected_minutes), 0) AS rejected, COALESCE(SUM(review_minutes), 0) AS pending,
             COALESCE(SUM(deferred_minutes), 0) AS deferred')->first();
         $lastSync = (clone $workersQuery)->max('last_synced_at');
-        $trend = (clone $query)->selectRaw('task_date, SUM(worked_minutes) AS worked, SUM(approved_minutes) AS approved')
+        $trend = (clone $query)->selectRaw('task_date, SUM(worked_minutes) AS worked, SUM(approved_minutes) AS approved, SUM(rejected_minutes) AS rejected, SUM(review_minutes) AS review, SUM(deferred_minutes) AS deferred')
             ->groupBy('task_date')->orderByDesc('task_date')->limit(90)->get()->reverse()->values();
         $records = $query->with('atlasWorker.user:id,name')->orderByDesc('recorded_at')->orderByDesc('id')
             ->paginate(50)->withQueryString();
