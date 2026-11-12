@@ -79,7 +79,7 @@
               </div>
             </div>
             <div class="hero-visual" data-reveal style="--delay: 140ms;" aria-label="Kontributor KameraKita menggunakan ponsel">
-              <img class="hero-woman" src="{{ asset('assets/figma/hero-07.png') }}" alt="Perempuan tersenyum melihat ponsel">
+              <img class="hero-woman" src="{{ asset('assets/figma/hero-07.png') }}?v={{ @filemtime(public_path('assets/figma/hero-07.png')) ?: time() }}" alt="Perempuan tersenyum melihat ponsel">
               <img class="coin coin--back float-two" src="{{ asset('assets/figma/hero-13.png') }}" alt="">
               <img class="coin coin--one float-one" src="{{ asset('assets/figma/hero-13.png') }}" alt="">
               <img class="coin coin--two float-two" src="{{ asset('assets/figma/hero-16.png') }}" alt="">
