@@ -91,7 +91,7 @@
                     <!-- Bottom Illustration & Button -->
                     <div class="relative flex-1 w-full mt-4 flex justify-center min-h-0">
                         <!-- Illustration filling the bottom -->
-                        <img src="{{ asset('assets/figma/hero-07.png') }}" alt="Welcome to KameraKita AI" class="w-full max-w-md h-full object-contain object-bottom drop-shadow-md">
+                        <img src="{{ asset('assets/figma/hero-07.png') }}?v={{ @filemtime(public_path('assets/figma/hero-07.png')) ?: 2 }}" alt="Welcome to KameraKita AI" class="w-full max-w-md h-full object-contain object-bottom drop-shadow-md">
                         
                         <!-- White Gradient Overlay -->
                         <div class="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-white via-white/90 to-transparent z-10"></div>
