@@ -198,55 +198,71 @@
                 @else
                 <!-- 1. Total Kirim vs Approved -->
                 @php
-                    $totalSub = $metrics['total_submitted_minutes'];
-                    $totalApp = $metrics['all_time_minutes'];
+                    $totalSub = (float) ($metrics['total_submitted_minutes'] ?? 0);
+                    $totalApp = (float) ($metrics['all_time_minutes'] ?? 0);
                     $percentApp = $totalSub > 0 ? min(100, round(($totalApp / $totalSub) * 100)) : 0;
+
+                    $subFormatted = $metrics['total_submitted_hours_formatted'] ?? null;
+                    if (!$subFormatted) {
+                        $m = (int) round($totalSub);
+                        $h = floor($m / 60);
+                        $r = $m % 60;
+                        $subFormatted = $h > 0 ? "{$h}j {$r}m" : "{$r}m";
+                    }
+
+                    $appFormatted = $metrics['all_time_hours_formatted'] ?? null;
+                    if (!$appFormatted) {
+                        $m = (int) round($totalApp);
+                        $h = floor($m / 60);
+                        $r = $m % 60;
+                        $appFormatted = $h > 0 ? "{$h}j {$r}m" : "{$r}m";
+                    }
                 @endphp
                 <div class="bg-slate-200/50 rounded-[28px] p-2 flex flex-col h-full">
                     <div class="text-center py-2 pb-3">
                         <span class="text-[13px] font-bold text-slate-500">{{ __('dashboard.general.your_stats') }}</span>
                     </div>
-                    <div class="bg-[#f0f1f3] rounded-[24px] p-5 sm:p-6 flex-grow flex flex-col justify-center border border-white/60 shadow-sm">
+                    <div class="bg-[#f0f1f3] rounded-[24px] p-4 sm:p-6 flex-grow flex flex-col justify-center border border-white/60 shadow-sm overflow-hidden">
                         
-                        <div class="flex justify-between items-center text-center">
+                        <div class="flex justify-between items-center text-center gap-1 sm:gap-2">
                             <!-- Dikirim -->
-                            <div class="flex-1">
-                                <h3 class="text-[13px] font-semibold text-slate-400 mb-2">{{ __('dashboard.general.submitted') }}</h3>
-                                <div class="text-2xl sm:text-3xl font-bold text-slate-800 tracking-tight">
-                                    {{ $metrics['total_submitted_minutes'] }}
+                            <div class="flex-1 min-w-0 px-0.5">
+                                <h3 class="text-[12px] sm:text-[13px] font-semibold text-slate-400 mb-1 sm:mb-2 truncate">{{ __('dashboard.general.submitted') }}</h3>
+                                <div class="text-xl sm:text-2xl font-bold text-slate-800 tracking-tight truncate" title="{{ $subFormatted }} ({{ number_format($totalSub, 0) }}m)">
+                                    {{ $subFormatted }}
                                 </div>
                             </div>
                             
                             <!-- Divider -->
-                            <div class="w-px h-10 bg-slate-200/80"></div>
+                            <div class="w-px h-10 bg-slate-200/80 shrink-0"></div>
                             
                             <!-- Approved -->
-                            <div class="flex-1">
-                                <h3 class="text-[13px] font-semibold text-slate-400 mb-2">{{ __('dashboard.general.approved') }}</h3>
-                                <div class="text-2xl sm:text-3xl font-bold text-slate-800 tracking-tight">
-                                    {{ $metrics['all_time_minutes'] }}
+                            <div class="flex-1 min-w-0 px-0.5">
+                                <h3 class="text-[12px] sm:text-[13px] font-semibold text-slate-400 mb-1 sm:mb-2 truncate">{{ __('dashboard.general.approved') }}</h3>
+                                <div class="text-xl sm:text-2xl font-bold text-slate-800 tracking-tight truncate" title="{{ $appFormatted }} ({{ number_format($totalApp, 0) }}m)">
+                                    {{ $appFormatted }}
                                 </div>
                             </div>
                             
                             <!-- Divider -->
-                            <div class="w-px h-10 bg-slate-200/80"></div>
+                            <div class="w-px h-10 bg-slate-200/80 shrink-0"></div>
                             
                             <!-- Rate -->
-                            <div class="flex-1">
-                                <h3 class="text-[13px] font-semibold text-slate-400 mb-2">{{ __('dashboard.general.level') }}</h3>
-                                <div class="text-2xl sm:text-3xl font-bold text-slate-800 tracking-tight">
-                                    {{ $percentApp }}<span class="text-base sm:text-lg text-slate-800 font-bold ml-0.5">%</span>
+                            <div class="flex-1 min-w-0 px-0.5">
+                                <h3 class="text-[12px] sm:text-[13px] font-semibold text-slate-400 mb-1 sm:mb-2 truncate">{{ __('dashboard.general.level') }}</h3>
+                                <div class="text-xl sm:text-2xl font-bold text-slate-800 tracking-tight truncate">
+                                    {{ $percentApp }}<span class="text-sm sm:text-base text-slate-800 font-bold ml-0.5">%</span>
                                 </div>
                             </div>
                         </div>
                         
                         <!-- Badge at bottom -->
-                        <div class="mt-6 flex justify-start">
-                            <div class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 border border-slate-200 rounded-full text-[11px] font-bold text-indigo-700 shadow-sm">
-                                <svg class="w-3.5 h-3.5 text-rose-500" fill="currentColor" viewBox="0 0 24 24">
+                        <div class="mt-5 sm:mt-6 flex justify-start">
+                            <div class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 border border-slate-200 rounded-full text-[11px] font-bold text-indigo-700 shadow-sm max-w-full truncate">
+                                <svg class="w-3.5 h-3.5 text-rose-500 shrink-0" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M12 2L14.5 9L22 10.5L16 15.5L17.5 23L12 19L6.5 23L8 15.5L2 10.5L9.5 9L12 2Z" />
                                 </svg>
-                                {{ __('dashboard.general.attention_quality') }}
+                                <span class="truncate">{{ __('dashboard.general.attention_quality') }}</span>
                             </div>
                         </div>
                     </div>

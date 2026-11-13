@@ -30,22 +30,22 @@ class CalculatePartnerMetricsService
               ->orWhere('atlas_email', $worker->email);
         })->pluck('id');
 
-        $totalSubmittedMinutes = \App\Models\AtlasTask::whereIn('atlas_worker_id', $atlasWorkerIds)->sum('worked_minutes');
-        $allTimeMinutes = \App\Models\AtlasTask::whereIn('atlas_worker_id', $atlasWorkerIds)->sum('approved_minutes');
-        $todaySubmittedMinutes = \App\Models\AtlasTask::whereIn('atlas_worker_id', $atlasWorkerIds)
+        $totalSubmittedMinutes = (float) (\App\Models\AtlasTask::whereIn('atlas_worker_id', $atlasWorkerIds)->sum('worked_minutes') ?? 0);
+        $allTimeMinutes = (float) (\App\Models\AtlasTask::whereIn('atlas_worker_id', $atlasWorkerIds)->sum('approved_minutes') ?? 0);
+        $todaySubmittedMinutes = (float) (\App\Models\AtlasTask::whereIn('atlas_worker_id', $atlasWorkerIds)
             ->whereDate('task_date', now())
-            ->sum('worked_minutes');
+            ->sum('worked_minutes') ?? 0);
             
-        $highestDailyMinutes = \App\Models\AtlasTask::whereIn('atlas_worker_id', $atlasWorkerIds)
+        $highestDailyMinutes = (float) (\App\Models\AtlasTask::whereIn('atlas_worker_id', $atlasWorkerIds)
             ->selectRaw('SUM(worked_minutes) as daily_total')
             ->groupBy('task_date')
             ->get()
-            ->max('daily_total') ?? 360; // Fallback to 6 hours (360 mins) if no data
+            ->max('daily_total') ?? 360); // Fallback to 6 hours (360 mins) if no data
 
-        $paidMinutes = $approvedReports->where('payment_status', 'paid')
+        $paidMinutes = (float) $approvedReports->where('payment_status', 'paid')
             ->sum('approved_duration_minutes');
             
-        $pendingMinutes = $approvedReports->where('payment_status', 'unpaid')
+        $pendingMinutes = (float) $approvedReports->where('payment_status', 'unpaid')
             ->sum('approved_duration_minutes');
 
         $rate = $worker->base_hourly_rate ?: self::DEFAULT_WORKER_HOURLY_RATE_IDR;
@@ -54,12 +54,13 @@ class CalculatePartnerMetricsService
         $totalEarnings = $paidEarnings + $pendingEarnings;
 
         return [
-            'total_submitted_minutes' => $totalSubmittedMinutes,
-            'today_submitted_minutes' => $todaySubmittedMinutes,
-            'highest_daily_minutes' => $highestDailyMinutes,
-            'all_time_minutes' => $allTimeMinutes,
-            'paid_minutes' => $paidMinutes,
-            'pending_minutes' => $pendingMinutes,
+            'total_submitted_minutes' => round($totalSubmittedMinutes, 1),
+            'today_submitted_minutes' => round($todaySubmittedMinutes, 1),
+            'highest_daily_minutes' => round($highestDailyMinutes, 1),
+            'all_time_minutes' => round($allTimeMinutes, 1),
+            'paid_minutes' => round($paidMinutes, 1),
+            'pending_minutes' => round($pendingMinutes, 1),
+            'total_submitted_hours_formatted' => $this->formatMinutes($totalSubmittedMinutes),
             'all_time_hours_formatted' => $this->formatMinutes($allTimeMinutes),
             'paid_hours_formatted' => $this->formatMinutes($paidMinutes),
             'pending_hours_formatted' => $this->formatMinutes($pendingMinutes),
@@ -349,8 +350,9 @@ class CalculatePartnerMetricsService
     /**
      * Helper to format minutes to a clean "Xh Ym" string.
      */
-    private function formatMinutes(int $minutes): string
+    public function formatMinutes(int|float $minutes): string
     {
+        $minutes = (int) round((float) $minutes);
         $hours = floor($minutes / 60);
         $remaining = $minutes % 60;
         if ($hours > 0) {
