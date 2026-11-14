@@ -6,10 +6,14 @@
             @php
                 $lastSync = $isVendorView ? $lastSync : \App\Models\AtlasWorker::max('last_synced_at');
             @endphp
+            @if($isVendorView)
             <div class="inline-flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-gray-100 shadow-sm text-sm font-medium text-gray-600">
                 <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 Update Terakhir: <span id="last-sync-time" data-utc="{{ $lastSync ? \Carbon\Carbon::parse($lastSync)->toISOString() : '' }}" class="font-bold text-gray-800">-</span>
             </div>
+            @else
+                @include('admin.atlas-recordings.sync-panel')
+            @endif
         </div>
     </x-slot>
 
@@ -253,6 +257,7 @@
                                         @else
                                             <span class="text-gray-300">-</span>
                                         @endif
+                                        <x-recording-qc-delta :record="$record" category="approved" />
                                     </td>
                                     <td class="whitespace-nowrap px-6 py-4 text-center">
                                         @if($record->rejected_minutes > 0)
@@ -262,6 +267,7 @@
                                         @else
                                             <span class="text-gray-300">-</span>
                                         @endif
+                                        <x-recording-qc-delta :record="$record" category="rejected" />
                                     </td>
                                     <td class="whitespace-nowrap px-6 py-4 text-center">
                                         @if($record->review_minutes > 0)

@@ -4,10 +4,24 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\AtlasTask;
+use App\Models\RoboticsSyncRun;
+use App\Services\Robotics1618Sync;
 use Illuminate\Http\Request;
 
 class AtlasRecordingController extends Controller
 {
+    public function refresh1618(Request $request, Robotics1618Sync $sync)
+    {
+        abort_unless(config('services.robotics1618.enabled'), 503, 'Sinkronisasi server 1618 belum diaktifkan.');
+        $sync->enqueue('manual', $request->user()->id);
+        return redirect()->route('admin.recordings.index')->with('sync_message', 'Permintaan pembaruan disimpan. Scheduler akan memprosesnya dalam sekitar satu menit.');
+    }
+
+    public function syncStatus()
+    {
+        return response()->json(RoboticsSyncRun::latest('id')->first());
+    }
+
     public function index(Request $request)
     {
         $request->validate(['source' => ['nullable', 'in:atlas,1618']]);
@@ -91,6 +105,7 @@ class AtlasRecordingController extends Controller
                             ->paginate(50)
                             ->withQueryString();
 
-        return view('admin.atlas-recordings.index', compact('recordings', 'stats', 'trend'));
+        $syncRun = RoboticsSyncRun::latest('id')->first();
+        return view('admin.atlas-recordings.index', compact('recordings', 'stats', 'trend', 'syncRun'));
     }
 }

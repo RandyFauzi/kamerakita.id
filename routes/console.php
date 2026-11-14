@@ -20,5 +20,11 @@ Schedule::command('app:pull-mailbox-emails')
 Schedule::command('app:clean-expired-emails')->daily();
 Schedule::command('mailbox:prune-quarantine')->daily();
 
+// Existing Hostinger schedule:run cron is sufficient. The HTTP button only enqueues.
+Schedule::command('robotics1618:sync --request')->everyTwoHours()->timezone('Asia/Makassar')
+    ->when(fn () => config('services.robotics1618.enabled'));
+Schedule::command('robotics1618:sync --work')->everyMinute()->withoutOverlapping(15)->runInBackground()
+    ->when(fn () => config('services.robotics1618.enabled'));
+
 // Atlas is synchronized by the versioned Playwright bot on its Windows host.
 // Do not schedule the legacy HTTP scraper, which targets the obsolete schema.

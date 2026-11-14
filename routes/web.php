@@ -275,5 +275,7 @@ require __DIR__.'/auth.php';
     Route::delete('/admin/payrolls/{payroll}', [\App\Http\Controllers\PayrollController::class, 'destroy'])->middleware('role:superadmin,admin')->name('payrolls.destroy');
     Route::post('/admin/payrolls/{payroll}/mark-paid', [\App\Http\Controllers\PayrollController::class, 'markAsPaid'])->middleware('role:superadmin,admin')->name('payrolls.mark_paid');
     Route::get('/admin/recordings', [\App\Http\Controllers\Admin\AtlasRecordingController::class, 'index'])->middleware('role:superadmin,admin')->name('admin.recordings.index');
+    Route::post('/admin/recordings/refresh-1618', [\App\Http\Controllers\Admin\AtlasRecordingController::class, 'refresh1618'])->middleware(['role:superadmin,admin', 'throttle:6,1'])->name('admin.recordings.refresh1618');
+    Route::get('/admin/recordings/sync-status', [\App\Http\Controllers\Admin\AtlasRecordingController::class, 'syncStatus'])->middleware(['role:superadmin,admin', 'throttle:30,1'])->name('admin.recordings.sync-status');
 
     Route::get('/astro/recording', [\App\Http\Controllers\Astro\AstroRecordingController::class, 'index'])->name('astro.recording');

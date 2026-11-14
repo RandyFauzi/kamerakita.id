@@ -19,6 +19,11 @@ return [
     ],
     'robotics1618' => [
         'bot_token' => env('ROBOTICS_1618_BOT_TOKEN'),
+        'username' => env('ROBOTICS_1618_USERNAME'),
+        'password' => env('ROBOTICS_1618_PASSWORD'),
+        'tenant' => env('ROBOTICS_1618_TENANT', 'kamerakita-ai'),
+        'enabled' => env('ROBOTICS_1618_SERVER_ENABLED', false),
+        'refresh_wait' => 30,
     ],
 
     'postmark' => [
