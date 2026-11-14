@@ -74,7 +74,7 @@ class ProcessCatchAllEmailService
     private function recipients($message): array
     {
         $attributes = $message->getAttributes();
-        foreach (['delivered_to', 'envelope_to', 'to'] as $key) {
+        foreach (['x_original_to', 'original_to', 'delivered_to', 'envelope_to', 'to'] as $key) {
             $value = $attributes[$key] ?? null;
             if (is_object($value) && method_exists($value, 'all')) $value = $value->all();
             $addresses = [];
@@ -82,6 +82,9 @@ class ProcessCatchAllEmailService
                 $email = is_object($address) ? ($address->mail ?? '') : $address;
                 if (is_string($email)) {
                     $email = strtolower(trim($email, " <>\t\r\n"));
+                    // Hostinger may rewrite Delivered-To to the catch-all
+                    // transport mailbox. That is not the worker recipient.
+                    if ($key !== 'to' && $email === strtolower((string) config('imap.accounts.default.username'))) continue;
                     if (filter_var($email, FILTER_VALIDATE_EMAIL)) $addresses[] = $email;
                 }
             }
@@ -135,8 +138,10 @@ class ProcessCatchAllEmailService
                     continue;
                 }
 
-                $subject = $message->getSubject() ?: '(Tanpa Subjek)';
-                $messageId = $message->getMessageId() ?: null;
+                $subject = (string) $message->getSubject();
+                $subject = $subject !== '' ? $subject : '(Tanpa Subjek)';
+                $messageId = (string) $message->getMessageId();
+                $messageId = $messageId !== '' ? $messageId : null;
                 $timestamp = now()->toDateTimeString();
                 $dateAttr = $message->getDate();
                 if ($dateAttr && $dateAttr->count() > 0) {
@@ -247,6 +252,9 @@ class ProcessCatchAllEmailService
                         $stats['DUPLICATE_COUNT']++;
                     }
 
+                    \App\Models\MailboxUnmatchedEmail::where('email_account', 'default')
+                        ->where('folder_name', $folderPath)->where('imap_uidvalidity', $currentUidvalidity)
+                        ->where('imap_uid', $uid)->delete();
                     DB::commit();
                     $processingSuccess = true;
                     
