@@ -465,16 +465,28 @@
                     legend: { show: true, position: 'top', horizontalAlign: 'right' },
                     tooltip: {
                         custom: function({series, seriesIndex, dataPointIndex, w}) {
+                            var formatHours = function(mins) {
+                                if (!mins || mins <= 0) return '0 jam';
+                                var h = mins / 60;
+                                var rounded = Math.round(h * 10) / 10;
+                                return (rounded % 1 === 0 ? rounded.toFixed(0) : rounded.toFixed(1)) + ' jam';
+                            };
                             var rows = w.config.series.map(function(status, index) {
                                 var value = (series[index] || [])[dataPointIndex] || 0;
-                                return '<div style="display:flex;justify-content:space-between;gap:16px;margin-top:6px">' +
+                                var mins = Math.round(value);
+                                var hoursStr = formatHours(value);
+                                return '<div style="display:flex;justify-content:space-between;gap:16px;margin-top:6px;align-items:center">' +
                                     '<span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;background:' + w.config.colors[index] + '"></span>' + status.name + '</span>' +
-                                    '<strong>' + value.toFixed(1) + ' mnt</strong></div>';
+                                    '<span><strong>' + mins + ' mnt</strong> <span style="color:#94a3b8;font-weight:normal;font-size:11px;margin-left:4px">(' + hoursStr + ')</span></span></div>';
                             }).join('');
+                            var totalVal = window.currentWorkedSeries[dataPointIndex] || 0;
+                            var totalMins = Math.round(totalVal);
+                            var totalHoursStr = formatHours(totalVal);
                             return '<div style="padding:12px;background:white;border:1px solid #e2e8f0;border-radius:12px;color:#0f172a">' +
                                 '<strong>' + w.globals.labels[dataPointIndex] + '</strong>' + rows +
-                                '<div style="margin-top:8px;border-top:1px solid #e2e8f0;padding-top:8px">Total Durasi: <strong>' +
-                                (window.currentWorkedSeries[dataPointIndex] || 0).toFixed(1) + ' mnt</strong></div></div>';
+                                '<div style="margin-top:8px;border-top:1px solid #e2e8f0;padding-top:8px;display:flex;justify-content:space-between;gap:16px;align-items:center">' +
+                                '<span>Total Durasi:</span>' +
+                                '<span><strong>' + totalMins + ' mnt</strong> <span style="color:#94a3b8;font-weight:normal;font-size:11px;margin-left:4px">(' + totalHoursStr + ')</span></span></div></div>';
                         }
                     }
                 };
