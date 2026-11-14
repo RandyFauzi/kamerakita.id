@@ -166,6 +166,11 @@
 
 <div class="bottom-nav-container md:hidden block" id="bottom-nav-container">
     
+    @php
+        $showUploadLaporan = false;
+    @endphp
+
+    @if($showUploadLaporan)
     <!-- SVG Shape Curve (Notch) -->
     <svg class="nav-bg" viewBox="0 0 390 90" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
         <path d="M0,24 C0,10.7 8.7,0 20,0 H135 C148,0 154,8 158,18 C165,36 178,50 195,50 C212,50 225,36 232,18 C236,8 242,0 255,0 H370 C381.3,0 390,10.7 390,24 V90 H0 V24 Z" fill="#ffffff"/>
@@ -181,6 +186,12 @@
             </svg>
         </div>
     </a>
+    @else
+    <!-- SVG Flat Shape (Tanpa Notch saat Upload Laporan di-hide) -->
+    <svg class="nav-bg" viewBox="0 0 390 90" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+        <path d="M0,24 C0,10.7 8.7,0 20,0 H370 C381.3,0 390,10.7 390,24 V90 H0 V24 Z" fill="#ffffff"/>
+    </svg>
+    @endif
 
     <!-- Item Navigasi -->
     <div class="nav-content" id="nav-menu">
@@ -198,7 +209,7 @@
         </a>
 
         <!-- 2. Riwayat Laporan -->
-        <a href="{{ route('video-submissions.report-history') }}" class="nav-item {{ request()->routeIs('video-submissions.report-history') ? 'active' : '' }}" style="margin-right: 35px;">
+        <a href="{{ route('video-submissions.report-history') }}" class="nav-item {{ request()->routeIs('video-submissions.report-history') ? 'active' : '' }}" @if($showUploadLaporan) style="margin-right: 35px;" @endif>
             <div class="icon-wrapper">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -211,7 +222,7 @@
         </a>
 
         <!-- 3. Riwayat Gaji (Wallet) -->
-        <a href="{{ route('video-submissions.payment-history') }}" class="nav-item {{ request()->routeIs('video-submissions.payment-history') ? 'active' : '' }}" style="margin-left: 35px;">
+        <a href="{{ route('video-submissions.payment-history') }}" class="nav-item {{ request()->routeIs('video-submissions.payment-history') ? 'active' : '' }}" @if($showUploadLaporan) style="margin-left: 35px;" @endif>
             <div class="icon-wrapper">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="2" y="5" width="20" height="14" rx="2"></rect>

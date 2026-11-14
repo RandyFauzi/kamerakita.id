@@ -150,15 +150,16 @@
 
     </div>
 
-    <!-- HORIZONTAL DIVIDER -->
-    <div class="h-px w-full bg-gradient-to-r from-slate-200/20 via-slate-200/80 to-slate-200/20 relative z-10"></div>
-
     <!-- BOTTOM ACTION -->
     @if(isset($actionSlot))
+        <!-- HORIZONTAL DIVIDER -->
+        <div class="h-px w-full bg-gradient-to-r from-slate-200/20 via-slate-200/80 to-slate-200/20 relative z-10"></div>
         <div class="relative z-10 bg-white/20 hover:bg-white/40 transition-colors backdrop-blur-md rounded-b-[28px]">
             {{ $actionSlot }}
         </div>
-    @else
+    @elseif(!empty($actionText))
+        <!-- HORIZONTAL DIVIDER -->
+        <div class="h-px w-full bg-gradient-to-r from-slate-200/20 via-slate-200/80 to-slate-200/20 relative z-10"></div>
         <a href="{{ $actionUrl }}" class="relative z-10 px-6 sm:px-8 py-4 sm:py-5 cursor-pointer bg-white/20 hover:bg-white/40 transition-colors backdrop-blur-md flex justify-between sm:justify-start sm:gap-3 items-center rounded-b-[28px] group">
             <span class="text-sm sm:text-base font-bold text-blue-700 group-hover:text-blue-900">{{ $actionText }}</span>
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="text-blue-600 transition-transform group-hover:translate-x-1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">

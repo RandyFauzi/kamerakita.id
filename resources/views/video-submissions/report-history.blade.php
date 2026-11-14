@@ -22,7 +22,8 @@
                         <p class="mt-1 text-xs text-slate-300">{{ __("dashboard.report_history.subtitle") }}</p>
                     </div>
 
-                    @if($partner->partner_role === 'worker')
+                    {{-- Upload Laporan di-hide sementara sesuai permintaan --}}
+                    @if(false && $partner->partner_role === 'worker')
                         <a href="{{ route('reports.create') }}" class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 text-xs font-black text-slate-900 transition hover:bg-slate-50 md:w-auto">
                             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 5v14m7-7H5"/>

@@ -18,6 +18,9 @@ class FilePondReportUploadController extends Controller
 {
     public function create()
     {
+        // Fitur upload laporan dinonaktifkan / disembunyikan sementara atas permintaan
+        return redirect()->route('dashboard')->with('error', 'Halaman upload laporan saat ini dinonaktifkan.');
+
         $partner = Partner::where('user_id', Auth::id())->first();
 
         if (!$partner || !in_array(strtolower(trim($partner->partner_role)), ['worker', 'mitra', 'rekruter'])) {
