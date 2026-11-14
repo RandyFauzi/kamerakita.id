@@ -8,6 +8,7 @@ class MailboxUnmatchedEmail extends Model
 {
     protected $fillable = [
         'email_account',
+        'folder_name',
         'imap_uid',
         'imap_uidvalidity',
         'recipient',

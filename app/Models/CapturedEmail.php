@@ -15,6 +15,8 @@ class CapturedEmail extends Model
         'subject',
         'message_content',
         'imap_uid',
+        'imap_account',
+        'imap_folder',
         'imap_uidvalidity',
         'message_id',
         'received_at',

@@ -2,52 +2,107 @@
 
 namespace App\Services;
 
-use App\Models\User;
-use App\Models\CapturedEmail;
-use App\Models\MailboxSyncState;
+use App\Models\{User, CapturedEmail, MailboxSyncState};
 use Webklex\IMAP\Facades\Client;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\{Log, DB, Cache, Schema};
 
 class ProcessCatchAllEmailService
 {
+    private function emptyStats(): array
+    {
+        return ['CONNECTED' => false, 'UIDVALIDITY' => null, 'LAST_UID' => 0,
+            'FETCHED_COUNT' => 0, 'PROCESSED_COUNT' => 0, 'SAVED_COUNT' => 0,
+            'DUPLICATE_COUNT' => 0, 'UNMATCHED_COUNT' => 0, 'FAILED_COUNT' => 0, 'NEW_LAST_UID' => 0];
+    }
+
     public function processEmails(): array
     {
-        $stats = [
-            'CONNECTED' => false,
-            'UIDVALIDITY' => null,
-            'LAST_UID' => 0,
-            'FETCHED_COUNT' => 0,
-            'PROCESSED_COUNT' => 0,
-            'SAVED_COUNT' => 0,
-            'DUPLICATE_COUNT' => 0,
-            'UNMATCHED_COUNT' => 0,
-            'FAILED_COUNT' => 0,
-            'NEW_LAST_UID' => 0,
-        ];
-
-        Log::info("IMAP Catch-All: Menghubungkan ke server IMAP...");
-        
+        $stats = $this->emptyStats();
+        $stats['FOLDERS'] = [];
+        $lock = Cache::lock('mailbox:imap-sync', 600);
+        if (!$lock->get()) {
+            $stats['SKIPPED_LOCKED'] = true;
+            return $stats;
+        }
+        $client = null;
         try {
+            if (!Schema::hasColumn('captured_emails', 'imap_folder') || !Schema::hasColumn('mailbox_unmatched_emails', 'folder_name')) {
+                throw new \RuntimeException('Run mailbox folder identity migration before syncing.');
+            }
             $client = Client::account('default');
             $client->connect();
-            Log::info("IMAP Catch-All: Berhasil terhubung ke server!");
             $stats['CONNECTED'] = true;
+            $folders = ['INBOX'];
+            foreach ($client->getFolders(false) as $folder) {
+                if (!$folder->no_select && in_array(strtolower($folder->name), ['spam', 'junk', 'junk e-mail', 'junk email'], true)) {
+                    $folders[] = $folder->path;
+                }
+            }
+            foreach (array_unique($folders) as $path) {
+                $result = $this->emptyStats();
+                try {
+                    $this->processFolder($client, $path, $result);
+                } catch (\Throwable $error) {
+                    $result['FAILED_COUNT']++;
+                    Log::error('Mailbox folder sync failed', ['folder' => $path, 'error' => $error->getMessage()]);
+                }
+                $stats['FOLDERS'][$path] = $result;
+                foreach (['FETCHED_COUNT', 'PROCESSED_COUNT', 'SAVED_COUNT', 'DUPLICATE_COUNT', 'UNMATCHED_COUNT', 'FAILED_COUNT'] as $key) {
+                    $stats[$key] += $result[$key];
+                }
+                if ($path === 'INBOX') {
+                    foreach (['UIDVALIDITY', 'LAST_UID', 'NEW_LAST_UID'] as $key) $stats[$key] = $result[$key];
+                }
+            }
+        } catch (\Throwable $error) {
+            $stats['FAILED_COUNT']++;
+            Log::error('Mailbox sync failed', ['error' => $error->getMessage()]);
+        } finally {
+            try {
+                if ($client) $client->disconnect();
+            } catch (\Throwable $error) {
+                $stats['FAILED_COUNT']++;
+                Log::warning('Mailbox disconnect failed', ['error' => $error->getMessage()]);
+            } finally {
+                $lock->release();
+            }
+        }
+        return $stats;
+    }
 
-            $folder = $client->getFolder('INBOX');
+    private function recipients($message): array
+    {
+        $attributes = $message->getAttributes();
+        foreach (['delivered_to', 'envelope_to', 'to'] as $key) {
+            $value = $attributes[$key] ?? null;
+            if (is_object($value) && method_exists($value, 'all')) $value = $value->all();
+            $addresses = [];
+            foreach ((array) $value as $address) {
+                $email = is_object($address) ? ($address->mail ?? '') : $address;
+                if (is_string($email)) {
+                    $email = strtolower(trim($email, " <>\t\r\n"));
+                    if (filter_var($email, FILTER_VALIDATE_EMAIL)) $addresses[] = $email;
+                }
+            }
+            if ($addresses) return array_unique($addresses);
+        }
+        return [];
+    }
+
+    private function processFolder($client, string $folderPath, array &$stats): void
+    {
+            $folder = $client->getFolder($folderPath);
             
             $status = $folder->getStatus();
             $currentUidvalidity = $status['uidvalidity'] ?? null;
             
             if (!$currentUidvalidity) {
-                Log::error("IMAP Catch-All: Tidak bisa mendapatkan UIDVALIDITY. Menggunakan UID fallback (berisiko duplikat pada perubahan folder).");
-                $currentUidvalidity = 1; // Fallback
+                throw new \RuntimeException('Missing UIDVALIDITY for '.$folderPath);
             }
             $stats['UIDVALIDITY'] = $currentUidvalidity;
 
             $syncState = MailboxSyncState::firstOrCreate(
-                ['email_account' => 'default', 'folder_name' => 'INBOX'],
+                ['email_account' => 'default', 'folder_name' => $folderPath],
                 ['uidvalidity' => $currentUidvalidity, 'last_uid' => 0]
             );
 
@@ -62,7 +117,7 @@ class ProcessCatchAllEmailService
             $lastUid = $syncState->last_uid;
             $stats['LAST_UID'] = $lastUid;
             
-            $searchUid = $lastUid > 0 ? $lastUid : 1;
+            $searchUid = $lastUid + 1;
             Log::info("IMAP Catch-All: Menarik pesan dengan UID > {$lastUid} (Query UID: {$searchUid}:*)");
             $messages = $folder->query()->whereUid($searchUid . ':*')->limit(100)->get();
             
@@ -87,32 +142,7 @@ class ProcessCatchAllEmailService
                     $timestamp = $dateAttr->first()->setTimezone(config('app.timezone'))->toDateTimeString();
                 }
 
-                $resolvedRecipients = [];
-                
-                $attributes = $message->getAttributes();
-                $deliveredTo = $attributes['delivered_to'] ?? $attributes['envelope_to'] ?? null;
-                
-                if ($deliveredTo) {
-                    if (is_array($deliveredTo)) {
-                        foreach ($deliveredTo as $dt) {
-                            $resolvedRecipients[] = strtolower(trim($dt));
-                        }
-                    } elseif (is_string($deliveredTo)) {
-                        $resolvedRecipients[] = strtolower(trim($deliveredTo));
-                    }
-                }
-
-                if (empty($resolvedRecipients)) {
-                    $toAttribute = $message->getTo();
-                    $toAddresses = $toAttribute ? $toAttribute->all() : [];
-                    foreach ($toAddresses as $to) {
-                        if (isset($to->mail)) {
-                            $resolvedRecipients[] = strtolower(trim($to->mail));
-                        }
-                    }
-                }
-                
-                $resolvedRecipients = array_filter($resolvedRecipients);
+                $resolvedRecipients = $this->recipients($message);
 
                 if (empty($resolvedRecipients)) {
                     Log::warning("IMAP Catch-All: UNMATCHED_RECIPIENT (No Recipient Found)", [
@@ -122,7 +152,7 @@ class ProcessCatchAllEmailService
                         'timestamp' => $timestamp
                     ]);
                     \App\Models\MailboxUnmatchedEmail::updateOrCreate(
-                        ['email_account' => 'default', 'imap_uidvalidity' => $currentUidvalidity, 'imap_uid' => $uid],
+                        ['email_account' => 'default', 'folder_name' => $folderPath, 'imap_uidvalidity' => $currentUidvalidity, 'imap_uid' => $uid],
                         [
                             'recipient' => null,
                             'sender' => strtolower(trim($message->getFrom()[0]->mail ?? 'unknown')),
@@ -135,6 +165,7 @@ class ProcessCatchAllEmailService
                     $stats['UNMATCHED_COUNT']++;
                     $stats['PROCESSED_COUNT']++;
                     if ($uid > $highestUidProcessed) $highestUidProcessed = $uid;
+                    $syncState->update(['last_uid' => $highestUidProcessed]);
                     continue;
                 }
 
@@ -158,7 +189,7 @@ class ProcessCatchAllEmailService
                         'timestamp' => $timestamp
                     ]);
                     \App\Models\MailboxUnmatchedEmail::updateOrCreate(
-                        ['email_account' => 'default', 'imap_uidvalidity' => $currentUidvalidity, 'imap_uid' => $uid],
+                        ['email_account' => 'default', 'folder_name' => $folderPath, 'imap_uidvalidity' => $currentUidvalidity, 'imap_uid' => $uid],
                         [
                             'recipient' => implode(', ', $resolvedRecipients),
                             'sender' => strtolower(trim($message->getFrom()[0]->mail ?? 'unknown')),
@@ -171,6 +202,7 @@ class ProcessCatchAllEmailService
                     $stats['UNMATCHED_COUNT']++;
                     $stats['PROCESSED_COUNT']++;
                     if ($uid > $highestUidProcessed) $highestUidProcessed = $uid;
+                    $syncState->update(['last_uid' => $highestUidProcessed]);
                     continue;
                 }
 
@@ -183,6 +215,7 @@ class ProcessCatchAllEmailService
                     DB::beginTransaction();
 
                     $existing = CapturedEmail::where('user_id', $userId)
+                        ->where('imap_account', 'default')->where('imap_folder', $folderPath)
                         ->where('imap_uidvalidity', $currentUidvalidity)
                         ->where('imap_uid', $uid)
                         ->exists();
@@ -199,6 +232,8 @@ class ProcessCatchAllEmailService
                             'sender_address' => $senderAddress,
                             'subject' => $subject,
                             'message_content' => $content,
+                            'imap_account' => 'default',
+                            'imap_folder' => $folderPath,
                             'imap_uid' => $uid,
                             'imap_uidvalidity' => $currentUidvalidity,
                             'message_id' => $messageId,
@@ -214,7 +249,7 @@ class ProcessCatchAllEmailService
                     DB::commit();
                     $processingSuccess = true;
                     
-                } catch (\Exception $dbErr) {
+                } catch (\Throwable $dbErr) {
                     DB::rollBack();
                     Log::error("IMAP Catch-All: GAGAL MENYIMPAN KE DB", [
                         'uid' => $uid,
@@ -232,6 +267,7 @@ class ProcessCatchAllEmailService
                     $stats['PROCESSED_COUNT']++;
                     if ($uid > $highestUidProcessed) {
                         $highestUidProcessed = $uid;
+                        $syncState->update(['last_uid' => $highestUidProcessed]);
                     }
                 }
                 
@@ -245,10 +281,5 @@ class ProcessCatchAllEmailService
             }
             $stats['NEW_LAST_UID'] = $highestUidProcessed;
 
-        } catch (\Exception $e) {
-            Log::error("IMAP Catch-All: TERJADI ERROR FATAL: " . $e->getMessage());
-        }
-
-        return $stats;
     }
 }

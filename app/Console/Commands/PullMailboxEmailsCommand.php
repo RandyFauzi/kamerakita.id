@@ -42,5 +42,9 @@ class PullMailboxEmailsCommand extends Command
         }
         $this->info('=============================');
         $this->newLine();
+        foreach ($stats['FOLDERS'] ?? [] as $folder => $result) {
+            $this->line("Folder {$folder}: saved={$result['SAVED_COUNT']}, duplicates={$result['DUPLICATE_COUNT']}, failed={$result['FAILED_COUNT']}, cursor={$result['NEW_LAST_UID']}");
+        }
+        return $stats['FAILED_COUNT'] > 0 ? self::FAILURE : self::SUCCESS;
     }
 }
