@@ -43,12 +43,17 @@ class AtlasRecordingController extends Controller
             });
         }
 
-        // Filter by date range
+        $isMysql = \Illuminate\Support\Facades\DB::connection()->getDriverName() === 'mysql';
+        $dateExpr = $isMysql
+            ? "COALESCE(DATE(DATE_ADD(recorded_at, INTERVAL 8 HOUR)), task_date)"
+            : "COALESCE(DATE(datetime(recorded_at, '+8 hours')), task_date)";
+
+        // Filter by date range (aligned with Makassar / WITA local time)
         if ($request->filled('start_date')) {
-            $query->where('task_date', '>=', $request->input('start_date'));
+            $query->whereRaw("{$dateExpr} >= ?", [$request->input('start_date')]);
         }
         if ($request->filled('end_date')) {
-            $query->where('task_date', '<=', $request->input('end_date'));
+            $query->whereRaw("{$dateExpr} <= ?", [$request->input('end_date')]);
         }
 
         // Filter by salary status
@@ -89,12 +94,12 @@ class AtlasRecordingController extends Controller
             'total_rejected' => $statsQuery->sum('rejected_minutes'),
         ];
 
-        // Chart Data (Group by date)
+        // Chart Data (Group by date, aligned with Makassar / WITA local time)
         $chartQuery = clone $query;
         $chartQuery->setEagerLoads([]);
-        $trend = $chartQuery->selectRaw('task_date, SUM(worked_minutes) as worked, SUM(approved_minutes) as approved, SUM(review_minutes) as review, SUM(rejected_minutes) as rejected, SUM(deferred_minutes) as deferred')
-                            ->groupBy('task_date')
-                            ->orderBy('task_date', 'desc')
+        $trend = $chartQuery->selectRaw("{$dateExpr} as task_date, SUM(worked_minutes) as worked, SUM(approved_minutes) as approved, SUM(review_minutes) as review, SUM(rejected_minutes) as rejected, SUM(deferred_minutes) as deferred")
+                            ->groupBy(\Illuminate\Support\Facades\DB::raw($dateExpr))
+                            ->orderBy(\Illuminate\Support\Facades\DB::raw($dateExpr), 'desc')
                             ->limit(90)
                             ->get()
                             ->reverse()

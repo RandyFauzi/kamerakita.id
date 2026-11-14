@@ -84,10 +84,10 @@
     "semantic_hash": "6015f287d577d49d30627648dedd86ce"
   },
   "app/Console/Commands/PullMailboxEmailsCommand.php": {
-    "mtime": 1790739756.4323695,
-    "seen": 1791343609.4396408,
-    "ast_hash": "cfdee8aee57213041679e240e09b3647",
-    "semantic_hash": "cfdee8aee57213041679e240e09b3647"
+    "mtime": 1794615953.5260296,
+    "seen": 1794616181.7957578,
+    "ast_hash": "eeedae0e3dcc818de1b0042914614070",
+    "semantic_hash": ""
   },
   "app/Console/Commands/QuickReconcileByEmail.php": {
     "mtime": 1790739756.4323695,
@@ -132,9 +132,9 @@
     "semantic_hash": "808abbfe9c1bccbb76d69fb05a8a0c40"
   },
   "app/Http/Controllers/Admin/AtlasRecordingController.php": {
-    "mtime": 1794456641.9721756,
-    "seen": 1794457365.5643997,
-    "ast_hash": "5bcb487504baf30de3d965117dcf9372",
+    "mtime": 1794619957.671518,
+    "seen": 1794620079.5541286,
+    "ast_hash": "84dae78d4a74efa19cce2548f7897a75",
     "semantic_hash": ""
   },
   "app/Http/Controllers/Admin/PasswordRecoveryController.php": {
@@ -618,9 +618,9 @@
     "semantic_hash": "3fb52fc4bbb6a06a84851498af614b85"
   },
   "app/Models/CapturedEmail.php": {
-    "mtime": 1794357954.3881972,
-    "seen": 1794358032.2749527,
-    "ast_hash": "16e916e50ded2ff42cca4781fdef3b5a",
+    "mtime": 1794615953.5220196,
+    "seen": 1794616181.7959805,
+    "ast_hash": "5a5d146e5f33d80844f67a2142ca59d3",
     "semantic_hash": ""
   },
   "app/Models/Category.php": {
@@ -672,10 +672,10 @@
     "semantic_hash": "f47f1c49ff04aa402af124a5b1cb1935"
   },
   "app/Models/MailboxUnmatchedEmail.php": {
-    "mtime": 1790739756.4936972,
-    "seen": 1791343609.4397798,
-    "ast_hash": "3e34b1c98a8dcb985c8216dbfcabec52",
-    "semantic_hash": "3e34b1c98a8dcb985c8216dbfcabec52"
+    "mtime": 1794615953.5260296,
+    "seen": 1794616181.7960007,
+    "ast_hash": "edd4309c67af98ee09ffd440457ebe20",
+    "semantic_hash": ""
   },
   "app/Models/McpAuditLog.php": {
     "mtime": 1790739756.4936972,
@@ -834,10 +834,10 @@
     "semantic_hash": "f61e182ed1d3f9f6470cd827d5d0e1d9"
   },
   "app/Services/ProcessCatchAllEmailService.php": {
-    "mtime": 1790739756.5086732,
-    "seen": 1791343609.4398162,
-    "ast_hash": "ab1698cd632125e42469d39e8b892e4b",
-    "semantic_hash": "ab1698cd632125e42469d39e8b892e4b"
+    "mtime": 1794616837.8412056,
+    "seen": 1794617065.560917,
+    "ast_hash": "8730dca77184122bf36c7e002ef5406d",
+    "semantic_hash": ""
   },
   "app/Services/ProcessPartnerPayrollService.php": {
     "mtime": 1790739756.5086732,
@@ -1770,9 +1770,9 @@
     "semantic_hash": "63b5abcd104c726924379c3461b767d0"
   },
   "resources/views/admin/atlas-recordings/index.blade.php": {
-    "mtime": 1794457912.4807131,
-    "seen": 1794457986.931673,
-    "ast_hash": "fc44e5b84bccd69a8960fee81577ad73",
+    "mtime": 1794620003.7244277,
+    "seen": 1794620079.5550687,
+    "ast_hash": "0c4afc93192720bc8f18c6fb18f4b775",
     "semantic_hash": ""
   },
   "resources/views/admin/password_recoveries/index.blade.php": {
@@ -2586,9 +2586,9 @@
     "semantic_hash": ""
   },
   "app/Http/Controllers/VendorRecordingController.php": {
-    "mtime": 1794361524.0245833,
-    "seen": 1794361555.0126853,
-    "ast_hash": "742c488de2241cb7c0262ead027c551e",
+    "mtime": 1794619968.7916489,
+    "seen": 1794620079.5542452,
+    "ast_hash": "ef9cd2503d212be042f00ecfa2eae9f0",
     "semantic_hash": ""
   },
   "app/Mcp/Tools/MatchPayrollExcelTool.php": {
@@ -3588,9 +3588,9 @@
     "semantic_hash": ""
   },
   "app/Services/RecordingIngestor.php": {
-    "mtime": 1794457148.787953,
-    "seen": 1794457365.5653656,
-    "ast_hash": "1fdb14a7411ae6535480e81ca647a5c5",
+    "mtime": 1794619893.23688,
+    "seen": 1794620079.5544353,
+    "ast_hash": "f66893d521ff591a0d3c398657d30462",
     "semantic_hash": ""
   },
   "app/Services/Robotics1618Csv.php": {
@@ -3618,9 +3618,9 @@
     "semantic_hash": ""
   },
   "resources/views/admin/atlas-recordings/sync-panel.blade.php": {
-    "mtime": 1794457949.7922232,
-    "seen": 1794457986.9316764,
-    "ast_hash": "05fe31d181e0b6fec8f8262879663108",
+    "mtime": 1794618158.8503573,
+    "seen": 1794618244.720501,
+    "ast_hash": "7ba8414a51b74e832239108abb0873f2",
     "semantic_hash": ""
   },
   "resources/views/components/recording-qc-delta.blade.php": {
@@ -3636,9 +3636,9 @@
     "semantic_hash": ""
   },
   "tests/Feature/Robotics1618ServerTest.php": {
-    "mtime": 1794457808.8688054,
-    "seen": 1794457827.5952117,
-    "ast_hash": "c64286ca40d7d4502b0bbdee9ea27cf2",
+    "mtime": 1794618179.7505443,
+    "seen": 1794618244.7208664,
+    "ast_hash": "7187ffc73358ac83bf0bbfc6eb8cfda5",
     "semantic_hash": ""
   },
   "scripts/ROBOTICS_1618_SERVER.md": {
@@ -3651,6 +3651,24 @@
     "mtime": 1794457808.869802,
     "seen": 1794457827.5944526,
     "ast_hash": "316bd5e803b87b611e6e46326893ccb2",
+    "semantic_hash": ""
+  },
+  "database/migrations/2026_11_14_090000_scope_mailbox_identity_by_folder.php": {
+    "mtime": 1794615953.5220196,
+    "seen": 1794616181.7963412,
+    "ast_hash": "39b8ce411bf55ee63545ebed3893b6ed",
+    "semantic_hash": ""
+  },
+  "tests/Feature/MailboxSpamSyncTest.php": {
+    "mtime": 1794616837.856826,
+    "seen": 1794617065.5616674,
+    "ast_hash": "312232bb8a1aa85e265788220de82b44",
+    "semantic_hash": ""
+  },
+  "database/migrations/2026_11_14_000001_align_atlas_tasks_task_date_to_makassar.php": {
+    "mtime": 1794620010.6217878,
+    "seen": 1794620079.554715,
+    "ast_hash": "6342d4f01de901b8d71836a2d3940672",
     "semantic_hash": ""
   },
   ".agents/mcp-bridge/package-lock.json": {

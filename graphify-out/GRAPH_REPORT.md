@@ -1,25 +1,25 @@
-# Graph Report - kamerakita.id-main  (2026-11-13)
+# Graph Report - kamerakita.id-main  (2026-11-14)
 
 ## Corpus Check
-- 533 files · ~250,524 words
+- 536 files · ~251,515 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 30 file(s) not represented in the graph (top: (none) 19, .css 4, .example 2)
 
 ## Summary
-- 2645 nodes · 4598 edges · 382 communities (108 shown, 274 thin omitted)
+- 2667 nodes · 4644 edges · 356 communities (92 shown, 264 thin omitted)
 - Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 200 edges (avg confidence: 0.91)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `d51b1a05`
+- Built from commit: `23cd0e9b`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
-- VendorRecordingsTest.php
+- App\Services\Robotics1618Sync
 - Illuminate\Database\Schema\Blueprint
 - Connector1618Test
-- Illuminate\Support\Facades\Storage
+- App\Http\Controllers\EditRejectedVideoWorkReportController
 - Module 4
 - Illuminate\Http\Request
 - Robotics1618ServerTest
@@ -28,16 +28,16 @@
 - Invoice
 - Illuminate\Database\Eloquent\Model
 - 2026_08_14_062310_add_avatar_to_users_table.php
-- Illuminate\Support\Facades\Schema
-- ActivationCode
+- 2026_07_17_065051_rename_contributor_id_to_mitra_parent_id_in_partners_table.php
+- App\Http\Controllers\VerifyVideoWorkReportController
 - EvidenceFileBackupService
 - LeaderboardService
 - Partner
 - Symfony\Component\HttpFoundation\Response
-- Illuminate\Database\Eloquent\Relations\BelongsTo
+- PasswordRecoveryController.php
 - Kotnes.md - Konteks Lengkap Project Kamerakita.ai
 - Illuminate\Foundation\Testing\RefreshDatabase
-- Konteks Proyek: KameraKita.id
+- FastworkOnboarding
 - .view
 - Module 25
 - Robotics1618SyncTest
@@ -45,28 +45,29 @@
 - BatchApproveReportsTool
 - Illuminate\Console\Command
 - CapturedEmail
-- BaseTool
 - Illuminate\Database\Eloquent\Relations\BelongsTo
-- CheckEvidenceFiles.php
-- 17. Catatan Inkonsistensi dan Potensi Perbaikan
+- Illuminate\Support\Facades\Auth
+- App\Services\RecordingIngestor
+- AtlasRecordingController.php
+- VideoWorkReportEvidenceAccessTest.php
 - QuickReconcileByEmailTool
-- UserFactory
-- AdminAssistantController.php
+- Illuminate\Database\Eloquent\Concerns\HasUuids
+- .date
 - 0001_01_01_000002_create_jobs_table.php
 - Module 40
 - Module 41
-- Context: Mailbox Code Review Project
-- MigrateEvidenceFilesToPrivateStorage.php
+- Illuminate\Support\Facades\DB
+- BRIEFING — 2026-08-10T11:33:45Z
 - Rincian Temuan Audit Frontend
 - Module 45
 - LoginRequest
 - .log
 - BotTest
 - .toggleRead
-- 12. Environment Variables
 - ListActivityLogsController.php
 - Explorer Backend & DB Performance Handoff Report
 - AtlasTask
+- Illuminate\Support\Facades\Hash
 - PayrollAssistantTool
 - Module 56
 - Module 57
@@ -74,28 +75,28 @@
 - Module 59
 - Module 60
 - atlas_sync.py
-- App\Http\Controllers\Controller
+- 1618 server connector (Laravel)
 - CleanProductionDummyData.php
-- QcStatsTool
+- McpServerController.php
 - NotificationDelivery
 - Module 66
 - Detail Analisis Temuan Audit
 - Bab 1: Analisis Standar Pengkodean (Best Practices - R1)
-- 7. Database dan Migration
+- PullMailboxEmailsCommand.php
 - User
 - AnomalyDetectorTool
 - Robotics1618Source
-- App\Services\RecordingIngestor
-- SendWaTool
-- ProcessCatchAllEmailService
 - ActivationCode
+- SendWaTool
+- Laporan Audit Code Review & Rekomendasi Perbaikan Fitur Mailbox KameraKita.id
+- 2026_11_03_120000_add_recording_source_tracking.php
 - VendorRecordingsTest
-- Illuminate\Support\Facades\Auth
+- .handle
 - Module 79
-- 2026_07_22_120000_add_has_headstrap_to_partners_table.php
+- Illuminate\Database\Migrations\Migration
 - App\Http\Controllers\RenderDashboardOverviewController
-- BRIEFING — 2026-08-10T11:33:45Z
-- App\Http\Controllers\EditRejectedVideoWorkReportController
+- ProcessCatchAllEmailService
+- App\Http\Controllers\ExportPayrollDataController
 - PartnerListPaginationTest.php
 - 2026_08_09_053512_add_registration_date_to_partners_table.php
 - 2026_09_05_101714_add_imap_identities_to_captured_emails_table.php
@@ -106,7 +107,7 @@
 - robotics1618_sync.py
 - 0001_01_01_000001_create_cache_table.php
 - Module 94
-- Tests\TestCase
+- VendorTeamWorkerManagementTest
 - Module 96
 - Module 97
 - Module 98
@@ -114,21 +115,18 @@
 - Module 100
 - Requirements
 - TopPartnersTool
-- BatchReconcileByEmailTool
+- BaseTool
 - 2026_08_09_152322_add_read_and_starred_to_captured_emails_table.php
-- 2026_07_17_063028_create_client_invoices_table.php
-- 2026_08_11_104447_add_rate_applied_to_video_work_reports_table.php
-- CustomWebPushNotification
+- MailboxSpamSyncTest
+- Illuminate\Support\Facades\Schema
+- VendorController.php
 - Module 108
 - AutoReconcileProportionalTool
 - App\Http\Controllers\ShowVideoWorkReportEvidenceController
-- App\Http\Controllers\ExportPayrollDataController
-- Module 113
-- 2026_09_06_134049_add_international_onboarding_fields_to_partners_table.php
+- 2026_07_28_063216_create_recruiter_commissions_table.php
 - 2026_09_10_075542_create_password_recovery_tables.php
 - 2026_07_28_060034_create_activity_logs_table.php
 - Module 117
-- AggregateRecordsTool
 - 1618 recording connector
 - Module 120
 - Illuminate\View\View
@@ -138,14 +136,14 @@
 - process_source_html
 - UserFactory.php
 - Module 127
-- 2026_08_09_101751_create_captured_emails_table.php
+- RateCard
 - BRIEFING — 2026-08-10T11:38:25Z
 - Langkah Deployment di Server Produksi
 - AtlasRecordingSyncTest
 - 2026_08_20_141200_create_categories_table.php
 - 2026_09_05_091424_create_mcp_audit_logs_table.php
-- Illuminate\Database\Migrations\Migration
-- WhatsAppNotificationService
+- ManagePaymentsController.php
+- MailboxController
 - Module 136
 - Module 137
 - Module 138
@@ -154,9 +152,9 @@
 - Module 154
 - Module 155
 - admin.atlas-recordings.sync-panel
-- CleanExpiredEmailsCommand
+- 2026_07_24_080216_add_is_client_registered_to_partners.php
 - 3. Perubahan & Stabilisasi yang Dilakukan
-- RateCard
+- MatchPayrollExcelTool
 - BRIEFING — 2026-08-10T11:31:00Z
 - BRIEFING — 2026-08-10T11:29:15Z
 - VideoWorkReport
@@ -166,37 +164,34 @@
 - Victory Audit Handoff Report — Mailbox Code Review Project
 - BRIEFING — 2026-08-10
 - Handoff Report - Mailbox Audit Report Generation
-- Illuminate\Support\Facades\Log
-- MatchPayrollExcelTool
-- CreateCustomUserTool
-- 2026_08_04_050903_add_project_name_to_video_work_reports_table.php
+- MailboxSpamSyncTest.php
+- 2026_08_10_133518_add_indexes_to_captured_emails_table.php
+- 2026_08_12_022227_add_has_headstrap_to_fastwork_onboardings_table.php
 - PasswordResetTest.php
 - 2026_10_01_103130_add_worker_notes_to_video_work_reports_table.php
 - 2026_08_04_040357_add_evidence_submitted_image_paths_to_video_work_reports_table.php
 - 0001_01_01_000000_create_users_table.php
 - 2026_08_18_065009_add_onboarding_fields_to_users_table.php
-- 2026_10_09_035433_create_payrolls_table.php
+- 2026_09_16_051542_add_created_at_index_to_mailbox_unmatched_emails_table.php
 - Atlas recording sync
 - Public portfolio — /portofolio
 - FetchRecordsTool
 - 2026_09_05_090959_drop_legacy_account_columns_from_partners.php
-- api.php
-- 2026_07_17_060448_create_partners_table.php
+- 2026_11_14_090000_scope_mailbox_identity_by_folder.php
 - 2026_10_15_020000_add_deferred_minutes_to_atlas_tasks.php
 - RevertReconcileByEmailTool
 - 2026_09_05_083802_create_invoices_table.php
 - 2026_11_02_154500_add_bypass_worker_bank_onboarding_to_partners_table.php
-- 2026_07_25_112319_create_fastwork_onboardings_table.php
-- SearchPartnerTool
-- 2026_09_05_101722_create_mailbox_sync_states_table.php
+- McpServerController.php
+- VideoWorkReportUpdateLifecycleTest
 - Progress Log — Mailbox Code Review
-- PullMailboxEmailsCommand.php
-- 2026_09_16_024747_create_mailbox_unmatched_emails_table.php
+- 2026_07_17_060449_create_video_work_reports_table.php
+- 2026_08_13_071829_create_personal_access_tokens_table.php
 - 2026_07_18_190000_create_evidence_file_backups_table.php
 - 2026_09_16_023430_add_message_id_index_to_captured_emails_table.php
 - 2026_10_09_051230_add_payment_proof_to_payrolls_table.php
-- EventController.php
-- MailboxController
+- 2026_08_20_141201_create_recordings_table.php
+- 2026_09_05_090638_create_report_periods_table.php
 - 2026_09_05_090255_create_rate_cards_table.php
 - DISPATCH LOG
 - admin.atlas-recordings.index
@@ -210,39 +205,19 @@
 - worker_report/progress.md
 - Team Nanda Hourly tracker & Participant Information Indonesia_02a37a53.md
 - 2026_10_09_030151_create_master_tasks_table.php
-- SoftDeleteEmailTool
-- Laporan Analisis Frontend UI/UX & AlpineJS (Mailbox Code Review)
+- Illuminate\Support\Facades\Storage
+- FilePondReportUploadController.php
 - QuickReconcileByEmail.php
-- 2026_07_24_070907_create_referral_codes_and_add_group_to_partners.php
-- .payroll
-- 10. Action dan Service
-- BE-03: Risiko Out-Of-Memory (OOM) Akibat Penarikan Seluruh Folder IMAP Tanpa Chunking/Filtering
-- ProcessPartnerPayrollService
-- BE-05: Absensi Perlindungan Cron Overlapping (`withoutOverlapping`) pada Jadwal Penarikan Email 1 Menit
-- 15. Alur Fitur Utama
 - Bab 3: Analisis UI/UX & Logika Frontend (R3)
-- BE-06: Tidak Adanya Validasi Input (Request Validation) dan Type Casting pada Controller Status Email
-- FE-02: Masalah Sinkronisasi State AlpineJS Antara Array `emails` dan Object Reference `selectedEmail`
-- FE-03: Penanganan Error Asinkron Menggunakan `alert()` Bawaan Browser Tanpa Indicator Loading UI
-- FE-06: Higiene Data Binding Campuran (Blade String Interpolation dalam Template Literal JS)
-- FE-07: Penggunaan Palet Warna Hex Manual (Hardcoded Hex) Menyebabkan Ketidakseragaman UI & Menyulitkan Mode Gelap
-- FE-08: Potensi Implikasi Performa & Alokasi Memori pada Getter `filteredEmails`
-- FE-09: Risiko Parsing Date Mengembalikan String `"Invalid Date"` pada Format Tanggal
-- FE-10: Ketergantungan Eksternal CDN Tanpa Fallback Asinkron untuk Avatar Pengguna
-- Finding 4 (High): Komponen Tombol Interaktif Tanpa Event Handler (Dead Action Buttons)
-- Finding 5 (Medium): Tata Letak Responsive Bermasalah & Penggunaan Inline Style `style="display: none;"` Redundat Tanpa Global CSS `[x-cloak]`
-- Finding 6 (Medium): Higiene Data Binding Campuran (Blade String Interpolation dalam Template Literal JS)
-- Finding 7 (Medium): Penggunaan Palet Warna Hex Manual (Hardcoded Hex) Menyebabkan Ketidakseragaman UI & Menyulitkan Mode Gelap
-- 6. Role dan Tipe Partner
 
 ## God Nodes (most connected - your core abstractions)
-1. `User` - 170 edges
+1. `User` - 168 edges
 2. `Partner` - 155 edges
 3. `VideoWorkReport` - 126 edges
 4. `Controller` - 63 edges
 5. `TestCase` - 58 edges
-6. `AtlasTask` - 43 edges
-7. `CapturedEmail` - 29 edges
+6. `AtlasTask` - 41 edges
+7. `CapturedEmail` - 27 edges
 8. `BotTest` - 27 edges
 9. `Invoice` - 25 edges
 10. `BaseTool` - 22 edges
@@ -252,41 +227,41 @@
   Kotnes.md → app/Http/Controllers/ManageAdminUsersController.php
 - `Tabel `partners`` --references--> `Partner`  [INFERRED]
   Kotnes.md → app/Models/Partner.php
-- `Deskripsi Masalah & Analisis Dampak` --references--> `MailboxController`  [INFERRED]
-  .agents/explorer_backend/analysis.md → app/Http/Controllers/MailboxController.php
-- `4. Fitur Utama & Alur Kerja (Workflow)` --references--> `MailboxController`  [INFERRED]
-  konteks.md → app/Http/Controllers/MailboxController.php
+- `Deskripsi Masalah & Analisis Dampak` --references--> `CleanExpiredEmailsCommand`  [INFERRED]
+  .agents/explorer_backend/analysis.md → app/Console/Commands/CleanExpiredEmailsCommand.php
 - `3. QC modal memakai gambar upload asli via route private` --references--> `VideoWorkReport`  [INFERRED]
   Kotnes.md → app/Models/VideoWorkReport.php
+- `Cuplikan Kode Perbaikan yang Direkomendasikan` --references--> `CapturedEmailPolicy`  [INFERRED]
+  .agents/explorer_backend/analysis.md → app/Policies/CapturedEmailPolicy.php
 
 ## Import Cycles
 - None detected.
 
-## Communities (382 total, 274 thin omitted)
+## Communities (356 total, 264 thin omitted)
 
 ### Community 1 - "Illuminate\Database\Schema\Blueprint"
 Cohesion: 0.06
-Nodes (31): {closure#1}(), {closure#2}(), {closure#1}(), {closure#2}(), {closure#1}(), {closure#2}(), {closure#3}(), {closure#4}() (+23 more)
+Nodes (29): {closure#1}(), {closure#2}(), {closure#3}(), {closure#1}(), {closure#2}(), {closure#1}(), {closure#2}(), {closure#3}() (+21 more)
 
-### Community 3 - "Illuminate\Support\Facades\Storage"
-Cohesion: 0.13
-Nodes (8): {closure#2}(), {closure#1}(), StoreEvidenceImageService, 9. Controller dan Logic Bisnis, `EditRejectedVideoWorkReportController`, `ManageAdminUsersController`, `SubmitVideoWorkReportController`, VideoWorkReportUpdateLifecycleTest
+### Community 3 - "App\Http\Controllers\EditRejectedVideoWorkReportController"
+Cohesion: 0.14
+Nodes (3): AdminAssistantController, {closure#4}(), EditRejectedVideoWorkReportController
 
 ### Community 4 - "Module 4"
 Cohesion: 0.06
 Nodes (7): patch_file(), patch_file(), patch_file(), patch_file(), patch_file(), patch_file(), patch_file()
 
 ### Community 5 - "Illuminate\Http\Request"
-Cohesion: 0.08
-Nodes (8): FilePondReportUploadController, LocaleController, ManageOnboardingsController, ManagePaymentsController, MasterTaskController, PortfolioController, PushSubscriptionController, VendorController
+Cohesion: 0.11
+Nodes (6): AtlasBotController, LocaleController, OnboardingController, PortfolioController, PushSubscriptionController, VendorController
 
 ### Community 6 - "Robotics1618ServerTest"
 Cohesion: 0.14
 Nodes (4): {closure#1}(), {closure#2}(), {closure#5}(), Robotics1618ServerTest
 
 ### Community 7 - "SyncMailboxJob"
-Cohesion: 0.33
-Nodes (3): ProcessSubmittedReport, SendWhatsAppMessageJob, SyncMailboxJob
+Cohesion: 0.10
+Nodes (7): {closure#1}(), ProcessSubmittedReport, SendWhatsAppMessageJob, SyncMailboxJob, AdminAnnouncementWebPush, CustomWebPushNotification, WhatsAppNotificationService
 
 ### Community 8 - "Module 8"
 Cohesion: 0.07
@@ -297,68 +272,68 @@ Cohesion: 0.10
 Nodes (6): MigrateInvoicesData, InvoiceController, Client, ClientInvoice, Invoice, InvoiceLifecycleTest
 
 ### Community 11 - "Illuminate\Database\Eloquent\Model"
-Cohesion: 0.12
-Nodes (9): FastworkOnboarding, InvoiceItem, MailboxSyncState, MailboxUnmatchedEmail, MasterTask, McpAuditLog, NotificationCampaign, ReportPeriod (+1 more)
+Cohesion: 0.15
+Nodes (6): InvoiceItem, MailboxSyncState, MasterTask, McpAuditLog, NotificationCampaign, ReportPeriod
 
-### Community 13 - "Illuminate\Support\Facades\Schema"
-Cohesion: 0.06
-Nodes (9): {closure#1}(), {closure#2}(), {closure#1}(), {closure#2}(), {closure#1}(), {closure#1}(), {closure#2}(), {closure#1}() (+1 more)
-
-### Community 14 - "ActivationCode"
-Cohesion: 0.14
-Nodes (3): MobileRecordingController, Category, Recording
+### Community 14 - "App\Http\Controllers\VerifyVideoWorkReportController"
+Cohesion: 0.07
+Nodes (7): {closure#12}(), {closure#8}(), {closure#9}(), VerifyVideoWorkReportController, PeriodApproval, CheckRecruiterMilestone, PeriodService
 
 ### Community 15 - "EvidenceFileBackupService"
-Cohesion: 0.14
+Cohesion: 0.13
 Nodes (5): BackupEvidenceFilesToDatabase, {closure#1}(), RestoreEvidenceFilesFromDatabase, EvidenceFileBackup, EvidenceFileBackupService
 
+### Community 16 - "LeaderboardService"
+Cohesion: 0.14
+Nodes (4): LeaderboardController, {closure#1}(), {closure#2}(), LeaderboardService
+
 ### Community 17 - "Partner"
-Cohesion: 0.06
-Nodes (13): {closure#4}(), Partner, DatabaseSeeder, 8. Model dan Relasi, `App\Models\ClientInvoice`, `App\Models\Partner`, `App\Models\User`, `App\Models\VideoWorkReport` (+5 more)
+Cohesion: 0.07
+Nodes (13): Partner, DatabaseSeeder, 13. Seeder dan Data Demo, 8. Model dan Relasi, `App\Models\ClientInvoice`, `App\Models\Partner`, `App\Models\User`, `App\Models\VideoWorkReport` (+5 more)
 
 ### Community 18 - "Symfony\Component\HttpFoundation\Response"
 Cohesion: 0.17
 Nodes (6): EnsureOnboardingCompleted, McpAuditLogger, McpAuthenticate, RoleMiddleware, {closure#1}(), SetLocale
 
-### Community 19 - "Illuminate\Database\Eloquent\Relations\BelongsTo"
-Cohesion: 0.13
-Nodes (3): PhoneHelper, PasswordRecoveryController, PasswordRecoveryRequest
+### Community 19 - "PasswordRecoveryController.php"
+Cohesion: 0.12
+Nodes (4): PhoneHelper, PasswordRecoveryController, PasswordRecoveryRequest, `VerifyVideoWorkReportController`
 
 ### Community 21 - "Kotnes.md - Konteks Lengkap Project Kamerakita.ai"
-Cohesion: 0.18
-Nodes (10): 11. View dan UI, 13. Seeder dan Data Demo, 16. Command Penting, 18. Peta File Penting untuk AI, 19. Mental Model Data, 1. Ringkasan Project, 20. Kesimpulan, 2. Teknologi dan Dependency (+2 more)
+Cohesion: 0.04
+Nodes (45): ProcessPartnerPayrollService, 11. View dan UI, 12. Environment Variables, 15. Alur Fitur Utama, 16. Command Penting, 17. Catatan Inkonsistensi dan Potensi Perbaikan, 18. Peta File Penting untuk AI, 19. Mental Model Data (+37 more)
 
 ### Community 22 - "Illuminate\Foundation\Testing\RefreshDatabase"
-Cohesion: 0.06
-Nodes (10): AuthenticationTest, PasswordConfirmationTest, PasswordUpdateTest, RegistrationTest, ExampleTest, FastworkOnboardingTest, NotifyInactiveWorkersTest, PayrollCalculationTest (+2 more)
-
-### Community 23 - "Konteks Proyek: KameraKita.id"
-Cohesion: 0.29
-Nodes (6): 1. Tech Stack & Environment, 2. Struktur Role (Peran Pengguna), 4. Fitur Utama & Alur Kerja (Workflow), 5. UI/UX Guidelines, Catatan Khusus, Konteks Proyek: KameraKita.id
+Cohesion: 0.07
+Nodes (11): AuthenticationTest, PasswordConfirmationTest, PasswordUpdateTest, RegistrationTest, ExampleTest, FastworkOnboardingTest, LeaderboardMitraAggregationTest, NotifyInactiveWorkersTest (+3 more)
 
 ### Community 24 - ".view"
-Cohesion: 0.07
-Nodes (12): FastworkOnboardingController, ListPartnerPaymentHistoryController, ListPartnerReportHistoryController, RenderDashboardOverviewController, 5. Route Aplikasi, `RenderDashboardOverviewController`, `routes/auth.php`, `routes/web.php` (+4 more)
+Cohesion: 0.11
+Nodes (7): EventController, FastworkOnboardingController, ListPartnerPaymentHistoryController, GET /(), GET /jadi-vendor(), GET /onboarding/success(), GET /panduan()
 
 ### Community 25 - "Module 25"
 Cohesion: 0.12
 Nodes (15): server, transport, author, dependencies, @modelcontextprotocol/sdk, description, keywords, license (+7 more)
 
 ### Community 29 - "Illuminate\Console\Command"
-Cohesion: 0.13
-Nodes (7): BackfillReferrals, SendAnnouncementPush, SyncAtlasData, SyncMitraWorkersBankAccounts, SyncPartnerActivityStatus, SyncRobotics1618, TestEvidenceStorageWrite
+Cohesion: 0.12
+Nodes (8): BackfillReferrals, CleanExpiredEmailsCommand, CreateAdminUser, NotifyInactiveWorkers, SyncAtlasData, SyncPartnerActivityStatus, TestEvidenceStorageWrite, Deskripsi Masalah & Analisis Dampak
 
-### Community 33 - "Illuminate\Database\Eloquent\Relations\BelongsTo"
-Cohesion: 0.15
-Nodes (3): ActivityLog, PasswordRecoveryToken, RecruiterCommission
+### Community 30 - "CapturedEmail"
+Cohesion: 0.09
+Nodes (3): CapturedEmail, CapturedEmailPolicy, MailboxSecurityTest
 
-### Community 35 - "17. Catatan Inkonsistensi dan Potensi Perbaikan"
-Cohesion: 0.29
-Nodes (7): 17. Catatan Inkonsistensi dan Potensi Perbaikan, 1. Unit finansial sudah diarahkan ke Rupiah, 3. QC modal memakai gambar upload asli via route private, 4. `User` model dan role, 5. README menyebut Laravel 11.x, composer Laravel 13.x, 6. Access control backend, 8. File upload evidence private
+### Community 31 - "Illuminate\Database\Eloquent\Relations\BelongsTo"
+Cohesion: 0.09
+Nodes (9): ActivityLog, PasswordRecoveryToken, RecruiterCommission, 1. Tech Stack & Environment, 2. Struktur Role (Peran Pengguna), 3. Struktur Database (Model Utama), 5. UI/UX Guidelines, Catatan Khusus (+1 more)
 
-### Community 37 - "UserFactory"
-Cohesion: 0.29
-Nodes (5): UserFactory, 14. Factory, `PartnerFactory`, `UserFactory`, `VideoWorkReportFactory`
+### Community 32 - "Illuminate\Support\Facades\Auth"
+Cohesion: 0.08
+Nodes (7): ListPartnerReportHistoryController, RekruterController, RenderDashboardOverviewController, ActivityLogger, 5. Route Aplikasi, `routes/auth.php`, `routes/web.php`
+
+### Community 37 - "Illuminate\Database\Eloquent\Concerns\HasUuids"
+Cohesion: 0.26
+Nodes (3): MobileRecordingController, Category, Recording
 
 ### Community 39 - "0001_01_01_000002_create_jobs_table.php"
 Cohesion: 0.33
@@ -372,37 +347,41 @@ Nodes (11): autoload-dev, psr-4, description, keywords, license, minimum-stabili
 Cohesion: 0.17
 Nodes (12): require, doctrine/dbal, laravel/framework, laravel-notification-channels/webpush, laravel/sanctum, laravel/telescope, laravel/tinker, league/flysystem-aws-s3-v3 (+4 more)
 
-### Community 42 - "Context: Mailbox Code Review Project"
-Cohesion: 0.40
-Nodes (4): Context: Mailbox Code Review Project, Overview, Requirements Mapping, Strict Rule
+### Community 42 - "Illuminate\Support\Facades\DB"
+Cohesion: 0.10
+Nodes (3): getNewRange(), mergeStatus(), up()
+
+### Community 43 - "BRIEFING — 2026-08-10T11:33:45Z"
+Cohesion: 0.22
+Nodes (8): Artifact Index, BRIEFING — 2026-08-10T11:33:45Z, Current Parent, Investigation State, 🔒 Key Constraints, Key Decisions Made, Mission, 🔒 My Identity
 
 ### Community 44 - "Rincian Temuan Audit Frontend"
-Cohesion: 0.13
-Nodes (15): Cuplikan Kode Eksisting vs Rekomendasi Perbaikan, Cuplikan Kode Eksisting vs Rekomendasi Perbaikan, Cuplikan Kode Eksisting vs Rekomendasi Perbaikan, Cuplikan Kode Eksisting vs Rekomendasi Perbaikan, Cuplikan Kode Eksisting vs Rekomendasi Perbaikan, Deskripsi Masalah & Analisis Dampak, Deskripsi Masalah & Analisis Dampak, Deskripsi Masalah & Analisis Dampak (+7 more)
+Cohesion: 0.06
+Nodes (31): Cuplikan Kode Eksisting vs Rekomendasi Perbaikan, Cuplikan Kode Eksisting vs Rekomendasi Perbaikan, Cuplikan Kode Eksisting vs Rekomendasi Perbaikan, Cuplikan Kode Eksisting vs Rekomendasi Perbaikan, Cuplikan Kode Eksisting vs Rekomendasi Perbaikan, Cuplikan Kode Eksisting vs Rekomendasi Perbaikan, Cuplikan Kode Eksisting vs Rekomendasi Perbaikan, Cuplikan Kode Eksisting vs Rekomendasi Perbaikan (+23 more)
 
 ### Community 45 - "Module 45"
 Cohesion: 0.24
 Nodes (3): {closure#1}(), {closure#2}(), TelescopeServiceProvider
+
+### Community 47 - ".log"
+Cohesion: 0.14
+Nodes (4): FilePondReportUploadController, {closure#2}(), ManagePartnerDemographicsController, SimpleReportUploadController
 
 ### Community 48 - "BotTest"
 Cohesion: 0.07
 Nodes (3): BotTest, parse(), urlopen()
 
 ### Community 49 - ".toggleRead"
-Cohesion: 0.20
-Nodes (9): Cuplikan Kode Eksisting vs Rekomendasi Perbaikan, Deskripsi Masalah & Analisis Dampak, Finding 2 (High): Masalah Sinkronisasi State AlpineJS Antara Array `emails` dan Object Reference `selectedEmail`, 1. Observation, 2. Logic Chain, 3. Caveats, 4. Conclusion, 5. Verification Method (+1 more)
-
-### Community 50 - "12. Environment Variables"
-Cohesion: 0.20
-Nodes (10): 12. Environment Variables, Aplikasi, AWS/S3, Database, Logging, Mail, Queue, Cache, Broadcast, Filesystem, Redis (+2 more)
+Cohesion: 0.08
+Nodes (25): BE-06: Tidak Adanya Validasi Input (Request Validation) dan Type Casting pada Controller Status Email, Cuplikan Kode Perbaikan yang Direkomendasikan, Cuplikan Kode Saat Ini, Deskripsi Masalah & Analisis Dampak, Laporan Audit Backend & Performa Database Fitur Mailbox, Rekomendasi Langkah Implemetasi, Ringkasan Eksekutif, Tabel Ringkasan Temuan Audit (+17 more)
 
 ### Community 52 - "Explorer Backend & DB Performance Handoff Report"
-Cohesion: 0.08
-Nodes (23): 1. Observation, 2. Logic Chain, 3. Caveats, 4. Conclusion, 5. Verification Method, Explorer Backend & DB Performance Handoff Report, Bab 2: Analisis Performa & Efisiensi Backend (R2), BE-01: Pengambilan Seluruh Data Email Tanpa Paginasi (`->get()`) Mengakibatkan Memory Exhaustion & Monolithic JSON Payload (+15 more)
+Cohesion: 0.07
+Nodes (26): 1. Observation, 2. Logic Chain, 3. Caveats, 4. Conclusion, 5. Verification Method, Explorer Backend & DB Performance Handoff Report, Bab 2: Analisis Performa & Efisiensi Backend (R2), BE-01: Pengambilan Seluruh Data Email Tanpa Paginasi (`->get()`) Mengakibatkan Memory Exhaustion & Monolithic JSON Payload (+18 more)
 
 ### Community 53 - "AtlasTask"
-Cohesion: 0.05
-Nodes (12): {closure#10}(), {closure#11}(), {closure#9}(), PayrollController, AtlasTask, AtlasWorker, Payroll, CheckRecruiterMilestone (+4 more)
+Cohesion: 0.14
+Nodes (4): MasterTaskController, PayrollController, AtlasTask, Payroll
 
 ### Community 56 - "Module 56"
 Cohesion: 0.25
@@ -425,64 +404,80 @@ Cohesion: 0.22
 Nodes (8): background_color, description, display, icons, name, short_name, start_url, theme_color
 
 ### Community 61 - "atlas_sync.py"
-Cohesion: 0.13
-Nodes (14): build_payload_records(), init_db(), main(), normalize_timestamp(), parse_hours(), process_table_rows(), push_to_laravel_api(), refresh_atlas_session() (+6 more)
-
-### Community 62 - "App\Http\Controllers\Controller"
 Cohesion: 0.14
-Nodes (8): AtlasRecordingController, AtlasBotController, RecordingIngestor, 1618 server connector (Laravel), Concurrency and resource limits, Configuration and scheduling, QC change indicators, Verification and deployment
+Nodes (13): build_payload_records(), init_db(), main(), normalize_timestamp(), parse_hours(), process_table_rows(), push_to_laravel_api(), refresh_atlas_session() (+5 more)
+
+### Community 62 - "1618 server connector (Laravel)"
+Cohesion: 0.22
+Nodes (6): RecordingIngestor, 1618 server connector (Laravel), Concurrency and resource limits, Configuration and scheduling, QC change indicators, Verification and deployment
+
+### Community 64 - "McpServerController.php"
+Cohesion: 0.07
+Nodes (5): McpServerController, AggregateRecordsTool, CreateCustomUserTool, QcStatsTool, SearchPartnerTool
+
+### Community 65 - "NotificationDelivery"
+Cohesion: 0.23
+Nodes (3): TrackWebPushDelivery, TrackWebPushFailure, NotificationDelivery
 
 ### Community 66 - "Module 66"
 Cohesion: 0.32
 Nodes (3): {closure#1}(), {closure#2}(), {closure#3}()
 
 ### Community 67 - "Detail Analisis Temuan Audit"
-Cohesion: 0.09
-Nodes (22): BE-01: Pengambilan Seluruh Data Email Tanpa Paginasi (`->get()`) Mengakibatkan Memory Exhaustion & Monolithic JSON Payload, BE-02: Masalah Kueri N+1 pada Pencarian User dalam Loop Pemrosesan Email Catch-All, BE-07: Pencampuran Logika Output Terminal (`echo`) pada Service Layer Mengabaikan Separation of Concerns, BE-08: Penggunaan Otorisasi Manual Berulang Tanpa Laravel Policy / Gate Abstraction, BE-09: Discrepancy Deskripsi Command CLI dan Kurangnya DB Batching Transaction, Cuplikan Kode Perbaikan yang Direkomendasikan, Cuplikan Kode Perbaikan yang Direkomendasikan, Cuplikan Kode Perbaikan yang Direkomendasikan (+14 more)
+Cohesion: 0.10
+Nodes (21): BE-02: Masalah Kueri N+1 pada Pencarian User dalam Loop Pemrosesan Email Catch-All, BE-03: Risiko Out-Of-Memory (OOM) Akibat Penarikan Seluruh Folder IMAP Tanpa Chunking/Filtering, BE-04: Kurangnya Indeks Database (DB Indexes) untuk Query Sort, Filtering, dan Cleanup Email, BE-05: Absensi Perlindungan Cron Overlapping (`withoutOverlapping`) pada Jadwal Penarikan Email 1 Menit, BE-08: Penggunaan Otorisasi Manual Berulang Tanpa Laravel Policy / Gate Abstraction, Cuplikan Kode Migration Saat Ini, Cuplikan Kode Perbaikan yang Direkomendasikan, Cuplikan Kode Perbaikan yang Direkomendasikan (+13 more)
 
 ### Community 68 - "Bab 1: Analisis Standar Pengkodean (Best Practices - R1)"
-Cohesion: 0.10
-Nodes (20): Bab 1: Analisis Standar Pengkodean (Best Practices - R1), BE-06: Tidak Adanya Validasi Input (Request Validation) dan Type Casting pada Controller Status Email, BE-07: Pencampuran Logika Output Terminal (`echo`) pada Service Layer Mengabaikan Separation of Concerns, BE-08: Penggunaan Otorisasi Manual Berulang Tanpa Laravel Policy / Gate Abstraction, BE-09: Discrepancy Deskripsi Command CLI dan Kurangnya DB Batching Transaction, Cuplikan Kode Perbaikan yang Direkomendasikan, Cuplikan Kode Perbaikan yang Direkomendasikan, Cuplikan Kode Perbaikan yang Direkomendasikan (+12 more)
-
-### Community 69 - "7. Database dan Migration"
-Cohesion: 0.50
-Nodes (4): 7. Database dan Migration, Tabel `client_invoices`, Tabel `partners`, Tabel `video_work_reports`
+Cohesion: 0.17
+Nodes (12): Bab 1: Analisis Standar Pengkodean (Best Practices - R1), BE-06: Tidak Adanya Validasi Input (Request Validation) dan Type Casting pada Controller Status Email, BE-07: Pencampuran Logika Output Terminal (`echo`) pada Service Layer Mengabaikan Separation of Concerns, BE-08: Penggunaan Otorisasi Manual Berulang Tanpa Laravel Policy / Gate Abstraction, Cuplikan Kode Perbaikan yang Direkomendasikan, Cuplikan Kode Perbaikan yang Direkomendasikan, Cuplikan Kode Perbaikan yang Direkomendasikan, Cuplikan Kode Saat Ini (+4 more)
 
 ### Community 70 - "User"
-Cohesion: 0.06
-Nodes (11): CreateAdminUser, User, Tabel `users`, `VerifyVideoWorkReportController`, ActivityLogTest, AdminCreateReportTest, EmailVerificationTest, MailboxSecurityTest (+3 more)
-
-### Community 72 - "Robotics1618Source"
 Cohesion: 0.09
-Nodes (4): RoboticsSyncRun, Robotics1618Csv, Robotics1618Source, Robotics1618Sync
+Nodes (6): User, Tabel `users`, ActivityLogTest, MitraWorkerBankSyncAndOnboardingBypassTest, ProfileTest, RouteRoleProtectionTest
 
-### Community 75 - "ProcessCatchAllEmailService"
-Cohesion: 0.16
-Nodes (11): Deskripsi Masalah & Analisis Dampak, Deskripsi Masalah & Analisis Dampak, Rekomendasi Langkah Implemetasi, 2026-08-10T11:29:43Z, PullMailboxEmailsCommand, ProcessCatchAllEmailService, Bab 4: Panduan Prioritas Remediasi & Roadmap Implementasi, Deskripsi Masalah & Analisis Dampak (+3 more)
+### Community 75 - "Laporan Audit Code Review & Rekomendasi Perbaikan Fitur Mailbox KameraKita.id"
+Cohesion: 0.12
+Nodes (16): BE-09: Discrepancy Deskripsi Command CLI dan Kurangnya DB Batching Transaction, Cuplikan Kode Perbaikan yang Direkomendasikan, Cuplikan Kode Saat Ini, Deskripsi Masalah & Analisis Dampak, PullMailboxEmailsCommand, Bab 4: Panduan Prioritas Remediasi & Roadmap Implementasi, BE-09: Discrepancy Deskripsi Command CLI dan Kurangnya DB Batching Transaction, Cuplikan Kode Perbaikan yang Direkomendasikan (+8 more)
+
+### Community 76 - "2026_11_03_120000_add_recording_source_tracking.php"
+Cohesion: 0.29
+Nodes (4): {closure#1}(), {closure#2}(), {closure#3}(), {closure#4}()
 
 ### Community 79 - "Module 79"
 Cohesion: 0.38
 Nodes (6): {closure#1}(), {closure#2}(), {closure#3}(), down(), getConnection(), up()
 
-### Community 81 - "App\Http\Controllers\RenderDashboardOverviewController"
-Cohesion: 0.16
-Nodes (7): {closure#1}(), CalculatePartnerMetricsService, `CalculatePartnerMetricsService`, `getGlobalMetrics()`, `getMitraMetrics(Partner $mitra)`, `getWorkerMetrics(Partner $worker)`, {closure#1}()
+### Community 80 - "Illuminate\Database\Migrations\Migration"
+Cohesion: 0.06
+Nodes (9): {closure#1}(), {closure#2}(), {closure#1}(), {closure#1}(), {closure#1}(), {closure#2}(), {closure#1}(), {closure#2}() (+1 more)
 
-### Community 82 - "BRIEFING — 2026-08-10T11:33:45Z"
-Cohesion: 0.22
-Nodes (8): Artifact Index, BRIEFING — 2026-08-10T11:33:45Z, Current Parent, Investigation State, 🔒 Key Constraints, Key Decisions Made, Mission, 🔒 My Identity
+### Community 81 - "App\Http\Controllers\RenderDashboardOverviewController"
+Cohesion: 0.20
+Nodes (8): {closure#1}(), CalculatePartnerMetricsService, 10. Action dan Service, `CalculatePartnerMetricsService`, `getGlobalMetrics()`, `getMitraMetrics(Partner $mitra)`, `getWorkerMetrics(Partner $worker)`, {closure#1}()
+
+### Community 82 - "ProcessCatchAllEmailService"
+Cohesion: 0.15
+Nodes (10): BE-07: Pencampuran Logika Output Terminal (`echo`) pada Service Layer Mengabaikan Separation of Concerns, Cuplikan Kode Perbaikan yang Direkomendasikan, Cuplikan Kode Saat Ini, Deskripsi Masalah & Analisis Dampak, 2026-08-10T11:29:43Z, Context: Mailbox Code Review Project, Overview, Requirements Mapping (+2 more)
+
+### Community 83 - "App\Http\Controllers\ExportPayrollDataController"
+Cohesion: 0.12
+Nodes (8): ExportPayrollDataController, ShowVideoWorkReportEvidenceController, 9. Controller dan Logic Bisnis, `EditRejectedVideoWorkReportController`, `ExportPayrollDataController`, `ManageAdminUsersController`, `RenderDashboardOverviewController`, `ShowVideoWorkReportEvidenceController`
 
 ### Community 87 - "Controller"
-Cohesion: 0.06
-Nodes (14): PushNotificationController, AstroRecordingController, ConfirmablePasswordController, EmailVerificationNotificationController, NewPasswordController, PasswordController, PasswordResetLinkController, {closure#1}() (+6 more)
+Cohesion: 0.07
+Nodes (11): PushNotificationController, MobileAuthController, AstroRecordingController, EmailVerificationNotificationController, NewPasswordController, PasswordController, RegisteredUserController, VerifyEmailController (+3 more)
+
+### Community 89 - "SourceClient"
+Cohesion: 0.31
+Nodes (3): SameOriginRedirect, SourceClient, utc()
 
 ### Community 90 - "Module 90"
 Cohesion: 0.40
 Nodes (5): autoload, psr-4, App\\, Database\\Factories\\, Database\\Seeders\\
 
 ### Community 91 - "robotics1618_sync.py"
-Cohesion: 0.19
-Nodes (6): deliver(), main(), minutes(), parse_csv(), run(), utc()
+Cohesion: 0.18
+Nodes (5): deliver(), main(), minutes(), parse_csv(), run()
 
 ### Community 99 - "Plan: Mailbox Code Review Audit"
 Cohesion: 0.25
@@ -492,21 +487,21 @@ Nodes (7): Architecture & Scope, Constraints, M1: Backend & DB Performance Explo
 Cohesion: 0.15
 Nodes (12): 2026-08-10T11:29:15Z, Acceptance Criteria, Audit Pengkodean, Audit Performa, Dokumen Akhir, Original User Request, R1. Analisis Standar Pengkodean (Best Practices), R2. Analisis Performa & Efisiensi Backend (+4 more)
 
-### Community 107 - "CustomWebPushNotification"
-Cohesion: 0.17
-Nodes (3): {closure#1}(), AdminAnnouncementWebPush, CustomWebPushNotification
+### Community 103 - "BaseTool"
+Cohesion: 0.11
+Nodes (3): BaseTool, BatchReconcileByEmailTool, SoftDeleteEmailTool
 
-### Community 111 - "App\Http\Controllers\ShowVideoWorkReportEvidenceController"
-Cohesion: 0.20
-Nodes (3): ShowAvatarController, ShowVideoWorkReportEvidenceController, `ShowVideoWorkReportEvidenceController`
+### Community 106 - "Illuminate\Support\Facades\Schema"
+Cohesion: 0.07
+Nodes (8): {closure#1}(), {closure#1}(), {closure#1}(), {closure#1}(), {closure#2}(), {closure#1}(), {closure#1}(), {closure#2}()
 
 ### Community 119 - "1618 recording connector"
 Cohesion: 0.33
 Nodes (5): 1618 recording connector, Configuration, Data flow and safeguards, Operations, Shared recording identity and freshness
 
 ### Community 121 - "Illuminate\View\View"
-Cohesion: 0.09
-Nodes (7): AuthenticatedSessionController, EmailVerificationPromptController, ManageAdminUsersController, ProfileController, AppLayout, GuestLayout, MailboxLayout
+Cohesion: 0.08
+Nodes (9): AuthenticatedSessionController, ConfirmablePasswordController, EmailVerificationPromptController, PasswordResetLinkController, ManageAdminUsersController, ProfileController, AppLayout, GuestLayout (+1 more)
 
 ### Community 122 - "Pemetaan KameraKita"
 Cohesion: 0.15
@@ -521,8 +516,16 @@ Cohesion: 0.17
 Nodes (11): Artifact Index, Attack Surface, Audit Progress, Audit Scope, BRIEFING — 2026-08-10T19:39:22+08:00, Current Parent, 🔒 Key Constraints, Key Decisions Made (+3 more)
 
 ### Community 125 - "process_source_html"
-Cohesion: 0.15
-Nodes (9): Deskripsi Masalah & Analisis Dampak, AtlasSessionExpired, capture_recordings_fast(), chunks(), fetch(), schedule(), process_source_html(), find() (+1 more)
+Cohesion: 0.16
+Nodes (9): AtlasSessionExpired, capture_recordings_fast(), chunks(), fetch(), schedule(), process_source_html(), find(), __init__() (+1 more)
+
+### Community 126 - "UserFactory.php"
+Cohesion: 0.16
+Nodes (7): PartnerFactory, UserFactory, VideoWorkReportFactory, 14. Factory, `PartnerFactory`, `UserFactory`, `VideoWorkReportFactory`
+
+### Community 128 - "RateCard"
+Cohesion: 0.31
+Nodes (3): RateCard, CategorySeeder, RateCardSeeder
 
 ### Community 129 - "BRIEFING — 2026-08-10T11:38:25Z"
 Cohesion: 0.18
@@ -532,9 +535,13 @@ Nodes (10): Artifact Index, Attack Surface, BRIEFING — 2026-08-10T11:38:25Z, C
 Cohesion: 0.18
 Nodes (10): 1. Kloning Repositori & Instal Dependensi, 2. Konfigurasi Environment (`.env`), 3. Migrasi & Seeding Database, 4. Build Aset Frontend, 5. Hubungkan Symlink Storage (Penting), 6. Caching Optimasi Produksi (Crucial), Kamerakita.ai - Agency Management Dashboard, Konfigurasi Akun Awal (Development) (+2 more)
 
-### Community 134 - "Illuminate\Database\Migrations\Migration"
-Cohesion: 0.06
-Nodes (6): {closure#1}(), {closure#1}(), getNewRange(), mergeStatus(), up(), {closure#1}()
+### Community 134 - "ManagePaymentsController.php"
+Cohesion: 0.12
+Nodes (6): {closure#10}(), {closure#11}(), {closure#9}(), ManagePaymentsController, StoreEvidenceImageService, `SubmitVideoWorkReportController`
+
+### Community 135 - "MailboxController"
+Cohesion: 0.18
+Nodes (6): BE-01: Pengambilan Seluruh Data Email Tanpa Paginasi (`->get()`) Mengakibatkan Memory Exhaustion & Monolithic JSON Payload, Cuplikan Kode Perbaikan yang Direkomendasikan, Cuplikan Kode Saat Ini, Deskripsi Masalah & Analisis Dampak, MailboxController, 4. Fitur Utama & Alur Kerja (Workflow)
 
 ### Community 138 - "Module 138"
 Cohesion: 0.21
@@ -544,17 +551,9 @@ Nodes (10): 1. Fatal JavaScript Syntax Error Masking Validation Errors, 2. The i
 Cohesion: 0.67
 Nodes (3): extra, laravel, dont-discover
 
-### Community 287 - "CleanExpiredEmailsCommand"
-Cohesion: 0.18
-Nodes (9): BE-04: Kurangnya Indeks Database (DB Indexes) untuk Query Sort, Filtering, dan Cleanup Email, Cuplikan Kode Migration Saat Ini, Cuplikan Kode Perbaikan yang Direkomendasikan, Deskripsi Masalah & Analisis Dampak, CleanExpiredEmailsCommand, BE-04: Kurangnya Indeks Database (DB Indexes) untuk Query Sort, Filtering, dan Cleanup Email, Cuplikan Kode Migration Saat Ini, Cuplikan Kode Perbaikan yang Direkomendasikan (+1 more)
-
 ### Community 288 - "3. Perubahan & Stabilisasi yang Dilakukan"
 Cohesion: 0.20
 Nodes (9): 1. ROOT CAUSE Paling Mungkin & 2. ROOT CAUSE Terbukti, 2. Kondisi Request & Payload, 3. Perubahan & Stabilisasi yang Dilakukan, 4. Kesimpulan & Sisa Risiko (Remaining Risk), A. Frontend (submit-report.blade.php), B. Backend (SubmitVideoWorkReportController.php), C. Image Processing (StoreEvidenceImageService.php), D. Automated Tests (VideoSubmissionTest.php) (+1 more)
-
-### Community 289 - "RateCard"
-Cohesion: 0.24
-Nodes (3): RateCard, CategorySeeder, RateCardSeeder
 
 ### Community 290 - "BRIEFING — 2026-08-10T11:31:00Z"
 Cohesion: 0.22
@@ -565,8 +564,8 @@ Cohesion: 0.22
 Nodes (8): Artifact Index, BRIEFING — 2026-08-10T11:29:15Z, 🔒 Key Constraints, Mission, 🔒 My Identity, Project Status, User Context, Victory Audit Status
 
 ### Community 292 - "VideoWorkReport"
-Cohesion: 0.06
-Nodes (9): {closure#12}(), {closure#8}(), {closure#9}(), VerifyVideoWorkReportController, PeriodApproval, VideoWorkReport, PeriodService, {closure#1}() (+1 more)
+Cohesion: 0.09
+Nodes (9): VerifyVideoWorkReportAction, CheckEvidenceFiles, {closure#1}(), {closure#1}(), MigrateEvidenceFilesToPrivateStorage, VideoWorkReport, {closure#1}(), `VerifyVideoWorkReportAction` (+1 more)
 
 ### Community 293 - "Quality Review & Verification Handoff Report"
 Cohesion: 0.25
@@ -592,10 +591,6 @@ Nodes (6): 1. Observation, 2. Logic Chain, 3. Caveats, 4. Conclusion, 5. Verific
 Cohesion: 0.33
 Nodes (3): {closure#1}(), {closure#2}(), {closure#3}()
 
-### Community 310 - "2026_10_09_035433_create_payrolls_table.php"
-Cohesion: 0.33
-Nodes (3): {closure#1}(), {closure#2}(), {closure#3}()
-
 ### Community 311 - "Atlas recording sync"
 Cohesion: 0.33
 Nodes (5): Atlas recording sync, Changes, Direct recording capture and incremental delivery, Offline verification, Preparation before any real delivery
@@ -608,113 +603,29 @@ Nodes (5): Checks, Evidence and metric definitions, Files and deployment, Public
 Cohesion: 0.50
 Nodes (3): Current Status, Iteration Status, Progress Log — Mailbox Code Review
 
-### Community 355 - "Laporan Analisis Frontend UI/UX & AlpineJS (Mailbox Code Review)"
-Cohesion: 0.40
-Nodes (4): Executive Summary, Laporan Analisis Frontend UI/UX & AlpineJS (Mailbox Code Review), Plan & Matrix Rekomendasi Perbaikan, Ringkasan Temuan Berdasarkan Severitas
-
-### Community 357 - "2026_07_24_070907_create_referral_codes_and_add_group_to_partners.php"
-Cohesion: 0.33
-Nodes (3): {closure#1}(), {closure#2}(), {closure#3}()
-
-### Community 360 - ".payroll"
-Cohesion: 0.40
-Nodes (4): 2. Middleware role route sensitif, 4. Entry Point dan Bootstrap, `bootstrap/app.php`, `public/index.php`
-
-### Community 362 - "10. Action dan Service"
-Cohesion: 0.33
-Nodes (3): VerifyVideoWorkReportAction, 10. Action dan Service, `VerifyVideoWorkReportAction`
-
-### Community 363 - "BE-03: Risiko Out-Of-Memory (OOM) Akibat Penarikan Seluruh Folder IMAP Tanpa Chunking/Filtering"
-Cohesion: 0.50
-Nodes (4): BE-03: Risiko Out-Of-Memory (OOM) Akibat Penarikan Seluruh Folder IMAP Tanpa Chunking/Filtering, Cuplikan Kode Perbaikan yang Direkomendasikan, Cuplikan Kode Saat Ini, Deskripsi Masalah & Analisis Dampak
-
-### Community 364 - "ProcessPartnerPayrollService"
-Cohesion: 0.60
-Nodes (3): ProcessPartnerPayrollService, 7. `ProcessPartnerPayrollService` belum dipakai, `ProcessPartnerPayrollService`
-
-### Community 365 - "BE-05: Absensi Perlindungan Cron Overlapping (`withoutOverlapping`) pada Jadwal Penarikan Email 1 Menit"
-Cohesion: 0.50
-Nodes (4): BE-05: Absensi Perlindungan Cron Overlapping (`withoutOverlapping`) pada Jadwal Penarikan Email 1 Menit, Cuplikan Kode Perbaikan yang Direkomendasikan, Cuplikan Kode Saat Ini, Deskripsi Masalah & Analisis Dampak
-
-### Community 366 - "15. Alur Fitur Utama"
-Cohesion: 0.40
-Nodes (5): 15. Alur Fitur Utama, Alur dashboard, Alur payroll CSV, Alur QC, Alur worker submit laporan
-
 ### Community 367 - "Bab 3: Analisis UI/UX & Logika Frontend (R3)"
-Cohesion: 0.15
-Nodes (13): Bab 3: Analisis UI/UX & Logika Frontend (R3), Cuplikan Kode Perbaikan yang Direkomendasikan, Cuplikan Kode Perbaikan yang Direkomendasikan, Cuplikan Kode Perbaikan yang Direkomendasikan, Cuplikan Kode Saat Ini, Cuplikan Kode Saat Ini, Cuplikan Kode Saat Ini, Deskripsi Masalah & Analisis Dampak (+5 more)
-
-### Community 368 - "BE-06: Tidak Adanya Validasi Input (Request Validation) dan Type Casting pada Controller Status Email"
-Cohesion: 0.50
-Nodes (4): BE-06: Tidak Adanya Validasi Input (Request Validation) dan Type Casting pada Controller Status Email, Cuplikan Kode Perbaikan yang Direkomendasikan, Cuplikan Kode Saat Ini, Deskripsi Masalah & Analisis Dampak
-
-### Community 369 - "FE-02: Masalah Sinkronisasi State AlpineJS Antara Array `emails` dan Object Reference `selectedEmail`"
-Cohesion: 0.50
-Nodes (4): Cuplikan Kode Perbaikan yang Direkomendasikan, Cuplikan Kode Saat Ini, Deskripsi Masalah & Analisis Dampak, FE-02: Masalah Sinkronisasi State AlpineJS Antara Array `emails` dan Object Reference `selectedEmail`
-
-### Community 370 - "FE-03: Penanganan Error Asinkron Menggunakan `alert()` Bawaan Browser Tanpa Indicator Loading UI"
-Cohesion: 0.50
-Nodes (4): Cuplikan Kode Perbaikan yang Direkomendasikan, Cuplikan Kode Saat Ini, Deskripsi Masalah & Analisis Dampak, FE-03: Penanganan Error Asinkron Menggunakan `alert()` Bawaan Browser Tanpa Indicator Loading UI
-
-### Community 371 - "FE-06: Higiene Data Binding Campuran (Blade String Interpolation dalam Template Literal JS)"
-Cohesion: 0.50
-Nodes (4): Cuplikan Kode Perbaikan yang Direkomendasikan, Cuplikan Kode Saat Ini, Deskripsi Masalah & Analisis Dampak, FE-06: Higiene Data Binding Campuran (Blade String Interpolation dalam Template Literal JS)
-
-### Community 372 - "FE-07: Penggunaan Palet Warna Hex Manual (Hardcoded Hex) Menyebabkan Ketidakseragaman UI & Menyulitkan Mode Gelap"
-Cohesion: 0.50
-Nodes (4): Cuplikan Kode Perbaikan yang Direkomendasikan, Cuplikan Kode Saat Ini, Deskripsi Masalah & Analisis Dampak, FE-07: Penggunaan Palet Warna Hex Manual (Hardcoded Hex) Menyebabkan Ketidakseragaman UI & Menyulitkan Mode Gelap
-
-### Community 373 - "FE-08: Potensi Implikasi Performa & Alokasi Memori pada Getter `filteredEmails`"
-Cohesion: 0.50
-Nodes (4): Cuplikan Kode Perbaikan yang Direkomendasikan, Cuplikan Kode Saat Ini, Deskripsi Masalah & Analisis Dampak, FE-08: Potensi Implikasi Performa & Alokasi Memori pada Getter `filteredEmails`
-
-### Community 374 - "FE-09: Risiko Parsing Date Mengembalikan String `"Invalid Date"` pada Format Tanggal"
-Cohesion: 0.50
-Nodes (4): Cuplikan Kode Perbaikan yang Direkomendasikan, Cuplikan Kode Saat Ini, Deskripsi Masalah & Analisis Dampak, FE-09: Risiko Parsing Date Mengembalikan String `"Invalid Date"` pada Format Tanggal
-
-### Community 375 - "FE-10: Ketergantungan Eksternal CDN Tanpa Fallback Asinkron untuk Avatar Pengguna"
-Cohesion: 0.50
-Nodes (4): Cuplikan Kode Perbaikan yang Direkomendasikan, Cuplikan Kode Saat Ini, Deskripsi Masalah & Analisis Dampak, FE-10: Ketergantungan Eksternal CDN Tanpa Fallback Asinkron untuk Avatar Pengguna
-
-### Community 376 - "Finding 4 (High): Komponen Tombol Interaktif Tanpa Event Handler (Dead Action Buttons)"
-Cohesion: 0.67
-Nodes (3): Cuplikan Kode Eksisting vs Rekomendasi Perbaikan, Deskripsi Masalah & Analisis Dampak, Finding 4 (High): Komponen Tombol Interaktif Tanpa Event Handler (Dead Action Buttons)
-
-### Community 377 - "Finding 5 (Medium): Tata Letak Responsive Bermasalah & Penggunaan Inline Style `style="display: none;"` Redundat Tanpa Global CSS `[x-cloak]`"
-Cohesion: 0.67
-Nodes (3): Cuplikan Kode Eksisting vs Rekomendasi Perbaikan, Deskripsi Masalah & Analisis Dampak, Finding 5 (Medium): Tata Letak Responsive Bermasalah & Penggunaan Inline Style `style="display: none;"` Redundat Tanpa Global CSS `[x-cloak]`
-
-### Community 378 - "Finding 6 (Medium): Higiene Data Binding Campuran (Blade String Interpolation dalam Template Literal JS)"
-Cohesion: 0.67
-Nodes (3): Cuplikan Kode Eksisting vs Rekomendasi Perbaikan, Deskripsi Masalah & Analisis Dampak, Finding 6 (Medium): Higiene Data Binding Campuran (Blade String Interpolation dalam Template Literal JS)
-
-### Community 379 - "Finding 7 (Medium): Penggunaan Palet Warna Hex Manual (Hardcoded Hex) Menyebabkan Ketidakseragaman UI & Menyulitkan Mode Gelap"
-Cohesion: 0.67
-Nodes (3): Cuplikan Kode Eksisting vs Rekomendasi Perbaikan, Deskripsi Masalah & Analisis Dampak, Finding 7 (Medium): Penggunaan Palet Warna Hex Manual (Hardcoded Hex) Menyebabkan Ketidakseragaman UI & Menyulitkan Mode Gelap
-
-### Community 381 - "6. Role dan Tipe Partner"
-Cohesion: 0.67
-Nodes (3): 6. Role dan Tipe Partner, Partner role (`partners.partner_role`), Role user (`users.role`)
+Cohesion: 0.06
+Nodes (36): Bab 3: Analisis UI/UX & Logika Frontend (R3), Cuplikan Kode Perbaikan yang Direkomendasikan, Cuplikan Kode Perbaikan yang Direkomendasikan, Cuplikan Kode Perbaikan yang Direkomendasikan, Cuplikan Kode Perbaikan yang Direkomendasikan, Cuplikan Kode Perbaikan yang Direkomendasikan, Cuplikan Kode Perbaikan yang Direkomendasikan, Cuplikan Kode Perbaikan yang Direkomendasikan (+28 more)
 
 ## Knowledge Gaps
-- **9 isolated node(s):** `profile.partials.update-password-form`, `profile.partials.update-profile-information-form`, `video-submissions.qc-room-page`, `admin.atlas-recordings.sync-panel`, `admin.atlas-recordings.index` (+4 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1184 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **274 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **9 isolated node(s):** `admin.atlas-recordings.sync-panel`, `profile.partials.update-password-form`, `profile.partials.update-profile-information-form`, `video-submissions.qc-room-page`, `admin.atlas-recordings.index` (+4 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1189 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **264 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `fetch()` connect `process_source_html` to `3. Perubahan & Stabilisasi yang Dilakukan`, `.toggleRead`, `FE-03: Penanganan Error Asinkron Menggunakan `alert()` Bawaan Browser Tanpa Indicator Loading UI`?**
-  _High betweenness centrality (0.107) - this node is a cross-community bridge._
+- **Why does `User` connect `User` to `AtlasRecordingSyncTest`, `Illuminate\Http\Request`, `SyncMailboxJob`, `Invoice`, `Illuminate\Database\Eloquent\Model`, `LeaderboardService`, `Partner`, `PasswordRecoveryController.php`, `Kotnes.md - Konteks Lengkap Project Kamerakita.ai`, `Illuminate\Foundation\Testing\RefreshDatabase`, `Illuminate\Console\Command`, `CapturedEmail`, `Illuminate\Database\Eloquent\Relations\BelongsTo`, `VideoWorkReportEvidenceAccessTest.php`, `VideoWorkReport`, `Module 45`, `.log`, `PasswordResetTest.php`, `ListActivityLogsController.php`, `Explorer Backend & DB Performance Handoff Report`, `Illuminate\Support\Facades\Hash`, `RevertReconcileByEmailTool`, `CleanProductionDummyData.php`, `McpServerController.php`, `McpServerController.php`, `Detail Analisis Temuan Audit`, `VideoWorkReportUpdateLifecycleTest`, `Controller`, `Illuminate\Support\Facades\Storage`, `FilePondReportUploadController.php`, `BaseTool`, `VendorController.php`, `Illuminate\View\View`, `UserFactory.php`?**
+  _High betweenness centrality (0.119) - this node is a cross-community bridge._
 - **Are the 6 inferred relationships involving `User` (e.g. with `Deskripsi Masalah & Analisis Dampak` and `{closure#2}()`) actually correct?**
   _`User` has 6 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `profile.partials.update-password-form`, `profile.partials.update-profile-information-form`, `video-submissions.qc-room-page` to the rest of the system?**
+- **What connects `admin.atlas-recordings.sync-panel`, `profile.partials.update-password-form`, `profile.partials.update-profile-information-form` to the rest of the system?**
   _9 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Illuminate\Database\Schema\Blueprint` be split into smaller, more focused modules?**
-  _Cohesion score 0.05584415584415584 - nodes in this community are weakly interconnected._
-- **Why does `User` connect `User` to `Illuminate\Support\Facades\Storage`, `AtlasRecordingSyncTest`, `Illuminate\Http\Request`, `Invoice`, `Illuminate\Database\Eloquent\Model`, `Partner`, `Illuminate\Database\Eloquent\Relations\BelongsTo`, `Illuminate\Foundation\Testing\RefreshDatabase`, `Illuminate\Console\Command`, `CapturedEmail`, `17. Catatan Inkonsistensi dan Potensi Perbaikan`, `VideoWorkReport`, `Module 45`, `Illuminate\Support\Facades\Log`, `.log`, `PasswordResetTest.php`, `ListActivityLogsController.php`, `Explorer Backend & DB Performance Handoff Report`, `AtlasTask`, `api.php`, `RevertReconcileByEmailTool`, `CleanProductionDummyData.php`, `SearchPartnerTool`, `ProcessCatchAllEmailService`, `Controller`, `BatchReconcileByEmailTool`, `CustomWebPushNotification`, `Illuminate\View\View`, `UserFactory.php`?**
-  _High betweenness centrality (0.103) - this node is a cross-community bridge._
+  _Cohesion score 0.06196078431372549 - nodes in this community are weakly interconnected._
+- **Why does `fetch()` connect `process_source_html` to `3. Perubahan & Stabilisasi yang Dilakukan`, `.toggleRead`?**
+  _High betweenness centrality (0.068) - this node is a cross-community bridge._
 - **Are the 8 inferred relationships involving `Partner` (e.g. with `3. Struktur Database (Model Utama)` and ``App\Models\Partner``) actually correct?**
   _`Partner` has 8 INFERRED edges - model-reasoned connections that need verification._
-- **Should `Illuminate\Support\Facades\Storage` be split into smaller, more focused modules?**
-  _Cohesion score 0.13043478260869565 - nodes in this community are weakly interconnected._
+- **Should `App\Http\Controllers\EditRejectedVideoWorkReportController` be split into smaller, more focused modules?**
+  _Cohesion score 0.1437908496732026 - nodes in this community are weakly interconnected._

@@ -353,10 +353,18 @@
 
             var grouped = [];
             var months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+            function parseTaskDate(dateStr) {
+                if (!dateStr) return new Date();
+                var p = String(dateStr).split('-');
+                if (p.length === 3) {
+                    return new Date(parseInt(p[0], 10), parseInt(p[1], 10) - 1, parseInt(p[2], 10));
+                }
+                return new Date(dateStr);
+            }
 
             if (tf === 'daily') {
                 grouped = window.rawTrendData.slice(-30).map(item => {
-                    var d = new Date(item.task_date);
+                    var d = parseTaskDate(item.task_date);
                     return {
                         label: d.getDate() + ' ' + months[d.getMonth()],
                         worked: parseFloat(item.worked) || 0,
@@ -369,7 +377,7 @@
             } else if (tf === 'weekly') {
                 var weeksMap = {};
                 window.rawTrendData.forEach(item => {
-                    var d = new Date(item.task_date);
+                    var d = parseTaskDate(item.task_date);
                     var day = d.getDay();
                     var diff = d.getDate() - day + (day === 0 ? -6 : 1); 
                     var monday = new Date(d.setDate(diff));
@@ -388,7 +396,7 @@
             } else if (tf === 'monthly') {
                 var mthsMap = {};
                 window.rawTrendData.forEach(item => {
-                    var d = new Date(item.task_date);
+                    var d = parseTaskDate(item.task_date);
                     var key = months[d.getMonth()] + ' ' + d.getFullYear();
                     if(!mthsMap[key]) mthsMap[key] = { worked: 0, approved: 0, rejected: 0, pending: 0, deferred: 0 };
                     mthsMap[key].worked += (parseFloat(item.worked) || 0);
@@ -421,7 +429,7 @@
                 var months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
                 
                 var initialData = trendData.slice(-30).map(item => {
-                    var d = new Date(item.task_date);
+                    var d = parseTaskDate(item.task_date);
                     return {
                         label: d.getDate() + ' ' + months[d.getMonth()],
                         worked: parseFloat(item.worked) || 0,

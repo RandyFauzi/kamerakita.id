@@ -115,7 +115,8 @@ class RecordingIngestor
                 $rejected = $minutes('rejected_min', 'rejected_hours');
                 $deferred = $minutes('deferred_min', 'deferred_hours');
                 $total = round(isset($rec['duration_min']) ? (float) $rec['duration_min'] : (float) $rec['duration_sec'] / 60, 6);
-                $date = CarbonImmutable::parse($rec['recorded_utc'], 'UTC')->utc();
+                $recordedUtc = CarbonImmutable::parse($rec['recorded_utc'], 'UTC');
+                $localTaskDate = $recordedUtc->timezone('Asia/Makassar')->toDateString();
                 $id = strtolower($rec['record_id']);
                 $matches = $tasksById->get($id, collect());
                 if ($matches->count() > 1) {
@@ -154,8 +155,8 @@ class RecordingIngestor
                 }
                 $values = [
                     'atlas_worker_id' => $worker->id,
-                    'task_date' => $date->toDateString(),
-                    'recorded_at' => $date->format('Y-m-d H:i:s'),
+                    'task_date' => $localTaskDate,
+                    'recorded_at' => $recordedUtc->format('Y-m-d H:i:s'),
                     'task_name' => $rec['task'],
                     'worked_minutes' => $total,
                     'approved_minutes' => $approved,
