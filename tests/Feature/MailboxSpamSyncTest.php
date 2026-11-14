@@ -39,7 +39,7 @@ class MailboxSpamSyncTest extends TestCase
         ]));
         foreach (['INBOX' => $inbox, 'INBOX.Junk' => $spam] as $path => $messages) {
             $folder = Mockery::mock(\Webklex\PHPIMAP\Folder::class);
-            $c->shouldReceive('getFolder')->with($path)->andReturn($folder);
+            $c->shouldReceive('getFolderByPath')->with($path)->andReturn($folder);
             $folder->shouldReceive('getStatus')->andReturn(['uidvalidity' => 123]);
             if ($failInbox && $path === 'INBOX') {
                 $folder->shouldReceive('query')->andThrow(new \RuntimeException('Inbox temporarily unavailable'));

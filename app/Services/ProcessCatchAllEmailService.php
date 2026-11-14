@@ -92,7 +92,7 @@ class ProcessCatchAllEmailService
 
     private function processFolder($client, string $folderPath, array &$stats): void
     {
-            $folder = $client->getFolder($folderPath);
+            $folder = $client->getFolderByPath($folderPath);
             
             $status = $folder->getStatus();
             $currentUidvalidity = $status['uidvalidity'] ?? null;
