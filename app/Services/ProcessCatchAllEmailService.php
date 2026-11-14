@@ -123,7 +123,10 @@ class ProcessCatchAllEmailService
             
             $searchUid = $lastUid + 1;
             Log::info("IMAP Catch-All: Menarik pesan dengan UID > {$lastUid} (Query UID: {$searchUid}:*)");
-            $messages = $folder->query()->whereUid($searchUid . ':*')->limit(100)->get();
+            // Inspect headers first. Do not download bodies/attachments of
+            // unrelated spam before knowing which registered user owns it.
+            $messages = $folder->query()->setFetchBody(false)->setFetchOrderAsc()
+                ->whereUid($searchUid . ':*')->limit(100)->get();
             
             $stats['FETCHED_COUNT'] = $messages->count();
 
@@ -214,6 +217,7 @@ class ProcessCatchAllEmailService
 
                 // Email has a matched user. Now we process and save it.
                 $senderAddress = strtolower(trim($message->getFrom()[0]->mail ?? 'unknown'));
+                $message->parseBody();
                 $content = $message->getHTMLBody() ?: $message->getTextBody();
                 $processingSuccess = false;
 

@@ -27,6 +27,7 @@ class MailboxSpamSyncTest extends TestCase
         ]);
         $m->shouldReceive('getFrom')->andReturn([(object) ['mail' => 'sender@example.com']]);
         $m->shouldReceive('getHTMLBody')->andReturn('<p>OTP fixture</p>');
+        $m->shouldReceive('parseBody')->andReturnSelf();
         return $m;
     }
 
@@ -50,6 +51,8 @@ class MailboxSpamSyncTest extends TestCase
                 $query = Mockery::mock(\Webklex\PHPIMAP\Query\WhereQuery::class);
                 $folder->shouldReceive('query')->andReturn($query);
                 $query->shouldReceive('whereUid')->andReturnSelf();
+                $query->shouldReceive('setFetchBody')->with(false)->andReturnSelf();
+                $query->shouldReceive('setFetchOrderAsc')->andReturnSelf();
                 $query->shouldReceive('limit')->with(100)->andReturnSelf();
                 $query->shouldReceive('get')->andReturn(new \Webklex\PHPIMAP\Support\MessageCollection($messages));
             }
