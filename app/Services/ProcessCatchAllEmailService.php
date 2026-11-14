@@ -34,7 +34,8 @@ class ProcessCatchAllEmailService
             $stats['CONNECTED'] = true;
             $folders = ['INBOX'];
             foreach ($client->getFolders(false) as $folder) {
-                if (!$folder->no_select && in_array(strtolower($folder->name), ['spam', 'junk', 'junk e-mail', 'junk email'], true)) {
+                if (!$folder->no_select && (in_array(strtolower($folder->name), ['spam', 'junk', 'junk e-mail', 'junk email'], true)
+                    || preg_match('~(?:^|[./])(?:spam|junk|junk e-mail|junk email)$~i', $folder->path))) {
                     $folders[] = $folder->path;
                 }
             }

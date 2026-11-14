@@ -34,7 +34,7 @@ class MailboxSpamSyncTest extends TestCase
         $c->shouldReceive('connect')->andReturnSelf();
         $c->shouldReceive('disconnect')->andReturnSelf();
         $c->shouldReceive('getFolders')->with(false)->andReturn(new \Webklex\PHPIMAP\Support\FolderCollection([
-            (object) ['name' => 'Junk', 'path' => 'INBOX.Junk', 'no_select' => false],
+            (object) ['name' => 'INBOX.Junk', 'path' => 'INBOX.Junk', 'no_select' => false],
             (object) ['name' => 'Trash', 'path' => 'INBOX.Trash', 'no_select' => false],
         ]));
         foreach (['INBOX' => $inbox, 'INBOX.Junk' => $spam] as $path => $messages) {
