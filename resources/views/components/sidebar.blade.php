@@ -135,7 +135,7 @@
             <!-- GROUP 2: ADMIN OPERASIONAL -->
             @if(Auth::user()->canAccessQcRoom() || in_array(Auth::user()->role ?? '', ['superadmin', 'admin']))
             @php
-                $isAdminActive = request()->routeIs('video-submissions.*', 'admin.recordings.*', 'payments.*', 'payroll.*', 'invoices.*', 'partners.*', 'admin.onboardings.*', 'admin.password-recoveries.*', 'push-notifications.broadcast.*');
+                $isAdminActive = request()->routeIs('video-submissions.*', 'admin.recordings.*', 'admin.finance.*', 'payments.*', 'payroll.*', 'invoices.*', 'partners.*', 'admin.onboardings.*', 'admin.password-recoveries.*', 'push-notifications.broadcast.*');
             @endphp
             <details name="sidebar-menu" class="group border-t border-gray-100 pt-3" {{ $isAdminActive ? 'open' : '' }}>
                 <summary class="flex items-center justify-between px-3 py-2 cursor-pointer rounded-xl text-[10px] font-bold text-gray-400 uppercase tracking-wider hover:bg-gray-50 transition-colors">
@@ -143,6 +143,12 @@
                     <svg class="w-4 h-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </summary>
                 <div class="mt-1 space-y-1">
+                    @if(in_array(Auth::user()->role, ['admin', 'superadmin']))
+                    <a href="{{ route('admin.finance.index') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('admin.finance.*') ? 'bg-indigo-50/80 text-indigo-700' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-2 0-3 1-3 2s1 2 3 2 3 1 3 2-1 2-3 2m0-10v12M5 4h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5a1 1 0 011-1z"/></svg>
+                        Keuangan
+                    </a>
+                    @endif
                     @if(Auth::user()->canAccessQcRoom())
                         <a href="{{ route('video-submissions.qc-room') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('video-submissions.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
                             <svg class="w-5 h-5 mr-3 {{ request()->routeIs('video-submissions.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">

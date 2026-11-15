@@ -47,6 +47,15 @@ Route::get('/leaderboard', [\App\Http\Controllers\LeaderboardController::class, 
     ->name('leaderboard.index');
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::prefix('admin/finance')->name('admin.finance.')->middleware('role:superadmin,admin')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\FinanceController::class, 'index'])->name('index');
+        Route::post('/entries', [\App\Http\Controllers\Admin\FinanceController::class, 'store'])->name('store');
+        Route::put('/entries/{entry}', [\App\Http\Controllers\Admin\FinanceController::class, 'update'])->name('update');
+        Route::delete('/entries/{entry}', [\App\Http\Controllers\Admin\FinanceController::class, 'destroy'])->name('destroy');
+        Route::post('/settings', [\App\Http\Controllers\Admin\FinanceController::class, 'settings'])->name('settings');
+        Route::post('/distribute', [\App\Http\Controllers\Admin\FinanceController::class, 'distribute'])->name('distribute');
+    });
+
     Route::get('/video-work-reports/{report}/evidence/{type}', ShowVideoWorkReportEvidenceController::class)
         ->middleware(['signed:relative'])
         ->name('video-submissions.evidence.show');
