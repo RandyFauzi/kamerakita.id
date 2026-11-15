@@ -98,4 +98,41 @@ class FinanceJournalTest extends TestCase
         $this->assertSame(0, app(FinanceJournal::class)->totals('2026-10')['profit']);
         $this->get(route('admin.finance.index', ['month' => '2026-10']))->assertOk()->assertSee('Modal / saldo awal');
     }
+
+    public function test_autosave_retries_are_idempotent_and_stale_edits_are_rejected(): void
+    {
+        $this->actingAs($this->admin());
+        $payload = ['entry_date' => '2026-10-12', 'type' => 'income', 'amount' => 125000,
+            'category' => 'Proyek', 'description' => 'Inline row', 'client_key' => (string) \Illuminate\Support\Str::uuid()];
+        $first = $this->postJson(route('admin.finance.store'), $payload)->assertOk()->assertJsonPath('entry.revision', 1);
+        $id = $first->json('entry.id');
+        $this->postJson(route('admin.finance.store'), $payload)->assertOk()->assertJsonPath('entry.id', $id);
+        $this->assertSame(1, FinanceEntry::count());
+        $this->putJson(route('admin.finance.update', $id), $payload + ['revision' => 1])->assertOk()->assertJsonPath('entry.revision', 2);
+        $this->putJson(route('admin.finance.update', $id), array_replace($payload, ['amount' => 999999, 'revision' => 1]))->assertConflict();
+        $this->assertSame(125000, FinanceEntry::find($id)->amount);
+        $this->postJson(route('admin.finance.store'), array_replace($payload, ['amount' => 200000]))
+            ->assertConflict()->assertJsonPath('entry.id', $id);
+        $this->deleteJson(route('admin.finance.destroy', $id), ['revision' => 1])->assertConflict();
+        $this->deleteJson(route('admin.finance.destroy', $id), ['revision' => 2])->assertOk()->assertJsonPath('deleted', true);
+        $this->postJson(route('admin.finance.store'), $payload)->assertConflict();
+        $this->assertSoftDeleted('finance_entries', ['id' => $id]);
+    }
+
+    public function test_autosave_errors_are_json_and_profit_no_longer_deducts_a_reserve(): void
+    {
+        $this->actingAs($this->admin());
+        $this->postJson(route('admin.finance.store'), ['amount' => -1])->assertUnprocessable()->assertJsonValidationErrors(['amount', 'entry_date']);
+        $this->postJson(route('admin.finance.settings'), ['recipients' => [['name' => 'Owner', 'percent' => 100]]])->assertOk();
+        $setting = FinanceSetting::firstOrFail();
+        $setting->update(['reserve_bps' => 2000]); // Legacy setting must not reduce a new allocation.
+        $this->entry('income', 100000);
+        $this->getJson(route('admin.finance.index', ['month' => '2026-10']))->assertOk()
+            ->assertJsonPath('allocation.pool', 100000)->assertJsonPath('allocation.reserve', 0);
+        $this->postJson(route('admin.finance.distribute'), ['month' => '2026-10'])->assertOk();
+        $this->assertSame(100000, (int) FinanceEntry::where('type', 'distribution')->sum('amount'));
+        $this->postJson(route('admin.finance.store'), ['entry_date' => '2026-10-12', 'type' => 'expense',
+            'amount' => 1, 'category' => 'X', 'description' => 'Closed month', 'client_key' => (string) \Illuminate\Support\Str::uuid()])
+            ->assertUnprocessable()->assertJsonValidationErrors('month');
+    }
 }

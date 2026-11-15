@@ -10,5 +10,6 @@ class FinanceEntry extends Model
     use SoftDeletes;
 
     protected $guarded = [];
-    protected $casts = ['amount' => 'integer', 'entry_date' => 'date'];
+    protected $attributes = ['revision' => 1];
+    protected $casts = ['amount' => 'integer', 'revision' => 'integer', 'entry_date' => 'date'];
 }

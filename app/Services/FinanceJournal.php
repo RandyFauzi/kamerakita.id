@@ -11,7 +11,7 @@ class FinanceJournal
 {
     public function setting(): FinanceSetting
     {
-        return FinanceSetting::firstOrCreate(['id' => 1], ['reserve_bps' => 2000, 'recipients' => []]);
+        return FinanceSetting::firstOrCreate(['id' => 1], ['reserve_bps' => 0, 'recipients' => []]);
     }
 
     public function entries(string $month)
@@ -37,9 +37,10 @@ class FinanceJournal
 
     public function allocation(int $profit, FinanceSetting $setting): array
     {
-        $positive = max(0, $profit);
-        $reserve = intdiv($positive, 10000) * $setting->reserve_bps + intdiv(($positive % 10000) * $setting->reserve_bps, 10000);
-        $pool = max(0, $profit) - $reserve;
+        // Existing closed snapshots retain their historical allocations.
+        // New allocations distribute the full positive profit, with no reserve.
+        $reserve = 0;
+        $pool = max(0, $profit);
         $rows = [];
         foreach ($setting->recipients as $recipient) {
             $weighted = ($pool % 10000) * $recipient['bps'];
@@ -52,7 +53,7 @@ class FinanceJournal
             $left = $pool - array_sum(array_column($rows, 'amount'));
             for ($i = 0; $i < $left; $i++) $rows[$order[$i]]['amount']++;
         }
-        return ['profit' => $profit, 'reserve' => $reserve, 'pool' => $pool, 'reserve_bps' => $setting->reserve_bps, 'recipients' => $rows];
+        return ['profit' => $profit, 'reserve' => $reserve, 'pool' => $pool, 'reserve_bps' => 0, 'recipients' => $rows];
     }
 
     public function openPeriod(string $month): FinancePeriod
