@@ -108,6 +108,8 @@ class MonthlyTargetPeriodTest extends TestCase
 
             $metrics = app(CalculatePartnerMetricsService::class)->getGlobalMetrics();
 
+            $this->assertEquals(4000, $metrics['monthly_target_hours']);
+            $this->assertEquals(1000, $metrics['weekly_target_hours']);
             $this->assertEquals('16 Nov - 15 Dec 2026', $metrics['monthly_period_label']);
             $this->assertEquals(180, $metrics['monthly_approved_minutes']); // 120 + 60
             $this->assertEquals(3.0, $metrics['monthly_approved_hours']);
