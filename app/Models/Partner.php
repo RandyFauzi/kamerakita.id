@@ -83,6 +83,16 @@ class Partner extends Model
                 $partner->referral_code = $code;
             }
         });
+
+        static::saving(function (Partner $partner) {
+            if (in_array($partner->partner_role, self::RECRUITER_ROLES) && empty($partner->referral_code)) {
+                do {
+                    $code = 'REF-' . strtoupper(Str::random(6));
+                } while (self::where('referral_code', $code)->exists());
+
+                $partner->referral_code = $code;
+            }
+        });
     }
 
     protected $casts = [
@@ -111,6 +121,11 @@ class Partner extends Model
         return (bool) ($this->bypass_worker_bank_onboarding ?? true);
     }
 
+    public function isWorker(): bool
+    {
+        return strtolower(trim((string) $this->partner_role)) === self::ROLE_WORKER;
+    }
+
     public function isMitra(): bool
     {
         return strtolower(trim((string) $this->partner_role)) === self::ROLE_MITRA;
@@ -119,6 +134,19 @@ class Partner extends Model
     public function isMainAccount(): bool
     {
         return strtolower(trim((string) $this->partner_role)) === self::ROLE_MAIN_ACCOUNT;
+    }
+
+    public function makeMainAccount(): bool
+    {
+        $this->partner_role = self::ROLE_MAIN_ACCOUNT;
+        if (empty($this->referral_code)) {
+            do {
+                $code = 'REF-' . strtoupper(Str::random(6));
+            } while (self::where('referral_code', $code)->exists());
+            $this->referral_code = $code;
+        }
+
+        return $this->save();
     }
 
     public function isTeamParent(): bool
@@ -277,5 +305,13 @@ class Partner extends Model
     public function recordings(): HasMany
     {
         return $this->hasMany(Recording::class, 'partner_id');
+    }
+
+    /**
+     * Relationship: Requests to become a Main Account
+     */
+    public function mainAccountRequests(): HasMany
+    {
+        return $this->hasMany(MainAccountRequest::class);
     }
 }

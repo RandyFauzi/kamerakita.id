@@ -23,6 +23,13 @@ Route::get('/jadi-vendor', function () {
     return view('jadi-vendor');
 })->name('jadi-vendor');
 
+// Main Account (Akun Induk) Application Form
+Route::get('/pengajuan-akun-induk', [\App\Http\Controllers\MainAccountRequestController::class, 'create'])
+    ->name('main-account.request');
+Route::post('/pengajuan-akun-induk', [\App\Http\Controllers\MainAccountRequestController::class, 'store'])
+    ->middleware('throttle:10,1')
+    ->name('main-account.request.store');
+
 Route::get('/portofolio', [\App\Http\Controllers\PortfolioController::class, 'index'])->name('portfolio.index');
 Route::post('/portofolio/contact', [\App\Http\Controllers\PortfolioController::class, 'inquiry'])
     ->middleware('throttle:10,1')->name('portfolio.inquiry');
@@ -110,6 +117,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/admin/password-recoveries/{recoveryRequest}/send-wa', [\App\Http\Controllers\Admin\PasswordRecoveryController::class, 'sendWhatsApp'])
         ->middleware('role:superadmin,admin')
         ->name('admin.password-recoveries.send-wa');
+
+    // Admin Main Account Requests Management
+    Route::prefix('admin/main-account-requests')->name('admin.main-account-requests.')->middleware('role:superadmin,admin')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\MainAccountRequestController::class, 'index'])->name('index');
+        Route::post('/{mainAccountRequest}/approve', [\App\Http\Controllers\Admin\MainAccountRequestController::class, 'approve'])->name('approve');
+        Route::post('/{mainAccountRequest}/reject', [\App\Http\Controllers\Admin\MainAccountRequestController::class, 'reject'])->name('reject');
+    });
 
     Route::post('/leaderboard/reset', [\App\Http\Controllers\LeaderboardController::class, 'reset'])
         ->middleware('role:superadmin,admin')

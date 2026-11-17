@@ -7,6 +7,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -40,7 +41,12 @@ class User extends Authenticatable
         return $this->hasOne(Partner::class);
     }
 
-    public function capturedEmails(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function mainAccountRequests(): HasMany
+    {
+        return $this->hasMany(MainAccountRequest::class);
+    }
+
+    public function capturedEmails(): HasMany
     {
         return $this->hasMany(CapturedEmail::class);
     }
@@ -60,7 +66,7 @@ class User extends Authenticatable
         return in_array($this->role, ['superadmin', 'admin', 'finance'], true);
     }
 
-    public function atlasWorker(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function atlasWorker(): HasOne
     {
         return $this->hasOne(AtlasWorker::class);
     }
