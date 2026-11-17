@@ -159,7 +159,7 @@
                         <div class="flex justify-between items-baseline">
                             <div>
                                 <span class="text-xs font-bold text-slate-800">{{ __('dashboard.general.monthly_target') }}</span>
-                                <span class="text-[10px] text-slate-400 font-medium block">{{ __('dashboard.general.month') }}: {{ $metrics['monthly_period_label'] }}</span>
+                                <span class="text-[10px] text-slate-400 font-medium block">{{ __('dashboard.general.period') }}: {{ $metrics['monthly_period_label'] }}</span>
                             </div>
                             <div class="text-right">
                                 <span class="text-sm font-black text-slate-900">{{ $metrics['monthly_approved_hours'] }} <span class="text-xs text-slate-400 font-normal">/ {{ number_format($metrics['monthly_target_hours'], 0, ',', '.') }} Jam</span></span>

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Partner;
 use App\Models\VideoWorkReport;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 
 class CalculatePartnerMetricsService
@@ -298,9 +299,10 @@ class CalculatePartnerMetricsService
         $weeklySubmittedPercent = $weeklyTargetMinutes > 0 ? round(($weeklySubmittedMinutes / $weeklyTargetMinutes) * 100, 1) : 0;
         $weeklyPeriodLabel = $weeklyPeriodStart->format('d M') . ' - ' . $weeklyPeriodEnd->format('d M Y');
 
-        // 2. Target Bulanan (400 Jam Video Approved)
-        $monthlyStart = now()->copy()->startOfMonth();
-        $monthlyEnd = now()->copy()->endOfMonth();
+        // 2. Target Bulanan (Siklus tanggal 16 bulan ini s/d 15 bulan depan)
+        $monthlyPeriod = $this->getMonthlyTargetRange();
+        $monthlyStart = $monthlyPeriod['start'];
+        $monthlyEnd = $monthlyPeriod['end'];
 
         $monthlyApprovedMinutes = \App\Models\AtlasTask::whereBetween('task_date', [
                 $monthlyStart->toDateString(),
@@ -320,7 +322,7 @@ class CalculatePartnerMetricsService
         $monthlySubmittedHours = round($monthlySubmittedMinutes / 60, 1);
         $monthlyProgressPercent = $monthlyTargetMinutes > 0 ? round(($monthlyApprovedMinutes / $monthlyTargetMinutes) * 100, 1) : 0;
         $monthlySubmittedPercent = $monthlyTargetMinutes > 0 ? round(($monthlySubmittedMinutes / $monthlyTargetMinutes) * 100, 1) : 0;
-        $monthlyPeriodLabel = now()->translatedFormat('F Y');
+        $monthlyPeriodLabel = $monthlyPeriod['label'];
 
         return [
             'total_workers' => $totalWorkersCount,
@@ -353,6 +355,34 @@ class CalculatePartnerMetricsService
             'monthly_progress_percent' => $monthlyProgressPercent,
             'monthly_submitted_percent' => $monthlySubmittedPercent,
             'monthly_period_label' => $monthlyPeriodLabel,
+        ];
+    }
+
+    /**
+     * Get the rolling monthly target period (16th of current/previous month to 15th of next/current month).
+     *
+     * @return array{start: Carbon, end: Carbon, label: string}
+     */
+    public function getMonthlyTargetRange(?Carbon $referenceDate = null): array
+    {
+        $now = ($referenceDate ? $referenceDate->copy() : now())->startOfDay();
+
+        if ($now->day >= 16) {
+            $start = $now->copy()->startOfMonth()->day(16)->startOfDay();
+            $end = $now->copy()->startOfMonth()->addMonthNoOverflow()->day(15)->endOfDay();
+        } else {
+            $start = $now->copy()->startOfMonth()->subMonthNoOverflow()->day(16)->startOfDay();
+            $end = $now->copy()->startOfMonth()->day(15)->endOfDay();
+        }
+
+        $label = $start->year === $end->year
+            ? $start->format('d M') . ' - ' . $end->format('d M Y')
+            : $start->format('d M Y') . ' - ' . $end->format('d M Y');
+
+        return [
+            'start' => $start,
+            'end' => $end,
+            'label' => $label,
         ];
     }
 
