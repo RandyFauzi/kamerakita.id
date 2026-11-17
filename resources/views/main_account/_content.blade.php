@@ -47,6 +47,16 @@
     .kk-btn-blue {
         background-color: #0284c7;
         color: #ffffff;
+        padding: 13px 26px;
+        border-radius: 14px;
+        font-size: 13px;
+        font-weight: 800;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: none;
+        cursor: pointer;
         box-shadow: 0 10px 20px -5px rgba(2, 132, 199, 0.35);
         transition: transform 200ms ease, background-color 200ms ease, box-shadow 200ms ease;
     }
@@ -344,9 +354,9 @@
 
         <!-- Tombol Aksi -->
         <div class="flex items-center justify-end gap-3 pt-2">
-            <button type="submit" class="kk-btn-blue px-7 py-3.5 rounded-xl text-xs font-extrabold flex items-center gap-2">
+            <button type="submit" class="kk-btn-blue">
                 <span>Kirim Pengajuan Akun Induk</span>
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
             </button>
         </div>
     </form>
