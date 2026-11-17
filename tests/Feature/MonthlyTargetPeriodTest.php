@@ -51,6 +51,54 @@ class MonthlyTargetPeriodTest extends TestCase
         $this->assertEquals('16 Jan - 15 Feb 2027', $jan31['label']);
     }
 
+    public function test_weekly_target_range_rolls_every_7_days_from_16th(): void
+    {
+        $service = app(CalculatePartnerMetricsService::class);
+
+        // Week 1: 16 Nov - 22 Nov 2026
+        $w1Start = $service->getWeeklyTargetRange(Carbon::parse('2026-11-16'));
+        $this->assertEquals('2026-11-16', $w1Start['start']->toDateString());
+        $this->assertEquals('2026-11-22', $w1Start['end']->toDateString());
+        $this->assertEquals('16 Nov - 22 Nov 2026', $w1Start['label']);
+
+        $w1Day2 = $service->getWeeklyTargetRange(Carbon::parse('2026-11-17'));
+        $this->assertEquals('2026-11-16', $w1Day2['start']->toDateString());
+        $this->assertEquals('2026-11-22', $w1Day2['end']->toDateString());
+
+        $w1End = $service->getWeeklyTargetRange(Carbon::parse('2026-11-22'));
+        $this->assertEquals('2026-11-16', $w1End['start']->toDateString());
+        $this->assertEquals('2026-11-22', $w1End['end']->toDateString());
+
+        // Week 2: 23 Nov - 29 Nov 2026
+        $w2 = $service->getWeeklyTargetRange(Carbon::parse('2026-11-23'));
+        $this->assertEquals('2026-11-23', $w2['start']->toDateString());
+        $this->assertEquals('2026-11-29', $w2['end']->toDateString());
+        $this->assertEquals('23 Nov - 29 Nov 2026', $w2['label']);
+
+        // Week 3: 30 Nov - 06 Dec 2026
+        $w3 = $service->getWeeklyTargetRange(Carbon::parse('2026-12-01'));
+        $this->assertEquals('2026-11-30', $w3['start']->toDateString());
+        $this->assertEquals('2026-12-06', $w3['end']->toDateString());
+        $this->assertEquals('30 Nov - 06 Dec 2026', $w3['label']);
+
+        // Week 4: 07 Dec - 13 Dec 2026
+        $w4 = $service->getWeeklyTargetRange(Carbon::parse('2026-12-10'));
+        $this->assertEquals('2026-12-07', $w4['start']->toDateString());
+        $this->assertEquals('2026-12-13', $w4['end']->toDateString());
+
+        // Remainder before cutoff: 14 Dec - 15 Dec 2026 (capped at 15th)
+        $rem = $service->getWeeklyTargetRange(Carbon::parse('2026-12-14'));
+        $this->assertEquals('2026-12-14', $rem['start']->toDateString());
+        $this->assertEquals('2026-12-15', $rem['end']->toDateString());
+        $this->assertEquals('14 Dec - 15 Dec 2026', $rem['label']);
+
+        // Cross-year Week 3 in Dec cycle: 30 Dec 2026 - 05 Jan 2027
+        $crossYear = $service->getWeeklyTargetRange(Carbon::parse('2027-01-02'));
+        $this->assertEquals('2026-12-30', $crossYear['start']->toDateString());
+        $this->assertEquals('2027-01-05', $crossYear['end']->toDateString());
+        $this->assertEquals('30 Dec 2026 - 05 Jan 2027', $crossYear['label']);
+    }
+
     public function test_global_metrics_sums_monthly_target_only_within_16th_to_15th_window(): void
     {
         Carbon::setTestNow(Carbon::parse('2026-11-17 14:00:00'));
@@ -110,6 +158,10 @@ class MonthlyTargetPeriodTest extends TestCase
 
             $this->assertEquals(4000, $metrics['monthly_target_hours']);
             $this->assertEquals(1000, $metrics['weekly_target_hours']);
+            $this->assertEquals('16 Nov - 22 Nov 2026', $metrics['weekly_period_label']);
+            $this->assertEquals(120, $metrics['weekly_approved_minutes']); // Only T-START (16 Nov)
+            $this->assertEquals(2.0, $metrics['weekly_approved_hours']);
+            $this->assertEquals(3.0, $metrics['weekly_submitted_hours']);
             $this->assertEquals('16 Nov - 15 Dec 2026', $metrics['monthly_period_label']);
             $this->assertEquals(180, $metrics['monthly_approved_minutes']); // 120 + 60
             $this->assertEquals(3.0, $metrics['monthly_approved_hours']);

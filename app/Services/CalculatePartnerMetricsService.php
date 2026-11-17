@@ -274,10 +274,11 @@ class CalculatePartnerMetricsService
         $onReviewMinutesSum = (int) VideoWorkReport::where('qc_status', 'on_review')->sum('submitted_duration_minutes');
         $rejectedMinutesSum = (int) VideoWorkReport::where('qc_status', 'rejected')->sum('submitted_duration_minutes');
 
-        // 1. Target Mingguan (100 Jam Video Approved)
-        $currentPeriod = PeriodService::getPeriodRange(now());
-        $weeklyPeriodStart = $currentPeriod['start']->copy()->startOfDay();
-        $weeklyPeriodEnd = $currentPeriod['end']->copy()->endOfDay();
+        // 1. Target Mingguan (7 hari per minggu dihitung mulai tanggal 16 siklus bulanan)
+        $monthlyTargetHours = 4000;
+        $weeklyPeriod = $this->getWeeklyTargetRange();
+        $weeklyPeriodStart = $weeklyPeriod['start'];
+        $weeklyPeriodEnd = $weeklyPeriod['end'];
 
         $weeklyApprovedMinutes = \App\Models\AtlasTask::whereBetween('task_date', [
                 $weeklyPeriodStart->toDateString(),
@@ -291,14 +292,13 @@ class CalculatePartnerMetricsService
             ])
             ->sum('worked_minutes');
 
-        $monthlyTargetHours = 4000;
         $weeklyTargetHours = (int) round($monthlyTargetHours / 4);
         $weeklyTargetMinutes = $weeklyTargetHours * 60;
         $weeklyApprovedHours = round($weeklyApprovedMinutes / 60, 1);
         $weeklySubmittedHours = round($weeklySubmittedMinutes / 60, 1);
         $weeklyProgressPercent = $weeklyTargetMinutes > 0 ? round(($weeklyApprovedMinutes / $weeklyTargetMinutes) * 100, 1) : 0;
         $weeklySubmittedPercent = $weeklyTargetMinutes > 0 ? round(($weeklySubmittedMinutes / $weeklyTargetMinutes) * 100, 1) : 0;
-        $weeklyPeriodLabel = $weeklyPeriodStart->format('d M') . ' - ' . $weeklyPeriodEnd->format('d M Y');
+        $weeklyPeriodLabel = $weeklyPeriod['label'];
 
         // 2. Target Bulanan (Siklus tanggal 16 bulan ini s/d 15 bulan depan)
         $monthlyPeriod = $this->getMonthlyTargetRange();
@@ -355,6 +355,40 @@ class CalculatePartnerMetricsService
             'monthly_progress_percent' => $monthlyProgressPercent,
             'monthly_submitted_percent' => $monthlySubmittedPercent,
             'monthly_period_label' => $monthlyPeriodLabel,
+        ];
+    }
+
+    /**
+     * Get the rolling 7-day weekly target window anchored to the 16th of the monthly cycle,
+     * capped at the 15th cutoff so each cycle resets cleanly on the 16th.
+     *
+     * @return array{start: Carbon, end: Carbon, label: string}
+     */
+    public function getWeeklyTargetRange(?Carbon $referenceDate = null): array
+    {
+        $now = ($referenceDate ? $referenceDate->copy() : now())->startOfDay();
+        $monthlyPeriod = $this->getMonthlyTargetRange($now);
+        $monthlyStart = $monthlyPeriod['start'];
+        $monthlyEnd = $monthlyPeriod['end'];
+
+        $daysSinceStart = (int) $monthlyStart->diffInDays($now);
+        $weekIndex = intdiv($daysSinceStart, 7);
+
+        $start = $monthlyStart->copy()->addDays($weekIndex * 7)->startOfDay();
+        $end = $start->copy()->addDays(6)->endOfDay();
+
+        if ($end->greaterThan($monthlyEnd)) {
+            $end = $monthlyEnd->copy();
+        }
+
+        $label = $start->year === $end->year
+            ? $start->format('d M') . ' - ' . $end->format('d M Y')
+            : $start->format('d M Y') . ' - ' . $end->format('d M Y');
+
+        return [
+            'start' => $start,
+            'end' => $end,
+            'label' => $label,
         ];
     }
 
