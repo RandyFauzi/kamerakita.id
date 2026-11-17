@@ -48,7 +48,7 @@ class CalculatePartnerMetricsService
         $pendingMinutes = (float) $approvedReports->where('payment_status', 'unpaid')
             ->sum('approved_duration_minutes');
 
-        $rate = $worker->base_hourly_rate ?: self::DEFAULT_WORKER_HOURLY_RATE_IDR;
+        $rate = $worker->effectiveHourlyRate();
         $paidEarnings = ($paidMinutes / 60) * $rate;
         $pendingEarnings = ($pendingMinutes / 60) * $rate;
         $totalEarnings = $paidEarnings + $pendingEarnings;
@@ -72,14 +72,14 @@ class CalculatePartnerMetricsService
     }
 
     /**
-     * Get aggregated metrics for a Mitra managing multiple Workers.
+     * Get aggregated metrics for a Mitra or Main Account managing multiple Workers.
      */
     public function getMitraMetrics(Partner $mitra): array
     {
-        // Get all workers assigned to this Mitra
+        // Get all workers assigned to this parent (Mitra or Main Account)
         $workers = Partner::query()
             ->where('mitra_parent_id', $mitra->id)
-            ->where('partner_role', 'worker')
+            ->where('partner_role', Partner::ROLE_WORKER)
             ->with('user')
             ->get();
 
@@ -87,14 +87,17 @@ class CalculatePartnerMetricsService
         $totalAllTime = 0;
         $totalPaid = 0;
         $totalPending = 0;
-        
-        // Passive commission from workers in Rupiah per approved hour.
+        $teamPaidEarnings = 0;
+        $teamPendingEarnings = 0;
+
+        // Passive commission from workers in Rupiah per approved hour (10k for Mitra, 0 for Main Account).
+        $commissionRate = $mitra->teamCommissionHourlyRate();
         $commissionPaid = 0;
         $commissionPending = 0;
 
         foreach ($workers as $worker) {
             $metrics = $this->getWorkerMetrics($worker);
-            
+
             $workersData[] = [
                 'worker' => $worker,
                 'metrics' => $metrics,
@@ -103,12 +106,14 @@ class CalculatePartnerMetricsService
             $totalAllTime += $metrics['all_time_minutes'];
             $totalPaid += $metrics['paid_minutes'];
             $totalPending += $metrics['pending_minutes'];
+            $teamPaidEarnings += $metrics['paid_earnings'];
+            $teamPendingEarnings += $metrics['pending_earnings'];
 
-            $commissionPaid += ($metrics['paid_minutes'] / 60) * self::MITRA_COMMISSION_HOURLY_RATE_IDR;
-            $commissionPending += ($metrics['pending_minutes'] / 60) * self::MITRA_COMMISSION_HOURLY_RATE_IDR;
+            $commissionPaid += ($metrics['paid_minutes'] / 60) * $commissionRate;
+            $commissionPending += ($metrics['pending_minutes'] / 60) * $commissionRate;
         }
 
-        // Mitra's own recordings use the configured partner rate, with a Rupiah fallback.
+        // Parent's own recordings use the configured partner rate, with a Rupiah fallback.
         $ownReports = VideoWorkReport::query()
             ->where('partner_id', $mitra->id)
             ->where('qc_status', 'approved')
@@ -125,7 +130,7 @@ class CalculatePartnerMetricsService
         return [
             'workers_count' => $workers->count(),
             'workers_data' => $workersData,
-            
+
             // Team total metrics
             'total_all_time_minutes' => $totalAllTime,
             'total_paid_minutes' => $totalPaid,
@@ -133,16 +138,20 @@ class CalculatePartnerMetricsService
             'total_all_time_hours_formatted' => $this->formatMinutes($totalAllTime),
             'total_paid_hours_formatted' => $this->formatMinutes($totalPaid),
             'total_pending_hours_formatted' => $this->formatMinutes($totalPending),
+            'sub_worker_hourly_rate' => $mitra->subWorkerHourlyRate(),
+            'team_paid_earnings' => $teamPaidEarnings,
+            'team_pending_earnings' => $teamPendingEarnings,
+            'team_total_earnings' => $teamPaidEarnings + $teamPendingEarnings,
 
-            // Mitra own earnings
+            // Mitra / Main Account own earnings
             'personal_paid_earnings' => $personalPaidEarnings,
             'personal_pending_earnings' => $personalPendingEarnings,
             'personal_all_time_hours_formatted' => $this->formatMinutes($ownAllTime),
 
-            // Commission earnings
+            // Commission earnings (10k/hr for Mitra, 0 for Main Account)
             'commission_paid_earnings' => $commissionPaid,
             'commission_pending_earnings' => $commissionPending,
-            'commission_hourly_rate' => self::MITRA_COMMISSION_HOURLY_RATE_IDR,
+            'commission_hourly_rate' => $commissionRate,
             'personal_hourly_rate' => $mitraOwnRate,
         ];
     }

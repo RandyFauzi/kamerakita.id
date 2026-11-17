@@ -29,7 +29,8 @@
                             <label for="partner_role" class="block text-sm font-semibold text-gray-700 mb-1">Peran Kemitraan <span class="text-red-500">*</span></label>
                             <select name="partner_role" id="partner_role" x-model="role" required class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                                 <option value="worker">Worker (Perekam Video)</option>
-                                <option value="mitra">Vendor</option>
+                                <option value="mitra">Vendor / Mitra</option>
+                                <option value="main_account">Main Account (Akun Induk Multi-Kontributor)</option>
                                 <option value="rekruter">Rekruter (Perekrut Worker)</option>
                             </select>
                             @error('partner_role') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
@@ -141,14 +142,14 @@
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Pilih Mitra Atasan (Shown only if role is worker) -->
+                        <!-- Pilih Mitra / Main Account Atasan (Shown only if role is worker) -->
                         <div x-show="role === 'worker'" class="animate-in fade-in duration-200">
-                            <label for="mitra_parent_id" class="block text-sm font-semibold text-gray-700 mb-1">Pilih Vendor Atasan</label>
+                            <label for="mitra_parent_id" class="block text-sm font-semibold text-gray-700 mb-1">Pilih Mitra / Main Account Atasan</label>
                             <select name="mitra_parent_id" id="mitra_parent_id" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-                                <option value="">Pilih Mitra...</option>
+                                <option value="">Pilih Atasan (Opsional)...</option>
                                 @foreach($mitraList as $mitra)
                                     <option value="{{ $mitra->id }}" {{ old('mitra_parent_id') == $mitra->id ? 'selected' : '' }}>
-                                        {{ $mitra->full_name }} ({{ $mitra->mitra_id }})
+                                        {{ $mitra->full_name }} ({{ $mitra->roleLabel() }} - {{ $mitra->mitra_id }})
                                     </option>
                                 @endforeach
                             </select>

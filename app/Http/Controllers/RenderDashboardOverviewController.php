@@ -102,7 +102,7 @@ class RenderDashboardOverviewController extends Controller
                 return view('dashboard.worker', compact('partner', 'metrics', 'reports', 'isRankOneThisWeek', 'userRank', 'isAstro', 'astroStats'));
             }
 
-            if ($partner->partner_role === 'mitra') {
+            if ($partner->isTeamParent()) {
                 $metrics = $this->metricsService->getMitraMetrics($partner);
                 $userRank = $this->leaderboardService->getPartnerWeeklyRank($partner->id, 3);
 

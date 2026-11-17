@@ -205,7 +205,7 @@ class EditRejectedVideoWorkReportController extends Controller
             ->where('user_id', Auth::id())
             ->firstOrFail();
 
-        abort_unless(in_array(strtolower(trim($partner->partner_role)), ['worker', 'mitra', 'rekruter']), 403);
+        abort_unless($partner->hasStandardPortalAccess(), 403);
         abort_unless($report->partner_id === $partner->id, 403);
         abort_unless($report->qc_status === 'rejected', 403, 'Hanya laporan yang ditolak yang bisa diperbaiki.');
         abort_unless($report->payment_status === 'unpaid', 403, 'Laporan yang sudah dibayar tidak bisa diperbaiki.');

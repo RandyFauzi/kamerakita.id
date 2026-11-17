@@ -1,6 +1,9 @@
+@php
+    $isMainAccount = $partner->isMainAccount();
+@endphp
 <x-app-layout>
-    <x-slot:title>Dashboard Mitra</x-slot:title>
-    <x-slot:metaDescription>Kelola tim dan pantau performa seluruh Worker di bawah naungan Anda sebagai Mitra Kamerakita.</x-slot:metaDescription>
+    <x-slot:title>{{ $isMainAccount ? 'Dashboard Main Account' : 'Dashboard Mitra' }}</x-slot:title>
+    <x-slot:metaDescription>{{ $isMainAccount ? 'Kelola seluruh sub-akun dan pantau performa akun Anda sebagai Main Account KameraKita.' : 'Kelola tim dan pantau performa seluruh Worker di bawah naungan Anda sebagai Mitra Kamerakita.' }}</x-slot:metaDescription>
 
     <div class="space-y-4 sm:space-y-6" x-data="{ showBanner: true }">
         
@@ -67,7 +70,7 @@
                     </div>
                     <div class="space-y-1">
                         <div class="flex flex-wrap items-center gap-2">
-                            <span class="block text-xs font-black tracking-widest text-indigo-650 uppercase">RUANG MANAJEMEN TIM</span>
+                            <span class="block text-xs font-black tracking-widest text-indigo-650 uppercase">{{ $isMainAccount ? 'MAIN ACCOUNT HUB' : 'RUANG MANAJEMEN TIM' }}</span>
                             @php
                                 $bannerRegDate = $partner->registration_date ?? $partner->created_at ?? Auth::user()->created_at;
                             @endphp
@@ -76,7 +79,13 @@
                                 <span>Terdaftar: <strong class="text-gray-700">{{ $bannerRegDate ? \Carbon\Carbon::parse($bannerRegDate)->translatedFormat('d M Y') : '-' }}</strong></span>
                             </span>
                         </div>
-                        <p class="text-sm text-gray-500 max-w-xl">Anda terdaftar sebagai Vendor. Anda mengawasi statistik rekam kerja, status QC, serta penumpukan pending transfer dari tim Worker Anda.</p>
+                        <p class="text-sm text-gray-500 max-w-xl">
+                            @if($isMainAccount)
+                                Anda terdaftar sebagai Main Account. Anda mengelola dan memantau seluruh sub-akun kontributor Anda (termasuk OTP Mailbox terpusat) dengan tarif penuh Rp60.000/jam.
+                            @else
+                                Anda terdaftar sebagai Vendor. Anda mengawasi statistik rekam kerja, status QC, serta penumpukan pending transfer dari tim Worker Anda (Paket Rp60.000/jam: Rp50.000 Worker + Rp10.000 Komisi Mitra).
+                            @endif
+                        </p>
                         <!-- Progress bar -->
                         <div class="w-full bg-indigo-100 h-2 rounded-full mt-3 overflow-hidden">
                             <div class="bg-indigo-650 h-full rounded-full" style="width: 100%"></div>
@@ -112,7 +121,9 @@
                 <div>
                     <span class="block text-[10px] font-black tracking-widest text-indigo-200 uppercase">{{ __('dashboard.general.your_referral_code') }}</span>
                     <span class="block text-2xl sm:text-3xl font-black text-white font-mono tracking-widest mt-1">{{ $partner->referral_code }}</span>
-                    <span class="block text-xs text-indigo-200 mt-1">Bagikan kode ini ke calon Worker yang ingin bergabung di bawah tim Anda.</span>
+                    <span class="block text-xs text-indigo-200 mt-1">
+                        {{ $isMainAccount ? 'Gunakan atau bagikan kode ini jika ingin mendaftarkan sub-akun baru agar langsung terhubung ke Main Account Anda (Rp60.000/jam).' : 'Bagikan kode ini ke calon Worker yang ingin bergabung di bawah tim Anda.' }}
+                    </span>
                 </div>
             </div>
             <button onclick="navigator.clipboard.writeText('{{ $partner->referral_code }}').then(() => { this.textContent = '✓ Tersalin!'; setTimeout(() => this.textContent = 'Salin Kode', 1500) })"
@@ -124,8 +135,29 @@
 
         <!-- Dynamic Holographic Card & Info Balance -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-            <!-- Left: Holographic balance card (2 cols) - KOMISI TIM -->
+            <!-- Left: Holographic balance card (2 cols) -->
             <div class="lg:col-span-2">
+                @if($isMainAccount)
+                <x-glass-orb-card 
+                    title="Rp{{ number_format($metrics['team_total_earnings'] ?? 0, 0, ',', '.') }}"
+                    subtitle="TOTAL PENDAPATAN SUB-AKUN (RATE Rp{{ number_format($metrics['sub_worker_hourly_rate'] ?? 60000, 0, ',', '.') }}/{{ __('dashboard.general.hour') }})"
+                    label1="PENDING BAYAR SUB-AKUN"
+                    value1="Rp{{ number_format($metrics['team_pending_earnings'] ?? 0, 0, ',', '.') }}"
+                    label2="{{ __('dashboard.general.total_hours') }} KERJA"
+                    value2="{{ $metrics['total_all_time_hours_formatted'] }}"
+                >
+                    <x-slot name="actionSlot">
+                        <div class="grid grid-cols-2 divide-x divide-slate-200/50 w-full">
+                            <a href="{{ route('vendor.workers.index') }}" class="py-4 text-center text-sm font-bold text-blue-700 hover:bg-black/5 transition-colors">
+                                Kelola Sub-Akun
+                            </a>
+                            <a href="{{ route('vendor.reports.index') }}" class="py-4 text-center text-sm font-bold text-slate-700 hover:bg-black/5 transition-colors">
+                                QC Tracker Akun
+                            </a>
+                        </div>
+                    </x-slot>
+                </x-glass-orb-card>
+                @else
                 <x-glass-orb-card 
                     title="Rp{{ number_format($metrics['commission_paid_earnings'] + $metrics['commission_pending_earnings'], 0, ',', '.') }}"
                     subtitle="{{ __('dashboard.general.worker_team_commission') }} (RATE Rp{{ number_format($metrics['commission_hourly_rate'], 0, ',', '.') }}/{{ __('dashboard.general.hour') }})"
@@ -145,6 +177,7 @@
                         </div>
                     </x-slot>
                 </x-glass-orb-card>
+                @endif
             </div>
 
             <!-- Right: Investment balance card (1 col) - {{ __('dashboard.general.personal_income') }} -->
@@ -194,8 +227,8 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
                         </svg>
                     </div>
-                    <span class="block text-xs font-bold text-gray-800">Total Workers</span>
-                    <span class="block text-[10px] text-gray-400 font-medium">{{ $metrics['workers_count'] }} Anggota</span>
+                    <span class="block text-xs font-bold text-gray-800">{{ $isMainAccount ? 'Total Sub-Akun' : 'Total Workers' }}</span>
+                    <span class="block text-[10px] text-gray-400 font-medium">{{ $metrics['workers_count'] }} {{ $isMainAccount ? 'Akun' : 'Anggota' }}</span>
                 </div>
 
                 <!-- Feature 2: Total Paid Tim -->
@@ -205,7 +238,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                     </div>
-                    <span class="block text-xs font-bold text-gray-800">Sudah Dibayar Tim</span>
+                    <span class="block text-xs font-bold text-gray-800">{{ $isMainAccount ? 'Sudah Dibayar Akun' : 'Sudah Dibayar Tim' }}</span>
                     <span class="block text-[10px] text-gray-400 font-medium font-mono">{{ $metrics['total_paid_hours_formatted'] }}</span>
                 </div>
 

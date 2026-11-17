@@ -14,9 +14,10 @@ class RateCardSeeder extends Seeder
     {
         $rates = [
             ['project' => 'atlas', 'partner_role' => 'worker', 'rate_per_hour' => 50000],
-            ['project' => 'atlas', 'partner_role' => 'mitra', 'rate_per_hour' => 63000],
-            ['project' => 'atlas', 'partner_role' => 'commission', 'rate_per_hour' => 9000],
-            ['project' => 'atlas', 'partner_role' => 'vendor', 'rate_per_hour' => 65000],
+            ['project' => 'atlas', 'partner_role' => 'mitra', 'rate_per_hour' => 60000],
+            ['project' => 'atlas', 'partner_role' => 'main_account', 'rate_per_hour' => 60000],
+            ['project' => 'atlas', 'partner_role' => 'commission', 'rate_per_hour' => 10000],
+            ['project' => 'atlas', 'partner_role' => 'vendor', 'rate_per_hour' => 60000],
         ];
 
         foreach ($rates as $rate) {

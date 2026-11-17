@@ -64,8 +64,11 @@ class RegisteredUserController extends Controller
             $recruiterPartner = Partner::where('referral_code', $request->referral_code)->first();
         }
 
-        $isUnderMitra = ($recruiterPartner && $recruiterPartner->partner_role === 'mitra');
-        $bypassBank = $isUnderMitra && $recruiterPartner->bypassesWorkerBankOnboarding();
+        $isUnderTeamParent = ($recruiterPartner && $recruiterPartner->isTeamParent());
+        $bypassBank = $isUnderTeamParent && $recruiterPartner->bypassesWorkerBankOnboarding();
+        $baseHourlyRate = $isUnderTeamParent
+            ? $recruiterPartner->subWorkerHourlyRate()
+            : ($recruiterPartner ? Partner::MITRA_WORKER_HOURLY_RATE_IDR : Partner::DEFAULT_WORKER_HOURLY_RATE_IDR);
 
         // Construct the internal email address
         $internalEmail = $request->username . '@kamerakitaid.site';
@@ -92,12 +95,12 @@ class RegisteredUserController extends Controller
             'has_headstrap' => false,
             'status' => 'active',
             'group_name' => $groupName,
-            'base_hourly_rate' => $recruiterPartner ? 50000 : 60000,
+            'base_hourly_rate' => $baseHourlyRate,
             'user_id' => $user->id,
             // Link to recruiter if a valid referral code was provided
             'recruiter_partner_id' => $recruiterPartner ? $recruiterPartner->id : null,
-            // Jika yang mengundang adalah Mitra, otomatis jadikan Mitra tersebut sebagai atasannya
-            'mitra_parent_id' => $isUnderMitra ? $recruiterPartner->id : null,
+            // Jika yang mengundang adalah Mitra/Main Account, otomatis jadikan sebagai atasannya
+            'mitra_parent_id' => $isUnderTeamParent ? $recruiterPartner->id : null,
             // Otomatis isi rekening dari Mitra jika Mitra mengaktifkan bypass onboarding rekening
             'bank_name' => $bypassBank ? $recruiterPartner->bank_name : null,
             'bank_account_number' => $bypassBank ? $recruiterPartner->bank_account_number : null,

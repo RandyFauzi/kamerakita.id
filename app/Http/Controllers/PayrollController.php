@@ -66,22 +66,10 @@ class PayrollController extends Controller
             $totalNominal = 0;
 
             foreach ($workersToProcess as $wId) {
-                $worker = AtlasWorker::with('user.partner')->find($wId);
+                $worker = AtlasWorker::with('user.partner.mitraParent')->find($wId);
                 $partner = $worker->user->partner ?? null;
-                
-                $ratePerHour = 60000; // Default flat rate
-                if ($partner) {
-                    if ($partner->base_hourly_rate > 0) {
-                        $ratePerHour = $partner->base_hourly_rate;
-                    } else {
-                        // If under mitra, 50k. Otherwise 60k.
-                        if (!empty($partner->mitra_parent_id) || !empty($partner->mitra_id)) {
-                            $ratePerHour = 50000;
-                        } else {
-                            $ratePerHour = 60000;
-                        }
-                    }
-                }
+
+                $ratePerHour = $partner ? $partner->effectiveHourlyRate() : \App\Models\Partner::DEFAULT_WORKER_HOURLY_RATE_IDR;
 
                 $tasksToLock = AtlasTask::where('atlas_worker_id', $wId)
                     ->whereNull('payroll_id')
@@ -97,8 +85,8 @@ class PayrollController extends Controller
 
                 $payroll = Payroll::create([
                     'atlas_worker_id' => $wId,
-                    'period_start' => clone $periodStart,
-                    'period_end' => clone $periodEnd,
+                    'period_start' => $periodStart,
+                    'period_end' => $periodEnd,
                     'total_approved_minutes' => $totalApprovedMinutes,
                     'amount_rupiah' => $totalRupiah,
                     'status' => 'UNPAID',
@@ -119,7 +107,7 @@ class PayrollController extends Controller
             }
 
             return back()->with('success', "Berhasil men-generate $createdCount Invoice Payroll dengan total tagihan Rp " . number_format($totalNominal, 0, ',', '.') . "!");
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }

@@ -294,6 +294,14 @@
                           : 'text-gray-500 hover:text-gray-700' }}">
                         Mitra Kordinator
                     </a>
+
+                    <a href="{{ route('partners.index', array_merge(request()->except(['role', 'worker_type', 'mitra_parent', 'recruiter_parent', 'page']), ['role' => 'main_account'])) }}" 
+                       class="whitespace-nowrap flex items-center gap-2 px-6 py-2.5 rounded-full font-semibold text-sm transition-all duration-200 ease-out
+                       {{ request('role') == 'main_account' && !request('mitra_parent') 
+                          ? 'bg-white text-gray-900 shadow-sm ring-1 ring-black/5' 
+                          : 'text-gray-500 hover:text-gray-700' }}">
+                        Main Account ({{ number_format($summary['total_main_accounts'] ?? 0, 0, ',', '.') }})
+                    </a>
                     
                     <a href="{{ route('partners.index', array_merge(request()->except(['role', 'worker_type', 'mitra_parent', 'recruiter_parent', 'page']), ['role' => 'worker', 'worker_type' => 'langsung'])) }}" 
                        class="whitespace-nowrap flex items-center gap-2 px-6 py-2.5 rounded-full font-semibold text-sm transition-all duration-200 ease-out
@@ -499,6 +507,8 @@
                                             <option value="">Semua</option>
                                             <option value="worker" {{ $role == 'worker' ? 'selected' : '' }}>Worker</option>
                                             <option value="mitra" {{ $role == 'mitra' ? 'selected' : '' }}>Mitra</option>
+                                            <option value="main_account" {{ $role == 'main_account' ? 'selected' : '' }}>Main Account</option>
+                                            <option value="rekruter" {{ $role == 'rekruter' ? 'selected' : '' }}>Rekruter</option>
                                         </select>
                                     </th>
                                     <!-- Grup Filter -->
@@ -563,8 +573,8 @@
                             <!-- We remove the outer tbody wrapper to allow multiple tbodies (one per item) -->
                             @forelse($partners as $partner)
                                 @php
-                                    $hasChildren = in_array($partner->partner_role, ['mitra', 'rekruter']);
-                                    $children = $partner->partner_role === 'mitra' ? $partner->workers : ($partner->partner_role === 'rekruter' ? $partner->recruitedWorkers : collect());
+                                    $hasChildren = in_array($partner->partner_role, \App\Models\Partner::RECRUITER_ROLES);
+                                    $children = $partner->isTeamParent() ? $partner->workers : ($partner->partner_role === 'rekruter' ? $partner->recruitedWorkers : collect());
                                 @endphp
                                 <tbody x-data="{ expanded: false }" class="bg-white border-b border-gray-100 last:border-none">
                                     <tr class="hover:bg-gray-50/50 transition-colors duration-150 {{ $hasChildren ? 'cursor-pointer' : '' }}" 
@@ -598,7 +608,9 @@
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 uppercase font-mono text-xs">
-                                            @if($partner->partner_role === 'mitra')
+                                            @if($partner->partner_role === 'main_account')
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-md bg-violet-50 text-violet-700 border border-violet-200 font-bold">Main Account</span>
+                                            @elseif($partner->partner_role === 'mitra')
                                                 Mitra
                                             @elseif($partner->partner_role === 'rekruter')
                                                 Rekruter
@@ -676,7 +688,7 @@
                                                     @click="openDeleteModal(@js([
                                                         'name' => $partner->full_name,
                                                         'mitraId' => $partner->mitra_id,
-                                                        'role' => $partner->partner_role === 'mitra' ? 'Mitra' : 'Worker',
+                                                        'role' => $partner->roleLabel(),
                                                         'url' => route('partners.destroy', $partner),
                                                     ]))"
                                                     class="p-1.5 text-gray-500 hover:text-red-650 hover:bg-red-50 rounded-lg transition"

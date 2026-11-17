@@ -81,7 +81,7 @@
                     </a>
                 @endif
 
-                @if($partner && in_array(strtolower(trim($partner->partner_role)), ['worker', 'mitra', 'rekruter']))
+                @if($partner && $partner->hasStandardPortalAccess())
                     <a href="{{ route('mailbox.index') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('mailbox.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
                         <svg class="w-5 h-5 mr-3 {{ request()->routeIs('mailbox.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
@@ -150,12 +150,15 @@
                     </a>
                     @endif
                     @if(Auth::user()->canAccessQcRoom())
+                        {{-- Verifikasi Laporan di-hide sementara sesuai permintaan (tidak dipakai lagi tapi jangan dihapus) --}}
+                        @if(false)
                         <a href="{{ route('video-submissions.qc-room') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('video-submissions.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
                             <svg class="w-5 h-5 mr-3 {{ request()->routeIs('video-submissions.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                             </svg>
                             Verifikasi Laporan
                         </a>
+                        @endif
 
                         <a href="{{ route('admin.recordings.index') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('admin.recordings.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
                             <svg class="w-5 h-5 mr-3 {{ request()->routeIs('admin.recordings.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -166,6 +169,8 @@
                     @endif
 
                     @if(Auth::user()->canAccessPayroll())
+                        {{-- Payroll & Tagihan serta Payments Gaji di-hide sementara sesuai permintaan (tidak dipakai lagi tapi jangan dihapus) --}}
+                        @if(false)
                         <a href="{{ route('payrolls.index') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('payrolls.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
                             <svg class="w-5 h-5 mr-3 {{ request()->routeIs('payrolls.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -178,6 +183,7 @@
                             </svg>
                             Payments Gaji
                         </a>
+                        @endif
                         <a href="{{ route('invoices.index') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('invoices.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
                             <svg class="w-5 h-5 mr-3 {{ request()->routeIs('invoices.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -217,14 +223,14 @@
             </details>
             @endif
 
-            <!-- GROUP 3: VENDOR / MITRA -->
-            @if($partner && $partner->partner_role === 'mitra')
+            <!-- GROUP 3: VENDOR / MITRA / MAIN ACCOUNT -->
+            @if($partner && $partner->isTeamParent())
             @php
                 $isVendorActive = request()->routeIs('vendor.workers.*', 'vendor.reports.*', 'vendor.payments.*', 'vendor.recordings.*');
             @endphp
             <details name="sidebar-menu" class="group border-t border-gray-100 pt-3" {{ $isVendorActive ? 'open' : '' }}>
                 <summary class="flex items-center justify-between px-3 py-2 cursor-pointer rounded-xl text-[10px] font-bold text-gray-400 uppercase tracking-wider hover:bg-gray-50 transition-colors">
-                    <span>Vendor Operasional</span>
+                    <span>{{ $partner->isMainAccount() ? 'Main Account' : 'Vendor Operasional' }}</span>
                     <svg class="w-4 h-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </summary>
                 <div class="mt-1 space-y-1">
@@ -232,17 +238,17 @@
                         <svg class="w-5 h-5 mr-3 {{ request()->routeIs('vendor.workers.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                         </svg>
-                        {{ __('dashboard.sidebar.team_worker_data') }}
+                        {{ $partner->isMainAccount() ? 'Sub-Akun Saya' : __('dashboard.sidebar.team_worker_data') }}
                     </a>
                     <a href="{{ route('vendor.recordings.index') }}" @if(request()->routeIs('vendor.recordings.*')) aria-current="page" @endif class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('vendor.recordings.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
                         <svg aria-hidden="true" class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l5-3v10l-5-3M4 6h9a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2z"/></svg>
-                        Recording Tim
+                        {{ $partner->isMainAccount() ? 'Recording Akun' : 'Recording Tim' }}
                     </a>
                     <a href="{{ route('vendor.reports.index') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('vendor.reports.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
                         <svg class="w-5 h-5 mr-3 {{ request()->routeIs('vendor.reports.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
                         </svg>
-                        {{ __('dashboard.sidebar.team_qc_tracker') }}
+                        {{ $partner->isMainAccount() ? 'QC Tracker Akun' : __('dashboard.sidebar.team_qc_tracker') }}
                     </a>
                     <a href="{{ route('vendor.payments.index') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('vendor.payments.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
                         <svg class="w-5 h-5 mr-3 {{ request()->routeIs('vendor.payments.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -319,6 +325,8 @@
                                 Kontributor
                             @elseif($partner && $partner->partner_role === 'mitra')
                                 Mitra (Koordinator)
+                            @elseif($partner && $partner->partner_role === 'main_account')
+                                Main Account
                             @elseif($partner && $partner->partner_role === 'rekruter')
                                 Rekruter
                             @else

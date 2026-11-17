@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-bold text-xl sm:text-2xl text-gray-800 leading-tight">
-            {{ __('Data Tim Worker') }}
+            {{ $partner->isMainAccount() ? __('Data Sub-Akun') : __('Data Tim Worker') }}
         </h2>
     </x-slot>
 
@@ -287,20 +287,33 @@
                 <!-- Header Title & Add Manual Button -->
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 pb-4 border-b border-gray-100 mb-4">
                     <div>
-                        <span class="block text-sm sm:text-base font-bold text-gray-900">Manajemen Anggota Tim</span>
-                        <span class="text-xs text-gray-400">Daftar worker di bawah naungan Anda</span>
+                        <div class="flex items-center gap-2">
+                            <span class="block text-sm sm:text-base font-bold text-gray-900">{{ $partner->isMainAccount() ? 'Manajemen Sub-Akun' : 'Manajemen Anggota Tim' }}</span>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-100">
+                                Rate Rp{{ number_format($partner->subWorkerHourlyRate(), 0, ',', '.') }}/jam
+                            </span>
+                        </div>
+                        <span class="text-xs text-gray-400">
+                            {{ $partner->isMainAccount() ? 'Daftar sub-akun di bawah naungan Main Account Anda (email @kamerakitaid.site terhubung ke Mailbox OTP)' : 'Daftar worker di bawah naungan Anda' }}
+                        </span>
                     </div>
                     <button @click="showAddWorkerModal = true" class="w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                        Tambah Anggota Manual
+                        {{ $partner->isMainAccount() ? 'Tambah Sub-Akun' : 'Tambah Anggota Manual' }}
                     </button>
                 </div>
 
                 <!-- Referral Info Box -->
                 <div class="mb-4 bg-gradient-to-br from-indigo-50/80 to-blue-50/80 border border-indigo-100 rounded-xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div>
-                        <h4 class="font-bold text-indigo-900 text-sm">Undang Worker secara Mandiri</h4>
-                        <p class="text-xs text-indigo-700 mt-1">Bagikan link ini agar worker bisa mendaftar sendiri dan <b>langsung masuk</b> ke tim Anda.</p>
+                        <h4 class="font-bold text-indigo-900 text-sm">{{ $partner->isMainAccount() ? 'Daftar Sub-Akun via Link Referral' : 'Undang Worker secara Mandiri' }}</h4>
+                        <p class="text-xs text-indigo-700 mt-1">
+                            @if($partner->isMainAccount())
+                                Gunakan link ini untuk mendaftarkan sub-akun secara mandiri agar <b>langsung terhubung</b> ke Main Account Anda (Tarif Rp60.000/jam).
+                            @else
+                                Bagikan link ini agar worker bisa mendaftar sendiri dan <b>langsung masuk</b> ke tim Anda.
+                            @endif
+                        </p>
                     </div>
                     <div class="flex items-center gap-2 w-full sm:w-auto">
                         <input type="text" readonly value="{{ route('register', ['ref' => $partner->referral_code]) }}" id="refLink" class="text-xs border-indigo-200 bg-white shadow-sm rounded-lg px-3 py-2 w-full sm:w-64 text-gray-600 focus:ring-0 focus:border-indigo-200" title="Link Pendaftaran Worker">
@@ -629,7 +642,10 @@
                                     <div class="sm:flex sm:items-start">
                                         <div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
                                             <div class="flex justify-between items-center mb-4 pb-3 border-b border-gray-100">
-                                                <h3 class="text-base sm:text-lg font-bold text-gray-900" id="modal-title">Daftarkan Worker Baru</h3>
+                                                <div>
+                                                    <h3 class="text-base sm:text-lg font-bold text-gray-900" id="modal-title">{{ $partner->isMainAccount() ? 'Daftarkan Sub-Akun Baru' : 'Daftarkan Worker Baru' }}</h3>
+                                                    <p class="text-[11px] text-indigo-600 font-semibold mt-0.5">Tarif otomatis: Rp{{ number_format($partner->subWorkerHourlyRate(), 0, ',', '.') }}/jam</p>
+                                                </div>
                                                 <button type="button" @click="showAddWorkerModal = false" class="text-gray-400 hover:text-gray-600 p-1">
                                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                                                 </button>

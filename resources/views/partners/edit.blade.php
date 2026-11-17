@@ -97,7 +97,8 @@
                                                 <label for="partner_role" class="block text-sm font-semibold text-gray-700 mb-1">Peran Kemitraan <span class="text-red-500">*</span></label>
                                                 <select name="partner_role" id="partner_role" x-model="role" required class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                                                     <option value="worker" {{ $partner->partner_role === 'worker' ? 'selected' : '' }}>Worker (Perekam Video)</option>
-                                                    <option value="mitra" {{ $partner->partner_role === 'mitra' ? 'selected' : '' }}>Vendor</option>
+                                                    <option value="mitra" {{ $partner->partner_role === 'mitra' ? 'selected' : '' }}>Vendor / Mitra</option>
+                                                    <option value="main_account" {{ $partner->partner_role === 'main_account' ? 'selected' : '' }}>Main Account (Akun Induk Multi-Kontributor)</option>
                                                     <option value="rekruter" {{ $partner->partner_role === 'rekruter' ? 'selected' : '' }}>Rekruter (Perekrut Worker)</option>
                                                 </select>
                                                 @error('partner_role') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
@@ -247,10 +248,10 @@
                                             <div x-show="role === 'worker'" class="animate-in fade-in duration-200">
                                                 <label for="mitra_parent_id" class="block text-sm font-semibold text-gray-700 mb-1">Pilih Vendor Atasan</label>
                                                 <select name="mitra_parent_id" id="mitra_parent_id" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-                                                    <option value="">Pilih Mitra...</option>
+                                                    <option value="">Pilih Atasan (Opsional)...</option>
                                                     @foreach($mitraList as $mitra)
                                                         <option value="{{ $mitra->id }}" {{ old('mitra_parent_id', $partner->mitra_parent_id) == $mitra->id ? 'selected' : '' }}>
-                                                            {{ $mitra->full_name }} ({{ $mitra->mitra_id }})
+                                                            {{ $mitra->full_name }} ({{ $mitra->roleLabel() }} - {{ $mitra->mitra_id }})
                                                         </option>
                                                     @endforeach
                                                 </select>
@@ -325,8 +326,8 @@
                                                 @error('is_vip') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                                             </div>
 
-                                            @if($partner->partner_role === 'mitra')
-                                            <!-- Sistem Rekening Worker Tim (Khusus Mitra) -->
+                                            @if($partner->isTeamParent())
+                                            <!-- Sistem Rekening Worker Tim (Khusus Mitra & Main Account) -->
                                             <div class="sm:col-span-2 bg-blue-50/70 border border-blue-200 rounded-2xl p-4">
                                                 <div class="flex items-start justify-between gap-4">
                                                     <div>
@@ -334,14 +335,14 @@
                                                             Sistem Rekening Worker Tim
                                                         </label>
                                                         <p class="text-xs text-blue-700 leading-relaxed">
-                                                            Atur apakah worker di bawah naungan Mitra ini otomatis disalurkan pencairannya lewat rekening Mitra (tanpa perlu mengisi formulir rekening saat onboarding) atau wajib mengisi rekening pribadi masing-masing.
+                                                            Atur apakah worker di bawah naungan {{ $partner->roleLabel() }} ini otomatis disalurkan pencairannya lewat rekening induk (tanpa perlu mengisi formulir rekening saat onboarding) atau wajib mengisi rekening pribadi masing-masing.
                                                         </p>
                                                     </div>
                                                 </div>
                                                 <div class="mt-3">
                                                     <select name="bypass_worker_bank_onboarding" id="bypass_worker_bank_onboarding" class="block w-full px-3.5 py-2.5 border border-blue-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white font-medium text-slate-800">
                                                         <option value="1" {{ old('bypass_worker_bank_onboarding', $partner->bypassesWorkerBankOnboarding() ? '1' : '0') === '1' ? 'selected' : '' }}>
-                                                            🟢 AKTIF: Rekening Terpusat Mitra (Bypass Onboarding Rekening Worker)
+                                                            🟢 AKTIF: Rekening Terpusat Induk (Bypass Onboarding Rekening Worker)
                                                         </option>
                                                         <option value="0" {{ old('bypass_worker_bank_onboarding', $partner->bypassesWorkerBankOnboarding() ? '1' : '0') === '0' ? 'selected' : '' }}>
                                                             ⚪ NONAKTIF: Rekening Mandiri Worker (Worker Wajib Isi Rekening Sendiri)

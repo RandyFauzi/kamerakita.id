@@ -1,6 +1,6 @@
 @php
     $partner = \App\Models\Partner::where('user_id', Auth::id())->first();
-    $isUser = $partner && in_array(strtolower(trim($partner->partner_role)), ['worker', 'mitra', 'rekruter']);
+    $isUser = $partner && $partner->hasStandardPortalAccess();
 @endphp
 
 @if($isUser)

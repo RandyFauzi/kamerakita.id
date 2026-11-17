@@ -92,21 +92,21 @@ class LeaderboardService
 
             // 2. Determine Leaderboard Entity
             if ($partner && $partner->mitra_parent_id && $partner->mitraParent) {
-                // Case A: Worker under a Mitra -> Credit goes to the Parent Mitra!
+                // Case A: Worker under a Mitra/Main Account -> Credit goes to the Parent!
                 $mitra = $partner->mitraParent;
                 $entityId = (string) $mitra->id;
                 $entityKey = 'mitra_' . $mitra->id;
                 $entityType = 'mitra';
                 $isTeam = true;
-                $name = $mitra->full_name ?: ($mitra->user?->name ?: 'Mitra KameraKita');
+                $name = $mitra->full_name ?: ($mitra->user?->name ?: ($mitra->isMainAccount() ? 'Main Account KameraKita' : 'Mitra KameraKita'));
                 $mitraId = $mitra->mitra_id;
-            } elseif ($partner && $partner->partner_role === Partner::ROLE_MITRA) {
-                // Case B: The Mitra themselves recorded -> Credit goes to the Mitra!
+            } elseif ($partner && $partner->isTeamParent()) {
+                // Case B: The Mitra/Main Account themselves recorded -> Credit goes to them!
                 $entityId = (string) $partner->id;
                 $entityKey = 'mitra_' . $partner->id;
                 $entityType = 'mitra';
                 $isTeam = true;
-                $name = $partner->full_name ?: ($partner->user?->name ?: 'Mitra KameraKita');
+                $name = $partner->full_name ?: ($partner->user?->name ?: ($partner->isMainAccount() ? 'Main Account KameraKita' : 'Mitra KameraKita'));
                 $mitraId = $partner->mitra_id;
             } elseif ($partner) {
                 // Case C: Solo / Independent Worker -> Credit goes to the Worker!

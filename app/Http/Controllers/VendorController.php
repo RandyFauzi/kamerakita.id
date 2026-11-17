@@ -14,14 +14,20 @@ use Illuminate\Support\Facades\Auth;
 
 class VendorController extends Controller
 {
-    public function qcTracker(Request $request)
+    private function requireTeamParentPartner(): Partner
     {
-        $user = Auth::user();
-        $partner = $user->partner;
+        $partner = Auth::user()?->partner;
 
-        if (!$partner || $partner->partner_role !== 'mitra') {
+        if (!$partner || !$partner->isTeamParent()) {
             abort(403, 'Unauthorized access.');
         }
+
+        return $partner;
+    }
+
+    public function qcTracker(Request $request)
+    {
+        $partner = $this->requireTeamParentPartner();
 
         $query = VideoWorkReport::with(['partner.user'])
             ->whereHas('partner', function ($q) use ($partner) {
@@ -65,12 +71,7 @@ class VendorController extends Controller
 
     public function payments(Request $request)
     {
-        $user = Auth::user();
-        $partner = $user->partner;
-
-        if (!$partner || $partner->partner_role !== 'mitra') {
-            abort(403, 'Unauthorized access.');
-        }
+        $partner = $this->requireTeamParentPartner();
 
         $approvedReports = VideoWorkReport::with('partner')
             ->whereHas('partner', function ($query) use ($partner) {
@@ -80,7 +81,7 @@ class VendorController extends Controller
             ->orderBy('submission_date', 'desc')
             ->get();
 
-        $vendorRatePerHour = 65000;
+        $vendorRatePerHour = $partner->subWorkerHourlyRate() + $partner->teamCommissionHourlyRate();
         $vendorRatePerMinute = $vendorRatePerHour / 60;
 
         $totalApprovedMinutes = $approvedReports->sum('approved_duration_minutes');
@@ -93,6 +94,8 @@ class VendorController extends Controller
         $totalUnpaid = $unpaidReports->sum('approved_duration_minutes') * $vendorRatePerMinute;
 
         return view('vendor.payments', compact(
+            'partner',
+            'vendorRatePerHour',
             'approvedReports',
             'totalApprovedMinutes',
             'totalEstimatedRevenue',
@@ -103,14 +106,9 @@ class VendorController extends Controller
 
     public function workers(Request $request, \App\Services\CalculatePartnerMetricsService $metricsService)
     {
-        $user = Auth::user();
-        $partner = $user->partner;
+        $partner = $this->requireTeamParentPartner();
 
-        if (!$partner || $partner->partner_role !== 'mitra') {
-            abort(403, 'Unauthorized access.');
-        }
-
-        // Auto-generate referral code if Mitra doesn't have one
+        // Auto-generate referral code if parent doesn't have one
         if (empty($partner->referral_code)) {
             $partner->referral_code = 'REF-' . strtoupper(str_replace('-', '', $partner->mitra_id)) . '-' . strtoupper(\Illuminate\Support\Str::random(4));
             $partner->save();
@@ -123,12 +121,7 @@ class VendorController extends Controller
 
     public function storeWorker(Request $request)
     {
-        $user = Auth::user();
-        $partner = $user->partner;
-
-        if (! $partner || $partner->partner_role !== 'mitra') {
-            abort(403, 'Unauthorized access.');
-        }
+        $partner = $this->requireTeamParentPartner();
 
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -147,10 +140,11 @@ class VendorController extends Controller
         }
 
         $bypassBank = $partner->bypassesWorkerBankOnboarding();
+        $subWorkerRate = $partner->subWorkerHourlyRate();
 
         for ($attempt = 1; $attempt <= 5; $attempt++) {
             try {
-                DB::transaction(function () use ($request, $generatedEmail, $bypassBank, $partner) {
+                DB::transaction(function () use ($request, $generatedEmail, $bypassBank, $partner, $subWorkerRate) {
                     $newUser = User::create([
                         'name' => $request->name,
                         'email' => $generatedEmail,
@@ -164,7 +158,7 @@ class VendorController extends Controller
                     $nextMitraId = Partner::nextMitraId();
 
                     Partner::create([
-                        'partner_role' => 'worker',
+                        'partner_role' => Partner::ROLE_WORKER,
                         'mitra_id' => $nextMitraId,
                         'full_name' => $newUser->name,
                         'whatsapp_number' => $request->whatsapp_number,
@@ -172,7 +166,7 @@ class VendorController extends Controller
                         'has_headstrap' => false,
                         'status' => 'active',
                         'group_name' => $partner->group_name ?? 'Group A',
-                        'base_hourly_rate' => 50000,
+                        'base_hourly_rate' => $subWorkerRate,
                         'user_id' => $newUser->id,
                         'mitra_parent_id' => $partner->id,
                         'recruiter_partner_id' => $partner->id,
@@ -192,17 +186,16 @@ class VendorController extends Controller
             }
         }
 
-        return redirect()->back()->with('success', 'Worker baru berhasil didaftarkan dengan Email: '.$generatedEmail.' dan masuk ke tim Anda!');
+        $successMessage = $partner->isMainAccount()
+            ? 'Sub-akun baru berhasil didaftarkan dengan Email: '.$generatedEmail.' (Tarif Rp'.number_format($subWorkerRate, 0, ',', '.').'/jam) dan masuk ke Main Account Anda!'
+            : 'Worker baru berhasil didaftarkan dengan Email: '.$generatedEmail.' dan masuk ke tim Anda!';
+
+        return redirect()->back()->with('success', $successMessage);
     }
 
     public function updateWorker(Request $request, $id)
     {
-        $user = Auth::user();
-        $partner = $user->partner;
-
-        if (!$partner || $partner->partner_role !== 'mitra') {
-            abort(403, 'Unauthorized access.');
-        }
+        $partner = $this->requireTeamParentPartner();
 
         // Find the partner to edit (the worker)
         $workerPartner = \App\Models\Partner::where('id', $id)
@@ -254,12 +247,7 @@ class VendorController extends Controller
 
     public function toggleWorkerBankBypass(Request $request)
     {
-        $user = Auth::user();
-        $partner = $user->partner;
-
-        if (!$partner || $partner->partner_role !== 'mitra') {
-            abort(403, 'Unauthorized access.');
-        }
+        $partner = $this->requireTeamParentPartner();
 
         $currentStatus = $partner->bypassesWorkerBankOnboarding();
         $newStatus = $request->has('bypass') ? $request->boolean('bypass') : !$currentStatus;
@@ -268,8 +256,9 @@ class VendorController extends Controller
             'bypass_worker_bank_onboarding' => $newStatus,
         ]);
 
+        $parentLabel = $partner->roleLabel();
         $statusText = $newStatus 
-            ? 'Aktif (Pencairan worker disalurkan terpusat via rekening Mitra, onboarding rekening worker dibypass)' 
+            ? "Aktif (Pencairan worker disalurkan terpusat via rekening {$parentLabel}, onboarding rekening worker dibypass)" 
             : 'Nonaktif (Worker tim wajib mengisi data rekening pribadi masing-masing saat proses onboarding)';
 
         return redirect()->back()->with('success', 'Pengaturan sistem rekening worker berhasil diperbarui: ' . $statusText);

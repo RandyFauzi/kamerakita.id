@@ -12,7 +12,7 @@ class VendorRecordingController extends Controller
     public function index(Request $request)
     {
         $partner = $request->user()->partner;
-        abort_unless($partner && $partner->partner_role === Partner::ROLE_MITRA, 403);
+        abort_unless($partner && $partner->isTeamParent(), 403);
 
         $filters = $request->validate([
             'source' => ['nullable', 'in:atlas,1618'],

@@ -36,7 +36,7 @@ class PartnerActivityStatusService
         ];
 
         Partner::query()
-            ->whereIn('partner_role', ['worker', 'mitra'])
+            ->whereIn('partner_role', [Partner::ROLE_WORKER, Partner::ROLE_MITRA, Partner::ROLE_MAIN_ACCOUNT])
             ->where('status', '!=', Partner::STATUS_SUSPENDED)
             ->select(['id', 'partner_role', 'status', 'created_at'])
             ->chunkById(100, function ($partners) use (&$result): void {

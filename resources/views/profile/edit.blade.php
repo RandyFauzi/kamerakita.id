@@ -53,10 +53,8 @@
                                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                                 </svg>
                                 <span class="text-[10px] font-bold tracking-wide uppercase">
-                                    @if($partner && $partner->partner_role === 'worker')
-                                        Kontributor
-                                    @elseif($partner && $partner->partner_role === 'mitra')
-                                        Mitra
+                                    @if($partner)
+                                        {{ $partner->roleLabel() }}
                                     @else
                                         {{ $user->role }}
                                     @endif

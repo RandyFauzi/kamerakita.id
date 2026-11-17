@@ -17,8 +17,8 @@ class ListPartnerPaymentHistoryController extends Controller
     {
         $partner = Partner::where('user_id', Auth::id())->first();
 
-        if (!$partner || !in_array(strtolower(trim($partner->partner_role)), ['worker', 'mitra', 'rekruter'])) {
-            return redirect()->route('dashboard')->with('error', 'Hanya akun Mitra/Worker/Rekruter yang dapat mengakses halaman ini.');
+        if (!$partner || !$partner->hasStandardPortalAccess()) {
+            return redirect()->route('dashboard')->with('error', 'Hanya akun Mitra/Main Account/Worker/Rekruter yang dapat mengakses halaman ini.');
         }
 
         $paidReports = VideoWorkReport::where('partner_id', $partner->id)

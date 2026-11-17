@@ -43,10 +43,11 @@ class RateCard extends Model
         
         // Fallbacks if not seeded
         switch ($role) {
-            case 'worker': return 50000;
-            case 'mitra': return 63000;
-            case 'vendor': return 65000;
-            case 'commission': return 9000;
+            case 'worker': return Partner::MITRA_WORKER_HOURLY_RATE_IDR;
+            case 'mitra': return Partner::TEAM_PACKAGE_HOURLY_RATE_IDR;
+            case 'main_account': return Partner::DEFAULT_WORKER_HOURLY_RATE_IDR;
+            case 'vendor': return Partner::TEAM_PACKAGE_HOURLY_RATE_IDR;
+            case 'commission': return Partner::MITRA_COMMISSION_HOURLY_RATE_IDR;
         }
         return 0;
     }

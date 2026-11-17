@@ -172,14 +172,7 @@ class MatchPayrollExcelTool extends BaseTool
                     if (count($lockedTaskIds) > 0) {
                         // Calculate standard nominal just for record
                         $partner = $worker->user->partner ?? null;
-                        $ratePerHour = 60000;
-                        if ($partner) {
-                            if ($partner->base_hourly_rate > 0) {
-                                $ratePerHour = $partner->base_hourly_rate;
-                            } else if (!empty($partner->mitra_parent_id) || !empty($partner->mitra_id)) {
-                                $ratePerHour = 50000;
-                            }
-                        }
+                        $ratePerHour = $partner ? $partner->effectiveHourlyRate() : \App\Models\Partner::DEFAULT_WORKER_HOURLY_RATE_IDR;
                         $totalRupiah = ($cumulativeMinutes / 60) * $ratePerHour;
 
                         $payroll = \App\Models\Payroll::create([

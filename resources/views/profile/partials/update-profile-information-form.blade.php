@@ -24,6 +24,10 @@
                             Kontributor
                         @elseif($partner && $partner->partner_role === 'mitra')
                             Mitra (Koordinator)
+                        @elseif($partner && $partner->partner_role === 'main_account')
+                            Main Account
+                        @elseif($partner && $partner->partner_role === 'rekruter')
+                            Rekruter
                         @else
                             {{ $user->role }}
                         @endif

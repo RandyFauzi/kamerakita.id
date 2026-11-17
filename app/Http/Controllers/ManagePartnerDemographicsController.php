@@ -42,6 +42,7 @@ class ManagePartnerDemographicsController extends Controller
         $totalUsers = Partner::count();
         $totalWorkers = Partner::where('partner_role', 'worker')->count();
         $totalMitra = Partner::where('partner_role', 'mitra')->count();
+        $totalMainAccounts = Partner::where('partner_role', Partner::ROLE_MAIN_ACCOUNT)->count();
         $totalRekruter = Partner::where('partner_role', 'rekruter')->count();
         $totalSuspended = Partner::where('status', 'suspended')->count();
         
@@ -59,6 +60,7 @@ class ManagePartnerDemographicsController extends Controller
             'total_users' => $totalUsers,
             'total_workers' => $totalWorkers,
             'total_mitra' => $totalMitra,
+            'total_main_accounts' => $totalMainAccounts,
             'total_rekruter' => $totalRekruter,
             'total_active' => $totalActive,
             'total_inactive' => $totalInactive,
@@ -78,7 +80,7 @@ class ManagePartnerDemographicsController extends Controller
                 ['*'], 'page', $perPage === 'all' ? 1 : null)
             ->withQueryString();
 
-        $mitraList = Partner::where('partner_role', 'mitra')->get();
+        $mitraList = Partner::whereIn('partner_role', Partner::TEAM_PARENT_ROLES)->get();
 
         return view('partners.index', compact(
             'partners', 'search', 'role', 'status', 'group', 'summary',
@@ -89,8 +91,8 @@ class ManagePartnerDemographicsController extends Controller
 
     public function create()
     {
-        // Get potential Mitra (Coordinators) for parent selection
-        $mitraList = Partner::where('partner_role', 'mitra')->get();
+        // Get potential Mitra / Main Account (Coordinators) for parent selection
+        $mitraList = Partner::whereIn('partner_role', Partner::TEAM_PARENT_ROLES)->get();
 
         // Auto-generate next KMK-XXX code
         $nextMitraId = \App\Models\Partner::nextMitraId();
@@ -101,7 +103,7 @@ class ManagePartnerDemographicsController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'partner_role' => 'required|in:worker,mitra,rekruter',
+            'partner_role' => ['required', Rule::in(Partner::ALL_ROLES)],
             'mitra_parent_id' => 'nullable|exists:partners,id',
             'mitra_id' => 'required|string|unique:partners,mitra_id',
             'nik' => 'nullable|string|max:30|unique:partners,nik',
@@ -159,7 +161,7 @@ class ManagePartnerDemographicsController extends Controller
     {
         $partner->load('user');
 
-        $mitraList = Partner::where('partner_role', 'mitra')
+        $mitraList = Partner::whereIn('partner_role', Partner::TEAM_PARENT_ROLES)
             ->where('id', '!=', $partner->id)
             ->get();
 
@@ -169,7 +171,7 @@ class ManagePartnerDemographicsController extends Controller
     public function update(Request $request, Partner $partner)
     {
         $validated = $request->validate([
-            'partner_role' => 'required|in:worker,mitra,rekruter',
+            'partner_role' => ['required', Rule::in(Partner::ALL_ROLES)],
             'mitra_parent_id' => 'nullable|exists:partners,id',
             'nik' => 'nullable|string|max:30|unique:partners,nik,'.$partner->id,
             'full_name' => 'required|string|max:255',
@@ -246,8 +248,8 @@ class ManagePartnerDemographicsController extends Controller
 
     public function toggleWorkerBankBypass(Request $request, Partner $partner)
     {
-        if ($partner->partner_role !== 'mitra') {
-            return redirect()->back()->with('error', 'Hanya mitra yang dapat memiliki pengaturan rekening worker tim.');
+        if (!$partner->isTeamParent()) {
+            return redirect()->back()->with('error', 'Hanya Mitra atau Main Account yang dapat memiliki pengaturan rekening worker tim.');
         }
 
         $currentStatus = $partner->bypassesWorkerBankOnboarding();

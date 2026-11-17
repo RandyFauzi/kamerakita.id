@@ -20,12 +20,24 @@ class Partner extends Model
     public const ROLE_WORKER = 'worker';
     public const ROLE_MITRA = 'mitra';
     public const ROLE_REKRUTER = 'rekruter';
+    public const ROLE_MAIN_ACCOUNT = 'main_account';
+
+    public const DEFAULT_WORKER_HOURLY_RATE_IDR = 60000;
+    public const MITRA_WORKER_HOURLY_RATE_IDR = 50000;
+    public const MITRA_COMMISSION_HOURLY_RATE_IDR = 10000;
+    public const TEAM_PACKAGE_HOURLY_RATE_IDR = 60000;
+
+    /** All valid partner roles */
+    public const ALL_ROLES = [self::ROLE_WORKER, self::ROLE_MITRA, self::ROLE_REKRUTER, self::ROLE_MAIN_ACCOUNT];
 
     /** Roles that own a referral code and can recruit workers */
-    public const RECRUITER_ROLES = [self::ROLE_MITRA, self::ROLE_REKRUTER];
+    public const RECRUITER_ROLES = [self::ROLE_MITRA, self::ROLE_REKRUTER, self::ROLE_MAIN_ACCOUNT];
+
+    /** Roles that manage sub-workers under mitra_parent_id */
+    public const TEAM_PARENT_ROLES = [self::ROLE_MITRA, self::ROLE_MAIN_ACCOUNT];
 
     protected $fillable = [
-        'partner_role',           // worker, mitra, rekruter
+        'partner_role',           // worker, mitra, rekruter, main_account
         'mitra_parent_id',        // referencing the parent Mitra
         'mitra_id',               // e.g., KMK-001
         'nik',
@@ -97,6 +109,61 @@ class Partner extends Model
     public function bypassesWorkerBankOnboarding(): bool
     {
         return (bool) ($this->bypass_worker_bank_onboarding ?? true);
+    }
+
+    public function isMitra(): bool
+    {
+        return strtolower(trim((string) $this->partner_role)) === self::ROLE_MITRA;
+    }
+
+    public function isMainAccount(): bool
+    {
+        return strtolower(trim((string) $this->partner_role)) === self::ROLE_MAIN_ACCOUNT;
+    }
+
+    public function isTeamParent(): bool
+    {
+        return in_array(strtolower(trim((string) $this->partner_role)), self::TEAM_PARENT_ROLES, true);
+    }
+
+    public function hasStandardPortalAccess(): bool
+    {
+        return in_array(strtolower(trim((string) $this->partner_role)), self::ALL_ROLES, true);
+    }
+
+    public function subWorkerHourlyRate(): int
+    {
+        return $this->isMainAccount()
+            ? self::DEFAULT_WORKER_HOURLY_RATE_IDR
+            : self::MITRA_WORKER_HOURLY_RATE_IDR;
+    }
+
+    public function teamCommissionHourlyRate(): int
+    {
+        return $this->isMitra() ? self::MITRA_COMMISSION_HOURLY_RATE_IDR : 0;
+    }
+
+    public function effectiveHourlyRate(): float
+    {
+        if ($this->base_hourly_rate > 0) {
+            return (float) $this->base_hourly_rate;
+        }
+
+        if ($this->mitraParent) {
+            return (float) $this->mitraParent->subWorkerHourlyRate();
+        }
+
+        return (float) self::DEFAULT_WORKER_HOURLY_RATE_IDR;
+    }
+
+    public function roleLabel(): string
+    {
+        return match (strtolower(trim((string) $this->partner_role))) {
+            self::ROLE_MAIN_ACCOUNT => 'Main Account',
+            self::ROLE_MITRA => 'Mitra',
+            self::ROLE_REKRUTER => 'Rekruter',
+            default => 'Kontributor',
+        };
     }
 
     public function statusLabel(): string

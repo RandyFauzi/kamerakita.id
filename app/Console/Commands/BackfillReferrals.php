@@ -27,7 +27,7 @@ class BackfillReferrals extends Command
      */
     public function handle()
     {
-        $partners = Partner::whereIn('partner_role', ['mitra', 'rekruter'])
+        $partners = Partner::whereIn('partner_role', Partner::RECRUITER_ROLES)
             ->whereNull('referral_code')
             ->get();
 

@@ -42,7 +42,7 @@ class CapturedEmail extends Model
                     ->select('user_id')->whereNotNull('user_id')
                     ->where('partner_role', Partner::ROLE_WORKER)
                     ->whereIn('mitra_parent_id', Partner::query()->select('id')
-                        ->where('user_id', $viewer->id)->where('partner_role', Partner::ROLE_MITRA)));
+                        ->where('user_id', $viewer->id)->whereIn('partner_role', Partner::TEAM_PARENT_ROLES)));
         });
     }
 
