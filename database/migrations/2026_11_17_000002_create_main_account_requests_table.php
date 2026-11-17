@@ -11,6 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Clean up any half-created table left behind by an earlier failed migration attempt
+        Schema::dropIfExists('main_account_requests');
+
         Schema::create('main_account_requests', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
