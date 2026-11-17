@@ -1,10 +1,10 @@
 <style>
     .kk-hero-banner {
         background: linear-gradient(110deg, #229ed0 -5%, #0284c7 64%, #0788c9 100%);
-        border-radius: 28px;
+        border-radius: 24px;
         position: relative;
         overflow: hidden;
-        box-shadow: 0 24px 60px rgba(2, 132, 199, 0.22);
+        box-shadow: 0 20px 45px rgba(2, 132, 199, 0.18);
     }
     .kk-eyebrow-yellow {
         background-color: #fde047;
@@ -15,39 +15,51 @@
     .kk-benefit-card {
         background: #ffffff;
         border: 1px solid #e2e8f0;
-        border-radius: 24px;
-        box-shadow: 0 18px 45px rgba(15, 23, 42, 0.06);
-        transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 240ms ease, border-color 240ms ease;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+        transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 220ms ease, border-color 220ms ease;
     }
     .kk-benefit-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 24px 55px rgba(2, 132, 199, 0.12);
+        transform: translateY(-2px);
+        box-shadow: 0 16px 38px rgba(2, 132, 199, 0.09);
         border-color: #7dd3fc;
+    }
+    .kk-icon-badge {
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
+        background: #f0f9ff;
+        border: 1px solid #e0f2fe;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        padding: 6px;
     }
     .kk-form-shell {
         background: #ffffff;
         border: 1px solid #e2e8f0;
-        border-radius: 32px;
-        box-shadow: 0 24px 70px rgba(15, 23, 42, 0.08);
+        border-radius: 28px;
+        box-shadow: 0 20px 55px rgba(15, 23, 42, 0.06);
         position: relative;
         overflow: hidden;
     }
     .kk-btn-blue {
         background-color: #0284c7;
         color: #ffffff;
-        box-shadow: 0 10px 20px -5px rgba(2, 132, 199, 0.38);
+        box-shadow: 0 10px 20px -5px rgba(2, 132, 199, 0.35);
         transition: transform 200ms ease, background-color 200ms ease, box-shadow 200ms ease;
     }
     .kk-btn-blue:hover {
         background-color: #0369a1;
         transform: translateY(-1px);
-        box-shadow: 0 14px 24px -6px rgba(2, 132, 199, 0.45);
+        box-shadow: 0 14px 24px -6px rgba(2, 132, 199, 0.42);
     }
 </style>
 
 <!-- Session Notifications -->
 @if(session('success'))
-<div class="bg-white border-2 border-emerald-400 p-6 rounded-2xl shadow-sm">
+<div class="bg-white border-2 border-emerald-400 p-5 rounded-2xl shadow-sm">
     <div class="flex items-start gap-4">
         <div class="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0">
             <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
@@ -62,7 +74,7 @@
 @endif
 
 @if(session('info'))
-<div class="bg-white border border-sky-200 p-5 rounded-2xl shadow-sm flex items-start gap-3.5">
+<div class="bg-white border border-sky-200 p-4 rounded-2xl shadow-sm flex items-start gap-3">
     <svg class="w-5 h-5 text-sky-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
     <div class="text-xs text-slate-700 leading-relaxed font-medium">
         {{ session('info') }}
@@ -71,7 +83,7 @@
 @endif
 
 @if(session('error'))
-<div class="bg-white border border-rose-200 p-5 rounded-2xl shadow-sm flex items-start gap-3.5">
+<div class="bg-white border border-rose-200 p-4 rounded-2xl shadow-sm flex items-start gap-3">
     <svg class="w-5 h-5 text-rose-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
     <div class="text-xs text-rose-700 leading-relaxed font-medium">
         {{ session('error') }}
@@ -81,15 +93,15 @@
 
 <!-- Active Main Account State -->
 @if(isset($partner) && $partner && $partner->isMainAccount())
-<div class="kk-hero-banner text-white p-8">
+<div class="kk-hero-banner text-white p-6 sm:p-8">
     <div class="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
-        <div class="max-w-xl space-y-3">
+        <div class="max-w-xl space-y-2.5">
             <span class="kk-eyebrow-yellow inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] uppercase">
                 <span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
                 Status: Main Account Aktif
             </span>
-            <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">Akun Anda Sudah Berstatus Main Account</h2>
-            <p class="text-sm text-sky-50 leading-relaxed">
+            <h2 class="text-2xl font-extrabold tracking-tight text-white">Akun Anda Sudah Berstatus Main Account</h2>
+            <p class="text-xs sm:text-sm text-sky-50 leading-relaxed">
                 Anda telah memiliki akses penuh untuk mendaftarkan dan mengelola seluruh sub-akun di bawah akun utama Anda dengan rate penuh Rp60.000/jam.
             </p>
             <div class="pt-2 flex flex-wrap gap-3">
@@ -101,15 +113,15 @@
                 </a>
             </div>
         </div>
-        <img src="{{ asset('assets/figma/steps-03.png') }}" alt="Main Account Aktif" class="w-36 h-36 object-contain shrink-0 drop-shadow-xl">
+        <img src="{{ asset('assets/figma/steps-03.png') }}" alt="" class="w-20 h-20 object-contain shrink-0 opacity-95 drop-shadow-md">
     </div>
 </div>
 @elseif(isset($pendingRequest) && $pendingRequest)
 <!-- Waiting List State -->
-<div class="bg-white border-2 border-amber-300 p-6 rounded-3xl shadow-sm">
+<div class="bg-white border-2 border-amber-300 p-6 rounded-2xl shadow-sm">
     <div class="flex items-start gap-4">
-        <div class="w-12 h-12 rounded-2xl bg-amber-100 flex items-center justify-center shrink-0">
-            <svg class="w-6 h-6 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <div class="w-11 h-11 rounded-2xl bg-amber-100 flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
         </div>
         <div class="space-y-1.5 flex-1">
             <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-amber-100 text-amber-900 rounded-full text-[11px] font-bold uppercase tracking-wider">
@@ -129,73 +141,77 @@
 </div>
 @endif
 
-<!-- Hero Showcase Matching Landing Page -->
+<!-- Compact Hero Showcase Matching Landing Page (Transparent Accent Asset Only) -->
 @if(!isset($partner) || !$partner || !$partner->isMainAccount())
-<div class="kk-hero-banner p-7 sm:p-10 text-white">
-    <!-- Subtle decorative coins from landing page -->
-    <img src="{{ asset('assets/figma/hero-13.png') }}" alt="" aria-hidden="true" class="hidden md:block absolute right-6 top-4 w-16 h-16 object-contain opacity-90 pointer-events-none">
-    <img src="{{ asset('assets/figma/hero-16.png') }}" alt="" aria-hidden="true" class="hidden md:block absolute right-48 bottom-3 w-12 h-12 object-contain opacity-80 pointer-events-none">
-
-    <div class="grid grid-cols-1 md:grid-cols-12 items-center gap-6 relative z-10">
-        <div class="md:col-span-8 space-y-3">
-            <span class="kk-eyebrow-yellow inline-block px-3.5 py-1 rounded-full text-[11px] uppercase">
+<div class="kk-hero-banner p-6 sm:p-8 text-white">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
+        <div class="space-y-2.5 max-w-2xl">
+            <span class="kk-eyebrow-yellow inline-block px-3 py-1 rounded-full text-[10px] uppercase">
                 KEUNGGULAN AKUN INDUK
             </span>
-            <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight text-white">
+            <h1 class="text-xl sm:text-3xl font-extrabold tracking-tight leading-tight text-white">
                 Satu Akun Induk untuk Seluruh Email Atlas Anda
             </h1>
-            <p class="text-sm text-sky-50 leading-relaxed max-w-2xl">
+            <p class="text-xs sm:text-sm text-sky-50 leading-relaxed">
                 Dirancang khusus bagi kontributor yang sering mengganti email pengerjaan. Kelola seluruh sub-akun, pantau OTP, dan cairkan seluruh penghasilan dalam satu pintu tanpa potongan komisi.
             </p>
         </div>
-        <div class="md:col-span-4 flex justify-center">
-            <img src="{{ asset('assets/figma/benefits-record-figma.png') }}" alt="Ilustrasi Kontributor KameraKita" class="w-40 h-40 sm:w-48 sm:h-48 object-contain drop-shadow-2xl">
+        <div class="hidden md:flex items-center gap-2 shrink-0 pr-2">
+            <img src="{{ asset('assets/figma/benefits-07.png') }}" alt="" class="w-24 h-24 object-contain drop-shadow-lg opacity-95">
         </div>
     </div>
 </div>
 @endif
 
-<!-- 4 Landing-Page Style Benefit Cards (No Emojis, Using Landing Page Figma Assets) -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+<!-- 4 Compact Benefit Cards (Small Transparent Landing Assets as Subtle Garnish) -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
     <!-- Benefit 1 -->
-    <article class="kk-benefit-card p-6 text-center flex flex-col items-center">
-        <div class="w-28 h-28 mb-4 flex items-center justify-center">
-            <img src="{{ asset('assets/figma/benefits-wallet-figma.png') }}" alt="Rate Penuh Rp60.000 per Jam" class="w-full h-full object-contain">
+    <article class="kk-benefit-card p-5 space-y-2.5">
+        <div class="flex items-center gap-3">
+            <div class="kk-icon-badge">
+                <img src="{{ asset('assets/figma/benefits-03.png') }}" alt="" class="w-full h-full object-contain">
+            </div>
+            <h3 class="text-sm font-extrabold leading-snug" style="color: #0284c7;">Rate Penuh Rp60.000/Jam</h3>
         </div>
-        <h3 class="text-base font-extrabold tracking-tight mb-2" style="color: #0284c7;">Rate Penuh Rp60.000/Jam</h3>
         <p class="text-xs text-slate-600 leading-relaxed">
             Tidak ada potongan sepeser pun. 100% hasil kerja seluruh sub-akun adalah milik Anda sepenuhnya.
         </p>
     </article>
 
     <!-- Benefit 2 -->
-    <article class="kk-benefit-card p-6 text-center flex flex-col items-center">
-        <div class="w-28 h-28 mb-4 flex items-center justify-center">
-            <img src="{{ asset('assets/figma/benefits-ai-figma.png') }}" alt="Kotak Masuk OTP Terpadu" class="w-full h-full object-contain">
+    <article class="kk-benefit-card p-5 space-y-2.5">
+        <div class="flex items-center gap-3">
+            <div class="kk-icon-badge">
+                <img src="{{ asset('assets/figma/steps-03.png') }}" alt="" class="w-full h-full object-contain">
+            </div>
+            <h3 class="text-sm font-extrabold leading-snug" style="color: #0284c7;">Kotak Masuk OTP Terpadu</h3>
         </div>
-        <h3 class="text-base font-extrabold tracking-tight mb-2" style="color: #0284c7;">Kotak Masuk OTP Terpadu</h3>
         <p class="text-xs text-slate-600 leading-relaxed">
             Seluruh kode OTP verifikasi email sub-akun langsung muncul di dashboard Anda tanpa perlu buka banyak Gmail.
         </p>
     </article>
 
     <!-- Benefit 3 -->
-    <article class="kk-benefit-card p-6 text-center flex flex-col items-center">
-        <div class="w-28 h-28 mb-4 flex items-center justify-center">
-            <img src="{{ asset('assets/figma/steps-03.png') }}" alt="Tracking Terpusat" class="w-full h-full object-contain">
+    <article class="kk-benefit-card p-5 space-y-2.5">
+        <div class="flex items-center gap-3">
+            <div class="kk-icon-badge">
+                <img src="{{ asset('assets/figma/benefits-07.png') }}" alt="" class="w-full h-full object-contain">
+            </div>
+            <h3 class="text-sm font-extrabold leading-snug" style="color: #0284c7;">Tracking Terpusat</h3>
         </div>
-        <h3 class="text-base font-extrabold tracking-tight mb-2" style="color: #0284c7;">Tracking Terpusat</h3>
         <p class="text-xs text-slate-600 leading-relaxed">
             Pantau total jam kerja, recording, dan status verifikasi QC seluruh email pengerjaan Anda dalam satu layar.
         </p>
     </article>
 
     <!-- Benefit 4 -->
-    <article class="kk-benefit-card p-6 text-center flex flex-col items-center">
-        <div class="w-28 h-28 mb-4 flex items-center justify-center">
-            <img src="{{ asset('assets/figma/steps-09.png') }}" alt="Pencairan 1 Rekening" class="w-full h-full object-contain">
+    <article class="kk-benefit-card p-5 space-y-2.5">
+        <div class="flex items-center gap-3">
+            <div class="kk-icon-badge">
+                <img src="{{ asset('assets/figma/steps-09.png') }}" alt="" class="w-full h-full object-contain">
+            </div>
+            <h3 class="text-sm font-extrabold leading-snug" style="color: #0284c7;">Pencairan 1 Rekening</h3>
         </div>
-        <h3 class="text-base font-extrabold tracking-tight mb-2" style="color: #0284c7;">Pencairan 1 Rekening</h3>
         <p class="text-xs text-slate-600 leading-relaxed">
             Penggajian otomatis ditransfer ke satu rekening utama yang Anda daftarkan, aman dan bebas risiko tertukar.
         </p>
@@ -203,15 +219,15 @@
 </div>
 
 @if(!isset($partner) || !$partner || (!$partner->isMainAccount() && (!isset($pendingRequest) || !$pendingRequest)))
-<!-- Application Form Shell (Matching Landing Page Calculator Shell) -->
+<!-- Application Form Shell -->
 <div class="kk-form-shell">
     <div class="p-6 sm:p-8 border-b border-slate-100 bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div class="flex items-center gap-3.5">
-            <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-white shadow-sm shrink-0" style="background-color: #0284c7;">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-sm shrink-0" style="background-color: #0284c7;">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
             </div>
             <div>
-                <h3 class="text-lg font-extrabold text-slate-900 tracking-tight">Formulir Pengajuan Akun Induk</h3>
+                <h3 class="text-base sm:text-lg font-extrabold text-slate-900 tracking-tight">Formulir Pengajuan Akun Induk</h3>
                 <p class="text-xs text-slate-500 mt-0.5">Data profil terisi otomatis. Anda dapat memperbarui nomor WhatsApp &amp; rekening jika diperlukan.</p>
             </div>
         </div>

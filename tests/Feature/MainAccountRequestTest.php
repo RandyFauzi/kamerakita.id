@@ -47,8 +47,10 @@ class MainAccountRequestTest extends TestCase
         $response->assertSee('Mandiri');
         $response->assertSee('1122334455');
         $response->assertSee('Worker Satu');
-        $response->assertSee('assets/figma/benefits-wallet-figma.png');
-        $response->assertSee('assets/figma/benefits-ai-figma.png');
+        $response->assertSee('assets/figma/benefits-03.png');
+        $response->assertSee('assets/figma/steps-03.png');
+        $response->assertSee('assets/figma/benefits-07.png');
+        $response->assertSee('assets/figma/steps-09.png');
     }
 
     public function test_submission_fails_with_wrong_password(): void
