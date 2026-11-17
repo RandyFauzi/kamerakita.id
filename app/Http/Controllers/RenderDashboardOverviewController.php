@@ -46,8 +46,9 @@ class RenderDashboardOverviewController extends Controller
                     ->limit(10)
                     ->get();
                 
-                // Check if user is rank 1, 2, or 3 this week using centralized service
-                $userRank = $this->leaderboardService->getPartnerWeeklyRank($partner->id, 3);
+                // Check if user is rank 1, 2, or 3 this week within their category using centralized service
+                $userCategory = $this->leaderboardService->resolvePartnerCategory($partner);
+                $userRank = $this->leaderboardService->getPartnerWeeklyRank($partner->id, 3, $userCategory);
                 $isRankOneThisWeek = $userRank === 1;
 
                 // Astro Data Check
@@ -104,7 +105,8 @@ class RenderDashboardOverviewController extends Controller
 
             if ($partner->isTeamParent()) {
                 $metrics = $this->metricsService->getMitraMetrics($partner);
-                $userRank = $this->leaderboardService->getPartnerWeeklyRank($partner->id, 3);
+                $userCategory = $this->leaderboardService->resolvePartnerCategory($partner);
+                $userRank = $this->leaderboardService->getPartnerWeeklyRank($partner->id, 3, $userCategory);
 
                 return view('dashboard.mitra', compact('partner', 'metrics', 'userRank'));
             }
