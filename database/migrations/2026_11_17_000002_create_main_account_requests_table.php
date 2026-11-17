@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('main_account_requests', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('partner_id')->constrained()->cascadeOnDelete();
+            $table->foreignUuid('partner_id')->constrained('partners')->cascadeOnDelete();
             $table->string('email');
             $table->string('phone_number')->nullable();
             $table->string('bank_name')->nullable();
