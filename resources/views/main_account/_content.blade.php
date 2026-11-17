@@ -248,7 +248,7 @@
     <form method="POST" action="{{ route('main-account.request.store') }}" class="p-6 sm:p-8 space-y-6 bg-white">
         @csrf
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
             <!-- Email Akun Terdaftar (Locked) -->
             <div>
                 <div class="flex items-center justify-between mb-2">
@@ -263,7 +263,7 @@
                 <input type="email" id="email" name="email" value="{{ $user->email }}" readonly
                        class="w-full text-xs font-semibold rounded-xl border border-slate-200 px-3.5 py-3 text-slate-600 bg-slate-100 cursor-not-allowed">
                 <x-input-error :messages="$errors->get('email')" class="mt-1" />
-                <p class="text-[11px] text-slate-400 mt-1.5">Email mengikuti akun yang sedang login dan tidak dapat diubah.</p>
+                <p class="text-[11px] text-slate-400 mt-1.5">Email mengikuti akun login dan tidak dapat diubah.</p>
             </div>
 
             <!-- Password Konfirmasi Keamanan -->
@@ -273,9 +273,9 @@
                 </label>
                 <input type="password" id="password" name="password" required
                        class="w-full text-xs rounded-xl border border-slate-200 px-3.5 py-3 text-slate-900 bg-white focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-                       placeholder="Masukkan kata sandi akun Anda saat ini">
+                       placeholder="Masukkan kata sandi akun Anda">
                 <x-input-error :messages="$errors->get('password')" class="mt-1" />
-                <p class="text-[11px] text-slate-400 mt-1.5">Verifikasi keamanan untuk memastikan Anda adalah pemilik sah akun ini.</p>
+                <p class="text-[11px] text-slate-400 mt-1.5">Verifikasi kepemilikan sah akun ini.</p>
             </div>
 
             <!-- WhatsApp Number (Auto-filled & Editable) -->
@@ -287,22 +287,7 @@
                        value="{{ $prefilledPhone }}"
                        class="w-full text-xs rounded-xl border border-slate-200 px-3.5 py-3 text-slate-900 bg-white focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
                        placeholder="Contoh: 081234567890">
-                <p class="text-[11px] text-slate-400 mt-1.5">Digunakan untuk notifikasi WhatsApp dari admin saat pengajuan disetujui (dapat diubah).</p>
-            </div>
-
-            <!-- Estimasi Akun yang Dikelola -->
-            <div>
-                <label for="estimated_accounts" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
-                    Perkiraan Jumlah Akun yang Dikelola
-                </label>
-                <select id="estimated_accounts" name="estimated_accounts"
-                        class="w-full text-xs rounded-xl border border-slate-200 px-3.5 py-3 text-slate-900 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 bg-white">
-                    <option value="2-5 Akun" {{ old('estimated_accounts') == '2-5 Akun' ? 'selected' : '' }}>2 – 5 Akun Email</option>
-                    <option value="6-10 Akun" {{ old('estimated_accounts') == '6-10 Akun' ? 'selected' : '' }}>6 – 10 Akun Email</option>
-                    <option value="11-20 Akun" {{ old('estimated_accounts') == '11-20 Akun' ? 'selected' : '' }}>11 – 20 Akun Email</option>
-                    <option value="> 20 Akun" {{ old('estimated_accounts') == '> 20 Akun' ? 'selected' : '' }}>Lebih dari 20 Akun</option>
-                </select>
-                <p class="text-[11px] text-slate-400 mt-1.5">Membantu admin memetakan kapasitas akun dan mailbox Anda.</p>
+                <p class="text-[11px] text-slate-400 mt-1.5">Untuk notifikasi persetujuan dari admin (dapat diubah).</p>
             </div>
         </div>
 

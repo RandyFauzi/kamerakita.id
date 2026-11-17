@@ -145,7 +145,7 @@
                             <tr>
                                 <th scope="col" class="px-5 py-4 font-semibold rounded-l-lg">Worker & Akun</th>
                                 <th scope="col" class="px-5 py-4 font-semibold">Kontak & Rekening Bank</th>
-                                <th scope="col" class="px-5 py-4 font-semibold">Estimasi & Catatan</th>
+                                <th scope="col" class="px-5 py-4 font-semibold">Catatan Pengajuan</th>
                                 <th scope="col" class="px-5 py-4 font-semibold">Waktu Pengajuan</th>
                                 <th scope="col" class="px-5 py-4 font-semibold">Status</th>
                                 <th scope="col" class="px-5 py-4 font-semibold rounded-r-lg text-right">Aksi</th>
