@@ -22,19 +22,123 @@
         </div>
     </x-slot>
 
-    <div class="py-6 sm:py-8 pb-24 md:pb-8">
+    <style>
+        .kk-modal-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 60;
+            background-color: rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .kk-modal-card {
+            background: #ffffff;
+            border-radius: 24px;
+            max-width: 460px;
+            width: 100%;
+            box-shadow: 0 25px 60px -12px rgba(15, 23, 42, 0.35);
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+        .kk-modal-btn {
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 150ms ease;
+        }
+        .kk-modal-btn--cancel {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+        }
+        .kk-modal-btn--cancel:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+        .kk-modal-btn--approve {
+            background: #059669;
+            color: #ffffff;
+            border: 1px solid #059669;
+            box-shadow: 0 8px 18px -4px rgba(5, 150, 105, 0.4);
+        }
+        .kk-modal-btn--approve:hover:not(:disabled) {
+            background: #047857;
+        }
+        .kk-modal-btn--reject {
+            background: #e11d48;
+            color: #ffffff;
+            border: 1px solid #e11d48;
+            box-shadow: 0 8px 18px -4px rgba(225, 29, 72, 0.4);
+        }
+        .kk-modal-btn--reject:hover:not(:disabled) {
+            background: #be123c;
+        }
+        .kk-modal-btn:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+        }
+    </style>
+
+    <div class="py-6 sm:py-8 pb-24 md:pb-8"
+         x-data="{
+            approveOpen: false,
+            rejectOpen: false,
+            submitting: false,
+            target: {
+                id: null,
+                name: '',
+                email: '',
+                phone: '',
+                bank: '',
+                hasBank: false,
+                approveUrl: '',
+                rejectUrl: ''
+            },
+            approveNotes: '',
+            sendWaNow: false,
+            rejectNotes: '',
+            openApprove(payload) {
+                this.target = payload;
+                this.approveNotes = '';
+                this.sendWaNow = false;
+                this.submitting = false;
+                this.approveOpen = true;
+            },
+            openReject(payload) {
+                this.target = payload;
+                this.rejectNotes = '';
+                this.submitting = false;
+                this.rejectOpen = true;
+            },
+            closeAll() {
+                if (this.submitting) return;
+                this.approveOpen = false;
+                this.rejectOpen = false;
+            }
+         }"
+         @keydown.escape.window="closeAll()">
+
         <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 space-y-6">
 
             <!-- Active Approval Success Banner with WhatsApp Action -->
             @if(session('manual_wa_url'))
-            <div class="bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 border-2 border-emerald-400 p-6 rounded-2xl shadow-sm">
-                <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
+            <div class="bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 border-2 border-emerald-400 p-5 sm:p-6 rounded-2xl shadow-sm">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div class="space-y-1">
                         <div class="inline-flex items-center gap-2 px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-bold uppercase tracking-wider">
                             <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                            Pengajuan Berhasil Disetujui!
+                            Pengajuan Berhasil Disetujui
                         </div>
-                        <h3 class="text-lg font-bold text-gray-900 mt-1">Akun Resmi Menjadi Main Account (Akun Induk)</h3>
+                        <h3 class="text-base sm:text-lg font-bold text-gray-900 mt-1">Akun Resmi Menjadi Main Account (Akun Induk)</h3>
                         <p class="text-xs text-gray-600">
                             Untuk Worker: <strong>{{ session('target_name') }}</strong> ({{ session('target_email') }})
                             @if(session('target_phone'))
@@ -43,7 +147,7 @@
                         </p>
                     </div>
 
-                    <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-3 shrink-0">
                         <a href="{{ session('manual_wa_url') }}" target="_blank"
                            class="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition shadow-sm"
                            style="background-color: #059669;">
@@ -61,7 +165,7 @@
             @if(session('success') && !session('manual_wa_url'))
             <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded-xl shadow-sm">
                 <div class="flex items-center">
-                    <svg class="h-5 w-5 text-green-500 mr-3" viewBox="0 0 20 20" fill="currentColor">
+                    <svg class="h-5 w-5 text-green-500 mr-3 shrink-0" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                     </svg>
                     <p class="text-sm text-green-800 font-medium">{{ session('success') }}</p>
@@ -72,7 +176,7 @@
             @if(session('info'))
             <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-xl shadow-sm">
                 <div class="flex items-center">
-                    <svg class="h-5 w-5 text-blue-500 mr-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
+                    <svg class="h-5 w-5 text-blue-500 mr-3 shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
                     <p class="text-sm text-blue-800 font-medium">{{ session('info') }}</p>
                 </div>
             </div>
@@ -81,7 +185,7 @@
             @if(session('error'))
             <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-xl shadow-sm">
                 <div class="flex items-center">
-                    <svg class="h-5 w-5 text-red-500 mr-3" viewBox="0 0 20 20" fill="currentColor">
+                    <svg class="h-5 w-5 text-red-500 mr-3 shrink-0" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
                     </svg>
                     <p class="text-sm text-red-800 font-medium">{{ session('error') }}</p>
@@ -137,14 +241,81 @@
                 </form>
             </div>
 
-            <!-- Table Card -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-2xl border border-gray-100">
+            <!-- Mobile Cards (< 1024px) -->
+            <div class="lg:hidden space-y-3">
+                @forelse($requests as $req)
+                    @php
+                        $partner = $req->partner;
+                        $phone = $req->phone_number ?: $partner?->whatsapp_number;
+                        $formattedPhone = $phone ? \App\Helpers\PhoneHelper::formatForGateway($phone) : null;
+                        $bankName = $req->bank_name ?: $partner?->bank_name;
+                        $bankNum = $req->bank_account_number ?: $partner?->bank_account_number;
+                        $bankOwner = $req->bank_account_owner ?: $partner?->bank_account_owner;
+                        $bankSummary = $bankName ? trim("{$bankName} - {$bankNum} (a/n {$bankOwner})") : 'Rekening belum terisi';
+                        $workerName = $req->user->name ?? $partner?->full_name ?? 'Tanpa Nama';
+                        $payloadJson = [
+                            'id' => $req->id,
+                            'name' => $workerName,
+                            'email' => $req->email,
+                            'phone' => $phone ?: '-',
+                            'bank' => $bankSummary,
+                            'hasBank' => (bool) ($bankName && $bankNum),
+                            'approveUrl' => route('admin.main-account-requests.approve', $req),
+                            'rejectUrl' => route('admin.main-account-requests.reject', $req),
+                        ];
+                    @endphp
+                    <div class="bg-white border border-gray-200/80 rounded-2xl p-4 shadow-sm space-y-3">
+                        <div class="flex items-start justify-between gap-2">
+                            <div class="min-w-0">
+                                <div class="font-bold text-gray-900 text-sm truncate">{{ $workerName }}</div>
+                                <div class="font-mono text-xs text-indigo-600 font-semibold truncate">{{ $req->email }}</div>
+                                <div class="text-[11px] text-gray-400 mt-0.5">{{ $req->created_at->format('d M Y, H:i') }}</div>
+                            </div>
+                            <div class="shrink-0">
+                                @if($req->isPending())
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800">Menunggu</span>
+                                @elseif($req->isApproved())
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">Disetujui</span>
+                                @elseif($req->isRejected())
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-100 text-rose-800">Ditolak</span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 rounded-xl p-3 space-y-1 text-xs text-gray-600">
+                            <div><span class="font-semibold text-gray-700">WhatsApp:</span> {{ $phone ?: '-' }}</div>
+                            <div><span class="font-semibold text-gray-700">Rekening:</span> {{ $bankSummary }}</div>
+                            @if($req->notes)
+                                <div class="pt-1 text-gray-500 italic">"{{ $req->notes }}"</div>
+                            @endif
+                        </div>
+
+                        @if($req->isPending())
+                            <div class="grid grid-cols-2 gap-2 pt-1">
+                                <button type="button" @click='openApprove(@json($payloadJson))' class="kk-modal-btn kk-modal-btn--approve w-full">
+                                    Setujui
+                                </button>
+                                <button type="button" @click='openReject(@json($payloadJson))' class="kk-modal-btn kk-modal-btn--cancel w-full text-rose-700">
+                                    Tolak
+                                </button>
+                            </div>
+                        @endif
+                    </div>
+                @empty
+                    <div class="bg-white rounded-2xl border border-gray-100 p-8 text-center text-xs text-gray-500">
+                        Tidak ada pengajuan Akun Induk yang sesuai dengan filter ini.
+                    </div>
+                @endforelse
+            </div>
+
+            <!-- Desktop Table Card (>= 1024px) -->
+            <div class="hidden lg:block bg-white overflow-hidden shadow-sm sm:rounded-2xl border border-gray-100">
                 <div class="p-6 text-gray-900 overflow-x-auto">
                     <table class="w-full text-sm text-left">
                         <thead class="text-xs text-gray-500 uppercase bg-gray-50/80 rounded-lg">
                             <tr>
-                                <th scope="col" class="px-5 py-4 font-semibold rounded-l-lg">Worker & Akun</th>
-                                <th scope="col" class="px-5 py-4 font-semibold">Kontak & Rekening Bank</th>
+                                <th scope="col" class="px-5 py-4 font-semibold rounded-l-lg">Worker &amp; Akun</th>
+                                <th scope="col" class="px-5 py-4 font-semibold">Kontak &amp; Rekening Bank</th>
                                 <th scope="col" class="px-5 py-4 font-semibold">Catatan Pengajuan</th>
                                 <th scope="col" class="px-5 py-4 font-semibold">Waktu Pengajuan</th>
                                 <th scope="col" class="px-5 py-4 font-semibold">Status</th>
@@ -157,11 +328,26 @@
                                     $partner = $req->partner;
                                     $phone = $req->phone_number ?: $partner?->whatsapp_number;
                                     $formattedPhone = $phone ? \App\Helpers\PhoneHelper::formatForGateway($phone) : null;
+                                    $bankName = $req->bank_name ?: $partner?->bank_name;
+                                    $bankNum = $req->bank_account_number ?: $partner?->bank_account_number;
+                                    $bankOwner = $req->bank_account_owner ?: $partner?->bank_account_owner;
+                                    $bankSummary = $bankName ? trim("{$bankName} - {$bankNum} (a/n {$bankOwner})") : 'Rekening belum terisi';
+                                    $workerName = $req->user->name ?? $partner?->full_name ?? 'Tanpa Nama';
+                                    $payloadJson = [
+                                        'id' => $req->id,
+                                        'name' => $workerName,
+                                        'email' => $req->email,
+                                        'phone' => $phone ?: '-',
+                                        'bank' => $bankSummary,
+                                        'hasBank' => (bool) ($bankName && $bankNum),
+                                        'approveUrl' => route('admin.main-account-requests.approve', $req),
+                                        'rejectUrl' => route('admin.main-account-requests.reject', $req),
+                                    ];
                                 @endphp
                                 <tr class="hover:bg-gray-50/80 transition-colors duration-150">
                                     <!-- Worker & Akun -->
                                     <td class="px-5 py-4">
-                                        <div class="font-bold text-gray-900">{{ $req->user->name ?? $partner?->full_name ?? 'Tanpa Nama' }}</div>
+                                        <div class="font-bold text-gray-900">{{ $workerName }}</div>
                                         <div class="font-mono text-xs text-indigo-600 font-semibold mt-0.5">{{ $req->email }}</div>
                                         <div class="text-[11px] text-gray-400 mt-0.5">
                                             ID: {{ $partner?->mitra_id ?? '-' }} • Role Saat Ini: 
@@ -181,17 +367,20 @@
                                         @endif
 
                                         <div class="mt-1 text-xs text-gray-600">
-                                            @if($req->bank_name || $partner?->bank_name)
-                                                <span class="font-bold text-gray-800">{{ $req->bank_name ?: $partner->bank_name }}:</span> 
-                                                <span class="font-mono text-gray-700">{{ $req->bank_account_number ?: $partner->bank_account_number }}</span>
-                                                <div class="text-[11px] text-gray-400">a/n {{ $req->bank_account_owner ?: $partner->bank_account_owner }}</div>
+                                            @if($bankName)
+                                                <span class="font-bold text-gray-800">{{ $bankName }}:</span> 
+                                                <span class="font-mono text-gray-700">{{ $bankNum }}</span>
+                                                <div class="text-[11px] text-gray-400">a/n {{ $bankOwner }}</div>
                                             @else
-                                                <span class="text-xs text-amber-600 font-medium">⚠️ Rekening belum terisi</span>
+                                                <span class="inline-flex items-center gap-1 text-xs text-amber-600 font-medium">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                                    Rekening belum terisi
+                                                </span>
                                             @endif
                                         </div>
                                     </td>
 
-                                    <!-- Estimasi & Catatan -->
+                                    <!-- Catatan -->
                                     <td class="px-5 py-4">
                                         @if($req->estimated_accounts)
                                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-indigo-50 text-indigo-700">
@@ -246,18 +435,18 @@
                                     <td class="px-5 py-4 whitespace-nowrap text-right">
                                         @if($req->isPending())
                                             <div class="flex items-center justify-end gap-2">
-                                                <!-- Tombol Setujui (Approve) -->
-                                                <form action="{{ route('admin.main-account-requests.approve', $req) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menyetujui pengajuan ini? Role akun akan langsung diubah menjadi Main Account.');">
-                                                    @csrf
-                                                    <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition shadow-sm">
-                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                                                        <span>Setujui</span>
-                                                    </button>
-                                                </form>
+                                                <!-- Tombol Setujui (Opens Custom Modal) -->
+                                                <button type="button"
+                                                        @click='openApprove(@json($payloadJson))'
+                                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition shadow-sm cursor-pointer">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                                    <span>Setujui</span>
+                                                </button>
 
-                                                <!-- Tombol Tolak (Reject) -->
-                                                <button type="button" onclick="openRejectModal('{{ $req->id }}', '{{ addslashes($req->user->name ?? $req->email) }}')"
-                                                        class="inline-flex items-center gap-1 px-3 py-1.5 bg-white border border-gray-200 hover:bg-rose-50 hover:border-rose-200 text-gray-700 hover:text-rose-700 rounded-lg text-xs font-bold transition shadow-sm">
+                                                <!-- Tombol Tolak (Opens Custom Modal) -->
+                                                <button type="button"
+                                                        @click='openReject(@json($payloadJson))'
+                                                        class="inline-flex items-center gap-1 px-3 py-1.5 bg-white border border-gray-200 hover:bg-rose-50 hover:border-rose-200 text-gray-700 hover:text-rose-700 rounded-lg text-xs font-bold transition shadow-sm cursor-pointer">
                                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                                                     <span>Tolak</span>
                                                 </button>
@@ -292,59 +481,178 @@
             </div>
 
         </div>
-    </div>
 
-    <!-- Reject Confirmation Modal -->
-    <div id="reject-modal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-gray-100 space-y-4">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        <!-- Approve Confirmation Modal (Custom UI/UX) -->
+        <div x-show="approveOpen"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             @click.self="closeAll()"
+             class="kk-modal-backdrop"
+             style="display: none;"
+             role="dialog"
+             aria-modal="true">
+            <div x-show="approveOpen"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 scale-95 translate-y-2"
+                 x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                 x-transition:leave="transition ease-in duration-150"
+                 x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                 x-transition:leave-end="opacity-0 scale-95 translate-y-2"
+                 class="kk-modal-card">
+
+                <!-- Modal Header -->
+                <div class="p-5 sm:p-6 border-b border-slate-100 flex items-start justify-between gap-3">
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-11 h-11 rounded-2xl bg-emerald-50 border border-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-extrabold text-slate-900 leading-tight">Setujui Pengajuan Akun Induk?</h3>
+                            <p class="text-xs text-slate-500 mt-0.5">Role akun akan langsung diubah menjadi <strong>Main Account</strong>.</p>
+                        </div>
                     </div>
+                    <button type="button" @click="closeAll()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+
+                <!-- Modal Body & Form -->
+                <form :action="target.approveUrl" method="POST" @submit="submitting = true" class="p-5 sm:p-6 space-y-4">
+                    @csrf
+
+                    <!-- Worker Summary Card -->
+                    <div class="p-4 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-2 text-xs">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="text-slate-400 font-semibold">Nama Worker</span>
+                            <span class="font-bold text-slate-900 truncate" x-text="target.name"></span>
+                        </div>
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="text-slate-400 font-semibold">Email</span>
+                            <span class="font-mono font-semibold text-indigo-600 truncate" x-text="target.email"></span>
+                        </div>
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="text-slate-400 font-semibold">WhatsApp</span>
+                            <span class="font-semibold text-slate-700" x-text="target.phone"></span>
+                        </div>
+                        <div class="pt-1.5 border-t border-slate-200/70 flex items-start justify-between gap-2">
+                            <span class="text-slate-400 font-semibold shrink-0">Rekening</span>
+                            <span class="font-semibold text-right" :class="target.hasBank ? 'text-emerald-700' : 'text-amber-600'" x-text="target.bank"></span>
+                        </div>
+                    </div>
+
+                    <!-- Optional Admin Note -->
                     <div>
-                        <h3 class="text-base font-bold text-gray-900">Tolak Pengajuan</h3>
-                        <p class="text-xs text-gray-500" id="reject-modal-target"></p>
+                        <label for="approve_admin_notes" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+                            Catatan Admin <span class="font-normal normal-case text-slate-400">(Opsional)</span>
+                        </label>
+                        <input type="text" id="approve_admin_notes" name="admin_notes" x-model="approveNotes"
+                               class="w-full text-xs rounded-xl border border-slate-200 px-3.5 py-2.5 text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                               placeholder="Contoh: Data tervalidasi lengkap.">
                     </div>
-                </div>
-                <button type="button" onclick="closeRejectModal()" class="text-gray-400 hover:text-gray-600">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
-            </div>
 
-            <form id="reject-form" method="POST" action="" class="space-y-4">
-                @csrf
-                <div>
-                    <label for="admin_notes" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-                        Alasan Penolakan (Akan tercatat di sistem)
+                    <!-- Auto WA Toggle -->
+                    <label class="flex items-start gap-2.5 p-3 rounded-xl bg-emerald-50/70 border border-emerald-100 cursor-pointer select-none">
+                        <input type="checkbox" name="send_wa_now" value="1" x-model="sendWaNow" class="mt-0.5 rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500">
+                        <span class="text-xs text-emerald-900 leading-snug">
+                            <strong>Kirim notifikasi WhatsApp otomatis</strong> melalui gateway begitu akun disetujui.
+                        </span>
                     </label>
-                    <textarea id="admin_notes" name="admin_notes" rows="3" required
-                              class="w-full text-xs rounded-xl border border-gray-200 px-3.5 py-3 text-gray-800 focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
-                              placeholder="Contoh: Belum melengkapi nomor rekening atau data profil..."></textarea>
+
+                    <!-- Modal Footer Buttons -->
+                    <div class="flex items-center justify-end gap-2.5 pt-2">
+                        <button type="button" @click="closeAll()" :disabled="submitting" class="kk-modal-btn kk-modal-btn--cancel">
+                            Batal
+                        </button>
+                        <button type="submit" :disabled="submitting" class="kk-modal-btn kk-modal-btn--approve">
+                            <svg x-show="!submitting" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            <span x-text="submitting ? 'Memproses...' : 'Ya, Setujui &amp; Aktifkan'"></span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Reject Confirmation Modal (Custom UI/UX) -->
+        <div x-show="rejectOpen"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             @click.self="closeAll()"
+             class="kk-modal-backdrop"
+             style="display: none;"
+             role="dialog"
+             aria-modal="true">
+            <div x-show="rejectOpen"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 scale-95 translate-y-2"
+                 x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                 x-transition:leave="transition ease-in duration-150"
+                 x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                 x-transition:leave-end="opacity-0 scale-95 translate-y-2"
+                 class="kk-modal-card">
+
+                <!-- Modal Header -->
+                <div class="p-5 sm:p-6 border-b border-slate-100 flex items-start justify-between gap-3">
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-11 h-11 rounded-2xl bg-rose-50 border border-rose-100 text-rose-600 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-extrabold text-slate-900 leading-tight">Tolak Pengajuan</h3>
+                            <p class="text-xs text-slate-500 mt-0.5 truncate max-w-[260px]" x-text="target.name + ' (' + target.email + ')'"></p>
+                        </div>
+                    </div>
+                    <button type="button" @click="closeAll()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
                 </div>
 
-                <div class="flex items-center justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeRejectModal()" class="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-xs font-bold transition">
-                        Batal
-                    </button>
-                    <button type="submit" class="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition shadow-sm shadow-rose-600/30">
-                        Konfirmasi Tolak
-                    </button>
-                </div>
-            </form>
+                <!-- Modal Body & Form -->
+                <form :action="target.rejectUrl" method="POST" @submit="submitting = true" class="p-5 sm:p-6 space-y-4">
+                    @csrf
+
+                    <!-- Quick Reason Chips -->
+                    <div>
+                        <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Pilihan Alasan Cepat:</span>
+                        <div class="flex flex-wrap gap-1.5">
+                            <button type="button" @click="rejectNotes = 'Rekening bank belum dilengkapi.'" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[11px] font-semibold transition cursor-pointer">
+                                + Rekening belum lengkap
+                            </button>
+                            <button type="button" @click="rejectNotes = 'Nomor WhatsApp tidak aktif / belum terisi.'" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[11px] font-semibold transition cursor-pointer">
+                                + No WA belum valid
+                            </button>
+                            <button type="button" @click="rejectNotes = 'Akun belum memenuhi kriteria verifikasi.'" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[11px] font-semibold transition cursor-pointer">
+                                + Belum memenuhi syarat
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="reject_admin_notes" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
+                            Alasan Penolakan <span class="text-rose-500">*</span>
+                        </label>
+                        <textarea id="reject_admin_notes" name="admin_notes" x-model="rejectNotes" rows="3" required
+                                  class="w-full text-xs rounded-xl border border-slate-200 px-3.5 py-2.5 text-slate-800 focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
+                                  placeholder="Tuliskan alasan penolakan..."></textarea>
+                    </div>
+
+                    <div class="flex items-center justify-end gap-2.5 pt-2">
+                        <button type="button" @click="closeAll()" :disabled="submitting" class="kk-modal-btn kk-modal-btn--cancel">
+                            Batal
+                        </button>
+                        <button type="submit" :disabled="submitting" class="kk-modal-btn kk-modal-btn--reject">
+                            <span x-text="submitting ? 'Memproses...' : 'Konfirmasi Tolak'"></span>
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-
-    <script>
-        function openRejectModal(requestId, name) {
-            const form = document.getElementById('reject-form');
-            form.action = `/admin/main-account-requests/${requestId}/reject`;
-            document.getElementById('reject-modal-target').textContent = `Worker: ${name}`;
-            document.getElementById('reject-modal').classList.remove('hidden');
-        }
-
-        function closeRejectModal() {
-            document.getElementById('reject-modal').classList.add('hidden');
-        }
-    </script>
 </x-app-layout>
