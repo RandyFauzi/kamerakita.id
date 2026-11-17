@@ -1,4 +1,7 @@
 <x-guest-layout>
+    <!-- Session Status -->
+    <x-auth-session-status class="mb-4" :status="session('status')" />
+
     <div class="mb-6 text-center">
         <h3 class="text-xl font-bold text-gray-900">{{ __('auth_view.register_title') }}</h3>
         <p class="text-xs text-gray-400 mt-1">{{ __('auth_view.register_subtitle') }}</p>

@@ -13,15 +13,19 @@ class MainAccountRequestTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_guest_and_worker_can_view_request_page(): void
+    public function test_guest_is_redirected_to_register_when_visiting_or_posting_request_page(): void
     {
-        // Guest view
-        $guestResponse = $this->get(route('main-account.request'));
-        $guestResponse->assertOk();
-        $guestResponse->assertSee('Pengajuan Akun Induk');
-        $guestResponse->assertSee('Rate Penuh Rp60.000/Jam');
+        $guestGet = $this->get(route('main-account.request'));
+        $guestGet->assertRedirect(route('register'));
 
-        // Authenticated worker view
+        $guestPost = $this->post(route('main-account.request.store'), [
+            'password' => 'anything',
+        ]);
+        $guestPost->assertRedirect(route('register'));
+    }
+
+    public function test_authenticated_worker_sees_prefilled_data_and_landing_page_assets(): void
+    {
         $user = User::factory()->create([
             'email' => 'worker1@kamerakitaid.site',
             'role' => 'partner',
@@ -30,11 +34,21 @@ class MainAccountRequestTest extends TestCase
             'user_id' => $user->id,
             'partner_role' => Partner::ROLE_WORKER,
             'email' => $user->email,
+            'whatsapp_number' => '081122334455',
+            'bank_name' => 'Mandiri',
+            'bank_account_number' => '1122334455',
+            'bank_account_owner' => 'Worker Satu',
         ]);
 
-        $authResponse = $this->actingAs($user)->get(route('main-account.request'));
-        $authResponse->assertOk();
-        $authResponse->assertSee('worker1@kamerakitaid.site');
+        $response = $this->actingAs($user)->get(route('main-account.request'));
+        $response->assertOk();
+        $response->assertSee('worker1@kamerakitaid.site');
+        $response->assertSee('081122334455');
+        $response->assertSee('Mandiri');
+        $response->assertSee('1122334455');
+        $response->assertSee('Worker Satu');
+        $response->assertSee('assets/figma/benefits-wallet-figma.png');
+        $response->assertSee('assets/figma/benefits-ai-figma.png');
     }
 
     public function test_submission_fails_with_wrong_password(): void
@@ -50,8 +64,7 @@ class MainAccountRequestTest extends TestCase
             'email' => $user->email,
         ]);
 
-        $response = $this->post(route('main-account.request.store'), [
-            'email' => 'worker2@kamerakitaid.site',
+        $response = $this->actingAs($user)->post(route('main-account.request.store'), [
             'password' => 'wrongpassword',
         ]);
 
@@ -61,7 +74,7 @@ class MainAccountRequestTest extends TestCase
         ]);
     }
 
-    public function test_worker_can_submit_request_successfully(): void
+    public function test_worker_can_submit_request_and_edit_phone_and_bank_but_email_stays_locked(): void
     {
         $user = User::factory()->create([
             'name' => 'Budi Worker',
@@ -74,11 +87,13 @@ class MainAccountRequestTest extends TestCase
             'partner_role' => Partner::ROLE_WORKER,
             'email' => $user->email,
             'whatsapp_number' => '089999999999',
-            'bank_name' => null,
+            'bank_name' => 'BRI',
+            'bank_account_number' => '999999',
+            'bank_account_owner' => 'Budi Lama',
         ]);
 
         $response = $this->actingAs($user)->post(route('main-account.request.store'), [
-            'email' => 'budi@kamerakitaid.site',
+            'email' => 'spoofed_other@kamerakitaid.site', // Must be ignored in favor of Auth::user()->email
             'password' => 'budiSecret123',
             'phone_number' => '081234567890',
             'bank_name' => 'BCA',
@@ -93,7 +108,7 @@ class MainAccountRequestTest extends TestCase
             'user_id' => $user->id,
             'partner_id' => $partner->id,
             'email' => 'budi@kamerakitaid.site',
-            'phone_number' => '089999999999',
+            'phone_number' => '081234567890',
             'bank_name' => 'BCA',
             'bank_account_number' => '123456789',
             'bank_account_owner' => 'Budi Santoso',
@@ -101,9 +116,12 @@ class MainAccountRequestTest extends TestCase
             'status' => 'pending',
         ]);
 
-        // Partner profile should be updated with bank
+        // Partner profile should also be updated with the edited values
         $partner->refresh();
+        $this->assertEquals('081234567890', $partner->whatsapp_number);
         $this->assertEquals('BCA', $partner->bank_name);
+        $this->assertEquals('123456789', $partner->bank_account_number);
+        $this->assertEquals('Budi Santoso', $partner->bank_account_owner);
     }
 
     public function test_worker_cannot_submit_duplicate_pending_request(): void
@@ -126,8 +144,7 @@ class MainAccountRequestTest extends TestCase
             'status' => 'pending',
         ]);
 
-        $response = $this->post(route('main-account.request.store'), [
-            'email' => 'worker_dup@kamerakitaid.site',
+        $response = $this->actingAs($user)->post(route('main-account.request.store'), [
             'password' => 'password123',
         ]);
 
@@ -148,8 +165,7 @@ class MainAccountRequestTest extends TestCase
             'email' => $user->email,
         ]);
 
-        $response = $this->post(route('main-account.request.store'), [
-            'email' => 'main_already@kamerakitaid.site',
+        $response = $this->actingAs($user)->post(route('main-account.request.store'), [
             'password' => 'password123',
         ]);
 

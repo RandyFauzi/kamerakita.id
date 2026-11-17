@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\MainAccountRequest;
 use App\Models\Partner;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -13,19 +12,26 @@ class MainAccountRequestController extends Controller
 {
     /**
      * Display the application form and benefits for Main Account.
+     * Redirects unauthenticated visitors to registration page ("Daftar").
      */
     public function create(Request $request)
     {
-        $user = Auth::user();
-        $partner = $user?->partner;
+        if (!Auth::check()) {
+            session(['url.intended' => route('main-account.request')]);
 
-        $pendingRequest = null;
-        if ($user) {
-            $pendingRequest = MainAccountRequest::where('user_id', $user->id)
-                ->pending()
-                ->latest()
-                ->first();
+            return redirect()->route('register')->with(
+                'status',
+                'Silakan daftar akun (atau klik "Sudah terdaftar?" untuk masuk) terlebih dahulu untuk mengajukan Akun Induk.'
+            );
         }
+
+        $user = Auth::user();
+        $partner = $user->partner ?? Partner::where('email', $user->email)->first();
+
+        $pendingRequest = MainAccountRequest::where('user_id', $user->id)
+            ->pending()
+            ->latest()
+            ->first();
 
         return view('main_account.request', compact('user', 'partner', 'pendingRequest'));
     }
@@ -35,8 +41,16 @@ class MainAccountRequestController extends Controller
      */
     public function store(Request $request)
     {
+        if (!Auth::check()) {
+            session(['url.intended' => route('main-account.request')]);
+
+            return redirect()->route('register')->with(
+                'status',
+                'Silakan daftar akun (atau klik "Sudah terdaftar?" untuk masuk) terlebih dahulu untuk mengajukan Akun Induk.'
+            );
+        }
+
         $request->validate([
-            'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
             'phone_number' => ['nullable', 'string', 'max:25'],
             'bank_name' => ['nullable', 'string', 'max:50'],
@@ -46,15 +60,15 @@ class MainAccountRequestController extends Controller
             'notes' => ['nullable', 'string', 'max:500'],
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $user = Auth::user();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (!Hash::check($request->password, $user->password)) {
             return back()->withInput($request->except('password'))->withErrors([
-                'password' => 'Email atau kata sandi yang Anda masukkan tidak sesuai.'
+                'password' => 'Kata sandi yang Anda masukkan tidak sesuai.'
             ]);
         }
 
-        $partner = $user->partner;
+        $partner = $user->partner ?? Partner::where('email', $user->email)->first();
 
         if (!$partner) {
             return back()->withInput($request->except('password'))->withErrors([
@@ -79,21 +93,24 @@ class MainAccountRequestController extends Controller
             ->first();
 
         if ($alreadyPending) {
-            return back()->withInput($request->except('password'))->with('info', 'Pengajuan Akun Induk Anda saat ini sudah ada di antrean verifikasi admin. Mohon menunggu proses review.');
+            return back()->withInput($request->except('password'))->with(
+                'info',
+                'Pengajuan Akun Induk Anda saat ini sudah ada di antrean verifikasi admin. Mohon menunggu proses review.'
+            );
         }
 
-        // Auto-fill phone/bank into partner profile if empty
+        // Update phone & bank details on partner profile so user edits are persisted
         $partnerUpdates = [];
-        if ($request->filled('phone_number') && empty($partner->whatsapp_number)) {
+        if ($request->filled('phone_number')) {
             $partnerUpdates['whatsapp_number'] = $request->phone_number;
         }
-        if ($request->filled('bank_name') && empty($partner->bank_name)) {
+        if ($request->filled('bank_name')) {
             $partnerUpdates['bank_name'] = $request->bank_name;
         }
-        if ($request->filled('bank_account_number') && empty($partner->bank_account_number)) {
+        if ($request->filled('bank_account_number')) {
             $partnerUpdates['bank_account_number'] = $request->bank_account_number;
         }
-        if ($request->filled('bank_account_owner') && empty($partner->bank_account_owner)) {
+        if ($request->filled('bank_account_owner')) {
             $partnerUpdates['bank_account_owner'] = $request->bank_account_owner;
         }
 
@@ -105,15 +122,18 @@ class MainAccountRequestController extends Controller
             'user_id' => $user->id,
             'partner_id' => $partner->id,
             'email' => $user->email,
-            'phone_number' => $partner->whatsapp_number ?? $request->phone_number,
-            'bank_name' => $partner->bank_name ?? $request->bank_name,
-            'bank_account_number' => $partner->bank_account_number ?? $request->bank_account_number,
-            'bank_account_owner' => $partner->bank_account_owner ?? $request->bank_account_owner,
+            'phone_number' => $request->input('phone_number') ?: $partner->whatsapp_number,
+            'bank_name' => $request->input('bank_name') ?: $partner->bank_name,
+            'bank_account_number' => $request->input('bank_account_number') ?: ($partner->bank_account_number ?: $partner->account_number),
+            'bank_account_owner' => $request->input('bank_account_owner') ?: ($partner->bank_account_owner ?: $partner->account_owner_name),
             'estimated_accounts' => $request->estimated_accounts,
             'notes' => $request->notes,
             'status' => 'pending',
         ]);
 
-        return back()->with('success', 'Pengajuan Akun Induk Anda berhasil dikirim! Tim Admin akan memvalidasi data Anda dalam waktu 1x24 jam.');
+        return back()->with(
+            'success',
+            'Pengajuan Akun Induk Anda berhasil dikirim! Tim Admin akan memvalidasi data Anda dalam waktu 1x24 jam.'
+        );
     }
 }
