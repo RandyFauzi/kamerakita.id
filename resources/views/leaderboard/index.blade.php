@@ -5,12 +5,12 @@
         </h2>
     </x-slot>
 
-    <div class="py-8 sm:py-10" x-data="{ currentCategory: '{{ $defaultCategory ?? 'worker' }}', currentTab: 'weekly' }">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm rounded-3xl p-5 sm:p-8 max-w-2xl mx-auto border border-slate-200/80">
+    <div class="py-6 sm:py-10 pb-24 md:pb-10" x-data="{ currentCategory: '{{ $defaultCategory ?? 'worker' }}', currentTab: 'weekly' }">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm rounded-2xl sm:rounded-3xl p-4 sm:p-8 max-w-2xl mx-auto border border-slate-200/80">
                 <!-- Dynamic Title & Subtitle -->
-                <div class="text-center mb-6">
-                    <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight">
+                <div class="text-center mb-5 sm:mb-6">
+                    <h3 class="text-xl sm:text-3xl font-extrabold text-slate-800 tracking-tight">
                         KameraKita <span style="color: #0284c7;" x-text="currentCategory === 'mitra' ? 'Top Mitra' : 'Top Workers'"></span>
                     </h3>
                     <p class="text-xs sm:text-sm text-slate-500 max-w-md mx-auto mt-1.5 leading-relaxed"
@@ -21,46 +21,46 @@
                 </div>
 
                 <!-- Category Switcher: Worker vs Mitra -->
-                <div class="grid grid-cols-2 gap-2 p-1.5 bg-slate-100 rounded-2xl mb-3">
+                <div class="grid grid-cols-2 gap-1.5 sm:gap-2 p-1 sm:p-1.5 bg-slate-100 rounded-2xl mb-3">
                     <button type="button"
                             @click="currentCategory = 'worker'"
                             :class="currentCategory === 'worker' ? 'bg-white shadow-sm text-sky-700 ring-1 ring-slate-200/70' : 'text-slate-500 hover:text-slate-700'"
-                            class="py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all duration-200 flex flex-col items-center justify-center leading-tight">
+                            class="py-2 sm:py-2.5 px-2 sm:px-3 rounded-xl font-bold text-xs sm:text-sm transition-all duration-200 flex flex-col items-center justify-center leading-tight">
                         <span>Kategori Worker</span>
-                        <span class="text-[10px] font-medium opacity-75 mt-0.5">Individu &amp; Main Account</span>
+                        <span class="text-[10px] font-medium opacity-75 mt-0.5 hidden sm:inline">Individu &amp; Main Account</span>
                     </button>
                     <button type="button"
                             @click="currentCategory = 'mitra'"
                             :class="currentCategory === 'mitra' ? 'bg-white shadow-sm text-sky-700 ring-1 ring-slate-200/70' : 'text-slate-500 hover:text-slate-700'"
-                            class="py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all duration-200 flex flex-col items-center justify-center leading-tight">
+                            class="py-2 sm:py-2.5 px-2 sm:px-3 rounded-xl font-bold text-xs sm:text-sm transition-all duration-200 flex flex-col items-center justify-center leading-tight">
                         <span>Kategori Mitra</span>
-                        <span class="text-[10px] font-medium opacity-75 mt-0.5">Vendor &amp; Studio</span>
+                        <span class="text-[10px] font-medium opacity-75 mt-0.5 hidden sm:inline">Vendor &amp; Studio</span>
                     </button>
                 </div>
 
                 <!-- Time Period Tabs -->
-                <div class="flex gap-2 p-1 bg-slate-100/80 rounded-xl mb-6">
+                <div class="flex gap-1.5 sm:gap-2 p-1 bg-slate-100/80 rounded-xl mb-6">
                     <button type="button"
                             @click="currentTab = 'weekly'"
                             :class="{ 'bg-white shadow-sm text-sky-700': currentTab === 'weekly', 'text-slate-500 hover:text-slate-700': currentTab !== 'weekly' }"
-                            class="flex-1 py-2 px-4 rounded-lg font-bold text-xs transition-all duration-200">
+                            class="flex-1 py-2 px-3 sm:px-4 rounded-lg font-bold text-xs transition-all duration-200">
                         {{ __('dashboard.leaderboard.this_week') }}
                     </button>
                     <button type="button"
                             @click="currentTab = 'allTime'"
                             :class="{ 'bg-white shadow-sm text-sky-700': currentTab === 'allTime', 'text-slate-500 hover:text-slate-700': currentTab !== 'allTime' }"
-                            class="flex-1 py-2 px-4 rounded-lg font-bold text-xs transition-all duration-200">
+                            class="flex-1 py-2 px-3 sm:px-4 rounded-lg font-bold text-xs transition-all duration-200">
                         {{ __('dashboard.leaderboard.all_time') }}
                     </button>
                 </div>
 
                 <!-- Leaderboards -->
-                <div class="flex flex-col items-center justify-start min-h-[400px] w-full">
+                <div class="flex flex-col items-center justify-start min-h-[380px] w-full">
                     <!-- Worker: Weekly -->
                     <template x-if="currentCategory === 'worker' && currentTab === 'weekly'">
                         <div class="w-full flex flex-col items-center">
                             <interactive-leaderboard theme="light" players="{{ $weeklyWorkerData }}"></interactive-leaderboard>
-                            <p class="mt-6 text-xs text-slate-400 italic text-center max-w-sm leading-relaxed">
+                            <p class="mt-6 text-[11px] sm:text-xs text-slate-400 italic text-center max-w-sm leading-relaxed">
                                 {{ __('dashboard.leaderboard.note') }}
                             </p>
                         </div>
@@ -70,7 +70,7 @@
                     <template x-if="currentCategory === 'worker' && currentTab === 'allTime'">
                         <div class="w-full flex flex-col items-center">
                             <interactive-leaderboard theme="light" players="{{ $allTimeWorkerData }}"></interactive-leaderboard>
-                            <p class="mt-6 text-xs text-slate-400 italic text-center max-w-sm leading-relaxed">
+                            <p class="mt-6 text-[11px] sm:text-xs text-slate-400 italic text-center max-w-sm leading-relaxed">
                                 {{ __('dashboard.leaderboard.note') }}
                             </p>
                         </div>
@@ -80,7 +80,7 @@
                     <template x-if="currentCategory === 'mitra' && currentTab === 'weekly'">
                         <div class="w-full flex flex-col items-center">
                             <interactive-leaderboard theme="light" players="{{ $weeklyMitraData }}"></interactive-leaderboard>
-                            <p class="mt-6 text-xs text-slate-400 italic text-center max-w-sm leading-relaxed">
+                            <p class="mt-6 text-[11px] sm:text-xs text-slate-400 italic text-center max-w-sm leading-relaxed">
                                 {{ __('dashboard.leaderboard.note') }}
                             </p>
                         </div>
@@ -90,7 +90,7 @@
                     <template x-if="currentCategory === 'mitra' && currentTab === 'allTime'">
                         <div class="w-full flex flex-col items-center">
                             <interactive-leaderboard theme="light" players="{{ $allTimeMitraData }}"></interactive-leaderboard>
-                            <p class="mt-6 text-xs text-slate-400 italic text-center max-w-sm leading-relaxed">
+                            <p class="mt-6 text-[11px] sm:text-xs text-slate-400 italic text-center max-w-sm leading-relaxed">
                                 {{ __('dashboard.leaderboard.note') }}
                             </p>
                         </div>
@@ -130,13 +130,13 @@
                 const top3 = players.slice(0, 3);
                 const others = players.slice(3);
 
+                const parseRaw = (val) => {
+                    if (typeof val === 'number') return Math.round(val);
+                    return parseInt(String(val).replace(/[^0-9]/g, '')) || 0;
+                };
+
                 const formatDuration = (val) => {
-                    let raw = 0;
-                    if (typeof val === 'number') {
-                        raw = Math.round(val);
-                    } else {
-                        raw = parseInt(String(val).replace(/[^0-9]/g, '')) || 0;
-                    }
+                    const raw = parseRaw(val);
                     const h = Math.floor(raw / 60);
                     const m = raw % 60;
                     if (h > 0 && m > 0) return `${h} Jam ${m} Menit`;
@@ -144,16 +144,17 @@
                     return `${m} Menit`;
                 };
 
-                const formatMetaLabel = (p) => {
-                    if (!p) return '';
-                    const count = parseInt(p.members_count || 1, 10);
-                    if (p.entity_type === 'main_account') {
-                        return count > 1 ? `Main Account · ${count} Akun` : 'Main Account';
-                    }
-                    if (p.entity_type === 'mitra' && count > 1) {
-                        return `${count} Anggota`;
-                    }
-                    return '';
+                const formatCompactDuration = (val) => {
+                    const raw = parseRaw(val);
+                    const h = Math.floor(raw / 60);
+                    const m = raw % 60;
+                    if (h > 0 && m > 0) return `${h}j ${m}m`;
+                    if (h > 0) return `${h}j`;
+                    return `${m}m`;
+                };
+
+                const renderDualDuration = (val) => {
+                    return `<span class="lb-dur-full">${formatDuration(val)}</span><span class="lb-dur-compact">${formatCompactDuration(val)}</span>`;
                 };
 
                 let podiumHtml = '';
@@ -162,10 +163,6 @@
                     const p2 = top3[1];
                     const p3 = top3[2];
 
-                    const p1Meta = formatMetaLabel(p1);
-                    const p2Meta = formatMetaLabel(p2);
-                    const p3Meta = formatMetaLabel(p3);
-
                     podiumHtml = `
                     <div class="lb-podium-grid">
                         <!-- Rank 2 -->
@@ -173,15 +170,14 @@
                         <div class="animate-entrance delay-200 lb-podium-col">
                             <img src="${p2.avatar}" class="lb-avatar-sm" style="border-color: #cbd5e1;">
                             <span class="lb-podium-name" style="color: ${isLight ? '#334155' : '#e2e8f0'};" title="${p2.name}">${p2.name}</span>
-                            ${p2Meta ? `<span class="lb-meta-pill">${p2Meta}</span>` : ''}
                             <div class="lb-podium-scores">
-                                <span class="lb-podium-worked" style="color: ${isLight ? '#0369a1' : '#38bdf8'};">${formatDuration(p2.worked_minutes ?? p2.score)}</span>
+                                <span class="lb-podium-worked" style="color: ${isLight ? '#0369a1' : '#38bdf8'};">${renderDualDuration(p2.worked_minutes ?? p2.score)}</span>
                                 <span class="lb-acc-pill">
                                     <span class="lb-acc-dot"></span>
-                                    Acc: ${formatDuration(p2.approved_minutes ?? 0)}
+                                    <span>Acc: ${renderDualDuration(p2.approved_minutes ?? 0)}</span>
                                 </span>
                             </div>
-                            <div class="lb-pedestal" style="height: 86px; background: linear-gradient(to bottom, #94a3b8, #cbd5e1);">
+                            <div class="lb-pedestal" style="height: 82px; background: linear-gradient(to bottom, #94a3b8, #cbd5e1);">
                                 <div class="lb-pedestal-num">2</div>
                             </div>
                         </div>
@@ -191,19 +187,18 @@
                         ${p1 ? `
                         <div class="animate-entrance delay-100 lb-podium-col lb-podium-col--first">
                             <div style="position: relative;">
-                                <div style="position: absolute; top: -22px; left: 50%; transform: translateX(-50%); font-size: 26px; filter: drop-shadow(0 2px 4px rgba(245,158,11,0.4)); z-index: 20;">👑</div>
+                                <div style="position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 24px; filter: drop-shadow(0 2px 4px rgba(245,158,11,0.4)); z-index: 20;">👑</div>
                                 <img src="${p1.avatar}" class="lb-avatar-lg" style="border-color: #fbbf24;">
                             </div>
                             <span class="lb-podium-name lb-podium-name--first" style="color: ${isLight ? '#0f172a' : '#f8fafc'};" title="${p1.name}">${p1.name}</span>
-                            ${p1Meta ? `<span class="lb-meta-pill">${p1Meta}</span>` : ''}
                             <div class="lb-podium-scores">
-                                <span class="lb-podium-worked lb-podium-worked--first">${formatDuration(p1.worked_minutes ?? p1.score)}</span>
+                                <span class="lb-podium-worked lb-podium-worked--first">${renderDualDuration(p1.worked_minutes ?? p1.score)}</span>
                                 <span class="lb-acc-pill">
                                     <span class="lb-acc-dot"></span>
-                                    Acc: ${formatDuration(p1.approved_minutes ?? 0)}
+                                    <span>Acc: ${renderDualDuration(p1.approved_minutes ?? 0)}</span>
                                 </span>
                             </div>
-                            <div class="lb-pedestal lb-pedestal--first" style="height: 122px; background: linear-gradient(to bottom, #f59e0b, #fcd34d);">
+                            <div class="lb-pedestal lb-pedestal--first" style="height: 116px; background: linear-gradient(to bottom, #f59e0b, #fcd34d);">
                                 <div class="lb-pedestal-num lb-pedestal-num--first">1</div>
                             </div>
                         </div>
@@ -214,15 +209,14 @@
                         <div class="animate-entrance delay-300 lb-podium-col">
                             <img src="${p3.avatar}" class="lb-avatar-sm" style="border-color: #fcd34d;">
                             <span class="lb-podium-name" style="color: ${isLight ? '#334155' : '#e2e8f0'};" title="${p3.name}">${p3.name}</span>
-                            ${p3Meta ? `<span class="lb-meta-pill">${p3Meta}</span>` : ''}
                             <div class="lb-podium-scores">
-                                <span class="lb-podium-worked" style="color: ${isLight ? '#0369a1' : '#38bdf8'};">${formatDuration(p3.worked_minutes ?? p3.score)}</span>
+                                <span class="lb-podium-worked" style="color: ${isLight ? '#0369a1' : '#38bdf8'};">${renderDualDuration(p3.worked_minutes ?? p3.score)}</span>
                                 <span class="lb-acc-pill">
                                     <span class="lb-acc-dot"></span>
-                                    Acc: ${formatDuration(p3.approved_minutes ?? 0)}
+                                    <span>Acc: ${renderDualDuration(p3.approved_minutes ?? 0)}</span>
                                 </span>
                             </div>
-                            <div class="lb-pedestal" style="height: 70px; background: linear-gradient(to bottom, #d97706, #fde68a);">
+                            <div class="lb-pedestal" style="height: 66px; background: linear-gradient(to bottom, #d97706, #fde68a);">
                                 <div class="lb-pedestal-num">3</div>
                             </div>
                         </div>
@@ -245,13 +239,22 @@
                             box-sizing: border-box;
                         }
 
+                        /* Responsive Dual Duration Helpers */
+                        .lb-dur-full { display: inline; }
+                        .lb-dur-compact { display: none; }
+
+                        @media (max-width: 520px) {
+                            .lb-dur-full { display: none; }
+                            .lb-dur-compact { display: inline; }
+                        }
+
                         /* Podium Grid */
                         .lb-podium-grid {
                             display: grid;
                             grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr) minmax(0, 1fr);
                             align-items: end;
-                            gap: 10px;
-                            margin: 34px 0 28px;
+                            gap: 8px;
+                            margin: 30px 0 26px;
                             width: 100%;
                         }
                         .lb-podium-col {
@@ -259,21 +262,22 @@
                             flex-direction: column;
                             align-items: center;
                             min-width: 0;
+                            overflow: hidden;
                         }
                         .lb-podium-col--first {
                             z-index: 10;
                         }
                         .lb-avatar-sm {
-                            width: 56px;
-                            height: 56px;
+                            width: 54px;
+                            height: 54px;
                             border-radius: 50%;
                             border: 3px solid #cbd5e1;
                             object-fit: cover;
                             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
                         }
                         .lb-avatar-lg {
-                            width: 72px;
-                            height: 72px;
+                            width: 68px;
+                            height: 68px;
                             border-radius: 50%;
                             border: 4px solid #fbbf24;
                             object-fit: cover;
@@ -294,20 +298,14 @@
                             font-weight: 800;
                             font-size: 15px;
                         }
-                        .lb-meta-pill {
-                            font-size: 10px;
-                            font-weight: 600;
-                            color: #0284c7;
-                            margin-top: 2px;
-                            white-space: nowrap;
-                        }
                         .lb-podium-scores {
                             display: flex;
                             flex-direction: column;
                             align-items: center;
                             gap: 4px;
-                            margin: 6px 0 10px;
+                            margin: 5px 0 10px;
                             width: 100%;
+                            min-width: 0;
                         }
                         .lb-podium-worked {
                             font-size: 12px;
@@ -332,6 +330,8 @@
                             border-radius: 999px;
                             white-space: nowrap;
                             max-width: 100%;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
                         }
                         .lb-acc-dot {
                             width: 5px;
@@ -397,7 +397,7 @@
 
                         .rank-card {
                             transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 220ms ease, border-color 220ms ease;
-                            border-radius: 18px;
+                            border-radius: 16px;
                             padding: 12px 16px;
                             display: flex;
                             align-items: center;
@@ -448,13 +448,6 @@
                             flex-shrink: 0;
                         }
 
-                        .lb-card-info {
-                            display: flex;
-                            flex-direction: column;
-                            min-width: 0;
-                            flex: 1;
-                        }
-
                         .lb-card-name {
                             font-weight: 700;
                             font-size: 14px;
@@ -462,15 +455,8 @@
                             white-space: nowrap;
                             overflow: hidden;
                             text-overflow: ellipsis;
-                        }
-
-                        .lb-card-meta {
-                            font-size: 11px;
-                            font-weight: 600;
-                            color: #0284c7;
-                            white-space: nowrap;
-                            overflow: hidden;
-                            text-overflow: ellipsis;
+                            min-width: 0;
+                            flex: 1;
                         }
 
                         .lb-card-right {
@@ -489,11 +475,15 @@
                             white-space: nowrap;
                         }
 
-                        @media (max-width: 480px) {
-                            .lb-podium-grid { gap: 6px; }
-                            .lb-podium-name { font-size: 11px; }
-                            .lb-podium-worked { font-size: 10px; }
-                            .lb-acc-pill { font-size: 9px; padding: 1.5px 5px; }
+                        @media (max-width: 520px) {
+                            .lb-podium-grid { gap: 6px; margin: 26px 0 22px; }
+                            .lb-avatar-sm { width: 46px; height: 46px; }
+                            .lb-avatar-lg { width: 58px; height: 58px; }
+                            .lb-podium-name { font-size: 11px; padding: 0 2px; }
+                            .lb-podium-name--first { font-size: 12px; }
+                            .lb-podium-worked { font-size: 11px; }
+                            .lb-podium-worked--first { font-size: 12px; }
+                            .lb-acc-pill { font-size: 9.5px; padding: 1.5px 6px; }
                             .rank-card { padding: 10px 12px; gap: 8px; }
                             .lb-card-left { gap: 8px; }
                             .lb-card-avatar { width: 34px; height: 34px; }
@@ -526,32 +516,28 @@
                     <div class="lb-container-${theme} theme-${theme}">
                         ${podiumHtml}
                         <div class="leaderboard-wrapper">
-                            ${others.map((player, index) => this.generatePlayerCard(player, index + 3, formatDuration, formatMetaLabel)).join('')}
+                            ${others.map((player, index) => this.generatePlayerCard(player, index + 3, renderDualDuration)).join('')}
                         </div>
                     </div>
                 `;
             }
 
-            generatePlayerCard(player, index, formatDuration, formatMetaLabel) {
+            generatePlayerCard(player, index, renderDualDuration) {
                 const rank = index + 1;
                 const delayClass = `delay-${Math.min((index + 1) * 50, 1000)}`;
-                const metaLabel = formatMetaLabel(player);
 
                 return `
                     <div class="rank-card animate-entrance ${delayClass}">
                         <div class="lb-card-left">
                             <div class="lb-rank-badge">${rank}</div>
                             <img src="${player.avatar}" alt="${player.name}" class="lb-card-avatar">
-                            <div class="lb-card-info">
-                                <span class="lb-card-name" title="${player.name}">${player.name}</span>
-                                ${metaLabel ? `<span class="lb-card-meta">${metaLabel}</span>` : ''}
-                            </div>
+                            <span class="lb-card-name" title="${player.name}">${player.name}</span>
                         </div>
                         <div class="lb-card-right">
-                            <span class="lb-card-worked">${formatDuration(player.worked_minutes ?? player.score)}</span>
+                            <span class="lb-card-worked">${renderDualDuration(player.worked_minutes ?? player.score)}</span>
                             <span class="lb-acc-pill">
                                 <span class="lb-acc-dot"></span>
-                                Acc: ${formatDuration(player.approved_minutes ?? 0)}
+                                <span>Acc: ${renderDualDuration(player.approved_minutes ?? 0)}</span>
                             </span>
                         </div>
                     </div>

@@ -43,7 +43,7 @@
         })->values();
     @endphp
 
-    <div class="py-8" 
+    <div class="py-6 sm:py-8 pb-24 lg:pb-10" 
          x-data="{
             showAddWorkerModal: {{ $errors->any() ? 'true' : 'false' }},
             showEditModal: false,
@@ -285,29 +285,29 @@
 
             <div class="bg-white rounded-2xl sm:rounded-[32px] p-4 sm:p-6 border border-gray-150 shadow-sm">
                 <!-- Header Title & Add Manual Button -->
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 pb-4 border-b border-gray-100 mb-4">
-                    <div>
-                        <div class="flex items-center gap-2">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-4 border-b border-gray-100 mb-4">
+                    <div class="min-w-0">
+                        <div class="flex flex-wrap items-center gap-2">
                             <span class="block text-sm sm:text-base font-bold text-gray-900">{{ $partner->isMainAccount() ? 'Manajemen Sub-Akun' : 'Manajemen Anggota Tim' }}</span>
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-100">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-100 whitespace-nowrap">
                                 Rate Rp{{ number_format($partner->subWorkerHourlyRate(), 0, ',', '.') }}/jam
                             </span>
                         </div>
-                        <span class="text-xs text-gray-400">
+                        <span class="text-xs text-gray-400 block mt-0.5 leading-relaxed">
                             {{ $partner->isMainAccount() ? 'Daftar sub-akun di bawah naungan Main Account Anda (email @kamerakitaid.site terhubung ke Mailbox OTP)' : 'Daftar worker di bawah naungan Anda' }}
                         </span>
                     </div>
-                    <button @click="showAddWorkerModal = true" class="w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                        {{ $partner->isMainAccount() ? 'Tambah Sub-Akun' : 'Tambah Anggota Manual' }}
+                    <button @click="showAddWorkerModal = true" class="w-full sm:w-auto shrink-0 px-4 py-2.5 sm:py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        <span>{{ $partner->isMainAccount() ? 'Tambah Sub-Akun' : 'Tambah Anggota Manual' }}</span>
                     </button>
                 </div>
 
                 <!-- Referral Info Box -->
-                <div class="mb-4 bg-gradient-to-br from-indigo-50/80 to-blue-50/80 border border-indigo-100 rounded-xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                    <div>
+                <div class="mb-4 bg-gradient-to-br from-indigo-50/80 to-blue-50/80 border border-indigo-100 rounded-2xl p-4 sm:p-5 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 sm:gap-4">
+                    <div class="min-w-0">
                         <h4 class="font-bold text-indigo-900 text-sm">{{ $partner->isMainAccount() ? 'Daftar Sub-Akun via Link Referral' : 'Undang Worker secara Mandiri' }}</h4>
-                        <p class="text-xs text-indigo-700 mt-1">
+                        <p class="text-xs text-indigo-700 mt-1 leading-relaxed">
                             @if($partner->isMainAccount())
                                 Gunakan link ini untuk mendaftarkan sub-akun secara mandiri agar <b>langsung terhubung</b> ke Main Account Anda (Tarif Rp60.000/jam).
                             @else
@@ -315,8 +315,8 @@
                             @endif
                         </p>
                     </div>
-                    <div class="flex items-center gap-2 w-full sm:w-auto">
-                        <input type="text" readonly value="{{ route('register', ['ref' => $partner->referral_code]) }}" id="refLink" class="text-xs border-indigo-200 bg-white shadow-sm rounded-lg px-3 py-2 w-full sm:w-64 text-gray-600 focus:ring-0 focus:border-indigo-200" title="Link Pendaftaran Worker">
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full lg:w-auto shrink-0">
+                        <input type="text" readonly value="{{ route('register', ['ref' => $partner->referral_code]) }}" id="refLink" class="text-xs border-indigo-200 bg-white shadow-sm rounded-xl px-3 py-2.5 w-full lg:w-64 min-w-0 text-gray-600 focus:ring-0 focus:border-indigo-200" title="Link Pendaftaran Worker">
                         <button type="button" onclick="
                             const copyText = document.getElementById('refLink');
                             copyText.select();
@@ -332,42 +332,57 @@
                                 btn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
                                 btn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
                             }, 2000);
-                        " class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2.5 rounded-lg transition-colors shadow-sm whitespace-nowrap">
+                        " class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-colors shadow-sm whitespace-nowrap shrink-0">
                             Salin Link
                         </button>
                     </div>
                 </div>
 
                 <!-- Setting Rekening Worker Tim Toggle -->
-                <div class="mb-6 bg-white border border-gray-200/80 rounded-xl p-4 sm:p-5 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                    <div class="space-y-1">
-                        <div class="flex items-center gap-2">
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold {{ $partner->bypassesWorkerBankOnboarding() ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200' }}">
-                                {{ $partner->bypassesWorkerBankOnboarding() ? '● Rekening Mitra Terpusat (Aktif)' : '○ Rekening Mandiri Worker' }}
+                <div class="mb-5 bg-white border border-gray-200/80 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
+                    <div class="space-y-1.5 min-w-0">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="text-xs sm:text-sm font-bold text-gray-900">
+                                {{ $partner->isMainAccount() ? 'Sistem Pencairan & Rekening Utama' : 'Sistem Pencairan & Rekening Tim' }}
                             </span>
-                            <span class="text-xs font-bold text-gray-800">Sistem Pencairan & Rekening Tim</span>
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold {{ $partner->bypassesWorkerBankOnboarding() ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200' }}">
+                                <span class="w-1.5 h-1.5 rounded-full {{ $partner->bypassesWorkerBankOnboarding() ? 'bg-emerald-500' : 'bg-amber-500' }}"></span>
+                                @if($partner->isMainAccount())
+                                    {{ $partner->bypassesWorkerBankOnboarding() ? 'Rekening Utama Terpusat (Aktif)' : 'Rekening Mandiri Sub-Akun' }}
+                                @else
+                                    {{ $partner->bypassesWorkerBankOnboarding() ? 'Rekening Mitra Terpusat (Aktif)' : 'Rekening Mandiri Worker' }}
+                                @endif
+                            </span>
                         </div>
                         <p class="text-xs text-gray-500 leading-relaxed max-w-2xl">
-                            @if($partner->bypassesWorkerBankOnboarding())
-                                Worker di tim Anda <b>otomatis menggunakan rekening Anda</b> untuk pencairan gaji. Worker langsung aktif dan tidak perlu mengisi nomor rekening saat pertama kali login (onboarding dibypass).
+                            @if($partner->isMainAccount())
+                                @if($partner->bypassesWorkerBankOnboarding())
+                                    Seluruh sub-akun Anda <b>otomatis menggunakan rekening utama Anda</b> untuk pencairan gaji. Sub-akun langsung aktif tanpa perlu mengisi rekening saat pertama kali login (onboarding dilewati).
+                                @else
+                                    Setiap sub-akun Anda <b>wajib mengisi rekening pribadi masing-masing</b> saat pertama kali login. Pencairan gaji dikirim langsung ke rekening masing-masing.
+                                @endif
                             @else
-                                Worker di tim Anda <b>wajib mengisi rekening pribadi masing-masing</b> saat pertama kali login. Pencairan gaji dikirim langsung ke rekening masing-masing worker.
+                                @if($partner->bypassesWorkerBankOnboarding())
+                                    Worker di tim Anda <b>otomatis menggunakan rekening Anda</b> untuk pencairan gaji. Worker langsung aktif dan tidak perlu mengisi nomor rekening saat pertama kali login (onboarding dibypass).
+                                @else
+                                    Worker di tim Anda <b>wajib mengisi rekening pribadi masing-masing</b> saat pertama kali login. Pencairan gaji dikirim langsung ke rekening masing-masing worker.
+                                @endif
                             @endif
                         </p>
                     </div>
 
-                    <form method="POST" action="{{ route('vendor.workers.toggle-bank-bypass') }}" class="shrink-0 w-full md:w-auto">
+                    <form method="POST" action="{{ route('vendor.workers.toggle-bank-bypass') }}" class="shrink-0 w-full lg:w-auto">
                         @csrf
                         <input type="hidden" name="bypass" value="{{ $partner->bypassesWorkerBankOnboarding() ? '0' : '1' }}">
                         <button type="submit" 
-                                onclick="return confirm('Apakah Anda yakin ingin mengubah sistem rekening worker tim menjadi: {{ $partner->bypassesWorkerBankOnboarding() ? 'Rekening Mandiri Worker' : 'Rekening Mitra Terpusat' }}?')"
-                                class="w-full md:w-auto inline-flex items-center justify-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-xl border transition shadow-2xs {{ $partner->bypassesWorkerBankOnboarding() ? 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50' : 'bg-indigo-600 border-indigo-600 text-white hover:bg-indigo-700' }}">
+                                onclick="return confirm('Apakah Anda yakin ingin mengubah sistem rekening menjadi: {{ $partner->bypassesWorkerBankOnboarding() ? 'Rekening Mandiri' : ($partner->isMainAccount() ? 'Rekening Utama Terpusat' : 'Rekening Mitra Terpusat') }}?')"
+                                class="w-full lg:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-xl border transition shadow-2xs {{ $partner->bypassesWorkerBankOnboarding() ? 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50' : 'bg-indigo-600 border-indigo-600 text-white hover:bg-indigo-700' }}">
                             @if($partner->bypassesWorkerBankOnboarding())
-                                <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                                <svg class="w-3.5 h-3.5 text-gray-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
                                 <span>Ubah ke Rekening Mandiri</span>
                             @else
-                                <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                                <span>Aktifkan Rekening Mitra Terpusat</span>
+                                <svg class="w-3.5 h-3.5 text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                <span>{{ $partner->isMainAccount() ? 'Aktifkan Rekening Utama Terpusat' : 'Aktifkan Rekening Mitra Terpusat' }}</span>
                             @endif
                         </button>
                     </form>
@@ -375,7 +390,7 @@
 
                 <!-- Toolbar Pencarian, Filter & Tombol Salin Kontak -->
                 <div class="mb-5 space-y-3">
-                    <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
+                    <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-2.5 sm:gap-3">
                         <!-- Input Search -->
                         <div class="relative flex-1">
                             <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
@@ -398,12 +413,12 @@
                         </div>
 
                         <!-- Filter Dropdowns & Salin Button -->
-                        <div class="flex flex-wrap items-center gap-2">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 lg:flex lg:flex-wrap items-center gap-2">
                             <!-- Filter Jam Kerja -->
-                            <div class="relative flex-1 sm:flex-none">
+                            <div class="relative">
                                 <select x-model="hoursFilter" 
                                         @change="currentPage = 1"
-                                        class="w-full sm:w-auto py-2.5 pl-3 pr-8 border border-gray-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white shadow-xs font-medium text-gray-700">
+                                        class="w-full lg:w-auto py-2.5 pl-3 pr-8 border border-gray-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white shadow-xs font-medium text-gray-700">
                                     <option value="all">Semua Jam Kerja</option>
                                     <option value="pending">Ada Jam Pending ( > 0m )</option>
                                     <option value="active">Pernah Kerja ( All Time > 0 )</option>
@@ -412,10 +427,10 @@
                             </div>
 
                             <!-- Filter Rekening Bank -->
-                            <div class="relative flex-1 sm:flex-none">
+                            <div class="relative">
                                 <select x-model="bankFilter" 
                                         @change="currentPage = 1"
-                                        class="w-full sm:w-auto py-2.5 pl-3 pr-8 border border-gray-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white shadow-xs font-medium text-gray-700">
+                                        class="w-full lg:w-auto py-2.5 pl-3 pr-8 border border-gray-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white shadow-xs font-medium text-gray-700">
                                     <option value="all">Semua Rekening</option>
                                     <option value="has_bank">Sudah Isi Rekening</option>
                                     <option value="no_bank">Belum Isi Rekening</option>
@@ -423,10 +438,10 @@
                             </div>
 
                             <!-- Urutkan / Sort -->
-                            <div class="relative flex-1 sm:flex-none">
+                            <div class="relative">
                                 <select x-model="sortBy" 
                                         @change="currentPage = 1"
-                                        class="w-full sm:w-auto py-2.5 pl-3 pr-8 border border-gray-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white shadow-xs font-medium text-gray-700">
+                                        class="w-full lg:w-auto py-2.5 pl-3 pr-8 border border-gray-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white shadow-xs font-medium text-gray-700">
                                     <option value="default">Urutan Default</option>
                                     <option value="registered_desc">Pendaftaran Terbaru</option>
                                     <option value="registered_asc">Pendaftaran Terlama</option>
@@ -439,11 +454,11 @@
                             </div>
 
                             <!-- Dropdown Salin Data Kontak (Split Button persis seperti di Admin) -->
-                            <div class="relative flex-none" @click.away="copyDropdown = false">
-                                <div class="inline-flex rounded-xl shadow-xs">
+                            <div class="relative sm:col-span-3 lg:flex-none" @click.away="copyDropdown = false">
+                                <div class="flex lg:inline-flex rounded-xl shadow-xs w-full lg:w-auto">
                                     <button type="button" 
                                             @click="openCopyModal('email')" 
-                                            class="justify-center inline-flex items-center px-3.5 py-2.5 bg-white border border-gray-200 rounded-l-xl font-semibold text-xs sm:text-sm text-gray-700 hover:bg-gray-50 hover:text-indigo-600 transition gap-1.5" 
+                                            class="flex-1 lg:flex-none justify-center inline-flex items-center px-3.5 py-2.5 bg-white border border-gray-200 rounded-l-xl font-semibold text-xs sm:text-sm text-gray-700 hover:bg-gray-50 hover:text-indigo-600 transition gap-1.5" 
                                             title="Salin Kontak dari Hasil Filter">
                                         <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
@@ -452,7 +467,7 @@
                                     </button>
                                     <button type="button" 
                                             @click="copyDropdown = !copyDropdown" 
-                                            class="inline-flex items-center px-2.5 py-2.5 bg-white border border-l-0 border-gray-200 rounded-r-xl text-gray-600 hover:bg-gray-50 hover:text-indigo-600 transition" 
+                                            class="inline-flex items-center px-3 py-2.5 bg-white border border-l-0 border-gray-200 rounded-r-xl text-gray-600 hover:bg-gray-50 hover:text-indigo-600 transition" 
                                             title="Pilihan Format Salin">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                                     </button>
@@ -520,8 +535,72 @@
                     </div>
                 </div>
 
-                <!-- Table Worker -->
-                <div class="overflow-x-auto pb-4">
+                <!-- Mobile & Tablet Card List (<= 1023px) -->
+                <div class="lg:hidden space-y-3 pb-2">
+                    <template x-for="item in paginatedWorkers" :key="'mob-' + item.id">
+                        <div class="bg-slate-50/70 border border-slate-200/80 rounded-2xl p-4 space-y-3">
+                            <!-- Card Top: ID, Name & Edit Button -->
+                            <div class="flex items-start justify-between gap-2">
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex flex-wrap items-center gap-1.5 mb-1">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-100" x-text="item.mitra_id"></span>
+                                        <template x-if="item.bank_account_number">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                Bank Terisi
+                                            </span>
+                                        </template>
+                                    </div>
+                                    <h4 class="font-bold text-sm text-gray-900 truncate" x-text="item.full_name"></h4>
+                                    <p class="text-xs text-gray-500 truncate mt-0.5" x-text="item.email || '-'"></p>
+                                </div>
+                                <button type="button" @click="openEditModal(item)" class="shrink-0 px-3 py-1.5 bg-white border border-gray-200 hover:border-blue-300 text-blue-600 rounded-xl text-xs font-bold shadow-2xs transition">
+                                    Edit
+                                </button>
+                            </div>
+
+                            <!-- 4-Stat Compact Grid -->
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 border-t border-slate-200/60">
+                                <div class="bg-white rounded-xl px-3 py-2 border border-slate-100">
+                                    <span class="block text-[10px] font-semibold text-gray-400 uppercase">All Time</span>
+                                    <span class="block text-xs font-bold text-gray-700 mt-0.5" x-text="item.all_time_hours"></span>
+                                </div>
+                                <div class="bg-white rounded-xl px-3 py-2 border border-slate-100">
+                                    <span class="block text-[10px] font-semibold text-gray-400 uppercase">Paid</span>
+                                    <span class="block text-xs font-bold text-emerald-700 mt-0.5" x-text="item.paid_hours"></span>
+                                </div>
+                                <div class="bg-white rounded-xl px-3 py-2 border border-slate-100">
+                                    <span class="block text-[10px] font-semibold text-gray-400 uppercase">Pending</span>
+                                    <span class="block text-xs font-bold text-amber-700 mt-0.5" x-text="item.pending_hours"></span>
+                                </div>
+                                <div class="bg-white rounded-xl px-3 py-2 border border-slate-100">
+                                    <span class="block text-[10px] font-semibold text-gray-400 uppercase">Est. Pending</span>
+                                    <span class="block text-xs font-extrabold text-slate-900 mt-0.5" x-text="'Rp' + item.pending_earnings_formatted"></span>
+                                </div>
+                            </div>
+
+                            <!-- Card Footer: WhatsApp & Registered Date -->
+                            <div class="flex flex-wrap items-center justify-between gap-2 pt-1 text-[11px] text-gray-500">
+                                <a :href="'https://wa.me/' + item.whatsapp_clean" target="_blank" class="inline-flex items-center gap-1.5 text-emerald-700 font-semibold hover:underline">
+                                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                                    <span x-text="item.whatsapp_number"></span>
+                                </a>
+                                <span class="text-gray-400">Daftar: <strong class="text-gray-600" x-text="item.registered_at"></strong></span>
+                            </div>
+                        </div>
+                    </template>
+
+                    <!-- Mobile Empty States -->
+                    <div x-show="workers.length > 0 && filteredWorkers.length === 0" style="display: none;" class="py-10 text-center text-gray-500 text-xs bg-slate-50 rounded-2xl border border-slate-100 p-4">
+                        <p class="font-medium text-gray-700 mb-2">Tidak ada akun yang sesuai dengan filter.</p>
+                        <button type="button" @click="resetFilters()" class="text-xs text-indigo-600 font-bold hover:underline">Reset Filter &amp; Pencarian</button>
+                    </div>
+                    <div x-show="workers.length === 0" style="display: none;" class="py-10 text-center text-gray-400 text-xs bg-slate-50 rounded-2xl border border-slate-100 p-4">
+                        {{ $partner->isMainAccount() ? 'Belum ada Sub-Akun terdaftar di bawah naungan Anda.' : 'Belum ada Worker terdaftar di bawah naungan Anda.' }}
+                    </div>
+                </div>
+
+                <!-- Table Worker (Desktop >= 1024px) -->
+                <div class="hidden lg:block overflow-x-auto pb-4">
                     <table class="w-full text-sm min-w-[700px]">
                         <thead>
                             <tr class="text-gray-500 border-b border-gray-100">

@@ -22,8 +22,8 @@
         </div>
     </x-slot>
 
-    <div class="py-8">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    <div class="py-6 sm:py-8 pb-24 md:pb-8">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 space-y-6">
 
             <!-- Active Approval Success Banner with WhatsApp Action -->
             @if(session('manual_wa_url'))

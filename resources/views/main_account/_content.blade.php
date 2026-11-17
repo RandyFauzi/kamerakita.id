@@ -65,6 +65,11 @@
         transform: translateY(-1px);
         box-shadow: 0 14px 24px -6px rgba(2, 132, 199, 0.42);
     }
+    @media (max-width: 640px) {
+        .kk-btn-blue {
+            width: 100%;
+        }
+    }
 </style>
 
 <!-- Session Notifications -->
