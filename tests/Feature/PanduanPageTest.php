@@ -35,8 +35,10 @@ class PanduanPageTest extends TestCase
             $response->assertSeeText('Panduan');
             $response->assertSeeText('Video Tutorial Daftar KameraKita');
             $response->assertSeeText('Video Tutorial Daftar Atlas');
+            $response->assertSeeText('Tonton Tutorial');
             $response->assertSee('assets/tutorials/tutorial-daftar-kamerakita.mp4', false);
             $response->assertSee('assets/tutorials/tutorial-daftar-atlas.mp4', false);
+            $response->assertSee('x-show="activeTutorial !== null"', false);
             $response->assertDontSee('ManualBook_Atlas.pdf', false);
             $response->assertDontSeeText('Unduh PDF');
             $response->assertDontSeeText('Panduan Book');
