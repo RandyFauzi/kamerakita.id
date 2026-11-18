@@ -24,24 +24,34 @@ class CalculatePartnerMetricsService
 
         $approvedReports = $allReports->where('qc_status', 'approved');
 
-        // Worker Metrics via AtlasTask
-        // Assuming AtlasWorker is linked to the Partner's user_id or email
-        $atlasWorkerIds = \App\Models\AtlasWorker::where(function ($q) use ($worker) {
-            $q->where('user_id', $worker->user_id)
-              ->orWhere('atlas_email', $worker->email);
-        })->pluck('id');
+        // Worker Metrics via AtlasTask (recording-only source)
+        $atlasWorkerIds = $this->resolveAtlasWorkerIds($worker);
 
-        $totalSubmittedMinutes = (float) (\App\Models\AtlasTask::whereIn('atlas_worker_id', $atlasWorkerIds)->sum('worked_minutes') ?? 0);
-        $allTimeMinutes = (float) (\App\Models\AtlasTask::whereIn('atlas_worker_id', $atlasWorkerIds)->sum('approved_minutes') ?? 0);
-        $todaySubmittedMinutes = (float) (\App\Models\AtlasTask::whereIn('atlas_worker_id', $atlasWorkerIds)
-            ->whereDate('task_date', now())
-            ->sum('worked_minutes') ?? 0);
-            
-        $highestDailyMinutes = (float) (\App\Models\AtlasTask::whereIn('atlas_worker_id', $atlasWorkerIds)
-            ->selectRaw('SUM(worked_minutes) as daily_total')
-            ->groupBy('task_date')
-            ->get()
-            ->max('daily_total') ?? 360); // Fallback to 6 hours (360 mins) if no data
+        $recordingAgg = $atlasWorkerIds->isNotEmpty()
+            ? \App\Models\AtlasTask::whereIn('atlas_worker_id', $atlasWorkerIds)
+                ->selectRaw('COALESCE(SUM(worked_minutes), 0) as worked_minutes, COALESCE(SUM(approved_minutes), 0) as approved_minutes, COALESCE(SUM(review_minutes), 0) as review_minutes, COALESCE(SUM(rejected_minutes), 0) as rejected_minutes')
+                ->first()
+            : null;
+
+        $totalSubmittedMinutes = (float) ($recordingAgg->worked_minutes ?? 0);
+        $allTimeMinutes = (float) ($recordingAgg->approved_minutes ?? 0);
+        $recordingBillableMinutes = (float) ($recordingAgg->approved_minutes ?? 0);
+        $recordingPendingMinutes = (float) ($recordingAgg->review_minutes ?? 0);
+        $recordingRejectedMinutes = (float) ($recordingAgg->rejected_minutes ?? 0);
+
+        $todaySubmittedMinutes = $atlasWorkerIds->isNotEmpty()
+            ? (float) (\App\Models\AtlasTask::whereIn('atlas_worker_id', $atlasWorkerIds)
+                ->whereDate('task_date', now())
+                ->sum('worked_minutes') ?? 0)
+            : 0.0;
+
+        $highestDailyMinutes = $atlasWorkerIds->isNotEmpty()
+            ? (float) (\App\Models\AtlasTask::whereIn('atlas_worker_id', $atlasWorkerIds)
+                ->selectRaw('SUM(worked_minutes) as daily_total')
+                ->groupBy('task_date')
+                ->get()
+                ->max('daily_total') ?? 360)
+            : 360.0;
 
         $paidMinutes = (float) $approvedReports->where('payment_status', 'paid')
             ->sum('approved_duration_minutes');
@@ -61,10 +71,18 @@ class CalculatePartnerMetricsService
             'all_time_minutes' => round($allTimeMinutes, 1),
             'paid_minutes' => round($paidMinutes, 1),
             'pending_minutes' => round($pendingMinutes, 1),
+            'recording_worked_minutes' => round($totalSubmittedMinutes, 1),
+            'recording_billable_minutes' => round($recordingBillableMinutes, 1),
+            'recording_pending_minutes' => round($recordingPendingMinutes, 1),
+            'recording_rejected_minutes' => round($recordingRejectedMinutes, 1),
             'total_submitted_hours_formatted' => $this->formatMinutes($totalSubmittedMinutes),
             'all_time_hours_formatted' => $this->formatMinutes($allTimeMinutes),
             'paid_hours_formatted' => $this->formatMinutes($paidMinutes),
             'pending_hours_formatted' => $this->formatMinutes($pendingMinutes),
+            'recording_worked_hours_formatted' => $this->formatMinutes($totalSubmittedMinutes),
+            'recording_billable_hours_formatted' => $this->formatMinutes($recordingBillableMinutes),
+            'recording_pending_hours_formatted' => $this->formatMinutes($recordingPendingMinutes),
+            'recording_rejected_hours_formatted' => $this->formatMinutes($recordingRejectedMinutes),
             'paid_earnings' => $paidEarnings,
             'pending_earnings' => $pendingEarnings,
             'total_earnings' => $totalEarnings,
@@ -187,17 +205,20 @@ class CalculatePartnerMetricsService
             $qcTotalVideosCount = $worker->videoWorkReports->count();
 
             // 2. AtlasTask counts & minutes (Atlas Worker recordings)
-            $atlasWorkerIds = \App\Models\AtlasWorker::where(function ($q) use ($worker) {
-                $q->where('user_id', $worker->user_id)
-                  ->orWhere('atlas_email', $worker->email);
-            })->pluck('id');
+            $atlasWorkerIds = $this->resolveAtlasWorkerIds($worker);
 
-            $atlasTasksQuery = \App\Models\AtlasTask::whereIn('atlas_worker_id', $atlasWorkerIds);
-            $atlasApprovedTasks = (clone $atlasTasksQuery)->where('approved_minutes', '>', 0);
-            $atlasApprovedVideosCount = (clone $atlasApprovedTasks)->count();
-            $atlasApprovedMinutes = (float) (clone $atlasApprovedTasks)->sum('approved_minutes');
-            $atlasReportedMinutes = (float) (clone $atlasTasksQuery)->sum('worked_minutes');
-            $atlasTotalVideosCount = (clone $atlasTasksQuery)->count();
+            $atlasAgg = $atlasWorkerIds->isNotEmpty()
+                ? \App\Models\AtlasTask::whereIn('atlas_worker_id', $atlasWorkerIds)
+                    ->selectRaw('COUNT(*) as task_count, SUM(CASE WHEN approved_minutes > 0 THEN 1 ELSE 0 END) as approved_count, COALESCE(SUM(worked_minutes), 0) as worked_minutes, COALESCE(SUM(approved_minutes), 0) as approved_minutes, COALESCE(SUM(review_minutes), 0) as review_minutes, COALESCE(SUM(rejected_minutes), 0) as rejected_minutes')
+                    ->first()
+                : null;
+
+            $atlasApprovedVideosCount = (int) ($atlasAgg->approved_count ?? 0);
+            $atlasApprovedMinutes = (float) ($atlasAgg->approved_minutes ?? 0);
+            $atlasReportedMinutes = (float) ($atlasAgg->worked_minutes ?? 0);
+            $atlasPendingMinutes = (float) ($atlasAgg->review_minutes ?? 0);
+            $atlasRejectedMinutes = (float) ($atlasAgg->rejected_minutes ?? 0);
+            $atlasTotalVideosCount = (int) ($atlasAgg->task_count ?? 0);
 
             // Combined metrics
             $totalApprovedVideos = $qcApprovedVideosCount + $atlasApprovedVideosCount;
@@ -233,6 +254,14 @@ class CalculatePartnerMetricsService
                 'approved_hours_formatted' => $this->formatMinutes((int)$totalApprovedMinutes),
                 'approved_videos_count' => $totalApprovedVideos,
                 'approved_minutes' => (int)$totalApprovedMinutes,
+                'recording_worked_minutes' => round($atlasReportedMinutes, 1),
+                'recording_billable_minutes' => round($atlasApprovedMinutes, 1),
+                'recording_pending_minutes' => round($atlasPendingMinutes, 1),
+                'recording_rejected_minutes' => round($atlasRejectedMinutes, 1),
+                'recording_worked_hours_formatted' => $this->formatMinutes($atlasReportedMinutes),
+                'recording_billable_hours_formatted' => $this->formatMinutes($atlasApprovedMinutes),
+                'recording_pending_hours_formatted' => $this->formatMinutes($atlasPendingMinutes),
+                'recording_rejected_hours_formatted' => $this->formatMinutes($atlasRejectedMinutes),
                 'milestone_reached' => $workerCommission !== null,
                 'milestone_status' => $workerCommission?->status,
                 'commission_amount' => $workerCommission ? (int)$workerCommission->commission_amount : \App\Services\CheckRecruiterMilestone::COMMISSION_AMOUNT,
@@ -432,5 +461,23 @@ class CalculatePartnerMetricsService
             return "{$hours}j {$remaining}m";
         }
         return "{$remaining}m";
+    }
+
+    private function resolveAtlasWorkerIds(Partner $partner): \Illuminate\Support\Collection
+    {
+        if (! $partner->user_id && empty($partner->email)) {
+            return collect();
+        }
+
+        return \App\Models\AtlasWorker::where(function ($q) use ($partner) {
+            if ($partner->user_id) {
+                $q->where('user_id', $partner->user_id);
+            }
+            if (! empty($partner->email)) {
+                $partner->user_id
+                    ? $q->orWhere('atlas_email', $partner->email)
+                    : $q->where('atlas_email', $partner->email);
+            }
+        })->pluck('id');
     }
 }

@@ -30,14 +30,14 @@
                 'bank_name' => $worker->bank_name ?? '',
                 'bank_account_number' => $worker->bank_account_number ?? '',
                 'bank_account_owner' => $worker->bank_account_owner ?? '',
-                'all_time_minutes' => (int)($m['all_time_minutes'] ?? 0),
-                'all_time_hours' => $m['all_time_hours_formatted'] ?? '0m',
-                'paid_minutes' => (int)($m['paid_minutes'] ?? 0),
-                'paid_hours' => $m['paid_hours_formatted'] ?? '0m',
-                'pending_minutes' => (int)($m['pending_minutes'] ?? 0),
-                'pending_hours' => $m['pending_hours_formatted'] ?? '0m',
-                'pending_earnings' => (float)($m['pending_earnings'] ?? 0),
-                'pending_earnings_formatted' => number_format((float)($m['pending_earnings'] ?? 0), 0, ',', '.'),
+                'all_time_minutes' => (int)($m['recording_worked_minutes'] ?? 0),
+                'all_time_hours' => $m['recording_worked_hours_formatted'] ?? '0m',
+                'billable_minutes' => (int)($m['recording_billable_minutes'] ?? 0),
+                'billable_hours' => $m['recording_billable_hours_formatted'] ?? '0m',
+                'pending_minutes' => (int)($m['recording_pending_minutes'] ?? 0),
+                'pending_hours' => $m['recording_pending_hours_formatted'] ?? '0m',
+                'rejected_minutes' => (int)($m['recording_rejected_minutes'] ?? 0),
+                'rejected_hours' => $m['recording_rejected_hours_formatted'] ?? '0m',
                 'edit_url' => route('vendor.workers.update', $worker->id),
             ];
         })->values();
@@ -86,9 +86,13 @@
                     });
                 }
 
-                // 2. Filter Jam Kerja
-                if (this.hoursFilter === 'pending') {
+                // 2. Filter Jam Rekaman
+                if (this.hoursFilter === 'billable') {
+                    list = list.filter(w => (w.billable_minutes || 0) > 0);
+                } else if (this.hoursFilter === 'pending') {
                     list = list.filter(w => (w.pending_minutes || 0) > 0);
+                } else if (this.hoursFilter === 'rejected') {
+                    list = list.filter(w => (w.rejected_minutes || 0) > 0);
                 } else if (this.hoursFilter === 'active') {
                     list = list.filter(w => (w.all_time_minutes || 0) > 0);
                 } else if (this.hoursFilter === 'zero') {
@@ -114,10 +118,12 @@
                     list.sort((a, b) => (a.registered_at_raw || 0) - (b.registered_at_raw || 0));
                 } else if (this.sortBy === 'all_time_desc') {
                     list.sort((a, b) => (b.all_time_minutes || 0) - (a.all_time_minutes || 0));
+                } else if (this.sortBy === 'billable_desc') {
+                    list.sort((a, b) => (b.billable_minutes || 0) - (a.billable_minutes || 0));
                 } else if (this.sortBy === 'pending_desc') {
                     list.sort((a, b) => (b.pending_minutes || 0) - (a.pending_minutes || 0));
-                } else if (this.sortBy === 'earnings_desc') {
-                    list.sort((a, b) => (b.pending_earnings || 0) - (a.pending_earnings || 0));
+                } else if (this.sortBy === 'rejected_desc') {
+                    list.sort((a, b) => (b.rejected_minutes || 0) - (a.rejected_minutes || 0));
                 }
 
                 return list;
@@ -414,15 +420,17 @@
 
                         <!-- Filter Dropdowns & Salin Button -->
                         <div class="grid grid-cols-1 sm:grid-cols-3 lg:flex lg:flex-wrap items-center gap-2">
-                            <!-- Filter Jam Kerja -->
+                            <!-- Filter Jam Rekaman -->
                             <div class="relative">
                                 <select x-model="hoursFilter" 
                                         @change="currentPage = 1"
                                         class="w-full lg:w-auto py-2.5 pl-3 pr-8 border border-gray-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white shadow-xs font-medium text-gray-700">
-                                    <option value="all">Semua Jam Kerja</option>
-                                    <option value="pending">Ada Jam Pending ( > 0m )</option>
-                                    <option value="active">Pernah Kerja ( All Time > 0 )</option>
-                                    <option value="zero">Belum Ada Jam ( 0m )</option>
+                                    <option value="all">Semua Jam Rekaman</option>
+                                    <option value="billable">Ada Billable ( &gt; 0m )</option>
+                                    <option value="pending">Ada Pending ( &gt; 0m )</option>
+                                    <option value="rejected">Ada Reject ( &gt; 0m )</option>
+                                    <option value="active">Ada Rekaman ( All Time &gt; 0 )</option>
+                                    <option value="zero">Belum Ada Rekaman ( 0m )</option>
                                 </select>
                             </div>
 
@@ -447,9 +455,10 @@
                                     <option value="registered_asc">Pendaftaran Terlama</option>
                                     <option value="name_asc">Nama (A - Z)</option>
                                     <option value="name_desc">Nama (Z - A)</option>
-                                    <option value="all_time_desc">Jam All Time Tertinggi</option>
+                                    <option value="all_time_desc">Total Rekaman Tertinggi</option>
+                                    <option value="billable_desc">Jam Billable Tertinggi</option>
                                     <option value="pending_desc">Jam Pending Tertinggi</option>
-                                    <option value="earnings_desc">Estimasi Pending Gaji Tertinggi</option>
+                                    <option value="rejected_desc">Jam Reject Tertinggi</option>
                                 </select>
                             </div>
 
@@ -558,23 +567,23 @@
                                 </button>
                             </div>
 
-                            <!-- 4-Stat Compact Grid -->
+                            <!-- 4-Stat Compact Grid (Data Hasil Rekaman) -->
                             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 border-t border-slate-200/60">
                                 <div class="bg-white rounded-xl px-3 py-2 border border-slate-100">
                                     <span class="block text-[10px] font-semibold text-gray-400 uppercase">All Time</span>
                                     <span class="block text-xs font-bold text-gray-700 mt-0.5" x-text="item.all_time_hours"></span>
                                 </div>
                                 <div class="bg-white rounded-xl px-3 py-2 border border-slate-100">
-                                    <span class="block text-[10px] font-semibold text-gray-400 uppercase">Paid</span>
-                                    <span class="block text-xs font-bold text-emerald-700 mt-0.5" x-text="item.paid_hours"></span>
+                                    <span class="block text-[10px] font-semibold text-gray-400 uppercase">Billable</span>
+                                    <span class="block text-xs font-bold text-emerald-700 mt-0.5" x-text="item.billable_hours"></span>
                                 </div>
                                 <div class="bg-white rounded-xl px-3 py-2 border border-slate-100">
                                     <span class="block text-[10px] font-semibold text-gray-400 uppercase">Pending</span>
                                     <span class="block text-xs font-bold text-amber-700 mt-0.5" x-text="item.pending_hours"></span>
                                 </div>
                                 <div class="bg-white rounded-xl px-3 py-2 border border-slate-100">
-                                    <span class="block text-[10px] font-semibold text-gray-400 uppercase">Est. Pending</span>
-                                    <span class="block text-xs font-extrabold text-slate-900 mt-0.5" x-text="'Rp' + item.pending_earnings_formatted"></span>
+                                    <span class="block text-[10px] font-semibold text-gray-400 uppercase">Reject</span>
+                                    <span class="block text-xs font-bold text-rose-700 mt-0.5" x-text="item.rejected_hours"></span>
                                 </div>
                             </div>
 
@@ -607,9 +616,9 @@
                                 <th class="py-3 text-left font-semibold whitespace-nowrap px-2">ID Worker</th>
                                 <th class="py-3 text-left font-semibold whitespace-nowrap px-2">Nama Worker</th>
                                 <th class="py-3 text-left font-semibold whitespace-nowrap px-2">All Time</th>
-                                <th class="py-3 text-left font-semibold whitespace-nowrap px-2">Paid</th>
+                                <th class="py-3 text-left font-semibold whitespace-nowrap px-2">Billable</th>
                                 <th class="py-3 text-left font-semibold whitespace-nowrap px-2">Pending</th>
-                                <th class="py-3 text-left font-semibold whitespace-nowrap px-2">Estimasi Pending Gaji</th>
+                                <th class="py-3 text-left font-semibold whitespace-nowrap px-2">Reject</th>
                                 <th class="py-3 text-left font-semibold whitespace-nowrap px-2">WhatsApp</th>
                                 <th class="py-3 text-center font-semibold whitespace-nowrap px-2">Aksi</th>
                             </tr>
@@ -633,10 +642,10 @@
                                             <span>Daftar: <span class="font-medium text-gray-600" x-text="item.registered_at"></span></span>
                                         </div>
                                     </td>
-                                    <td class="py-3.5 px-2 text-gray-600 whitespace-nowrap" x-text="item.all_time_hours"></td>
-                                    <td class="py-3.5 px-2 text-emerald-800 whitespace-nowrap font-medium" x-text="item.paid_hours"></td>
-                                    <td class="py-3.5 px-2 text-amber-800 font-bold whitespace-nowrap" x-text="item.pending_hours"></td>
-                                    <td class="py-3.5 px-2 font-extrabold text-slate-800 whitespace-nowrap" x-text="'Rp' + item.pending_earnings_formatted"></td>
+                                    <td class="py-3.5 px-2 text-gray-700 font-semibold whitespace-nowrap" x-text="item.all_time_hours"></td>
+                                    <td class="py-3.5 px-2 text-emerald-700 whitespace-nowrap font-bold" x-text="item.billable_hours"></td>
+                                    <td class="py-3.5 px-2 text-amber-700 font-bold whitespace-nowrap" x-text="item.pending_hours"></td>
+                                    <td class="py-3.5 px-2 text-rose-700 font-bold whitespace-nowrap" x-text="item.rejected_hours"></td>
                                     <td class="py-3.5 px-2 text-indigo-600 font-medium whitespace-nowrap">
                                         <a :href="'https://wa.me/' + item.whatsapp_clean" target="_blank" class="hover:underline inline-flex items-center gap-1">
                                             <span x-text="item.whatsapp_number"></span>

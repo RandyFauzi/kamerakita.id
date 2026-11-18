@@ -35,6 +35,10 @@
                 'approved_hours_formatted' => $item['approved_hours_formatted'],
                 'approved_videos_count' => $item['approved_videos_count'],
                 'approved_minutes' => $item['approved_minutes'],
+                'recording_worked_hours_formatted' => $item['recording_worked_hours_formatted'] ?? '0m',
+                'recording_billable_hours_formatted' => $item['recording_billable_hours_formatted'] ?? '0m',
+                'recording_pending_hours_formatted' => $item['recording_pending_hours_formatted'] ?? '0m',
+                'recording_rejected_hours_formatted' => $item['recording_rejected_hours_formatted'] ?? '0m',
                 'milestone_reached' => (bool) $item['milestone_reached'],
                 'milestone_status' => $item['milestone_status'] ?? 'none',
                 'commission_amount' => $item['commission_amount'],
@@ -682,8 +686,10 @@
                             <tr class="text-gray-500 text-[11px] uppercase tracking-wider">
                                 <th class="py-3 px-4 text-left font-bold">Worker & Kontak</th>
                                 <th class="py-3 px-3 text-left font-bold">ID Worker</th>
-                                <th class="py-3 px-3 text-center font-bold">Video Approved</th>
-                                <th class="py-3 px-3 text-center font-bold">Video Disubmit</th>
+                                <th class="py-3 px-3 text-center font-bold">All Time</th>
+                                <th class="py-3 px-3 text-center font-bold">Billable</th>
+                                <th class="py-3 px-3 text-center font-bold">Pending</th>
+                                <th class="py-3 px-3 text-center font-bold">Reject</th>
                                 <th class="py-3 px-3 text-center font-bold">Progres Target (20 Jam)</th>
                                 <th class="py-3 px-4 text-center font-bold">Status Reward</th>
                             </tr>
@@ -712,20 +718,24 @@
                                         <span class="inline-block px-2 py-0.5 font-mono text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-md" x-text="item.mitra_id"></span>
                                     </td>
 
-                                    {{-- Video Approved (Count + Hours) --}}
-                                    <td class="py-3.5 px-3 text-center">
-                                        <div class="font-bold text-sm text-gray-900">
-                                            <span x-text="item.approved_videos_count"></span> <span class="text-xs font-normal text-gray-500">Video</span>
-                                        </div>
-                                        <div class="text-xs font-bold text-emerald-600 mt-0.5" x-text="item.approved_hours_formatted"></div>
+                                    {{-- All Time Rekaman --}}
+                                    <td class="py-3.5 px-3 text-center whitespace-nowrap">
+                                        <span class="font-bold text-sm text-gray-800" x-text="item.recording_worked_hours_formatted"></span>
                                     </td>
 
-                                    {{-- Video Disubmit (Count + Hours) --}}
-                                    <td class="py-3.5 px-3 text-center">
-                                        <div class="font-semibold text-sm text-gray-700">
-                                            <span x-text="item.reported_videos_count"></span> <span class="text-xs font-normal text-gray-400">Video</span>
-                                        </div>
-                                        <div class="text-xs text-gray-400 mt-0.5" x-text="item.reported_hours_formatted"></div>
+                                    {{-- Billable Rekaman --}}
+                                    <td class="py-3.5 px-3 text-center whitespace-nowrap">
+                                        <span class="font-bold text-sm text-emerald-700" x-text="item.recording_billable_hours_formatted"></span>
+                                    </td>
+
+                                    {{-- Pending Rekaman --}}
+                                    <td class="py-3.5 px-3 text-center whitespace-nowrap">
+                                        <span class="font-bold text-sm text-amber-700" x-text="item.recording_pending_hours_formatted"></span>
+                                    </td>
+
+                                    {{-- Reject Rekaman --}}
+                                    <td class="py-3.5 px-3 text-center whitespace-nowrap">
+                                        <span class="font-bold text-sm text-rose-700" x-text="item.recording_rejected_hours_formatted"></span>
                                     </td>
 
                                     {{-- Progress Bar (20 Hours) --}}
@@ -772,7 +782,7 @@
 
                             {{-- No Search Match --}}
                             <tr x-show="filteredWorkers.length === 0">
-                                <td colspan="6" class="py-8 text-center text-gray-400 text-xs">
+                                <td colspan="8" class="py-8 text-center text-gray-400 text-xs">
                                     Tidak ada worker yang sesuai dengan filter atau pencarian Anda.
                                 </td>
                             </tr>
