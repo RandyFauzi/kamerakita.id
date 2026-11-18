@@ -670,6 +670,18 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <div class="flex items-center justify-end gap-2">
+                                                @if(Auth::user()?->canUseAccountPov() && $partner->user_id && (string) $partner->user_id !== (string) Auth::id())
+                                                <form method="POST" action="{{ route('account-pov.enter', $partner->user_id) }}" class="inline-flex">
+                                                    @csrf
+                                                    <input type="hidden" name="return_url" value="{{ request()->getRequestUri() }}">
+                                                    <button type="submit" class="inline-flex items-center gap-1 px-2 py-1 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-lg transition" title="Lihat tampilan POV akun {{ $partner->full_name }}">
+                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                                        </svg>
+                                                        <span>POV</span>
+                                                    </button>
+                                                </form>
+                                                @endif
                                                 @if($partner->partner_role === 'worker' || str_contains($partner->group_name, 'ASTRO'))
                                                 <a href="{{ route('admin.recordings.index', ['search' => $partner->user?->email ?? $partner->mitra_id]) }}" class="p-1.5 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition" title="Lihat Laporan Pekerjaan (Recording)">
                                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -767,6 +779,13 @@
                                                                     </td>
                                                                     <td class="px-6 py-3.5 whitespace-nowrap text-right text-xs">
                                                                         <div class="flex items-center justify-end gap-2">
+                                                                            @if(Auth::user()?->canUseAccountPov() && $child->user_id && (string) $child->user_id !== (string) Auth::id())
+                                                                            <form method="POST" action="{{ route('account-pov.enter', $child->user_id) }}" class="inline-flex">
+                                                                                @csrf
+                                                                                <input type="hidden" name="return_url" value="{{ request()->getRequestUri() }}">
+                                                                                <button type="submit" class="text-indigo-700 hover:text-indigo-900 font-bold px-2 py-1 rounded bg-indigo-50 hover:bg-indigo-100 transition" title="Lihat tampilan POV {{ $child->full_name }}">POV</button>
+                                                                            </form>
+                                                                            @endif
                                                                             @if($child->partner_role === 'worker' || str_contains($child->group_name, 'ASTRO'))
                                                                             <a href="{{ route('admin.recordings.index', ['search' => $child->user?->email ?? $child->mitra_id]) }}" class="text-indigo-600 hover:text-indigo-900 font-semibold px-2 py-1 rounded hover:bg-indigo-50 transition" title="Lihat Laporan (Recording)">Lihat Record</a>
                                                                             @endif

@@ -594,6 +594,7 @@
     </script>
     
     <!-- Watermark -->
+    <x-account-pov-banner variant="floating" />
     <div class="fixed bottom-4 right-5 z-50 opacity-60 hover:opacity-100 transition-all duration-300 animate-float group cursor-default">
         <p class="text-[10px] sm:text-xs font-bold text-slate-400 tracking-wide uppercase group-hover:text-blue-700 transition-colors duration-300">
             KameraKita AI 

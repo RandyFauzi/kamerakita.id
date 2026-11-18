@@ -1,8 +1,9 @@
 @php
     $partner = \App\Models\Partner::where('user_id', Auth::id())->first();
     $isUser = $partner && $partner->hasStandardPortalAccess();
+    $canUseAccountPov = app(\App\Services\AccountPovService::class)->canCurrentSessionUsePov();
 @endphp
-<header class="min-h-16 flex items-start sm:items-center px-4 py-3 sm:px-6 lg:px-8 sticky top-0 z-20 bg-[#f8f8f6]/95 backdrop-blur-md border-b border-gray-200/70" style="z-index: 20">
+<header class="min-h-16 flex items-start sm:items-center px-4 py-3 sm:px-6 lg:px-8 bg-[#f8f8f6]/95 backdrop-blur-md border-b border-gray-200/70">
     <div class="flex items-start sm:items-center gap-3 w-full min-w-0">
         <!-- Sidebar Toggle (Mobile) -->
         @if(!$isUser)
@@ -36,7 +37,22 @@
             @endif
         </div>
 
-        <div class="flex items-center shrink-0">
+        <div class="flex items-center gap-2 shrink-0">
+            @if($canUseAccountPov)
+                <button
+                    type="button"
+                    onclick="window.dispatchEvent(new CustomEvent('open-account-pov-modal'))"
+                    title="Buka Mode POV Akun (Ctrl+Shift+P)"
+                    class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200/80 text-xs font-bold transition shadow-xs"
+                >
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                    <span class="hidden sm:inline">Mode POV</span>
+                    <span class="sm:hidden">POV</span>
+                </button>
+            @endif
             <x-language-switcher />
         </div>
     </div>

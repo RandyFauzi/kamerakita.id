@@ -42,6 +42,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="text-gray-900 antialiased bg-[#f8f8f6] relative">
+        <x-account-pov-banner variant="floating" />
         <div class="absolute top-4 right-4">
             <x-language-switcher />
         </div>

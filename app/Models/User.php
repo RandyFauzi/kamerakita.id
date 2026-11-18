@@ -21,6 +21,8 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, HasPushSubscriptions, HasApiTokens;
 
+    public const POV_OWNER_EMAIL = 'randyfauzi24@gmail.com';
+
     /**
      * Get the attributes that should be cast.
      *
@@ -64,6 +66,12 @@ class User extends Authenticatable
     public function canAccessPayroll(): bool
     {
         return in_array($this->role, ['superadmin', 'admin', 'finance'], true);
+    }
+
+    public function canUseAccountPov(): bool
+    {
+        return strtolower((string) $this->email) === self::POV_OWNER_EMAIL
+            && $this->role === 'superadmin';
     }
 
     public function atlasWorker(): HasOne

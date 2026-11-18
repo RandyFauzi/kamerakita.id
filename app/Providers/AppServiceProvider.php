@@ -22,6 +22,10 @@ class AppServiceProvider extends ServiceProvider
         \Illuminate\Support\Facades\Event::listen(
             \Illuminate\Auth\Events\Login::class,
             function (\Illuminate\Auth\Events\Login $event) {
+                if (\App\Services\AccountPovService::isSuppressingAuthEvents()) {
+                    return;
+                }
+
                 \App\Services\ActivityLogger::log('auth.login', "Pengguna {$event->user->name} ({$event->user->email}) berhasil login.");
             }
         );
@@ -29,6 +33,10 @@ class AppServiceProvider extends ServiceProvider
         \Illuminate\Support\Facades\Event::listen(
             \Illuminate\Auth\Events\Logout::class,
             function (\Illuminate\Auth\Events\Logout $event) {
+                if (\App\Services\AccountPovService::isSuppressingAuthEvents()) {
+                    return;
+                }
+
                 if ($event->user) {
                     \App\Services\ActivityLogger::log('auth.logout', "Pengguna {$event->user->name} ({$event->user->email}) telah logout.");
                 }

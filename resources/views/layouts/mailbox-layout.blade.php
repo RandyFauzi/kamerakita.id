@@ -30,6 +30,7 @@
     </style>
 </head>
 <body class="font-sans antialiased bg-white text-slate-900 h-screen w-screen overflow-hidden flex selection:bg-indigo-200 selection:text-indigo-900">
+    <x-account-pov-banner variant="floating" />
     <div class="w-full h-full flex overflow-hidden">
         {{ $slot }}
     </div>

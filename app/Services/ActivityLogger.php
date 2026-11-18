@@ -16,8 +16,13 @@ class ActivityLogger
      */
     public static function log(string $activity, ?string $description = null): ActivityLog
     {
+        return self::logAs(Auth::id(), $activity, $description);
+    }
+
+    public static function logAs(int|string|null $userId, string $activity, ?string $description = null): ActivityLog
+    {
         return ActivityLog::create([
-            'user_id' => Auth::id(),
+            'user_id' => $userId,
             'activity' => $activity,
             'description' => $description,
             'ip_address' => request()->ip(),

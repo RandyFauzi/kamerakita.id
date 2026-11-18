@@ -49,8 +49,11 @@
 
             <!-- Page Body Content -->
             <div class="flex-1 min-w-0 md:pl-64 flex flex-col min-h-screen">
-                <!-- Top Navbar -->
-                <x-navbar :header="$header ?? null" />
+                <div class="sticky top-0 z-20">
+                    <x-account-pov-banner />
+                    <!-- Top Navbar -->
+                    <x-navbar :header="$header ?? null" />
+                </div>
 
                 <!-- Main Content Slot -->
                 @php
