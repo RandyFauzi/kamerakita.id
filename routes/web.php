@@ -96,11 +96,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware('role:superadmin,admin')
         ->name('admin.event');
 
-    // Rekruter Management Routes
-    Route::delete('/admin/users/{user}', [ManageAdminUsersController::class, 'destroy'])
-        ->middleware('role:superadmin')
-        ->name('admin-users.destroy');
-
     // Admin Password Recovery Management
     Route::get('/admin/password-recoveries', [\App\Http\Controllers\Admin\PasswordRecoveryController::class, 'index'])
         ->middleware('role:superadmin,admin')
