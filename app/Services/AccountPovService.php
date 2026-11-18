@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\Partner;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
 class AccountPovService
@@ -54,11 +53,6 @@ class AccountPovService
         }
 
         return $actor;
-    }
-
-    public function canCurrentSessionUsePov(?Request $request = null): bool
-    {
-        return $this->resolveActor($request) !== null;
     }
 
     public function isImpersonating(?Request $request = null): bool
@@ -139,55 +133,6 @@ class AccountPovService
         ];
     }
 
-    /**
-     * Search switchable accounts across users & linked partners cleanly.
-     */
-    public function searchAccounts(string $query = '', int $limit = 15): Collection
-    {
-        $search = trim($query);
-        $currentId = Auth::id();
-
-        $usersQuery = User::query()
-            ->with(['partner:id,user_id,mitra_id,full_name,partner_role,status,group_name,whatsapp_number'])
-            ->when($search !== '', function ($q) use ($search): void {
-                $escaped = addcslashes($search, '%_\\');
-                $like = "%{$escaped}%";
-
-                $q->where(function ($sub) use ($like): void {
-                    $sub->where('name', 'like', $like)
-                        ->orWhere('email', 'like', $like)
-                        ->orWhere('role', 'like', $like)
-                        ->orWhereHas('partner', function ($partnerQuery) use ($like): void {
-                            $partnerQuery->where('full_name', 'like', $like)
-                                ->orWhere('mitra_id', 'like', $like)
-                                ->orWhere('whatsapp_number', 'like', $like)
-                                ->orWhere('partner_role', 'like', $like);
-                        });
-                });
-            })
-            ->orderByRaw('CASE WHEN LOWER(email) = ? THEN 1 ELSE 0 END ASC', [User::POV_OWNER_EMAIL])
-            ->orderByDesc('updated_at')
-            ->limit($limit);
-
-        return $usersQuery->get()->map(function (User $user) use ($currentId): array {
-            $partner = $user->partner;
-
-            return [
-                'id' => $user->id,
-                'name' => $partner?->full_name ?: $user->name,
-                'email' => $user->email,
-                'role_label' => $this->formatRoleLabel($user, $partner),
-                'mitra_id' => $partner?->mitra_id,
-                'group_name' => $partner?->group_name,
-                'status' => $partner?->status,
-                'is_verified' => $user->email_verified_at !== null,
-                'has_completed_onboarding' => (bool) $user->has_completed_onboarding,
-                'is_current' => (string) $user->id === (string) $currentId,
-                'enter_url' => route('account-pov.enter', $user),
-            ];
-        })->values();
-    }
-
     public function formatRoleLabel(User $user, ?Partner $partner = null): string
     {
         $partner ??= $user->partner;
@@ -223,7 +168,7 @@ class AccountPovService
 
     private function sanitizeReturnUrl(?string $candidate): string
     {
-        $fallback = route('dashboard');
+        $fallback = route('partners.index');
 
         if (! is_string($candidate) || trim($candidate) === '') {
             return $fallback;

@@ -4,25 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Services\AccountPovService;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class AccountPovController extends Controller
 {
-    public function search(Request $request, AccountPovService $pov): JsonResponse
-    {
-        $pov->authorizeActor($request);
-
-        $validated = $request->validate([
-            'q' => ['nullable', 'string', 'max:100'],
-        ]);
-
-        return response()->json([
-            'accounts' => $pov->searchAccounts((string) ($validated['q'] ?? ''), 15),
-        ]);
-    }
-
     public function enter(Request $request, User $user, AccountPovService $pov): RedirectResponse
     {
         $actor = $pov->authorizeActor($request);
@@ -46,7 +32,7 @@ class AccountPovController extends Controller
         $pov->authorizeActor($request);
 
         if (! $pov->isImpersonating($request)) {
-            return redirect()->route('dashboard');
+            return redirect()->route('partners.index');
         }
 
         $result = $pov->leave($request);

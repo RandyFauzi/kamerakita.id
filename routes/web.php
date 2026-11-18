@@ -246,9 +246,6 @@ Route::middleware(['auth'])->prefix('vendor')->name('vendor.')->group(function (
 Route::middleware('auth')->group(function () {
     // Superadmin Account POV Switcher (strictly authorized inside controller/service for randyfauzi24@gmail.com)
     Route::prefix('account-pov')->name('account-pov.')->group(function () {
-        Route::get('/search', [\App\Http\Controllers\AccountPovController::class, 'search'])
-            ->middleware('throttle:60,1')
-            ->name('search');
         Route::post('/enter/{user}', [\App\Http\Controllers\AccountPovController::class, 'enter'])
             ->middleware('throttle:30,1')
             ->name('enter');

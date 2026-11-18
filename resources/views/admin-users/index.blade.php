@@ -79,15 +79,6 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $admin->created_at?->translatedFormat('d F Y') }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <div class="flex items-center justify-end gap-2">
-                                            @if(Auth::user()?->canUseAccountPov() && (string) $admin->id !== (string) Auth::id())
-                                            <form method="POST" action="{{ route('account-pov.enter', $admin) }}" class="inline-flex">
-                                                @csrf
-                                                <input type="hidden" name="return_url" value="{{ request()->getRequestUri() }}">
-                                                <button type="submit" class="inline-flex items-center gap-1 px-2 py-1 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-lg transition" title="Lihat tampilan POV akun {{ $admin->name }}">
-                                                    <span>POV</span>
-                                                </button>
-                                            </form>
-                                            @endif
                                             <a href="{{ route('admin-users.edit', $admin) }}" class="p-1.5 text-gray-500 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition" title="Edit">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
