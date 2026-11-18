@@ -305,7 +305,7 @@
 
                 <!-- Referral Info Box -->
                 <div class="mb-4 bg-gradient-to-br from-indigo-50/80 to-blue-50/80 border border-indigo-100 rounded-2xl p-4 sm:p-5 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 sm:gap-4">
-                    <div class="min-w-0">
+                    <div class="flex-1 min-w-0">
                         <h4 class="font-bold text-indigo-900 text-sm">{{ $partner->isMainAccount() ? 'Daftar Sub-Akun via Link Referral' : 'Undang Worker secara Mandiri' }}</h4>
                         <p class="text-xs text-indigo-700 mt-1 leading-relaxed">
                             @if($partner->isMainAccount())
@@ -340,7 +340,7 @@
 
                 <!-- Setting Rekening Worker Tim Toggle -->
                 <div class="mb-5 bg-white border border-gray-200/80 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
-                    <div class="space-y-1.5 min-w-0">
+                    <div class="space-y-1.5 flex-1 min-w-0">
                         <div class="flex flex-wrap items-center gap-2">
                             <span class="text-xs sm:text-sm font-bold text-gray-900">
                                 {{ $partner->isMainAccount() ? 'Sistem Pencairan & Rekening Utama' : 'Sistem Pencairan & Rekening Tim' }}
