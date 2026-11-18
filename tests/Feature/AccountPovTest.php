@@ -90,11 +90,12 @@ class AccountPovTest extends TestCase
             'status' => Partner::STATUS_ACTIVE,
         ]);
 
-        // Owner sees Buka POV button in Mitra & Pekerja page
+        // Owner sees Buka POV button in Mitra & Pekerja page (via non-nested enterAccountPov helper)
         $this->actingAs($owner)
             ->get(route('partners.index'))
             ->assertOk()
             ->assertSee('Buka POV')
+            ->assertSee('account-pov-enter-form')
             ->assertSee(route('account-pov.enter', $workerUser), false);
 
         // Enter Worker 1 POV -> immediately redirected to worker's dashboard

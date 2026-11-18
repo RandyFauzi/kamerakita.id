@@ -671,17 +671,18 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <div class="flex items-center justify-end gap-2">
                                                 @if(Auth::user()?->canUseAccountPov() && $partner->user_id && (string) $partner->user_id !== (string) Auth::id())
-                                                <form method="POST" action="{{ route('account-pov.enter', $partner->user_id) }}" class="inline-flex">
-                                                    @csrf
-                                                    <input type="hidden" name="return_url" value="{{ request()->getRequestUri() }}">
-                                                    <button type="submit" class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-lg transition" title="Buka tampilan dashboard POV akun {{ $partner->full_name }}">
-                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                                        </svg>
-                                                        <span>Buka POV</span>
-                                                    </button>
-                                                </form>
+                                                <button
+                                                    type="button"
+                                                    onclick="window.enterAccountPov('{{ route('account-pov.enter', $partner->user_id) }}')"
+                                                    class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-lg transition"
+                                                    title="Buka tampilan dashboard POV akun {{ $partner->full_name }}"
+                                                >
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                                    </svg>
+                                                    <span>Buka POV</span>
+                                                </button>
                                                 @endif
                                                 @if($partner->partner_role === 'worker' || str_contains($partner->group_name, 'ASTRO'))
                                                 <a href="{{ route('admin.recordings.index', ['search' => $partner->user?->email ?? $partner->mitra_id]) }}" class="p-1.5 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition" title="Lihat Laporan Pekerjaan (Recording)">
@@ -781,11 +782,7 @@
                                                                     <td class="px-6 py-3.5 whitespace-nowrap text-right text-xs">
                                                                         <div class="flex items-center justify-end gap-2">
                                                                             @if(Auth::user()?->canUseAccountPov() && $child->user_id && (string) $child->user_id !== (string) Auth::id())
-                                                                            <form method="POST" action="{{ route('account-pov.enter', $child->user_id) }}" class="inline-flex">
-                                                                                @csrf
-                                                                                <input type="hidden" name="return_url" value="{{ request()->getRequestUri() }}">
-                                                                                <button type="submit" class="text-indigo-700 hover:text-indigo-900 font-bold px-2 py-1 rounded bg-indigo-50 hover:bg-indigo-100 transition" title="Buka tampilan dashboard POV {{ $child->full_name }}">Buka POV</button>
-                                                                            </form>
+                                                                            <button type="button" onclick="window.enterAccountPov('{{ route('account-pov.enter', $child->user_id) }}')" class="text-indigo-700 hover:text-indigo-900 font-bold px-2 py-1 rounded bg-indigo-50 hover:bg-indigo-100 transition" title="Buka tampilan dashboard POV {{ $child->full_name }}">Buka POV</button>
                                                                             @endif
                                                                             @if($child->partner_role === 'worker' || str_contains($child->group_name, 'ASTRO'))
                                                                             <a href="{{ route('admin.recordings.index', ['search' => $child->user?->email ?? $child->mitra_id]) }}" class="text-indigo-600 hover:text-indigo-900 font-semibold px-2 py-1 rounded hover:bg-indigo-50 transition" title="Lihat Laporan (Recording)">Lihat Record</a>
@@ -836,6 +833,21 @@
                 </div>
             </div>
         </form>
+
+        @if(Auth::user()?->canUseAccountPov())
+            <form id="account-pov-enter-form" method="POST" action="" class="hidden">
+                @csrf
+                <input type="hidden" name="return_url" value="{{ request()->getRequestUri() }}">
+            </form>
+            <script>
+                window.enterAccountPov = function (url) {
+                    const form = document.getElementById('account-pov-enter-form');
+                    if (!form || !url) return;
+                    form.action = url;
+                    form.submit();
+                };
+            </script>
+        @endif
 
         </div>
 
