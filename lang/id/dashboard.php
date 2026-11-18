@@ -11,7 +11,7 @@ return array (
     'payments' => 'Pembayaran',
     'recruiter' => 'Rekruter',
     'summary' => 'Ringkasan',
-    'guide_book' => 'Panduan Book',
+    'guide_book' => 'Panduan',
     'submit_report' => 'Kirim Laporan',
     'report_history' => 'Riwayat Laporan',
     'salary_history' => 'Riwayat Gaji',

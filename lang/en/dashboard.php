@@ -11,7 +11,7 @@ return array (
     'payments' => 'Payments',
     'recruiter' => 'Recruiter',
     'summary' => 'Summary',
-    'guide_book' => 'Guide Book',
+    'guide_book' => 'Panduan',
     'submit_report' => 'Submit Report',
     'report_history' => 'Report History',
     'salary_history' => 'Salary History',
