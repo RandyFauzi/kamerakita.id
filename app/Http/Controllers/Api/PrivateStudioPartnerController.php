@@ -17,9 +17,9 @@ class PrivateStudioPartnerController extends Controller
     {
         $parents = Partner::query()
             ->whereIn('partner_role', Partner::TEAM_PARENT_ROLES)
-            ->where('status', Partner::STATUS_ACTIVE)
+            ->where('status', '!=', Partner::STATUS_SUSPENDED)
             ->orderBy('full_name')
-            ->get(['id', 'mitra_id', 'full_name', 'partner_role', 'email']);
+            ->get(['id', 'mitra_id', 'full_name', 'partner_role', 'email', 'whatsapp_number', 'status']);
 
         return response()->json(['data' => $parents]);
     }
@@ -63,7 +63,7 @@ class PrivateStudioPartnerController extends Controller
             'mitra_parent_id' => [
                 'required',
                 'uuid',
-                Rule::exists('partners', 'id')->where(fn ($query) => $query->whereIn('partner_role', Partner::TEAM_PARENT_ROLES)->where('status', Partner::STATUS_ACTIVE)),
+                Rule::exists('partners', 'id')->where(fn ($query) => $query->whereIn('partner_role', Partner::TEAM_PARENT_ROLES)->where('status', '!=', Partner::STATUS_SUSPENDED)),
             ],
             'phone_key' => 'nullable|string|max:64',
             'account_name' => 'nullable|string|max:128',
@@ -93,7 +93,7 @@ class PrivateStudioPartnerController extends Controller
         abort_if(User::whereRaw('LOWER(email) = ?', [$email])->exists(), 422, 'Email sudah terdaftar pada akun user lain.');
 
         $parent = Partner::findOrFail($data['mitra_parent_id']);
-        abort_unless(in_array($parent->partner_role, Partner::TEAM_PARENT_ROLES, true) && $parent->status === Partner::STATUS_ACTIVE, 422, 'Akun utama tidak aktif atau tidak valid.');
+        abort_unless(in_array($parent->partner_role, Partner::TEAM_PARENT_ROLES, true) && $parent->status !== Partner::STATUS_SUSPENDED, 422, 'Akun utama/mitra tidak valid atau dibekukan.');
 
         $partner = DB::transaction(function () use ($data, $email, $parent) {
             $user = User::create([
@@ -166,7 +166,7 @@ class PrivateStudioPartnerController extends Controller
         $data = $request->validate([
             'full_name' => 'required|string|max:255',
             'whatsapp_number' => 'required|string|max:20',
-            'mitra_parent_id' => ['required', 'uuid', Rule::exists('partners', 'id')->where(fn ($query) => $query->whereIn('partner_role', Partner::TEAM_PARENT_ROLES)->where('status', Partner::STATUS_ACTIVE))],
+            'mitra_parent_id' => ['required', 'uuid', Rule::exists('partners', 'id')->where(fn ($query) => $query->whereIn('partner_role', Partner::TEAM_PARENT_ROLES)->where('status', '!=', Partner::STATUS_SUSPENDED))],
         ]);
 
         DB::transaction(function () use ($partner, $data) {

@@ -59,14 +59,14 @@ class PrivateStudioPartnerIntegrationTest extends TestCase
             ->assertStatus(401);
     }
 
-    public function test_it_lists_only_active_team_parent_partners(): void
+    public function test_it_lists_non_suspended_team_parent_partners_with_whatsapp(): void
     {
         $activeMain = $this->createActiveParent('KMK-001', Partner::ROLE_MAIN_ACCOUNT);
         $activeMitra = $this->createActiveParent('KMK-002', Partner::ROLE_MITRA);
 
-        // Inactive parent
+        // Inactive parent (should also be included unless suspended)
         $inactive = Partner::create([
-            'partner_role' => Partner::ROLE_MAIN_ACCOUNT,
+            'partner_role' => Partner::ROLE_MITRA,
             'mitra_id' => 'KMK-003',
             'full_name' => 'Inactive Parent',
             'whatsapp_number' => '08123456780',
@@ -74,7 +74,17 @@ class PrivateStudioPartnerIntegrationTest extends TestCase
             'status' => Partner::STATUS_INACTIVE,
         ]);
 
-        // Normal worker
+        // Suspended parent (must NOT be included)
+        $suspended = Partner::create([
+            'partner_role' => Partner::ROLE_MITRA,
+            'mitra_id' => 'KMK-005',
+            'full_name' => 'Suspended Parent',
+            'whatsapp_number' => '08123456785',
+            'email' => 'suspended@example.com',
+            'status' => Partner::STATUS_SUSPENDED,
+        ]);
+
+        // Normal worker (must NOT be included)
         $worker = Partner::create([
             'partner_role' => Partner::ROLE_WORKER,
             'mitra_id' => 'KMK-004',
@@ -91,8 +101,13 @@ class PrivateStudioPartnerIntegrationTest extends TestCase
         $ids = collect($response->json('data'))->pluck('id')->all();
         $this->assertContains($activeMain->id, $ids);
         $this->assertContains($activeMitra->id, $ids);
-        $this->assertNotContains($inactive->id, $ids);
+        $this->assertContains($inactive->id, $ids);
+        $this->assertNotContains($suspended->id, $ids);
         $this->assertNotContains($worker->id, $ids);
+
+        // Pastikan nomor WhatsApp ada pada payload
+        $found = collect($response->json('data'))->firstWhere('id', $inactive->id);
+        $this->assertEquals('08123456780', $found['whatsapp_number']);
     }
 
     public function test_it_creates_user_and_mitra_partner_in_a_single_transaction(): void
