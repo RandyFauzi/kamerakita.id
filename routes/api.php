@@ -21,6 +21,7 @@ Route::prefix('private/studio')->middleware([
     Route::post('/partners', [PrivateStudioPartnerController::class, 'store'])->name('partners.store');
     Route::patch('/partners/{partner}/status', [PrivateStudioPartnerController::class, 'setStatus'])->name('partners.status');
     Route::put('/partners/{partner}', [PrivateStudioPartnerController::class, 'update'])->name('partners.update');
+    Route::delete('/partners/{partner}', [PrivateStudioPartnerController::class, 'destroy'])->name('partners.destroy');
 });
 
 // MCP Server Endpoint

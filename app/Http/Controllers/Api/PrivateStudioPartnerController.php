@@ -187,4 +187,38 @@ class PrivateStudioPartnerController extends Controller
             'mitra_parent_id' => $partner->mitra_parent_id,
         ]]);
     }
+
+    public function destroy(Partner $partner): JsonResponse
+    {
+        abort_unless($partner->partner_role === Partner::ROLE_MITRA, 404);
+
+        if ($partner->workers()->exists()) {
+            abort(422, 'Tidak dapat menghapus mitra yang masih menaungi pekerja/sub-mitra.');
+        }
+
+        if ($partner->videoWorkReports()->exists() || $partner->recordings()->exists()) {
+            abort(422, 'Tidak dapat menghapus permanen mitra yang sudah memiliki riwayat laporan atau rekaman. Nonaktifkan status akun untuk membekukan.');
+        }
+
+        $partnerId = $partner->id;
+        $mitraId = $partner->mitra_id;
+        $email = $partner->email;
+
+        DB::transaction(function () use ($partner) {
+            $user = $partner->user;
+            $partner->delete();
+            $user?->delete();
+        });
+
+        Log::info('Private Studio integration deleted a partner and user.', [
+            'partner_id' => $partnerId,
+            'mitra_id' => $mitraId,
+            'email' => $email,
+        ]);
+
+        return response()->json([
+            'message' => 'Akun mitra dan user KameraKita berhasil dihapus.',
+            'deleted' => true,
+        ]);
+    }
 }

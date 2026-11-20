@@ -326,4 +326,30 @@ class PrivateStudioPartnerIntegrationTest extends TestCase
             ])
             ->assertNotFound();
     }
+
+    public function test_it_can_delete_mitra_partner_without_locked_history(): void
+    {
+        $parent = $this->createActiveParent();
+        $response = $this->withHeaders($this->withIntegrationToken())
+            ->postJson(route('api.private.studio.partners.store'), [
+                'full_name' => 'Akun Dihapus',
+                'email' => 'hapus.mitra@example.com',
+                'password' => 'StrongSecretPass123!',
+                'whatsapp_number' => '08123456789',
+                'mitra_parent_id' => $parent->id,
+            ])
+            ->assertStatus(201);
+
+        $partnerId = $response->json('data.id');
+        $partner = Partner::findOrFail($partnerId);
+        $userId = $partner->user_id;
+
+        $this->withHeaders($this->withIntegrationToken())
+            ->deleteJson(route('api.private.studio.partners.destroy', $partner))
+            ->assertOk()
+            ->assertJson(['deleted' => true]);
+
+        $this->assertDatabaseMissing('partners', ['id' => $partnerId]);
+        $this->assertDatabaseMissing('users', ['id' => $userId]);
+    }
 }
