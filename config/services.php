@@ -2,6 +2,10 @@
 
 return [
 
+    'studio_integration' => [
+        'token' => env('AIKU_STUDIO_API_TOKEN'),
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Third Party Services
