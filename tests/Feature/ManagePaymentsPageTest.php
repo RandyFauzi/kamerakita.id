@@ -206,5 +206,15 @@ class ManagePaymentsPageTest extends TestCase
             ->assertSee('@Rp 80.000/jam')
             ->assertSee('Rp 500.000')
             ->assertSee('@Rp 50.000/jam');
+
+        // Live partial JSON filtering (modern instant filter without page reload)
+        $partial = $this->actingAs($admin)
+            ->getJson(route('payments.manage', ['cycle_id' => $cycle->id, 'search' => 'baru_excel01', 'partial' => 1]));
+
+        $partial->assertOk()
+            ->assertJsonPath('filteredCount', 1)
+            ->assertJsonPath('hasActiveFilter', true);
+        $this->assertStringContainsString('baru_excel01@kamerakitaid.site', $partial->json('html'));
+        $this->assertStringNotContainsString('dimass211119@kamerakitaid.site', $partial->json('html'));
     }
 }

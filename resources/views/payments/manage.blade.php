@@ -2,70 +2,15 @@
     <x-slot name="title">Pembayaran</x-slot>
 
     <x-slot name="header">
-        <div class="flex flex-wrap items-center justify-between gap-3">
-            <div>
-                <h2 class="font-bold text-xl sm:text-2xl text-slate-800 leading-tight">
-                    Pembayaran
-                </h2>
-                <p class="text-xs text-slate-500 mt-0.5">
-                    @if($activeCycle)
-                        {{ $activeCycle->name }}
-                        &middot; Sheet: <span class="font-semibold text-slate-700">{{ $activeCycle->source_label }}</span>
-                        @if($activeCycle->frozen_on)
-                            &middot; Frozen {{ $activeCycle->frozen_on->format('d M Y') }}
-                        @endif
-                    @else
-                        Upload file Excel / CSV pembayaran untuk mendeteksi &amp; mengintegrasikan akun otomatis
-                    @endif
-                </p>
-            </div>
-
-            <div class="flex flex-wrap items-center gap-2">
-                <button
-                    type="button"
-                    onclick="window.dispatchEvent(new CustomEvent('open-import-cycle-modal'))"
-                    class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm transition-colors"
-                >
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-                    Upload Excel Cycle
-                </button>
-
-                @if($activeCycle)
-                    <button
-                        type="button"
-                        onclick="window.dispatchEvent(new CustomEvent('open-rates-modal'))"
-                        class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-amber-50 border border-amber-300 text-amber-800 hover:bg-amber-100 shadow-sm transition-colors"
-                    >
-                        <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        Atur Rate Mitra / Tim
-                    </button>
-
-                    <button
-                        type="button"
-                        onclick="window.dispatchEvent(new CustomEvent('open-financials-modal'))"
-                        class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 shadow-sm transition-colors"
-                    >
-                        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                        Atur Revenue / Kurs
-                    </button>
-
-                    <a
-                        href="{{ route('payments.export-csv', array_merge(request()->query(), ['variant' => 'sheet'])) }}"
-                        class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 shadow-sm transition-colors"
-                    >
-                        <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                        Export Sheet
-                    </a>
-
-                    <a
-                        href="{{ route('payments.export-csv', array_merge(request()->query(), ['variant' => 'bank'])) }}"
-                        class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-800 text-white hover:bg-slate-900 shadow-sm transition-colors"
-                    >
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
-                        Export Rekening
-                    </a>
-                @endif
-            </div>
+        <div class="flex flex-wrap items-center justify-between gap-2">
+            <h2 class="font-bold text-xl sm:text-2xl text-slate-800 leading-tight">
+                Pembayaran
+            </h2>
+            @if($activeCycle)
+                <span class="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">
+                    {{ $activeCycle->name }}
+                </span>
+            @endif
         </div>
     </x-slot>
 
@@ -73,16 +18,6 @@
         $fmtHours = fn ($v) => number_format((float) $v, 2, ',', '.');
         $fmtIdr = fn ($v) => 'Rp ' . number_format((float) $v, 0, ',', '.');
         $fmtIdrDec = fn ($v) => 'Rp ' . number_format((float) $v, ((float) $v - floor((float) $v)) > 0.001 ? 2 : 0, ',', '.');
-
-        $sortUrl = function (string $column) use ($filters) {
-            $isCurrent = $filters['sort'] === $column;
-            $nextDir = ($isCurrent && $filters['dir'] === 'desc') ? 'asc' : 'desc';
-            return route('payments.manage', array_merge(request()->query(), [
-                'sort' => $column,
-                'dir' => $nextDir,
-                'page' => 1,
-            ]));
-        };
     @endphp
 
     <div
@@ -99,10 +34,121 @@
             selectedFileName: '',
             selectedIds: [],
             allPageIds: @json($displayRows->pluck('entry_id')->filter()->values()->all()),
+            cycleId: @js($activeCycle?->id),
+            filterState: {
+                search: @js($filters['search']),
+                account_type: @js($filters['account_type']),
+                parent_id: @js($filters['parent_id']),
+                pay_status: @js($filters['pay_status']),
+                sort: @js($filters['sort']),
+                dir: @js($filters['dir']),
+                per_page: @js($filters['per_page']),
+                page: 1,
+            },
+            isFiltering: false,
+            hasActiveFilter: @js($hasActiveFilter),
+            filteredCount: {{ $filteredSummary['count'] }},
+            searchTimer: null,
+            fetchSeq: 0,
+            hasActiveFilters() {
+                return (this.filterState.search || '').trim() !== ''
+                    || this.filterState.account_type !== 'all'
+                    || this.filterState.parent_id !== ''
+                    || this.filterState.pay_status !== 'all';
+            },
+            buildFilterParams(extra = {}) {
+                const params = new URLSearchParams();
+                if (this.cycleId) params.set('cycle_id', this.cycleId);
+                if (this.filterState.search.trim() !== '') params.set('search', this.filterState.search.trim());
+                if (this.filterState.account_type !== 'all') params.set('account_type', this.filterState.account_type);
+                if (this.filterState.parent_id !== '') params.set('parent_id', this.filterState.parent_id);
+                if (this.filterState.pay_status !== 'all') params.set('pay_status', this.filterState.pay_status);
+                if (this.filterState.sort !== 'default') params.set('sort', this.filterState.sort);
+                if (this.filterState.sort !== 'default' && this.filterState.dir !== 'asc') params.set('dir', this.filterState.dir);
+                if (this.filterState.per_page !== '100') params.set('per_page', this.filterState.per_page);
+                if (this.filterState.page > 1) params.set('page', this.filterState.page);
+                Object.entries(extra).forEach(([k, v]) => params.set(k, v));
+                return params;
+            },
+            exportUrl(variant) {
+                return '{{ route('payments.export-csv') }}?' + this.buildFilterParams({ variant }).toString();
+            },
+            onSearchInput() {
+                clearTimeout(this.searchTimer);
+                this.filterState.page = 1;
+                this.searchTimer = setTimeout(() => this.applyFilter(), 180);
+            },
+            setFilter(key, value) {
+                if (this.filterState[key] === value && key !== 'page') return;
+                this.filterState[key] = value;
+                if (key !== 'page') this.filterState.page = 1;
+                this.applyFilter();
+            },
+            toggleSort(col) {
+                if (this.filterState.sort === col) {
+                    this.filterState.dir = this.filterState.dir === 'desc' ? 'asc' : 'desc';
+                } else {
+                    this.filterState.sort = col;
+                    this.filterState.dir = col === 'worker_email' ? 'asc' : 'desc';
+                }
+                this.filterState.page = 1;
+                this.applyFilter();
+            },
+            resetFilters() {
+                this.filterState.search = '';
+                this.filterState.account_type = 'all';
+                this.filterState.parent_id = '';
+                this.filterState.pay_status = 'all';
+                this.filterState.page = 1;
+                this.applyFilter();
+            },
+            handlePaginationClick(event) {
+                const link = event.target.closest('a[href]');
+                if (!link) return;
+                event.preventDefault();
+                try {
+                    const url = new URL(link.href);
+                    const p = parseInt(url.searchParams.get('page') || '1', 10);
+                    this.filterState.page = Number.isNaN(p) ? 1 : p;
+                    this.applyFilter();
+                } catch (e) {}
+            },
+            async applyFilter() {
+                if (!this.cycleId) return;
+                const seq = ++this.fetchSeq;
+                this.isFiltering = true;
+                const cleanParams = this.buildFilterParams();
+                const partialParams = this.buildFilterParams({ partial: '1' });
+
+                const browserUrl = '{{ route('payments.manage') }}' + (cleanParams.toString() ? '?' + cleanParams.toString() : '');
+                window.history.replaceState({}, '', browserUrl);
+
+                try {
+                    const res = await fetch('{{ route('payments.manage') }}?' + partialParams.toString(), {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+                    });
+                    if (!res.ok) throw new Error('Network response failed');
+                    const data = await res.json();
+                    if (seq !== this.fetchSeq) return;
+                    if (this.$refs.resultsContainer) {
+                        this.$refs.resultsContainer.innerHTML = data.html;
+                    }
+                    this.allPageIds = data.allPageIds || [];
+                    this.selectedIds = [];
+                    this.hasActiveFilter = !!data.hasActiveFilter;
+                    this.filteredCount = data.filteredCount ?? 0;
+                } catch (err) {
+                    window.location.href = browserUrl;
+                } finally {
+                    if (seq === this.fetchSeq) this.isFiltering = false;
+                }
+            },
             openTeamRateModal(parentId = '') {
                 this.rateModalScope = 'parent';
                 if (parentId) {
                     this.rateModalParentId = parentId;
+                } else if (this.filterState.parent_id) {
+                    this.rateModalParentId = this.filterState.parent_id;
                 }
                 this.rateModalEntryId = null;
                 this.rateModalLabel = '';
@@ -140,10 +186,73 @@
         }"
         @open-import-cycle-modal.window="showImportModal = true"
         @open-financials-modal.window="showFinancialsModal = true"
-        @open-rates-modal.window="openTeamRateModal('{{ $filters['parent_id'] }}')"
-        class="py-5 sm:py-7"
+        @open-rates-modal.window="openTeamRateModal()"
+        class="py-5 sm:py-6"
     >
-        <div class="max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8 space-y-5">
+        <div class="max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8 space-y-4">
+            <!-- Top Action Toolbar -->
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <div class="text-xs text-slate-600">
+                    @if($activeCycle)
+                        <span class="font-semibold text-slate-800">{{ $activeCycle->name }}</span>
+                        &middot; Sheet: <span class="font-semibold text-indigo-700">{{ $activeCycle->source_label }}</span>
+                        @if($activeCycle->frozen_on)
+                            &middot; Frozen {{ $activeCycle->frozen_on->format('d M Y') }}
+                        @endif
+                    @else
+                        <span>Upload file Excel / CSV pembayaran untuk mendeteksi &amp; mengintegrasikan akun otomatis</span>
+                    @endif
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2">
+                    <button
+                        type="button"
+                        @click="showImportModal = true"
+                        class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm transition-colors"
+                    >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                        Upload Excel Cycle
+                    </button>
+
+                    @if($activeCycle)
+                        <button
+                            type="button"
+                            @click="openTeamRateModal()"
+                            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-amber-50 border border-amber-300 text-amber-800 hover:bg-amber-100 shadow-sm transition-colors"
+                        >
+                            <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            Atur Rate Mitra / Tim
+                        </button>
+
+                        <button
+                            type="button"
+                            @click="showFinancialsModal = true"
+                            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 shadow-sm transition-colors"
+                        >
+                            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                            Atur Revenue / Kurs
+                        </button>
+
+                        <a
+                            :href="exportUrl('sheet')"
+                            href="{{ route('payments.export-csv', array_merge(request()->query(), ['variant' => 'sheet'])) }}"
+                            class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 shadow-sm transition-colors"
+                        >
+                            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            Export Sheet
+                        </a>
+
+                        <a
+                            :href="exportUrl('bank')"
+                            href="{{ route('payments.export-csv', array_merge(request()->query(), ['variant' => 'bank'])) }}"
+                            class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-800 text-white hover:bg-slate-900 shadow-sm transition-colors"
+                        >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                            Export Rekening
+                        </a>
+                    @endif
+                </div>
+            </div>
             @if(session('success'))
                 <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-xl text-sm font-medium flex items-center justify-between gap-3">
                     <span>{{ session('success') }}</span>
@@ -244,7 +353,7 @@
                     </div>
 
                     <div class="flex flex-wrap items-center gap-3 text-xs text-slate-600">
-                        <span>Rate: <strong class="text-slate-900">{{ $fmtIdr($activeCycle->worker_rate_idr) }}/jam</strong></span>
+                        <span>Rate Default: <strong class="text-slate-900">{{ $fmtIdr($activeCycle->worker_rate_idr) }}/jam</strong></span>
                         <span>&middot;</span>
                         <span>Invoice Klien: <strong class="text-slate-900">{{ $fmtHours($activeCycle->client_billable_hours) }} jam &times; US${{ number_format($activeCycle->client_rate_usd, 2) }} = US${{ number_format($activeCycle->client_total_usd, 2, ',', '.') }}</strong></span>
 
@@ -336,125 +445,179 @@
                                 <strong>{{ $cycleTotals['auto_created_count'] }} akun</strong> belum ada di database sebelumnya dan sudah otomatis dibuatkan dengan tanda <strong>Akun Baru (Auto DB)</strong>.
                             </span>
                         </div>
-                        <a
-                            href="{{ route('payments.manage', ['cycle_id' => $activeCycle->id, 'account_type' => 'auto_created']) }}"
+                        <button
+                            type="button"
+                            @click="setFilter('account_type', 'auto_created')"
                             class="px-3 py-1 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold transition-colors"
                         >
                             Lihat {{ $cycleTotals['auto_created_count'] }} Akun Baru
-                        </a>
+                        </button>
                     </div>
                 @endif
 
-                <!-- Panel Filter & Search Per Akun -->
-                <form action="{{ route('payments.manage') }}" method="GET" class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
-                    <input type="hidden" name="cycle_id" value="{{ $activeCycle->id }}">
-                    <input type="hidden" name="sort" value="{{ $filters['sort'] }}">
-                    <input type="hidden" name="dir" value="{{ $filters['dir'] }}">
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-                        <div class="lg:col-span-2">
-                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Cari Akun / Email / Rekening</label>
-                            <div class="relative">
-                                <input
-                                    type="text"
-                                    name="search"
-                                    value="{{ $filters['search'] }}"
-                                    placeholder="Ketik email, nama partner, ID KMK, induk, bank..."
-                                    class="w-full rounded-xl border-slate-300 text-sm pl-9 pr-3 py-2 focus:border-indigo-500 focus:ring-indigo-500"
+                <!-- Filter Bar Modern (Live Search Otomatis + Filter Pills 1-Klik + Kontrol Ringkas) -->
+                <div class="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-sm space-y-3.5">
+                    <!-- Baris 1: Live Search + Pilih Mitra Induk + Status Bayar + Baris -->
+                    <div class="flex flex-col xl:flex-row xl:items-center gap-3">
+                        <!-- Live Search Instant -->
+                        <div class="relative flex-1 min-w-[240px]">
+                            <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                            <input
+                                type="text"
+                                x-model="filterState.search"
+                                @input="onSearchInput()"
+                                @keydown.enter.prevent="clearTimeout(searchTimer); applyFilter()"
+                                placeholder="Cari cepat email, nama, ID KMK, mitra induk, atau rekening (otomatis filter)..."
+                                class="w-full rounded-xl border-slate-200 bg-slate-50/70 focus:bg-white text-sm pl-10 pr-20 py-2.5 focus:border-indigo-500 focus:ring-indigo-500 transition-colors"
+                            >
+                            <div class="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+                                <span x-show="isFiltering" style="display: none;" class="inline-flex items-center text-[11px] font-semibold text-indigo-600">
+                                    <svg class="animate-spin w-3.5 h-3.5" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                                    </svg>
+                                </span>
+                                <button
+                                    type="button"
+                                    x-show="(filterState.search || '').length > 0"
+                                    style="display: none;"
+                                    @click="filterState.search = ''; filterState.page = 1; applyFilter()"
+                                    class="px-2 py-0.5 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-700 text-[11px] font-bold transition-colors"
+                                    title="Hapus pencarian"
                                 >
-                                <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                    &times;
+                                </button>
                             </div>
                         </div>
 
-                        <div>
-                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Tipe Akun</label>
-                            <select name="account_type" onchange="this.form.submit()" class="w-full rounded-xl border-slate-300 text-sm py-2 focus:border-indigo-500 focus:ring-indigo-500">
-                                <option value="all" @selected($filters['account_type'] === 'all')>Semua Akun</option>
-                                <option value="direct_worker" @selected($filters['account_type'] === 'direct_worker')>Worker Langsung</option>
-                                <option value="under_mitra" @selected($filters['account_type'] === 'under_mitra')>Under Mitra / Main Account</option>
-                                <option value="mitra" @selected($filters['account_type'] === 'mitra')>Mitra &amp; Timnya</option>
-                                <option value="main_account" @selected($filters['account_type'] === 'main_account')>Main Account &amp; Sub-Akun</option>
-                                <option value="rekruter" @selected($filters['account_type'] === 'rekruter')>Rekruter</option>
-                                <option value="auto_created" @selected($filters['account_type'] === 'auto_created')>Akun Baru (Auto-Dibuat Excel)</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Mitra / Akun Induk</label>
-                            <select name="parent_id" onchange="this.form.submit()" class="w-full rounded-xl border-slate-300 text-sm py-2 focus:border-indigo-500 focus:ring-indigo-500">
-                                <option value="">Semua Induk</option>
+                        <!-- Mitra / Akun Induk Selector -->
+                        <div class="w-full sm:w-auto xl:min-w-[260px]">
+                            <select
+                                x-model="filterState.parent_id"
+                                @change="filterState.page = 1; applyFilter()"
+                                class="w-full rounded-xl border-slate-200 bg-slate-50/70 focus:bg-white text-sm py-2.5 px-3 focus:border-indigo-500 focus:ring-indigo-500 font-medium text-slate-700"
+                            >
+                                <option value="">Semua Mitra / Akun Induk</option>
                                 @foreach($parentOptions as $parentOpt)
-                                    <option value="{{ $parentOpt['id'] }}" @selected($filters['parent_id'] === $parentOpt['id'])>
-                                        {{ $parentOpt['name'] }} {{ $parentOpt['mitra_id'] ? "({$parentOpt['mitra_id']})" : '' }} [{{ $parentOpt['count'] }}]
+                                    <option value="{{ $parentOpt['id'] }}">
+                                        {{ $parentOpt['name'] }} {{ $parentOpt['mitra_id'] ? "({$parentOpt['mitra_id']})" : '' }} &middot; {{ $parentOpt['count'] }} akun
                                     </option>
                                 @endforeach
                             </select>
                         </div>
 
-                        <div>
-                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Status Bayar</label>
-                            <select name="pay_status" onchange="this.form.submit()" class="w-full rounded-xl border-slate-300 text-sm py-2 focus:border-indigo-500 focus:ring-indigo-500">
-                                <option value="all" @selected($filters['pay_status'] === 'all')>Semua Status</option>
-                                <option value="unpaid" @selected($filters['pay_status'] === 'unpaid')>Belum Dibayar</option>
-                                <option value="paid" @selected($filters['pay_status'] === 'paid')>Sudah Dibayar</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
-                        <div class="flex flex-wrap items-center gap-2">
-                            <button type="submit" class="px-4 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 transition-colors">
-                                Terapkan Filter
+                        <!-- Segmented Status Bayar -->
+                        <div class="inline-flex items-center p-1 rounded-xl bg-slate-100 border border-slate-200/80 self-start xl:self-auto shrink-0">
+                            <button
+                                type="button"
+                                @click="setFilter('pay_status', 'all')"
+                                :class="filterState.pay_status === 'all' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'"
+                                class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap"
+                            >
+                                Semua
                             </button>
-                            @if($hasActiveFilter)
-                                <a
-                                    href="{{ route('payments.manage', ['cycle_id' => $activeCycle->id]) }}"
-                                    class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-semibold hover:bg-slate-200 transition-colors"
-                                >
-                                    Reset Filter
-                                </a>
-                            @endif
+                            <button
+                                type="button"
+                                @click="setFilter('pay_status', 'unpaid')"
+                                :class="filterState.pay_status === 'unpaid' ? 'bg-amber-500 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'"
+                                class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap"
+                            >
+                                Unpaid ({{ $categoryCounts['unpaid'] }})
+                            </button>
+                            <button
+                                type="button"
+                                @click="setFilter('pay_status', 'paid')"
+                                :class="filterState.pay_status === 'paid' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'"
+                                class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap"
+                            >
+                                Paid ({{ $categoryCounts['paid'] }})
+                            </button>
                         </div>
 
-                        <div class="flex items-center gap-2 text-xs text-slate-600">
-                            <span>Tampilkan:</span>
-                            <select name="per_page" onchange="this.form.submit()" class="rounded-lg border-slate-300 text-xs py-1 px-2">
-                                <option value="50" @selected($filters['per_page'] === '50')>50 baris</option>
-                                <option value="100" @selected($filters['per_page'] === '100')>100 baris</option>
-                                <option value="250" @selected($filters['per_page'] === '250')>250 baris</option>
-                                <option value="all" @selected($filters['per_page'] === 'all')>Semua ({{ $filteredSummary['count'] }})</option>
-                            </select>
-                        </div>
-                    </div>
-                </form>
-
-                <!-- Subtotal Filter -->
-                @if($hasActiveFilter)
-                    <div class="bg-indigo-50 border border-indigo-200 rounded-2xl px-4 py-3 flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm">
-                        <div class="flex flex-wrap items-center gap-3 text-indigo-950">
-                            <span class="font-bold">Hasil Filter ({{ number_format($filteredSummary['count'], 0, ',', '.') }} akun):</span>
-                            <span>Billable: <strong>{{ $fmtHours($filteredSummary['billable_hours']) }} jam</strong></span>
-                            <span>&middot;</span>
-                            <span>Rejected: <strong>{{ $fmtHours($filteredSummary['rejected_hours']) }} jam</strong></span>
-                            <span>&middot;</span>
-                            <span>Recordings: <strong>{{ number_format($filteredSummary['recordings_count'], 0, ',', '.') }}</strong></span>
-                        </div>
-                        <div class="flex flex-wrap items-center gap-3">
-                            @if($filters['parent_id'] !== '')
+                        <!-- Segmented Baris per Halaman -->
+                        <div class="inline-flex items-center p-1 rounded-xl bg-slate-100 border border-slate-200/80 self-start xl:self-auto shrink-0">
+                            @foreach(['50' => '50', '100' => '100', '250' => '250', 'all' => 'Semua'] as $perVal => $perLabel)
                                 <button
                                     type="button"
-                                    @click="openTeamRateModal('{{ $filters['parent_id'] }}')"
-                                    class="px-3 py-1 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold shadow-sm transition-colors"
+                                    @click="setFilter('per_page', '{{ $perVal }}')"
+                                    :class="filterState.per_page === '{{ $perVal }}' ? 'bg-white text-indigo-700 shadow-sm font-bold' : 'text-slate-600 hover:text-slate-900 font-medium'"
+                                    class="px-2.5 py-1.5 rounded-lg text-xs transition-all whitespace-nowrap"
                                 >
-                                    Ubah Rate Tim Ini
+                                    {{ $perLabel }}
                                 </button>
-                            @endif
-                            <div class="font-extrabold text-indigo-700 tabular-nums">
-                                Subtotal Yang Perlu dibayarkan: {{ $fmtIdr($filteredSummary['amount_to_pay_idr']) }}
-                            </div>
+                            @endforeach
                         </div>
                     </div>
-                @endif
+
+                    <!-- Baris 2: Quick Category Filter Pills (1-Klik Langsung Saring) -->
+                    <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100">
+                        <div class="flex flex-wrap items-center gap-1.5">
+                            @php
+                                $pills = [
+                                    ['key' => 'all', 'label' => 'Semua Akun', 'count' => $categoryCounts['all']],
+                                    ['key' => 'direct_worker', 'label' => 'Worker Langsung', 'count' => $categoryCounts['direct_worker']],
+                                    ['key' => 'under_mitra', 'label' => 'Under Mitra / Sub', 'count' => $categoryCounts['under_mitra']],
+                                    ['key' => 'mitra', 'label' => 'Mitra & Timnya', 'count' => $categoryCounts['mitra']],
+                                    ['key' => 'main_account', 'label' => 'Main Account', 'count' => $categoryCounts['main_account']],
+                                    ['key' => 'rekruter', 'label' => 'Rekruter', 'count' => $categoryCounts['rekruter']],
+                                ];
+                            @endphp
+
+                            @foreach($pills as $pill)
+                                <button
+                                    type="button"
+                                    @click="setFilter('account_type', '{{ $pill['key'] }}')"
+                                    :class="filterState.account_type === '{{ $pill['key'] }}'
+                                        ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
+                                        : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100 hover:text-slate-900'"
+                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all"
+                                >
+                                    <span>{{ $pill['label'] }}</span>
+                                    <span
+                                        :class="filterState.account_type === '{{ $pill['key'] }}' ? 'bg-white/20 text-white' : 'bg-slate-200/80 text-slate-700'"
+                                        class="px-1.5 py-0.2 rounded-full text-[10px] font-bold tabular-nums"
+                                    >
+                                        {{ $pill['count'] }}
+                                    </span>
+                                </button>
+                            @endforeach
+
+                            @if($categoryCounts['auto_created'] > 0)
+                                <button
+                                    type="button"
+                                    @click="setFilter('account_type', 'auto_created')"
+                                    :class="filterState.account_type === 'auto_created'
+                                        ? 'bg-amber-600 text-white border-amber-600 shadow-sm'
+                                        : 'bg-amber-50 text-amber-800 border-amber-200 hover:bg-amber-100'"
+                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all"
+                                >
+                                    <span>Akun Baru DB</span>
+                                    <span
+                                        :class="filterState.account_type === 'auto_created' ? 'bg-white/20 text-white' : 'bg-amber-200 text-amber-900'"
+                                        class="px-1.5 py-0.2 rounded-full text-[10px] font-bold tabular-nums"
+                                    >
+                                        {{ $categoryCounts['auto_created'] }}
+                                    </span>
+                                </button>
+                            @endif
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <button
+                                type="button"
+                                x-show="hasActiveFilters()"
+                                style="display: none;"
+                                @click="resetFilters()"
+                                class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold transition-colors"
+                            >
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                Reset Filter
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Bulk Action Bar -->
                 <div
@@ -507,225 +670,9 @@
                     <input type="hidden" name="status" x-ref="singleEntryStatus">
                 </form>
 
-                <!-- Tabel Utama (Pas muat tanpa terpotong di desktop) -->
-                <div class="bg-white border border-slate-300 rounded-2xl shadow-sm overflow-hidden">
-                    <div class="overflow-x-auto max-h-[75vh]">
-                        <table class="min-w-full border-collapse text-xs">
-                            <thead class="bg-[#2b2d30] text-white sticky top-0 z-10 select-none">
-                                <tr class="divide-x divide-slate-600">
-                                    <th class="px-2 py-2.5 text-center w-9 font-semibold">#</th>
-                                    <th class="px-2 py-2.5 text-center w-9">
-                                        <input
-                                            type="checkbox"
-                                            @change="toggleAll($event.target.checked)"
-                                            :checked="allPageIds.length > 0 && selectedIds.length === allPageIds.length"
-                                            class="rounded border-slate-500 bg-slate-700 text-indigo-500 focus:ring-0"
-                                            title="Pilih semua baris di halaman ini"
-                                        >
-                                    </th>
-                                    <th class="px-3 py-2.5 text-left font-bold">
-                                        <a href="{{ $sortUrl('worker_email') }}" class="inline-flex items-center gap-1 hover:text-indigo-300">
-                                            Worker email
-                                            @if($filters['sort'] === 'worker_email')<span>{{ $filters['dir'] === 'asc' ? '▲' : '▼' }}</span>@endif
-                                        </a>
-                                    </th>
-                                    <th class="px-3 py-2.5 text-left font-bold whitespace-nowrap">Rekening</th>
-                                    <th class="px-2.5 py-2.5 text-right font-bold">
-                                        <a href="{{ $sortUrl('billable_hours') }}" class="inline-flex items-center justify-end gap-1 hover:text-indigo-300">
-                                            Billable hours (to be paid)
-                                            @if($filters['sort'] === 'billable_hours')<span>{{ $filters['dir'] === 'asc' ? '▲' : '▼' }}</span>@endif
-                                        </a>
-                                    </th>
-                                    <th class="px-2.5 py-2.5 text-right font-bold">
-                                        <a href="{{ $sortUrl('rejected_hours') }}" class="inline-flex items-center justify-end gap-1 hover:text-indigo-300">
-                                            Rejected hours
-                                            @if($filters['sort'] === 'rejected_hours')<span>{{ $filters['dir'] === 'asc' ? '▲' : '▼' }}</span>@endif
-                                        </a>
-                                    </th>
-                                    <th class="px-2.5 py-2.5 text-right font-bold">
-                                        <a href="{{ $sortUrl('not_checked_hours') }}" class="inline-flex items-center justify-end gap-1 hover:text-indigo-300">
-                                            Not checked yet (hours)
-                                            @if($filters['sort'] === 'not_checked_hours')<span>{{ $filters['dir'] === 'asc' ? '▲' : '▼' }}</span>@endif
-                                        </a>
-                                    </th>
-                                    <th class="px-2.5 py-2.5 text-right font-bold">
-                                        <a href="{{ $sortUrl('total_hours') }}" class="inline-flex items-center justify-end gap-1 hover:text-indigo-300">
-                                            Total hours
-                                            @if($filters['sort'] === 'total_hours')<span>{{ $filters['dir'] === 'asc' ? '▲' : '▼' }}</span>@endif
-                                        </a>
-                                    </th>
-                                    <th class="px-2.5 py-2.5 text-right font-bold">
-                                        <a href="{{ $sortUrl('recordings_count') }}" class="inline-flex items-center justify-end gap-1 hover:text-indigo-300">
-                                            Recordings
-                                            @if($filters['sort'] === 'recordings_count')<span>{{ $filters['dir'] === 'asc' ? '▲' : '▼' }}</span>@endif
-                                        </a>
-                                    </th>
-                                    <th class="px-3 py-2.5 text-right font-bold whitespace-nowrap">
-                                        <a href="{{ $sortUrl('amount_to_pay_idr') }}" class="inline-flex items-center justify-end gap-1 hover:text-indigo-300">
-                                            Yang Perlu dibayarkan
-                                            @if($filters['sort'] === 'amount_to_pay_idr')<span>{{ $filters['dir'] === 'asc' ? '▲' : '▼' }}</span>@endif
-                                        </a>
-                                    </th>
-                                    <th class="px-2.5 py-2.5 text-center font-bold whitespace-nowrap">Status</th>
-                                </tr>
-                            </thead>
-
-                            <tbody class="divide-y divide-slate-200 bg-white">
-                                @forelse($displayRows as $idx => $row)
-                                    @php
-                                        $rowNum = $paginatedRows ? ($paginatedRows->firstItem() + $idx) : ($idx + 1);
-                                        $roleBadgeClass = match($row['account_category']) {
-                                            'direct_worker' => 'bg-sky-50 text-sky-700 border-sky-200',
-                                            'under_mitra' => 'bg-violet-50 text-violet-700 border-violet-200',
-                                            'under_main_account' => 'bg-purple-50 text-purple-700 border-purple-200',
-                                            'mitra' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
-                                            'main_account' => 'bg-indigo-50 text-indigo-700 border-indigo-200',
-                                            'rekruter' => 'bg-amber-50 text-amber-700 border-amber-200',
-                                            default => 'bg-slate-100 text-slate-600 border-slate-200',
-                                        };
-                                    @endphp
-                                    <tr class="divide-x divide-slate-200 hover:bg-blue-50/50 transition-colors {{ $row['is_paid'] ? 'bg-emerald-50/30' : ($row['was_auto_created'] ? 'bg-amber-50/40' : ($idx % 2 === 1 ? 'bg-slate-50/60' : '')) }}">
-                                        <td class="px-2 py-2 text-center text-slate-400 font-mono text-[11px] tabular-nums">
-                                            {{ $rowNum }}
-                                        </td>
-                                        <td class="px-2 py-2 text-center">
-                                            <input
-                                                type="checkbox"
-                                                value="{{ $row['entry_id'] }}"
-                                                x-model.number="selectedIds"
-                                                class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
-                                            >
-                                        </td>
-                                        <td class="px-3 py-2">
-                                            <div class="flex flex-wrap items-center gap-1.5">
-                                                <span class="font-medium text-slate-900 select-all">{{ $row['worker_email'] }}</span>
-                                                @if($row['was_auto_created'])
-                                                    <span
-                                                        title="Akun belum ada di database saat upload Excel, otomatis dibuatkan sistem sebagai Worker baru."
-                                                        class="inline-flex items-center px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-bold"
-                                                    >
-                                                        Akun Baru (Auto DB)
-                                                    </span>
-                                                @endif
-                                            </div>
-                                            <div class="mt-0.5 flex flex-wrap items-center gap-1.5 text-[10px]">
-                                                <span class="inline-flex items-center px-1.5 rounded border font-semibold {{ $roleBadgeClass }}">
-                                                    {{ $row['account_category_label'] }}
-                                                </span>
-                                                @if($row['partner_name'])
-                                                    <span class="text-slate-600 font-medium">
-                                                        {{ $row['partner_name'] }}
-                                                        @if($row['mitra_id'])({{ $row['mitra_id'] }})@endif
-                                                    </span>
-                                                @endif
-                                                @if($row['parent_name'])
-                                                    <span class="text-slate-400">
-                                                        &rarr; Induk: <strong class="text-slate-600">{{ $row['parent_name'] }}</strong>
-                                                    </span>
-                                                @endif
-                                            </div>
-                                        </td>
-                                        <td class="px-3 py-2">
-                                            @if($row['bank_name'] || $row['bank_account_number'])
-                                                <div class="font-mono text-[11px] font-semibold text-slate-800 whitespace-nowrap select-all">
-                                                    {{ $row['bank_name'] ?? '' }} {{ $row['bank_account_number'] ?? '' }}
-                                                </div>
-                                                <div class="text-[10px] text-slate-500 flex flex-wrap items-center gap-1 mt-0.5">
-                                                    @if($row['parent_name'] && str_starts_with((string) $row['bank_summary'], 'Rek. Induk:'))
-                                                        <span class="px-1 rounded bg-violet-50 text-violet-700 font-semibold border border-violet-200">Rek. Induk</span>
-                                                    @endif
-                                                    @if($row['bank_account_owner'])
-                                                        <span class="truncate max-w-[160px]" title="{{ $row['bank_account_owner'] }}">a.n. {{ $row['bank_account_owner'] }}</span>
-                                                    @endif
-                                                </div>
-                                            @else
-                                                <span class="text-[11px] text-slate-400 italic">Belum ada rekening</span>
-                                            @endif
-                                        </td>
-                                        <td class="px-2.5 py-2 text-right font-semibold text-slate-900 tabular-nums whitespace-nowrap">
-                                            {{ $fmtHours($row['billable_hours']) }}
-                                        </td>
-                                        <td class="px-2.5 py-2 text-right text-slate-700 tabular-nums whitespace-nowrap">
-                                            {{ $fmtHours($row['rejected_hours']) }}
-                                        </td>
-                                        <td class="px-2.5 py-2 text-right text-slate-600 tabular-nums whitespace-nowrap">
-                                            {{ $fmtHours($row['not_checked_hours']) }}
-                                        </td>
-                                        <td class="px-2.5 py-2 text-right font-medium text-slate-800 tabular-nums whitespace-nowrap">
-                                            {{ $fmtHours($row['total_hours']) }}
-                                        </td>
-                                        <td class="px-2.5 py-2 text-right text-slate-800 tabular-nums whitespace-nowrap">
-                                            {{ number_format($row['recordings_count'], 0, ',', '.') }}
-                                        </td>
-                                        <td class="px-3 py-2 text-right tabular-nums whitespace-nowrap">
-                                            <div class="font-bold text-slate-900">{{ $fmtIdr($row['amount_to_pay_idr']) }}</div>
-                                            @php $isCustomRate = $row['hourly_rate_idr'] !== (int) $activeCycle->worker_rate_idr; @endphp
-                                            <button
-                                                type="button"
-                                                @click="openSingleRateModal({{ $row['entry_id'] }}, @js($row['worker_email']), {{ $row['hourly_rate_idr'] }})"
-                                                title="Klik untuk ubah tarif per jam akun ini"
-                                                class="mt-0.5 inline-flex items-center px-1.5 py-0.2 rounded text-[10px] font-semibold transition-colors {{ $isCustomRate ? 'bg-indigo-100 text-indigo-800 hover:bg-indigo-200' : 'text-slate-400 hover:text-indigo-700 hover:bg-slate-100' }}"
-                                            >
-                                                {{ '@' . $fmtIdr($row['hourly_rate_idr']) }}/jam
-                                            </button>
-                                        </td>
-                                        <td class="px-2.5 py-2 text-center whitespace-nowrap">
-                                            @if($row['is_paid'])
-                                                <button
-                                                    type="button"
-                                                    @click="submitSingleStatus({{ $row['entry_id'] }}, 'unpaid')"
-                                                    title="Klik untuk kembalikan ke Unpaid"
-                                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 hover:bg-emerald-200 transition-colors"
-                                                >
-                                                    Paid
-                                                </button>
-                                            @else
-                                                <button
-                                                    type="button"
-                                                    @click="submitSingleStatus({{ $row['entry_id'] }}, 'paid')"
-                                                    title="Klik untuk tandai Sudah Dibayar"
-                                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-800 hover:bg-amber-200 transition-colors"
-                                                >
-                                                    Unpaid
-                                                </button>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="11" class="px-6 py-10 text-center text-slate-500">
-                                            Tidak ada baris akun yang cocok dengan filter saat ini.
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-
-                            @if($displayRows->isNotEmpty())
-                                <tfoot class="bg-slate-100 border-t-2 border-slate-300 font-bold text-slate-900">
-                                    <tr class="divide-x divide-slate-200">
-                                        <td colspan="4" class="px-3 py-2.5 text-right uppercase text-[11px] tracking-wider text-slate-600">
-                                            Total ({{ number_format($filteredSummary['count'], 0, ',', '.') }} akun)
-                                        </td>
-                                        <td class="px-2.5 py-2.5 text-right tabular-nums">{{ $fmtHours($filteredSummary['billable_hours']) }}</td>
-                                        <td class="px-2.5 py-2.5 text-right tabular-nums">{{ $fmtHours($filteredSummary['rejected_hours']) }}</td>
-                                        <td class="px-2.5 py-2.5 text-right tabular-nums">{{ $fmtHours($filteredSummary['not_checked_hours']) }}</td>
-                                        <td class="px-2.5 py-2.5 text-right tabular-nums">{{ $fmtHours($filteredSummary['total_hours']) }}</td>
-                                        <td class="px-2.5 py-2.5 text-right tabular-nums">{{ number_format($filteredSummary['recordings_count'], 0, ',', '.') }}</td>
-                                        <td class="px-3 py-2.5 text-right text-indigo-700 tabular-nums whitespace-nowrap">{{ $fmtIdr($filteredSummary['amount_to_pay_idr']) }}</td>
-                                        <td class="px-2.5 py-2.5 text-center text-[11px] text-emerald-700 whitespace-nowrap">
-                                            {{ $filteredSummary['paid_count'] }}/{{ $filteredSummary['count'] }} Paid
-                                        </td>
-                                    </tr>
-                                </tfoot>
-                            @endif
-                        </table>
-                    </div>
-
-                    @if($paginatedRows && $paginatedRows->hasPages())
-                        <div class="px-4 py-3 border-t border-slate-200 bg-slate-50">
-                            {{ $paginatedRows->links() }}
-                        </div>
-                    @endif
+                <!-- Container Hasil Filter & Tabel (Diperbarui Real-time Tanpa Reload Halaman) -->
+                <div x-ref="resultsContainer" :class="isFiltering ? 'opacity-60 pointer-events-none transition-opacity' : 'transition-opacity'">
+                    @include('payments.partials.results')
                 </div>
             @endif
         </div>
@@ -804,8 +751,8 @@
             </div>
         </div>
 
-        <!-- Modal Atur Revenue / Kurs USD -->
         @if($activeCycle)
+            <!-- Modal Atur Revenue / Kurs USD -->
             <div
                 x-show="showFinancialsModal"
                 style="display: none;"

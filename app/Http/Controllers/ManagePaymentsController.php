@@ -78,7 +78,19 @@ class ManagePaymentsController extends Controller
             || $filters['parent_id'] !== ''
             || $filters['pay_status'] !== 'all';
 
-        return view('payments.manage', compact(
+        $categoryCounts = [
+            'all' => $allRows->count(),
+            'direct_worker' => $allRows->where('account_category', 'direct_worker')->count(),
+            'under_mitra' => $allRows->whereIn('account_category', ['under_mitra', 'under_main_account'])->count(),
+            'mitra' => $allRows->filter(fn ($r) => $r['partner_role'] === Partner::ROLE_MITRA || $r['parent_role'] === Partner::ROLE_MITRA)->count(),
+            'main_account' => $allRows->filter(fn ($r) => $r['partner_role'] === Partner::ROLE_MAIN_ACCOUNT || $r['parent_role'] === Partner::ROLE_MAIN_ACCOUNT)->count(),
+            'rekruter' => $allRows->filter(fn ($r) => $r['partner_role'] === Partner::ROLE_REKRUTER || ! empty($r['recruiter_partner_id']))->count(),
+            'auto_created' => $allRows->where('was_auto_created', true)->count(),
+            'unpaid' => $allRows->where('is_paid', false)->count(),
+            'paid' => $allRows->where('is_paid', true)->count(),
+        ];
+
+        $viewData = compact(
             'cycles',
             'activeCycle',
             'displayRows',
@@ -88,7 +100,19 @@ class ManagePaymentsController extends Controller
             'filteredSummary',
             'cycleTotals',
             'parentOptions',
-        ));
+            'categoryCounts',
+        );
+
+        if ($request->boolean('partial') && $activeCycle) {
+            return response()->json([
+                'html' => view('payments.partials.results', $viewData)->render(),
+                'allPageIds' => $displayRows->pluck('entry_id')->filter()->values()->all(),
+                'filteredCount' => $filteredSummary['count'],
+                'hasActiveFilter' => $hasActiveFilter,
+            ]);
+        }
+
+        return view('payments.manage', $viewData);
     }
 
     public function importCsv(Request $request, PaymentCycleCsvImporter $importer)
