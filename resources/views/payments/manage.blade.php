@@ -35,6 +35,7 @@
             allPageIds: @json($displayRows->pluck('entry_id')->filter()->values()->all()),
             cycleId: @js($activeCycle?->id),
             filterState: {
+                tab: @js($filters['tab']),
                 search: @js($filters['search']),
                 account_type: @js($filters['account_type']),
                 parent_id: @js($filters['parent_id']),
@@ -58,6 +59,7 @@
             buildFilterParams(extra = {}) {
                 const params = new URLSearchParams();
                 if (this.cycleId) params.set('cycle_id', this.cycleId);
+                if (this.filterState.tab === 'pending') params.set('tab', 'pending');
                 if (this.filterState.search.trim() !== '') params.set('search', this.filterState.search.trim());
                 if (this.filterState.account_type !== 'all') params.set('account_type', this.filterState.account_type);
                 if (this.filterState.parent_id !== '') params.set('parent_id', this.filterState.parent_id);
@@ -438,6 +440,42 @@
                         </button>
                     </div>
                 @endif
+
+                <!-- Tab Utama Cycle: Semua Pembayaran vs Data Pending (Not Checked Yet) -->
+                <div class="bg-white border border-slate-200/90 rounded-2xl p-1.5 shadow-sm inline-flex flex-wrap items-center gap-1.5">
+                    <button
+                        type="button"
+                        @click="setFilter('tab', 'all')"
+                        :class="filterState.tab === 'all' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'"
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all"
+                    >
+                        <span>Semua Data Pembayaran</span>
+                        <span
+                            :class="filterState.tab === 'all' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-700'"
+                            class="px-2 py-0.5 rounded-full text-[11px] font-bold tabular-nums"
+                        >
+                            {{ $categoryCounts['all'] }}
+                        </span>
+                    </button>
+
+                    <button
+                        type="button"
+                        @click="setFilter('tab', 'pending')"
+                        :class="filterState.tab === 'pending' ? 'bg-amber-600 text-white shadow-sm' : 'text-slate-700 hover:bg-amber-50/70'"
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all"
+                    >
+                        <svg class="w-4 h-4" :class="filterState.tab === 'pending' ? 'text-white' : 'text-amber-500'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span>Pending (Belum Dicek)</span>
+                        <span
+                            :class="filterState.tab === 'pending' ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-800'"
+                            class="px-2 py-0.5 rounded-full text-[11px] font-bold tabular-nums"
+                        >
+                            {{ $categoryCounts['pending_count'] }} akun &middot; {{ $fmtHours($categoryCounts['pending_hours']) }} jam
+                        </span>
+                    </button>
+                </div>
 
                 <!-- Filter Bar Modern (Live Search Otomatis + Filter Pills 1-Klik + Kontrol Ringkas) -->
                 <div class="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-sm space-y-3.5">

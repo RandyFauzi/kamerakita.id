@@ -30,6 +30,7 @@ class ManagePaymentsController extends Controller
         $parentOptions = $this->extractParentOptions($allRows);
 
         $filters = [
+            'tab' => $request->input('tab') === 'pending' ? 'pending' : 'all',
             'search' => trim((string) $request->input('search', '')),
             'account_type' => (string) $request->input('account_type', 'all'),
             'parent_id' => (string) $request->input('parent_id', ''),
@@ -49,6 +50,7 @@ class ManagePaymentsController extends Controller
             'total_hours' => round((float) $filteredRows->sum('total_hours'), 2),
             'recordings_count' => (int) $filteredRows->sum('recordings_count'),
             'amount_to_pay_idr' => (int) $filteredRows->sum('amount_to_pay_idr'),
+            'estimated_pending_idr' => (int) $filteredRows->sum('estimated_pending_idr'),
             'paid_count' => $filteredRows->where('is_paid', true)->count(),
             'paid_amount_idr' => (int) $filteredRows->where('is_paid', true)->sum('amount_to_pay_idr'),
             'auto_created_count' => $filteredRows->where('was_auto_created', true)->count(),
@@ -78,6 +80,8 @@ class ManagePaymentsController extends Controller
             || $filters['parent_id'] !== ''
             || $filters['pay_status'] !== 'all';
 
+        $pendingRows = $allRows->filter(fn ($r) => (float) $r['not_checked_hours'] > 0.0001);
+
         $categoryCounts = [
             'all' => $allRows->count(),
             'direct_worker' => $allRows->where('account_category', 'direct_worker')->count(),
@@ -88,6 +92,9 @@ class ManagePaymentsController extends Controller
             'auto_created' => $allRows->where('was_auto_created', true)->count(),
             'unpaid' => $allRows->where('is_paid', false)->count(),
             'paid' => $allRows->where('is_paid', true)->count(),
+            'pending_count' => $pendingRows->count(),
+            'pending_hours' => round((float) $pendingRows->sum('not_checked_hours'), 2),
+            'pending_estimated_idr' => (int) $pendingRows->sum('estimated_pending_idr'),
         ];
 
         $viewData = compact(
@@ -292,6 +299,7 @@ class ManagePaymentsController extends Controller
         $allRows = $activeCycle ? $this->buildCycleRows($activeCycle) : collect();
 
         $filters = [
+            'tab' => $request->input('tab') === 'pending' ? 'pending' : 'all',
             'search' => trim((string) $request->input('search', '')),
             'account_type' => (string) $request->input('account_type', 'all'),
             'parent_id' => (string) $request->input('parent_id', ''),
@@ -303,7 +311,8 @@ class ManagePaymentsController extends Controller
         $rows = $this->applyFiltersAndSorting($allRows, $filters);
         $variant = $request->input('variant', 'sheet');
         $slug = $activeCycle ? str()->slug($activeCycle->name) : 'pembayaran';
-        $filename = "pembayaran_{$slug}_{$variant}_" . now('Asia/Makassar')->format('Ymd_His') . '.csv';
+        $tabSuffix = $filters['tab'] === 'pending' ? '_pending' : '';
+        $filename = "pembayaran_{$slug}{$tabSuffix}_{$variant}_" . now('Asia/Makassar')->format('Ymd_His') . '.csv';
 
         return response()->streamDownload(function () use ($rows, $variant) {
             $out = fopen('php://output', 'w');
@@ -447,12 +456,14 @@ class ManagePaymentsController extends Controller
             }
         }
 
+        $hourlyRate = (int) ($entry->hourly_rate_idr ?: $entry->cycle?->worker_rate_idr ?: self::DEFAULT_WORKER_RATE_IDR);
+
         return [
             'entry_id' => $entry->id,
             'atlas_worker_id' => $entry->atlas_worker_id,
             'worker_email' => $entry->worker_email,
             'billable_hours' => (float) $entry->billable_hours,
-            'hourly_rate_idr' => (int) ($entry->hourly_rate_idr ?: $entry->cycle?->worker_rate_idr ?: self::DEFAULT_WORKER_RATE_IDR),
+            'hourly_rate_idr' => $hourlyRate,
             'rejected_hours' => (float) $entry->rejected_hours,
             'not_checked_hours' => (float) $entry->not_checked_hours,
             'total_hours' => (float) $entry->total_hours,
@@ -462,6 +473,7 @@ class ManagePaymentsController extends Controller
             'on_list_now' => $entry->on_list_now ?: 'Yes',
             'removed_from_program' => $entry->removed_from_program,
             'amount_to_pay_idr' => (int) $entry->amount_to_pay_idr,
+            'estimated_pending_idr' => (int) round((float) $entry->not_checked_hours * $hourlyRate),
             'was_auto_created' => (bool) $entry->was_auto_created,
             'is_paid' => (bool) $entry->is_paid,
             'paid_at' => $entry->paid_at?->timezone('Asia/Makassar')->format('d M Y H:i'),
@@ -574,6 +586,10 @@ class ManagePaymentsController extends Controller
                 }
             }
 
+            if (($filters['tab'] ?? 'all') === 'pending' && (float) $row['not_checked_hours'] <= 0.0001) {
+                return false;
+            }
+
             if ($filters['pay_status'] === 'paid' && ! $row['is_paid']) {
                 return false;
             } elseif ($filters['pay_status'] === 'unpaid' && $row['is_paid']) {
@@ -594,12 +610,15 @@ class ManagePaymentsController extends Controller
             'total_hours',
             'recordings_count',
             'amount_to_pay_idr',
+            'estimated_pending_idr',
         ];
 
         if (in_array($sort, $allowedSorts, true)) {
             $filtered = $desc
                 ? $filtered->sortByDesc($sort, SORT_NATURAL | SORT_FLAG_CASE)
                 : $filtered->sortBy($sort, SORT_NATURAL | SORT_FLAG_CASE);
+        } elseif (($filters['tab'] ?? 'all') === 'pending') {
+            $filtered = $filtered->sortByDesc('not_checked_hours');
         } else {
             $filtered = $filtered->sortBy('sort_order');
         }

@@ -1,6 +1,7 @@
 @php
     $fmtHours = fn ($v) => number_format((float) $v, 2, ',', '.');
     $fmtIdr = fn ($v) => 'Rp ' . number_format((float) $v, 0, ',', '.');
+    $isPendingTab = ($filters['tab'] ?? 'all') === 'pending';
 
     $sortUrl = function (string $column) use ($filters, $activeCycle) {
         $isCurrent = $filters['sort'] === $column;
@@ -14,8 +15,24 @@
     };
 @endphp
 
-<!-- Subtotal Filter -->
-@if($hasActiveFilter)
+@if($isPendingTab)
+    <!-- Ringkasan Khusus Tab Pending (Not Checked Yet) -->
+    <div class="bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3.5 flex flex-wrap items-center justify-between gap-3 mb-4">
+        <div class="flex flex-wrap items-center gap-3 text-xs sm:text-sm text-amber-950">
+            <span class="inline-flex items-center gap-1.5 font-extrabold text-amber-800">
+                <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Daftar Pending Cycle Ini:
+            </span>
+            <span><strong>{{ number_format($filteredSummary['count'], 0, ',', '.') }} akun</strong> memiliki jam pending</span>
+            <span>&middot;</span>
+            <span>Total Pending: <strong>{{ $fmtHours($filteredSummary['not_checked_hours']) }} jam</strong></span>
+        </div>
+        <div class="text-xs sm:text-sm font-extrabold text-amber-800 tabular-nums">
+            Estimasi Nilai Pending: {{ $fmtIdr($filteredSummary['estimated_pending_idr']) }}
+        </div>
+    </div>
+@elseif($hasActiveFilter)
+    <!-- Subtotal Filter -->
     <div class="bg-indigo-50 border border-indigo-200 rounded-2xl px-4 py-3 flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm mb-4">
         <div class="flex flex-wrap items-center gap-3 text-indigo-950">
             <span class="font-bold">Hasil Filter ({{ number_format($filteredSummary['count'], 0, ',', '.') }} akun):</span>
@@ -49,15 +66,17 @@
             <thead class="bg-[#2b2d30] text-white sticky top-0 z-10 select-none">
                 <tr class="divide-x divide-slate-600">
                     <th class="px-2 py-2.5 text-center w-9 font-semibold">#</th>
-                    <th class="px-2 py-2.5 text-center w-9">
-                        <input
-                            type="checkbox"
-                            @change="toggleAll($event.target.checked)"
-                            :checked="allPageIds.length > 0 && selectedIds.length === allPageIds.length"
-                            class="rounded border-slate-500 bg-slate-700 text-indigo-500 focus:ring-0"
-                            title="Pilih semua baris di halaman ini"
-                        >
-                    </th>
+                    @if(!$isPendingTab)
+                        <th class="px-2 py-2.5 text-center w-9">
+                            <input
+                                type="checkbox"
+                                @change="toggleAll($event.target.checked)"
+                                :checked="allPageIds.length > 0 && selectedIds.length === allPageIds.length"
+                                class="rounded border-slate-500 bg-slate-700 text-indigo-500 focus:ring-0"
+                                title="Pilih semua baris di halaman ini"
+                            >
+                        </th>
+                    @endif
                     <th class="px-3 py-2.5 text-left font-bold">
                         <a href="{{ $sortUrl('worker_email') }}" @click.prevent="toggleSort('worker_email')" class="inline-flex items-center gap-1 hover:text-indigo-300">
                             Worker email
@@ -65,43 +84,82 @@
                         </a>
                     </th>
                     <th class="px-3 py-2.5 text-left font-bold whitespace-nowrap">Rekening</th>
-                    <th class="px-2.5 py-2.5 text-right font-bold">
-                        <a href="{{ $sortUrl('billable_hours') }}" @click.prevent="toggleSort('billable_hours')" class="inline-flex items-center justify-end gap-1 hover:text-indigo-300">
-                            Billable hours (to be paid)
-                            @if($filters['sort'] === 'billable_hours')<span>{{ $filters['dir'] === 'asc' ? '▲' : '▼' }}</span>@endif
-                        </a>
-                    </th>
-                    <th class="px-2.5 py-2.5 text-right font-bold">
-                        <a href="{{ $sortUrl('rejected_hours') }}" @click.prevent="toggleSort('rejected_hours')" class="inline-flex items-center justify-end gap-1 hover:text-indigo-300">
-                            Rejected hours
-                            @if($filters['sort'] === 'rejected_hours')<span>{{ $filters['dir'] === 'asc' ? '▲' : '▼' }}</span>@endif
-                        </a>
-                    </th>
-                    <th class="px-2.5 py-2.5 text-right font-bold">
-                        <a href="{{ $sortUrl('not_checked_hours') }}" @click.prevent="toggleSort('not_checked_hours')" class="inline-flex items-center justify-end gap-1 hover:text-indigo-300">
-                            Not checked yet (hours)
-                            @if($filters['sort'] === 'not_checked_hours')<span>{{ $filters['dir'] === 'asc' ? '▲' : '▼' }}</span>@endif
-                        </a>
-                    </th>
-                    <th class="px-2.5 py-2.5 text-right font-bold">
-                        <a href="{{ $sortUrl('total_hours') }}" @click.prevent="toggleSort('total_hours')" class="inline-flex items-center justify-end gap-1 hover:text-indigo-300">
-                            Total hours
-                            @if($filters['sort'] === 'total_hours')<span>{{ $filters['dir'] === 'asc' ? '▲' : '▼' }}</span>@endif
-                        </a>
-                    </th>
-                    <th class="px-2.5 py-2.5 text-right font-bold">
-                        <a href="{{ $sortUrl('recordings_count') }}" @click.prevent="toggleSort('recordings_count')" class="inline-flex items-center justify-end gap-1 hover:text-indigo-300">
-                            Recordings
-                            @if($filters['sort'] === 'recordings_count')<span>{{ $filters['dir'] === 'asc' ? '▲' : '▼' }}</span>@endif
-                        </a>
-                    </th>
-                    <th class="px-3 py-2.5 text-right font-bold whitespace-nowrap">
-                        <a href="{{ $sortUrl('amount_to_pay_idr') }}" @click.prevent="toggleSort('amount_to_pay_idr')" class="inline-flex items-center justify-end gap-1 hover:text-indigo-300">
-                            Yang Perlu dibayarkan
-                            @if($filters['sort'] === 'amount_to_pay_idr')<span>{{ $filters['dir'] === 'asc' ? '▲' : '▼' }}</span>@endif
-                        </a>
-                    </th>
-                    <th class="px-2.5 py-2.5 text-center font-bold whitespace-nowrap">Status</th>
+                    @if($isPendingTab)
+                        <th class="px-3 py-2.5 text-right font-bold bg-amber-900/40 text-amber-200 whitespace-nowrap">
+                            <a href="{{ $sortUrl('not_checked_hours') }}" @click.prevent="toggleSort('not_checked_hours')" class="inline-flex items-center justify-end gap-1 hover:text-white">
+                                Pending (Not checked yet)
+                                @if($filters['sort'] === 'not_checked_hours' || $filters['sort'] === 'default')<span>{{ ($filters['sort'] === 'not_checked_hours' && $filters['dir'] === 'asc') ? '▲' : '▼' }}</span>@endif
+                            </a>
+                        </th>
+                        <th class="px-3 py-2.5 text-right font-bold whitespace-nowrap">
+                            <a href="{{ $sortUrl('estimated_pending_idr') }}" @click.prevent="toggleSort('estimated_pending_idr')" class="inline-flex items-center justify-end gap-1 hover:text-indigo-300">
+                                Estimasi Pending (IDR)
+                                @if($filters['sort'] === 'estimated_pending_idr')<span>{{ $filters['dir'] === 'asc' ? '▲' : '▼' }}</span>@endif
+                            </a>
+                        </th>
+                        <th class="px-2.5 py-2.5 text-right font-bold">
+                            <a href="{{ $sortUrl('billable_hours') }}" @click.prevent="toggleSort('billable_hours')" class="inline-flex items-center justify-end gap-1 hover:text-indigo-300">
+                                Billable hours
+                                @if($filters['sort'] === 'billable_hours')<span>{{ $filters['dir'] === 'asc' ? '▲' : '▼' }}</span>@endif
+                            </a>
+                        </th>
+                        <th class="px-2.5 py-2.5 text-right font-bold">
+                            <a href="{{ $sortUrl('rejected_hours') }}" @click.prevent="toggleSort('rejected_hours')" class="inline-flex items-center justify-end gap-1 hover:text-indigo-300">
+                                Rejected hours
+                                @if($filters['sort'] === 'rejected_hours')<span>{{ $filters['dir'] === 'asc' ? '▲' : '▼' }}</span>@endif
+                            </a>
+                        </th>
+                        <th class="px-2.5 py-2.5 text-right font-bold">
+                            <a href="{{ $sortUrl('total_hours') }}" @click.prevent="toggleSort('total_hours')" class="inline-flex items-center justify-end gap-1 hover:text-indigo-300">
+                                Total hours
+                                @if($filters['sort'] === 'total_hours')<span>{{ $filters['dir'] === 'asc' ? '▲' : '▼' }}</span>@endif
+                            </a>
+                        </th>
+                        <th class="px-2.5 py-2.5 text-right font-bold">
+                            <a href="{{ $sortUrl('recordings_count') }}" @click.prevent="toggleSort('recordings_count')" class="inline-flex items-center justify-end gap-1 hover:text-indigo-300">
+                                Recordings
+                                @if($filters['sort'] === 'recordings_count')<span>{{ $filters['dir'] === 'asc' ? '▲' : '▼' }}</span>@endif
+                            </a>
+                        </th>
+                    @else
+                        <th class="px-2.5 py-2.5 text-right font-bold">
+                            <a href="{{ $sortUrl('billable_hours') }}" @click.prevent="toggleSort('billable_hours')" class="inline-flex items-center justify-end gap-1 hover:text-indigo-300">
+                                Billable hours (to be paid)
+                                @if($filters['sort'] === 'billable_hours')<span>{{ $filters['dir'] === 'asc' ? '▲' : '▼' }}</span>@endif
+                            </a>
+                        </th>
+                        <th class="px-2.5 py-2.5 text-right font-bold">
+                            <a href="{{ $sortUrl('rejected_hours') }}" @click.prevent="toggleSort('rejected_hours')" class="inline-flex items-center justify-end gap-1 hover:text-indigo-300">
+                                Rejected hours
+                                @if($filters['sort'] === 'rejected_hours')<span>{{ $filters['dir'] === 'asc' ? '▲' : '▼' }}</span>@endif
+                            </a>
+                        </th>
+                        <th class="px-2.5 py-2.5 text-right font-bold">
+                            <a href="{{ $sortUrl('not_checked_hours') }}" @click.prevent="toggleSort('not_checked_hours')" class="inline-flex items-center justify-end gap-1 hover:text-indigo-300">
+                                Not checked yet (hours)
+                                @if($filters['sort'] === 'not_checked_hours')<span>{{ $filters['dir'] === 'asc' ? '▲' : '▼' }}</span>@endif
+                            </a>
+                        </th>
+                        <th class="px-2.5 py-2.5 text-right font-bold">
+                            <a href="{{ $sortUrl('total_hours') }}" @click.prevent="toggleSort('total_hours')" class="inline-flex items-center justify-end gap-1 hover:text-indigo-300">
+                                Total hours
+                                @if($filters['sort'] === 'total_hours')<span>{{ $filters['dir'] === 'asc' ? '▲' : '▼' }}</span>@endif
+                            </a>
+                        </th>
+                        <th class="px-2.5 py-2.5 text-right font-bold">
+                            <a href="{{ $sortUrl('recordings_count') }}" @click.prevent="toggleSort('recordings_count')" class="inline-flex items-center justify-end gap-1 hover:text-indigo-300">
+                                Recordings
+                                @if($filters['sort'] === 'recordings_count')<span>{{ $filters['dir'] === 'asc' ? '▲' : '▼' }}</span>@endif
+                            </a>
+                        </th>
+                        <th class="px-3 py-2.5 text-right font-bold whitespace-nowrap">
+                            <a href="{{ $sortUrl('amount_to_pay_idr') }}" @click.prevent="toggleSort('amount_to_pay_idr')" class="inline-flex items-center justify-end gap-1 hover:text-indigo-300">
+                                Yang Perlu dibayarkan
+                                @if($filters['sort'] === 'amount_to_pay_idr')<span>{{ $filters['dir'] === 'asc' ? '▲' : '▼' }}</span>@endif
+                            </a>
+                        </th>
+                        <th class="px-2.5 py-2.5 text-center font-bold whitespace-nowrap">Status</th>
+                    @endif
                 </tr>
             </thead>
 
@@ -123,14 +181,16 @@
                         <td class="px-2 py-2 text-center text-slate-400 font-mono text-[11px] tabular-nums">
                             {{ $rowNum }}
                         </td>
-                        <td class="px-2 py-2 text-center">
-                            <input
-                                type="checkbox"
-                                value="{{ $row['entry_id'] }}"
-                                x-model.number="selectedIds"
-                                class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
-                            >
-                        </td>
+                        @if(!$isPendingTab)
+                            <td class="px-2 py-2 text-center">
+                                <input
+                                    type="checkbox"
+                                    value="{{ $row['entry_id'] }}"
+                                    x-model.number="selectedIds"
+                                    class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                                >
+                            </td>
+                        @endif
                         <td class="px-3 py-2">
                             <div class="flex flex-wrap items-center gap-1.5">
                                 <span class="font-medium text-slate-900 select-all">{{ $row['worker_email'] }}</span>
@@ -177,59 +237,82 @@
                                 <span class="text-[11px] text-slate-400 italic">Belum ada rekening</span>
                             @endif
                         </td>
-                        <td class="px-2.5 py-2 text-right font-semibold text-slate-900 tabular-nums whitespace-nowrap">
-                            {{ $fmtHours($row['billable_hours']) }}
-                        </td>
-                        <td class="px-2.5 py-2 text-right text-slate-700 tabular-nums whitespace-nowrap">
-                            {{ $fmtHours($row['rejected_hours']) }}
-                        </td>
-                        <td class="px-2.5 py-2 text-right text-slate-600 tabular-nums whitespace-nowrap">
-                            {{ $fmtHours($row['not_checked_hours']) }}
-                        </td>
-                        <td class="px-2.5 py-2 text-right font-medium text-slate-800 tabular-nums whitespace-nowrap">
-                            {{ $fmtHours($row['total_hours']) }}
-                        </td>
-                        <td class="px-2.5 py-2 text-right text-slate-800 tabular-nums whitespace-nowrap">
-                            {{ number_format($row['recordings_count'], 0, ',', '.') }}
-                        </td>
-                        <td class="px-3 py-2 text-right tabular-nums whitespace-nowrap">
-                            <div class="font-bold text-slate-900">{{ $fmtIdr($row['amount_to_pay_idr']) }}</div>
-                            @php $isCustomRate = $row['hourly_rate_idr'] !== (int) $activeCycle->worker_rate_idr; @endphp
-                            <button
-                                type="button"
-                                @click="openSingleRateModal({{ $row['entry_id'] }}, @js($row['worker_email']), {{ $row['hourly_rate_idr'] }})"
-                                title="Klik untuk ubah tarif per jam akun ini"
-                                class="mt-0.5 inline-flex items-center px-1.5 py-0.2 rounded text-[10px] font-semibold transition-colors {{ $isCustomRate ? 'bg-indigo-100 text-indigo-800 hover:bg-indigo-200' : 'text-slate-400 hover:text-indigo-700 hover:bg-slate-100' }}"
-                            >
-                                {{ '@' . $fmtIdr($row['hourly_rate_idr']) }}/jam
-                            </button>
-                        </td>
-                        <td class="px-2.5 py-2 text-center whitespace-nowrap">
-                            @if($row['is_paid'])
+
+                        @if($isPendingTab)
+                            <td class="px-3 py-2 text-right bg-amber-50/60 tabular-nums whitespace-nowrap">
+                                <span class="font-extrabold text-amber-800">{{ $fmtHours($row['not_checked_hours']) }} jam</span>
+                            </td>
+                            <td class="px-3 py-2 text-right tabular-nums whitespace-nowrap">
+                                <div class="font-bold text-slate-900">{{ $fmtIdr($row['estimated_pending_idr']) }}</div>
+                                <div class="text-[10px] text-slate-400">{{ '@' . $fmtIdr($row['hourly_rate_idr']) }}/jam</div>
+                            </td>
+                            <td class="px-2.5 py-2 text-right font-semibold text-slate-800 tabular-nums whitespace-nowrap">
+                                {{ $fmtHours($row['billable_hours']) }}
+                            </td>
+                            <td class="px-2.5 py-2 text-right text-slate-700 tabular-nums whitespace-nowrap">
+                                {{ $fmtHours($row['rejected_hours']) }}
+                            </td>
+                            <td class="px-2.5 py-2 text-right font-medium text-slate-800 tabular-nums whitespace-nowrap">
+                                {{ $fmtHours($row['total_hours']) }}
+                            </td>
+                            <td class="px-2.5 py-2 text-right text-slate-800 tabular-nums whitespace-nowrap">
+                                {{ number_format($row['recordings_count'], 0, ',', '.') }}
+                            </td>
+                        @else
+                            <td class="px-2.5 py-2 text-right font-semibold text-slate-900 tabular-nums whitespace-nowrap">
+                                {{ $fmtHours($row['billable_hours']) }}
+                            </td>
+                            <td class="px-2.5 py-2 text-right text-slate-700 tabular-nums whitespace-nowrap">
+                                {{ $fmtHours($row['rejected_hours']) }}
+                            </td>
+                            <td class="px-2.5 py-2 text-right text-slate-600 tabular-nums whitespace-nowrap">
+                                {{ $fmtHours($row['not_checked_hours']) }}
+                            </td>
+                            <td class="px-2.5 py-2 text-right font-medium text-slate-800 tabular-nums whitespace-nowrap">
+                                {{ $fmtHours($row['total_hours']) }}
+                            </td>
+                            <td class="px-2.5 py-2 text-right text-slate-800 tabular-nums whitespace-nowrap">
+                                {{ number_format($row['recordings_count'], 0, ',', '.') }}
+                            </td>
+                            <td class="px-3 py-2 text-right tabular-nums whitespace-nowrap">
+                                <div class="font-bold text-slate-900">{{ $fmtIdr($row['amount_to_pay_idr']) }}</div>
+                                @php $isCustomRate = $row['hourly_rate_idr'] !== (int) $activeCycle->worker_rate_idr; @endphp
                                 <button
                                     type="button"
-                                    @click="submitSingleStatus({{ $row['entry_id'] }}, 'unpaid')"
-                                    title="Klik untuk kembalikan ke Unpaid"
-                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 hover:bg-emerald-200 transition-colors"
+                                    @click="openSingleRateModal({{ $row['entry_id'] }}, @js($row['worker_email']), {{ $row['hourly_rate_idr'] }})"
+                                    title="Klik untuk ubah tarif per jam akun ini"
+                                    class="mt-0.5 inline-flex items-center px-1.5 py-0.2 rounded text-[10px] font-semibold transition-colors {{ $isCustomRate ? 'bg-indigo-100 text-indigo-800 hover:bg-indigo-200' : 'text-slate-400 hover:text-indigo-700 hover:bg-slate-100' }}"
                                 >
-                                    Paid
+                                    {{ '@' . $fmtIdr($row['hourly_rate_idr']) }}/jam
                                 </button>
-                            @else
-                                <button
-                                    type="button"
-                                    @click="submitSingleStatus({{ $row['entry_id'] }}, 'paid')"
-                                    title="Klik untuk tandai Sudah Dibayar"
-                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-800 hover:bg-amber-200 transition-colors"
-                                >
-                                    Unpaid
-                                </button>
-                            @endif
-                        </td>
+                            </td>
+                            <td class="px-2.5 py-2 text-center whitespace-nowrap">
+                                @if($row['is_paid'])
+                                    <button
+                                        type="button"
+                                        @click="submitSingleStatus({{ $row['entry_id'] }}, 'unpaid')"
+                                        title="Klik untuk kembalikan ke Unpaid"
+                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 hover:bg-emerald-200 transition-colors"
+                                    >
+                                        Paid
+                                    </button>
+                                @else
+                                    <button
+                                        type="button"
+                                        @click="submitSingleStatus({{ $row['entry_id'] }}, 'paid')"
+                                        title="Klik untuk tandai Sudah Dibayar"
+                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-800 hover:bg-amber-200 transition-colors"
+                                    >
+                                        Unpaid
+                                    </button>
+                                @endif
+                            </td>
+                        @endif
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="11" class="px-6 py-10 text-center text-slate-500">
-                            Tidak ada baris akun yang cocok dengan filter saat ini.
+                        <td colspan="{{ $isPendingTab ? 9 : 11 }}" class="px-6 py-10 text-center text-slate-500">
+                            {{ $isPendingTab ? 'Tidak ada jam pending (Not checked yet) pada cycle/filter ini.' : 'Tidak ada baris akun yang cocok dengan filter saat ini.' }}
                         </td>
                     </tr>
                 @endforelse
@@ -238,18 +321,30 @@
             @if($displayRows->isNotEmpty())
                 <tfoot class="bg-slate-100 border-t-2 border-slate-300 font-bold text-slate-900">
                     <tr class="divide-x divide-slate-200">
-                        <td colspan="4" class="px-3 py-2.5 text-right uppercase text-[11px] tracking-wider text-slate-600">
-                            Total ({{ number_format($filteredSummary['count'], 0, ',', '.') }} akun)
-                        </td>
-                        <td class="px-2.5 py-2.5 text-right tabular-nums">{{ $fmtHours($filteredSummary['billable_hours']) }}</td>
-                        <td class="px-2.5 py-2.5 text-right tabular-nums">{{ $fmtHours($filteredSummary['rejected_hours']) }}</td>
-                        <td class="px-2.5 py-2.5 text-right tabular-nums">{{ $fmtHours($filteredSummary['not_checked_hours']) }}</td>
-                        <td class="px-2.5 py-2.5 text-right tabular-nums">{{ $fmtHours($filteredSummary['total_hours']) }}</td>
-                        <td class="px-2.5 py-2.5 text-right tabular-nums">{{ number_format($filteredSummary['recordings_count'], 0, ',', '.') }}</td>
-                        <td class="px-3 py-2.5 text-right text-indigo-700 tabular-nums whitespace-nowrap">{{ $fmtIdr($filteredSummary['amount_to_pay_idr']) }}</td>
-                        <td class="px-2.5 py-2.5 text-center text-[11px] text-emerald-700 whitespace-nowrap">
-                            {{ $filteredSummary['paid_count'] }}/{{ $filteredSummary['count'] }} Paid
-                        </td>
+                        @if($isPendingTab)
+                            <td colspan="3" class="px-3 py-2.5 text-right uppercase text-[11px] tracking-wider text-slate-600">
+                                Total Pending ({{ number_format($filteredSummary['count'], 0, ',', '.') }} akun)
+                            </td>
+                            <td class="px-3 py-2.5 text-right text-amber-800 tabular-nums whitespace-nowrap">{{ $fmtHours($filteredSummary['not_checked_hours']) }} jam</td>
+                            <td class="px-3 py-2.5 text-right text-indigo-700 tabular-nums whitespace-nowrap">{{ $fmtIdr($filteredSummary['estimated_pending_idr']) }}</td>
+                            <td class="px-2.5 py-2.5 text-right tabular-nums">{{ $fmtHours($filteredSummary['billable_hours']) }}</td>
+                            <td class="px-2.5 py-2.5 text-right tabular-nums">{{ $fmtHours($filteredSummary['rejected_hours']) }}</td>
+                            <td class="px-2.5 py-2.5 text-right tabular-nums">{{ $fmtHours($filteredSummary['total_hours']) }}</td>
+                            <td class="px-2.5 py-2.5 text-right tabular-nums">{{ number_format($filteredSummary['recordings_count'], 0, ',', '.') }}</td>
+                        @else
+                            <td colspan="4" class="px-3 py-2.5 text-right uppercase text-[11px] tracking-wider text-slate-600">
+                                Total ({{ number_format($filteredSummary['count'], 0, ',', '.') }} akun)
+                            </td>
+                            <td class="px-2.5 py-2.5 text-right tabular-nums">{{ $fmtHours($filteredSummary['billable_hours']) }}</td>
+                            <td class="px-2.5 py-2.5 text-right tabular-nums">{{ $fmtHours($filteredSummary['rejected_hours']) }}</td>
+                            <td class="px-2.5 py-2.5 text-right tabular-nums">{{ $fmtHours($filteredSummary['not_checked_hours']) }}</td>
+                            <td class="px-2.5 py-2.5 text-right tabular-nums">{{ $fmtHours($filteredSummary['total_hours']) }}</td>
+                            <td class="px-2.5 py-2.5 text-right tabular-nums">{{ number_format($filteredSummary['recordings_count'], 0, ',', '.') }}</td>
+                            <td class="px-3 py-2.5 text-right text-indigo-700 tabular-nums whitespace-nowrap">{{ $fmtIdr($filteredSummary['amount_to_pay_idr']) }}</td>
+                            <td class="px-2.5 py-2.5 text-center text-[11px] text-emerald-700 whitespace-nowrap">
+                                {{ $filteredSummary['paid_count'] }}/{{ $filteredSummary['count'] }} Paid
+                            </td>
+                        @endif
                     </tr>
                 </tfoot>
             @endif

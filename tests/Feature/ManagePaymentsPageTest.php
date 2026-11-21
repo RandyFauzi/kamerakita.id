@@ -217,5 +217,16 @@ class ManagePaymentsPageTest extends TestCase
             ->assertJsonPath('hasActiveFilter', true);
         $this->assertStringContainsString('baru_excel01@kamerakitaid.site', $partial->json('html'));
         $this->assertStringNotContainsString('dimass211119@kamerakitaid.site', $partial->json('html'));
+
+        // Pending tab shows only accounts with Not checked yet (hours) > 0
+        $pendingPage = $this->actingAs($admin)
+            ->get(route('payments.manage', ['cycle_id' => $cycle->id, 'tab' => 'pending']));
+
+        $pendingPage->assertOk()
+            ->assertSee('Daftar Pending Cycle Ini')
+            ->assertSee('baru_excel01@kamerakitaid.site')
+            ->assertSee('0,50 jam')
+            ->assertSee('Rp 25.000')
+            ->assertDontSee('dimass211119@kamerakitaid.site');
     }
 }
