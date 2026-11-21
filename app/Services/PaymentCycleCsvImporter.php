@@ -283,33 +283,36 @@ class PaymentCycleCsvImporter
     private function pickTargetWorksheet(Spreadsheet $spreadsheet, ?string $preferredSheet)
     {
         $sheets = $spreadsheet->getAllSheets();
+        $preferred = trim((string) $preferredSheet);
 
-        if ($preferredSheet) {
+        if ($preferred !== '') {
             foreach ($sheets as $sheet) {
-                if (strcasecmp(trim($sheet->getTitle()), trim($preferredSheet)) === 0) {
+                if (strcasecmp(trim($sheet->getTitle()), $preferred) === 0) {
+                    return $sheet;
+                }
+            }
+
+            if (! in_array(strtolower($preferred), ['kamerakita-id', 'kamerakita-ai'], true)) {
+                $available = implode(', ', array_map(fn ($s) => $s->getTitle(), $sheets));
+                throw ValidationException::withMessages([
+                    'excel_file' => "Sheet \"{$preferred}\" tidak ditemukan di file Excel. Sheet tersedia: {$available}.",
+                ]);
+            }
+        }
+
+        // Only read 1 exact target sheet: prioritize "kamerakita-id", then "kamerakita-ai"
+        foreach (['kamerakita-id', 'kamerakita-ai'] as $targetName) {
+            foreach ($sheets as $sheet) {
+                if (strtolower(trim($sheet->getTitle())) === $targetName) {
                     return $sheet;
                 }
             }
         }
 
-        // 1. Exact/substring match for "kamerakita-ai" / "kamerakita"
-        foreach ($sheets as $sheet) {
-            $title = strtolower(trim($sheet->getTitle()));
-            if ($title === 'kamerakita-ai' || str_contains($title, 'kamerakita')) {
-                return $sheet;
-            }
-        }
-
-        // 2. Fallback: first sheet that contains the expected table header
-        foreach ($sheets as $sheet) {
-            $preview = $this->normalizeRows($sheet->rangeToArray('A1:L15', null, false, false, false));
-            [$idx] = $this->locateWorkerHeader($preview);
-            if ($idx !== null) {
-                return $sheet;
-            }
-        }
-
-        return $spreadsheet->getActiveSheet();
+        $available = implode(', ', array_map(fn ($s) => $s->getTitle(), $sheets));
+        throw ValidationException::withMessages([
+            'excel_file' => "Sheet \"kamerakita-id\" tidak ditemukan di file Excel (hanya membaca 1 sheet tersebut). Sheet tersedia: {$available}.",
+        ]);
     }
 
     private function extractWorksheetRowsSafely(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet): array

@@ -143,7 +143,7 @@
                             Upload File Excel Payment Cycle
                         </h3>
                         <p class="mt-1.5 text-sm text-slate-600">
-                            Upload file <code>.xlsx</code>, <code>.xls</code>, atau <code>.csv</code> dari sheet <code>kamerakita-ai</code>. Sistem otomatis mendeteksi setiap akun, mencocokkan rekening &amp; mitra di database, dan membuatkan akun baru bertanda jika email belum terdaftar.
+                            Upload file <code>.xlsx</code>, <code>.xls</code>, atau <code>.csv</code>. Sistem hanya membaca 1 sheet (<code>kamerakita-id</code> / <code>kamerakita-ai</code>), mencocokkan akun ke database, dan otomatis membuatkan akun baru bertanda jika belum terdaftar.
                         </p>
                     </div>
 
@@ -690,7 +690,7 @@
                             class="sr-only"
                         >
                         <p class="text-xs font-bold text-slate-800" x-text="selectedFileName ? 'File siap upload: ' + selectedFileName : 'Klik atau tarik file Excel (.xlsx / .xls / .csv) ke sini'"></p>
-                        <p class="text-[11px] text-slate-500 mt-1">Otomatis fokus membaca sheet <code>kamerakita-ai</code></p>
+                        <p class="text-[11px] text-slate-500 mt-1">Hanya membaca 1 sheet target: <code>kamerakita-id</code> / <code>kamerakita-ai</code></p>
                     </label>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -700,7 +700,7 @@
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">Nama Sheet Excel (opsional)</label>
-                            <input type="text" name="sheet_name" value="kamerakita-ai" class="w-full rounded-xl border-slate-300 text-sm">
+                            <input type="text" name="sheet_name" value="kamerakita-id" placeholder="kamerakita-id" class="w-full rounded-xl border-slate-300 text-sm">
                         </div>
                     </div>
 

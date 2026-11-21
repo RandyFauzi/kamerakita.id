@@ -49,14 +49,17 @@ class ManagePaymentsPageTest extends TestCase
             'mitra_id' => 'KMK-101',
         ]);
 
-        // Build real multi-sheet .xlsx workbook (other sheet + kamerakita-ai sheet with formulas)
+        // Build real multi-sheet .xlsx workbook (other sheet + kamerakita-id sheet with formulas)
         $spreadsheet = new Spreadsheet();
         $otherSheet = $spreadsheet->getActiveSheet();
-        $otherSheet->setTitle('Ringkasan Lain');
-        $otherSheet->setCellValue('A1', 'Sheet lain');
+        $otherSheet->setTitle('Mitra Nugi');
+        $otherSheet->fromArray([
+            ['Worker email', 'Billable hours (to be paid)'],
+            ['tidakterbaca@kamerakitaid.site', 99],
+        ], null, 'A1');
 
         $sheet = $spreadsheet->createSheet();
-        $sheet->setTitle('kamerakita-ai');
+        $sheet->setTitle('kamerakita-id');
         $sheet->fromArray([
             ['kamerakita-ai: payment cycle 3 hours per worker'],
             ['Payment cycle 3 = 2026-11-01 to 2026-11-15 (UTC). Paid figures, frozen on 2026-11-20: 4,383.43 billable hours x US$4.50 = US$19,725.44.'],
@@ -87,7 +90,8 @@ class ManagePaymentsPageTest extends TestCase
 
         $cycle = PaymentCycle::firstOrFail();
         $this->assertSame('Payment Cycle 3 (2026-11-01 s/d 2026-11-15)', $cycle->name);
-        $this->assertSame('kamerakita-ai', $cycle->source_label);
+        $this->assertSame('kamerakita-id', $cycle->source_label);
+        $this->assertDatabaseMissing('payment_cycle_entries', ['worker_email' => 'tidakterbaca@kamerakitaid.site']);
         $this->assertSame(1500000, $cycle->revenue_idr);
         $this->assertSame(940200, $cycle->total_pay_idr);
 
