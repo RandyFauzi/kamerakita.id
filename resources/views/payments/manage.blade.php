@@ -474,6 +474,7 @@
                                             @if($filters['sort'] === 'worker_email')<span>{{ $filters['dir'] === 'asc' ? '▲' : '▼' }}</span>@endif
                                         </a>
                                     </th>
+                                    <th class="px-3 py-2.5 text-left font-bold whitespace-nowrap">Rekening</th>
                                     <th class="px-2.5 py-2.5 text-right font-bold">
                                         <a href="{{ $sortUrl('billable_hours') }}" class="inline-flex items-center justify-end gap-1 hover:text-indigo-300">
                                             Billable hours (to be paid)
@@ -568,14 +569,22 @@
                                                     </span>
                                                 @endif
                                             </div>
-                                            @if($row['bank_summary'])
-                                                <div class="mt-1 flex items-center gap-1.5 text-[10.5px] text-slate-500">
-                                                    <svg class="w-3 h-3 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
-                                                    <span class="font-mono font-medium text-slate-700 select-all">{{ $row['bank_summary'] }}</span>
+                                        </td>
+                                        <td class="px-3 py-2">
+                                            @if($row['bank_name'] || $row['bank_account_number'])
+                                                <div class="font-mono text-[11px] font-semibold text-slate-800 whitespace-nowrap select-all">
+                                                    {{ $row['bank_name'] ?? '' }} {{ $row['bank_account_number'] ?? '' }}
+                                                </div>
+                                                <div class="text-[10px] text-slate-500 flex flex-wrap items-center gap-1 mt-0.5">
+                                                    @if($row['parent_name'] && str_starts_with((string) $row['bank_summary'], 'Rek. Induk:'))
+                                                        <span class="px-1 rounded bg-violet-50 text-violet-700 font-semibold border border-violet-200">Rek. Induk</span>
+                                                    @endif
                                                     @if($row['bank_account_owner'])
-                                                        <span class="text-slate-400 truncate max-w-[170px]" title="{{ $row['bank_account_owner'] }}">a.n. {{ $row['bank_account_owner'] }}</span>
+                                                        <span class="truncate max-w-[160px]" title="{{ $row['bank_account_owner'] }}">a.n. {{ $row['bank_account_owner'] }}</span>
                                                     @endif
                                                 </div>
+                                            @else
+                                                <span class="text-[11px] text-slate-400 italic">Belum ada rekening</span>
                                             @endif
                                         </td>
                                         <td class="px-2.5 py-2 text-right font-semibold text-slate-900 tabular-nums whitespace-nowrap">
@@ -620,7 +629,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="10" class="px-6 py-10 text-center text-slate-500">
+                                        <td colspan="11" class="px-6 py-10 text-center text-slate-500">
                                             Tidak ada baris akun yang cocok dengan filter saat ini.
                                         </td>
                                     </tr>
@@ -630,7 +639,7 @@
                             @if($displayRows->isNotEmpty())
                                 <tfoot class="bg-slate-100 border-t-2 border-slate-300 font-bold text-slate-900">
                                     <tr class="divide-x divide-slate-200">
-                                        <td colspan="3" class="px-3 py-2.5 text-right uppercase text-[11px] tracking-wider text-slate-600">
+                                        <td colspan="4" class="px-3 py-2.5 text-right uppercase text-[11px] tracking-wider text-slate-600">
                                             Total ({{ number_format($filteredSummary['count'], 0, ',', '.') }} akun)
                                         </td>
                                         <td class="px-2.5 py-2.5 text-right tabular-nums">{{ $fmtHours($filteredSummary['billable_hours']) }}</td>
