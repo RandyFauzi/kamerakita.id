@@ -63,7 +63,7 @@ class ManagePaymentsPageTest extends TestCase
             [],
             ['Worker email', 'Billable hours (to be paid)', 'Rejected hours', 'Not checked yet (hours)', 'Total hours', 'Approved share', 'Recordings', 'Main rejection reason', 'On the list now', 'Removed from the program', 'Yang Perlu dibayarkan'],
             ['dimass211119@kamerakitaid.site', 5.67, 1.34, 0, 7.01, 0.81, 14, 'No Segments Produced', 'Yes', '', '=B5*60000'],
-            ['baru_excel01@kamerakitaid.site', 10.00, 1.00, 0.50, 11.50, 0.91, 22, 'Fake Task', 'Yes', '', '=B6*60000'],
+            ['baru_excel01@kamerakitaid.site', 10.00, 1.00, 0.50, 11.50, 0.91, 22, '=UNIQUE({"Fake Task"})', 'Yes', '', '=B6*60000'],
             ['', '', '', '', '', '', '', '', '', 'Total Bayar', '=SUM(K5:K6)'],
             ['', '', '', '', '', '', '', '', '', 'Revenue', 1500000],
         ], null, 'A1');

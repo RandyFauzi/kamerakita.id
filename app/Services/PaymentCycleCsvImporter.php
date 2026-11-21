@@ -253,7 +253,7 @@ class PaymentCycleCsvImporter
             }
 
             $sheet = $this->pickTargetWorksheet($spreadsheet, $preferredSheet);
-            $rows = $sheet->toArray(null, true, false, false);
+            $rows = $this->extractWorksheetRowsSafely($sheet);
 
             return [$rows, $sheet->getTitle() ?: 'kamerakita-ai'];
         }
@@ -302,7 +302,7 @@ class PaymentCycleCsvImporter
 
         // 2. Fallback: first sheet that contains the expected table header
         foreach ($sheets as $sheet) {
-            $preview = $sheet->rangeToArray('A1:L15', null, false, false, false);
+            $preview = $this->normalizeRows($sheet->rangeToArray('A1:L15', null, false, false, false));
             [$idx] = $this->locateWorkerHeader($preview);
             if ($idx !== null) {
                 return $sheet;
@@ -310,6 +310,75 @@ class PaymentCycleCsvImporter
         }
 
         return $spreadsheet->getActiveSheet();
+    }
+
+    private function extractWorksheetRowsSafely(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet): array
+    {
+        $highestRow = $sheet->getHighestRow();
+        $highestColIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($sheet->getHighestColumn());
+        $rows = [];
+
+        for ($r = 1; $r <= $highestRow; $r++) {
+            $row = [];
+            for ($c = 1; $c <= $highestColIndex; $c++) {
+                $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($c);
+                $cell = $sheet->getCell($colLetter . $r);
+                $val = null;
+
+                if ($cell->isFormula()) {
+                    $cached = $cell->getOldCalculatedValue();
+                    if ($cached !== null && $cached !== '' && ! is_array($cached)) {
+                        $val = $cached;
+                    } else {
+                        try {
+                            $val = $cell->getCalculatedValue();
+                        } catch (Throwable) {
+                            $val = $cached;
+                        }
+                    }
+                } else {
+                    $val = $cell->getValue();
+                }
+
+                $row[] = $this->scalarCell($val);
+            }
+            $rows[] = $row;
+        }
+
+        return $rows;
+    }
+
+    private function normalizeRows(array $rows): array
+    {
+        return array_map(
+            fn ($row) => is_array($row) ? array_map(fn ($cell) => $this->scalarCell($cell), $row) : [$this->scalarCell($row)],
+            $rows
+        );
+    }
+
+    private function scalarCell(mixed $value): string|int|float|null
+    {
+        while (is_array($value)) {
+            $value = $value === [] ? null : reset($value);
+        }
+
+        if ($value instanceof \PhpOffice\PhpSpreadsheet\RichText\RichText) {
+            return $value->getPlainText();
+        }
+
+        if (is_bool($value)) {
+            return $value ? 'Yes' : 'No';
+        }
+
+        if ($value === null || is_string($value) || is_int($value) || is_float($value)) {
+            return $value;
+        }
+
+        if (is_object($value) && method_exists($value, '__toString')) {
+            return (string) $value;
+        }
+
+        return null;
     }
 
     private function extractHighestMitraNumber(): int
