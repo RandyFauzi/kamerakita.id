@@ -120,6 +120,7 @@ class ManagePaymentsPageTest extends TestCase
             ->assertSee('Rp 600.000')
             ->assertSee('dimass211119@kamerakitaid.site')
             ->assertSee('Rp 340.200')
+            ->assertDontSeeText('Bagi 4')
             ->assertDontSeeText('Approved share')
             ->assertDontSeeText('Main rejection reason')
             ->assertDontSeeText('On the list now')

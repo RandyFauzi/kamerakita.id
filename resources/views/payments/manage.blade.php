@@ -17,7 +17,6 @@
     @php
         $fmtHours = fn ($v) => number_format((float) $v, 2, ',', '.');
         $fmtIdr = fn ($v) => 'Rp ' . number_format((float) $v, 0, ',', '.');
-        $fmtIdrDec = fn ($v) => 'Rp ' . number_format((float) $v, ((float) $v - floor((float) $v)) > 0.001 ? 2 : 0, ',', '.');
     @endphp
 
     <div
@@ -367,8 +366,8 @@
                     </div>
                 </div>
 
-                <!-- 4 Summary Cards Finansial (Total Bayar, Revenue, Omzet, Bagi 4) -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- 3 Summary Cards Finansial (Total Bayar, Revenue, Omzet) -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Total Bayar</span>
@@ -416,21 +415,6 @@
                         </p>
                         <p class="mt-1 text-xs text-slate-500">
                             Margin bersih setelah bayar worker
-                        </p>
-                    </div>
-
-                    <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Bagi 4</span>
-                            <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700">
-                                Omzet &divide; 4
-                            </span>
-                        </div>
-                        <p class="mt-2 text-xl sm:text-2xl font-extrabold text-slate-900 tabular-nums">
-                            {{ $cycleTotals['revenue_idr'] > 0 ? $fmtIdrDec($cycleTotals['bagi_4_idr']) : '-' }}
-                        </p>
-                        <p class="mt-1 text-xs text-slate-500">
-                            Estimasi pembagian per bagian
                         </p>
                     </div>
                 </div>
