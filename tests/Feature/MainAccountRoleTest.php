@@ -305,17 +305,10 @@ class MainAccountRoleTest extends TestCase
         ]);
 
         $admin = User::factory()->create(['role' => 'admin']);
-        $this->actingAs($admin)->post(route('payrolls.store'), [
-            'atlas_worker_id' => (string) $atlas1->id,
-            'period_start' => now()->subDay()->toDateString(),
-            'period_end' => now()->addDay()->toDateString(),
-        ])->assertRedirect();
-
-        $this->assertDatabaseHas('payrolls', [
-            'atlas_worker_id' => $atlas1->id,
-            'total_approved_minutes' => 150,
-            'amount_rupiah' => 150000, // 2.5 hours * 60,000
-        ]);
+        $this->actingAs($admin)->get(route('payments.manage', ['source' => 'live']))
+            ->assertOk()
+            ->assertSee('sub1@kamerakitaid.site')
+            ->assertSee('Rp 150.000');
 
         $leaderboard = collect(app(LeaderboardService::class)->getWeeklyLeaderboard(10));
         $entry = $leaderboard->firstWhere('entity_id', (string) $mainAccount->id);

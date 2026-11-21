@@ -188,19 +188,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/qc-room/quick-reconcile', [VerifyVideoWorkReportController::class, 'quickReconcileByEmail'])
         ->middleware('role:superadmin,admin')
         ->name('video-submissions.quick-reconcile');
-    // Batch Payment Module
-    Route::get('/payments/manage', [\App\Http\Controllers\ManagePaymentsController::class, 'index'])
-        ->middleware('role:superadmin,admin,finance')
-        ->name('payments.manage');
-    Route::post('/payments/manage/batch-pay', [\App\Http\Controllers\ManagePaymentsController::class, 'batchPay'])
-        ->middleware('role:superadmin')
-        ->name('payments.batch-pay');
-    Route::post('/payments/manage/{partner}/pay', [\App\Http\Controllers\ManagePaymentsController::class, 'processPayment'])
-        ->middleware('role:superadmin,admin,finance')
-        ->name('payments.process');
-    Route::post('/payments/manage/cancel', [\App\Http\Controllers\ManagePaymentsController::class, 'cancelPayment'])
-        ->middleware('role:superadmin,admin,finance')
-        ->name('payments.cancel');
+    // Payment Cycle & Pembayaran Module
+    Route::prefix('payments/manage')->name('payments.')->middleware('role:superadmin,admin,finance')->group(function () {
+        Route::get('/', [\App\Http\Controllers\ManagePaymentsController::class, 'index'])->name('manage');
+        Route::post('/import-csv', [\App\Http\Controllers\ManagePaymentsController::class, 'importCsv'])->name('import-csv');
+        Route::post('/snapshot-live', [\App\Http\Controllers\ManagePaymentsController::class, 'snapshotLive'])->name('snapshot-live');
+        Route::put('/cycles/{cycle}/financials', [\App\Http\Controllers\ManagePaymentsController::class, 'updateCycleFinancials'])->name('update-financials');
+        Route::delete('/cycles/{cycle}', [\App\Http\Controllers\ManagePaymentsController::class, 'destroyCycle'])->name('destroy-cycle');
+        Route::post('/entries/status', [\App\Http\Controllers\ManagePaymentsController::class, 'updatePaymentStatus'])->name('update-status');
+        Route::get('/export-csv', [\App\Http\Controllers\ManagePaymentsController::class, 'exportCsv'])->name('export-csv');
+    });
 
     // Phase 5: Bulk Payroll Export Module
     Route::get('/payroll/export-csv', [ExportPayrollDataController::class, 'exportCsv'])
@@ -295,12 +292,6 @@ Route::post('/onboarding', [\App\Http\Controllers\FastworkOnboardingController::
 require __DIR__.'/auth.php';
 
     Route::get('/tasks', [\App\Http\Controllers\MasterTaskController::class, 'index'])->name('tasks.index');
-    
-    // Payroll Routes (Admin)
-    Route::get('/admin/payrolls', [\App\Http\Controllers\PayrollController::class, 'index'])->middleware('role:superadmin,admin')->name('payrolls.index');
-    Route::post('/admin/payrolls', [\App\Http\Controllers\PayrollController::class, 'store'])->middleware('role:superadmin,admin')->name('payrolls.store');
-    Route::delete('/admin/payrolls/{payroll}', [\App\Http\Controllers\PayrollController::class, 'destroy'])->middleware('role:superadmin,admin')->name('payrolls.destroy');
-    Route::post('/admin/payrolls/{payroll}/mark-paid', [\App\Http\Controllers\PayrollController::class, 'markAsPaid'])->middleware('role:superadmin,admin')->name('payrolls.mark_paid');
     Route::get('/admin/recordings', [\App\Http\Controllers\Admin\AtlasRecordingController::class, 'index'])->middleware('role:superadmin,admin')->name('admin.recordings.index');
     Route::post('/admin/recordings/refresh-1618', [\App\Http\Controllers\Admin\AtlasRecordingController::class, 'refresh1618'])->middleware(['role:superadmin,admin', 'throttle:6,1'])->name('admin.recordings.refresh1618');
     Route::get('/admin/recordings/sync-status', [\App\Http\Controllers\Admin\AtlasRecordingController::class, 'syncStatus'])->middleware(['role:superadmin,admin', 'throttle:30,1'])->name('admin.recordings.sync-status');
