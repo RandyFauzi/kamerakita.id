@@ -6,9 +6,15 @@ use App\Models\AtlasWorker;
 use App\Models\Partner;
 use App\Models\PaymentCycle;
 use App\Models\PaymentCycleEntry;
+use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use Throwable;
 
 class PaymentCycleCsvImporter
 {
@@ -18,25 +24,20 @@ class PaymentCycleCsvImporter
         int $workerRateIdr = 60000,
         ?int $overrideRevenueIdr = null,
         ?int $userId = null,
+        ?string $preferredSheet = null,
     ): PaymentCycle {
-        $raw = file_get_contents($file->getRealPath());
-        if ($raw === false || trim($raw) === '') {
-            throw ValidationException::withMessages(['csv_file' => 'File CSV kosong atau tidak dapat dibaca.']);
+        [$rows, $detectedSheetName] = $this->readSpreadsheetRows($file, $preferredSheet);
+
+        if ($rows === []) {
+            throw ValidationException::withMessages(['excel_file' => 'File Excel/CSV kosong atau tidak dapat dibaca.']);
         }
-
-        // Strip UTF-8 BOM
-        $raw = preg_replace('/^\xEF\xBB\xBF/', '', $raw) ?? $raw;
-        $lines = preg_split("/\r\n|\n|\r/", $raw) ?: [];
-        $delimiter = $this->detectDelimiter($lines);
-
-        $rows = array_map(fn (string $line) => str_getcsv($line, $delimiter), $lines);
 
         $metadata = $this->extractHeaderMetadata($rows);
         [$headerIndex, $columns] = $this->locateWorkerHeader($rows);
 
         if ($headerIndex === null) {
             throw ValidationException::withMessages([
-                'csv_file' => 'Header kolom "Worker email" dan "Billable hours" tidak ditemukan di file CSV.',
+                'excel_file' => 'Header kolom "Worker email" dan "Billable hours" tidak ditemukan di sheet ' . $detectedSheetName . '.',
             ]);
         }
 
@@ -45,12 +46,12 @@ class PaymentCycleCsvImporter
 
         for ($i = $headerIndex + 1; $i < count($rows); $i++) {
             $row = $rows[$i];
-            $joined = strtolower(trim(implode(' ', $row)));
+            $joined = strtolower(trim(implode(' ', array_map(fn ($v) => (string) ($v ?? ''), $row))));
             if ($joined === '') {
                 continue;
             }
 
-            // Capture bottom summary values for the kamerakita-ai sheet
+            // Capture bottom summary Revenue row on the kamerakita-ai sheet
             $rowRevenue = $this->extractLabeledSummaryIdr($row, 'revenue');
             if ($rowRevenue !== null) {
                 $summaryRevenue = $rowRevenue;
@@ -58,7 +59,6 @@ class PaymentCycleCsvImporter
             }
 
             if ($this->isSummaryOrStopRow($row, $columns['worker_email'])) {
-                // Stop immediately if a second table header starts below the main sheet
                 $firstCell = strtolower(trim((string) ($row[$columns['worker_email']] ?? '')));
                 if (str_starts_with($firstCell, 'worker email')) {
                     break;
@@ -86,7 +86,7 @@ class PaymentCycleCsvImporter
             $removed = $columns['removed'] !== null ? trim((string) ($row[$columns['removed']] ?? '')) : '';
 
             $rawPay = $columns['amount_to_pay'] !== null ? ($row[$columns['amount_to_pay']] ?? null) : null;
-            $amountToPay = ($rawPay !== null && trim((string) $rawPay) !== '')
+            $amountToPay = ($rawPay !== null && trim((string) $rawPay) !== '' && ! str_starts_with(trim((string) $rawPay), '#'))
                 ? $this->parseIdr($rawPay)
                 : (int) round($billable * $workerRateIdr);
 
@@ -98,7 +98,7 @@ class PaymentCycleCsvImporter
                 'total_hours' => round($total, 2),
                 'approved_share' => round($share, 6),
                 'recordings_count' => max(0, $recordings),
-                'main_rejection_reason' => ($reason === '' || $reason === '0') ? null : $reason,
+                'main_rejection_reason' => ($reason === '' || $reason === '0' || str_starts_with($reason, '#')) ? null : $reason,
                 'on_list_now' => $onList !== '' ? $onList : 'Yes',
                 'removed_from_program' => ($removed === '' || $removed === '0') ? null : $removed,
                 'amount_to_pay_idr' => max(0, $amountToPay),
@@ -107,13 +107,18 @@ class PaymentCycleCsvImporter
         }
 
         if ($parsedRows === []) {
-            throw ValidationException::withMessages(['csv_file' => 'Tidak ada baris worker yang valid di file CSV.']);
+            throw ValidationException::withMessages(['excel_file' => 'Tidak ada baris worker yang valid di file Excel/CSV.']);
         }
 
         $emails = array_keys($parsedRows);
         $partnersByEmail = Partner::whereIn(DB::raw('LOWER(email)'), $emails)
             ->get()
             ->keyBy(fn (Partner $p) => strtolower((string) $p->email));
+
+        $usersByEmail = User::with('partner')
+            ->whereIn(DB::raw('LOWER(email)'), $emails)
+            ->get()
+            ->keyBy(fn (User $u) => strtolower((string) $u->email));
 
         $atlasWorkersByEmail = AtlasWorker::with('user.partner')
             ->whereIn(DB::raw('LOWER(atlas_email)'), $emails)
@@ -124,7 +129,20 @@ class PaymentCycleCsvImporter
         $totalUsd = $metadata['client_total_usd'] ?: round($metadata['client_billable_hours'] * $metadata['client_rate_usd'], 2);
         $usdToIdr = ($revenueIdr > 0 && $totalUsd > 0) ? round($revenueIdr / $totalUsd, 2) : null;
 
-        return DB::transaction(function () use ($cycleName, $metadata, $workerRateIdr, $revenueIdr, $totalUsd, $usdToIdr, $userId, $parsedRows, $partnersByEmail, $atlasWorkersByEmail) {
+        return DB::transaction(function () use (
+            $cycleName,
+            $detectedSheetName,
+            $metadata,
+            $workerRateIdr,
+            $revenueIdr,
+            $totalUsd,
+            $usdToIdr,
+            $userId,
+            $parsedRows,
+            $partnersByEmail,
+            $usersByEmail,
+            $atlasWorkersByEmail
+        ) {
             $resolvedName = trim((string) $cycleName);
             if ($resolvedName === '') {
                 $resolvedName = $metadata['suggested_name'] ?: ('Payment Cycle ' . now('Asia/Makassar')->format('d M Y H:i'));
@@ -132,7 +150,7 @@ class PaymentCycleCsvImporter
 
             $cycle = PaymentCycle::create([
                 'name' => $resolvedName,
-                'source_label' => 'kamerakita-ai',
+                'source_label' => $detectedSheetName ?: 'kamerakita-ai',
                 'period_start' => $metadata['period_start'],
                 'period_end' => $metadata['period_end'],
                 'frozen_on' => $metadata['frozen_on'],
@@ -146,16 +164,62 @@ class PaymentCycleCsvImporter
                 'created_by' => $userId,
             ]);
 
+            $nextMitraNum = $this->extractHighestMitraNumber() + 1;
             $now = now();
             $insertRows = [];
+
             foreach ($parsedRows as $email => $item) {
                 $atlasWorker = $atlasWorkersByEmail->get($email);
-                $partner = $partnersByEmail->get($email) ?? $atlasWorker?->user?->partner;
+                $user = $usersByEmail->get($email) ?? $atlasWorker?->user;
+                $partner = $partnersByEmail->get($email) ?? $user?->partner;
+                $wasAutoCreated = false;
+
+                if (! $partner) {
+                    $wasAutoCreated = true;
+
+                    if (! $user) {
+                        $user = User::create([
+                            'name' => $this->deriveDisplayName($email),
+                            'email' => $email,
+                            'password' => Hash::make(Str::random(24)),
+                            'role' => 'worker',
+                            'email_verified_at' => $now,
+                        ]);
+                    }
+
+                    [$mitraId, $nextMitraNum] = $this->allocateNextMitraId($nextMitraNum);
+
+                    $isRemoved = ! empty($item['removed_from_program']) || strtolower($item['on_list_now']) !== 'yes';
+
+                    $partner = Partner::create([
+                        'partner_role' => Partner::ROLE_WORKER,
+                        'mitra_id' => $mitraId,
+                        'full_name' => $user->name ?: $this->deriveDisplayName($email),
+                        'email' => $email,
+                        'whatsapp_number' => '',
+                        'registration_date' => $now->toDateString(),
+                        'status' => $isRemoved ? Partner::STATUS_INACTIVE : Partner::STATUS_ACTIVE,
+                        'base_hourly_rate' => $workerRateIdr,
+                        'user_id' => $user->id,
+                    ]);
+                }
+
+                if (! $atlasWorker) {
+                    $atlasWorker = AtlasWorker::create([
+                        'user_id' => $partner->user_id ?? $user?->id,
+                        'atlas_email' => $email,
+                        'group' => 'ASTRO',
+                        'active' => strtolower($item['on_list_now']) === 'yes',
+                    ]);
+                } elseif (! $atlasWorker->user_id && ($partner->user_id ?? $user?->id)) {
+                    $atlasWorker->update(['user_id' => $partner->user_id ?? $user?->id]);
+                }
 
                 $insertRows[] = array_merge($item, [
                     'payment_cycle_id' => $cycle->id,
-                    'partner_id' => $partner?->id,
-                    'atlas_worker_id' => $atlasWorker?->id,
+                    'partner_id' => $partner->id,
+                    'atlas_worker_id' => $atlasWorker->id,
+                    'was_auto_created' => $wasAutoCreated,
                     'is_paid' => false,
                     'created_at' => $now,
                     'updated_at' => $now,
@@ -168,6 +232,114 @@ class PaymentCycleCsvImporter
 
             return $cycle;
         });
+    }
+
+    /**
+     * Read Excel (.xlsx/.xls) or CSV (.csv/.txt) and auto-select the kamerakita-ai sheet.
+     *
+     * @return array{0: array<int, array<int, mixed>>, 1: string}
+     */
+    private function readSpreadsheetRows(UploadedFile $file, ?string $preferredSheet): array
+    {
+        $ext = strtolower((string) $file->getClientOriginalExtension());
+
+        if (in_array($ext, ['xlsx', 'xls'], true)) {
+            try {
+                $spreadsheet = IOFactory::load($file->getRealPath());
+            } catch (Throwable $e) {
+                throw ValidationException::withMessages([
+                    'excel_file' => 'Gagal membaca file Excel: ' . $e->getMessage(),
+                ]);
+            }
+
+            $sheet = $this->pickTargetWorksheet($spreadsheet, $preferredSheet);
+            $rows = $sheet->toArray(null, true, false, false);
+
+            return [$rows, $sheet->getTitle() ?: 'kamerakita-ai'];
+        }
+
+        $raw = file_get_contents($file->getRealPath());
+        if ($raw === false || trim($raw) === '') {
+            return [[], 'kamerakita-ai'];
+        }
+
+        $raw = preg_replace('/^\xEF\xBB\xBF/', '', $raw) ?? $raw;
+        $lines = preg_split("/\r\n|\n|\r/", $raw) ?: [];
+        $delimiter = $this->detectDelimiter($lines);
+        $rows = array_map(fn (string $line) => str_getcsv($line, $delimiter), $lines);
+
+        $sheetLabel = 'kamerakita-ai';
+        foreach (array_slice($rows, 0, 3) as $r) {
+            $first = trim((string) ($r[0] ?? ''));
+            if (stripos($first, 'kamerakita-ai') !== false) {
+                $sheetLabel = 'kamerakita-ai';
+                break;
+            }
+        }
+
+        return [$rows, $sheetLabel];
+    }
+
+    private function pickTargetWorksheet(Spreadsheet $spreadsheet, ?string $preferredSheet)
+    {
+        $sheets = $spreadsheet->getAllSheets();
+
+        if ($preferredSheet) {
+            foreach ($sheets as $sheet) {
+                if (strcasecmp(trim($sheet->getTitle()), trim($preferredSheet)) === 0) {
+                    return $sheet;
+                }
+            }
+        }
+
+        // 1. Exact/substring match for "kamerakita-ai" / "kamerakita"
+        foreach ($sheets as $sheet) {
+            $title = strtolower(trim($sheet->getTitle()));
+            if ($title === 'kamerakita-ai' || str_contains($title, 'kamerakita')) {
+                return $sheet;
+            }
+        }
+
+        // 2. Fallback: first sheet that contains the expected table header
+        foreach ($sheets as $sheet) {
+            $preview = $sheet->rangeToArray('A1:L15', null, false, false, false);
+            [$idx] = $this->locateWorkerHeader($preview);
+            if ($idx !== null) {
+                return $sheet;
+            }
+        }
+
+        return $spreadsheet->getActiveSheet();
+    }
+
+    private function extractHighestMitraNumber(): int
+    {
+        $highest = 0;
+        foreach (Partner::query()->where('mitra_id', 'like', 'KMK-%')->pluck('mitra_id') as $mitraId) {
+            if (preg_match('/^KMK-(\d+)$/D', (string) $mitraId, $matches)) {
+                $highest = max($highest, (int) $matches[1]);
+            }
+        }
+
+        return $highest;
+    }
+
+    private function allocateNextMitraId(int $nextNum): array
+    {
+        do {
+            $candidate = 'KMK-' . str_pad((string) $nextNum, 3, '0', STR_PAD_LEFT);
+            $nextNum++;
+        } while (Partner::where('mitra_id', $candidate)->exists());
+
+        return [$candidate, $nextNum];
+    }
+
+    private function deriveDisplayName(string $email): string
+    {
+        $local = strstr($email, '@', true) ?: $email;
+        $cleaned = trim((string) preg_replace('/[._\-]+/', ' ', $local));
+
+        return $cleaned !== '' ? Str::title($cleaned) : $email;
     }
 
     private function detectDelimiter(array $lines): string
@@ -191,7 +363,7 @@ class PaymentCycleCsvImporter
             'client_total_usd' => 0.0,
         ];
 
-        foreach (array_slice($rows, 0, 6) as $row) {
+        foreach (array_slice($rows, 0, 8) as $row) {
             $text = trim(implode(' ', array_filter($row, fn ($c) => trim((string) $c) !== '')));
             if ($text === '') {
                 continue;
@@ -273,7 +445,7 @@ class PaymentCycleCsvImporter
             if (strtolower(trim((string) $cell)) === $label) {
                 for ($j = $idx + 1; $j < count($row); $j++) {
                     $candidate = trim((string) ($row[$j] ?? ''));
-                    if ($candidate !== '') {
+                    if ($candidate !== '' && ! str_starts_with($candidate, '#')) {
                         return $this->parseIdr($candidate);
                     }
                 }
@@ -302,8 +474,12 @@ class PaymentCycleCsvImporter
 
     private function parseDecimal(mixed $value): float
     {
+        if (is_int($value) || is_float($value)) {
+            return (float) $value;
+        }
+
         $str = trim((string) $value);
-        if ($str === '') {
+        if ($str === '' || str_starts_with($str, '#')) {
             return 0.0;
         }
 
@@ -337,8 +513,13 @@ class PaymentCycleCsvImporter
 
     private function parseShare(mixed $value): float
     {
+        if (is_int($value) || is_float($value)) {
+            $num = (float) $value;
+            return $num > 1.0001 ? ($num / 100) : $num;
+        }
+
         $raw = trim((string) $value);
-        if ($raw === '') {
+        if ($raw === '' || str_starts_with($raw, '#')) {
             return 0.0;
         }
 
@@ -353,8 +534,12 @@ class PaymentCycleCsvImporter
 
     private function parseIdr(mixed $value): int
     {
+        if (is_int($value) || is_float($value)) {
+            return (int) round((float) $value);
+        }
+
         $str = trim((string) $value);
-        if ($str === '') {
+        if ($str === '' || str_starts_with($str, '#')) {
             return 0;
         }
 

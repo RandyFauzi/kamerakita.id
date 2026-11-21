@@ -2,33 +2,33 @@
 
 namespace Tests\Feature;
 
-use App\Models\AtlasTask;
-use App\Models\AtlasWorker;
 use App\Models\Partner;
 use App\Models\PaymentCycle;
 use App\Models\PaymentCycleEntry;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Tests\TestCase;
 
 class ManagePaymentsPageTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_role_access_and_legacy_payroll_routes_removed(): void
+    public function test_role_access_and_empty_excel_upload_screen(): void
     {
         $worker = User::factory()->create(['role' => 'worker', 'email_verified_at' => now()]);
         $finance = User::factory()->create(['role' => 'finance', 'email_verified_at' => now()]);
         $admin = User::factory()->create(['role' => 'superadmin', 'email_verified_at' => now()]);
 
         $this->actingAs($worker)->get(route('payments.manage'))->assertForbidden();
-        $this->actingAs($finance)->get(route('payments.manage'))->assertOk()->assertSeeText('Pembayaran');
+        $this->actingAs($finance)->get(route('payments.manage'))->assertOk()->assertSeeText('Upload File Excel Payment Cycle');
         $this->actingAs($admin)->get(route('payments.manage'))->assertOk()->assertSeeText('Pembayaran');
         $this->actingAs($admin)->get('/admin/payrolls')->assertNotFound();
     }
 
-    public function test_import_kamerakita_ai_csv_ignores_sub_sheets_links_partners_and_filters_cleanly(): void
+    public function test_import_xlsx_focuses_kamerakita_ai_sheet_auto_creates_missing_accounts_with_badge_and_filters(): void
     {
         $admin = User::factory()->create(['role' => 'superadmin', 'email_verified_at' => now()]);
 
@@ -49,50 +49,83 @@ class ManagePaymentsPageTest extends TestCase
             'mitra_id' => 'KMK-101',
         ]);
 
-        Partner::factory()->create([
-            'partner_role' => Partner::ROLE_WORKER,
-            'mitra_parent_id' => null,
-            'email' => 'maki0808@kamerakitaid.site',
-            'full_name' => 'Maki Langsung',
-            'mitra_id' => 'KMK-102',
-            'bank_name' => 'Mandiri',
-            'bank_account_number' => '999000222',
-        ]);
+        // Build real multi-sheet .xlsx workbook (other sheet + kamerakita-ai sheet with formulas)
+        $spreadsheet = new Spreadsheet();
+        $otherSheet = $spreadsheet->getActiveSheet();
+        $otherSheet->setTitle('Ringkasan Lain');
+        $otherSheet->setCellValue('A1', 'Sheet lain');
 
-        $csv = <<<CSV
-kamerakita-ai: payment cycle 3 hours per worker,,,,,,,,,,
-"Payment cycle 3 = 2026-11-01 to 2026-11-15 (UTC). Paid figures, frozen on 2026-11-20: 4,383.43 billable hours x US\$4.50 = US\$19,725.44.",,,,,,,,,,
-,,,,,,,,,,
-Worker email,Billable hours (to be paid),Rejected hours,Not checked yet (hours),Total hours,Approved share,Recordings,Main rejection reason,On the list now,Removed from the program,Yang Perlu dibayarkan
-maki0808@kamerakitaid.site,39.18,1.36,0.51,41.05,0.966401,85,Fake Task,Yes,,2350800
-dimass211119@kamerakitaid.site,"5,67","1,34","0,00","7,01",81%,14,No Segments Produced,Yes,,"Rp 340.200"
-,,,,,,,,,Total Bayar,2691000
-,,,,,,,,,Revenue,5000000
-,,,,,,,,,Omzet,2309000
-,,,,,,,,,Bagi 4,577250
-Worker email,Billable hours (to be paid),Rejected hours,Not checked yet (hours),Total hours,Approved share,Recordings,Main rejection reason,On the list now,Removed from the program,,,
-extra_sheet@kamerakitaid.site,10,0,0,10,1,20,Fake Task,Yes,0,800000,,
-CSV;
+        $sheet = $spreadsheet->createSheet();
+        $sheet->setTitle('kamerakita-ai');
+        $sheet->fromArray([
+            ['kamerakita-ai: payment cycle 3 hours per worker'],
+            ['Payment cycle 3 = 2026-11-01 to 2026-11-15 (UTC). Paid figures, frozen on 2026-11-20: 4,383.43 billable hours x US$4.50 = US$19,725.44.'],
+            [],
+            ['Worker email', 'Billable hours (to be paid)', 'Rejected hours', 'Not checked yet (hours)', 'Total hours', 'Approved share', 'Recordings', 'Main rejection reason', 'On the list now', 'Removed from the program', 'Yang Perlu dibayarkan'],
+            ['dimass211119@kamerakitaid.site', 5.67, 1.34, 0, 7.01, 0.81, 14, 'No Segments Produced', 'Yes', '', '=B5*60000'],
+            ['baru_excel01@kamerakitaid.site', 10.00, 1.00, 0.50, 11.50, 0.91, 22, 'Fake Task', 'Yes', '', '=B6*60000'],
+            ['', '', '', '', '', '', '', '', '', 'Total Bayar', '=SUM(K5:K6)'],
+            ['', '', '', '', '', '', '', '', '', 'Revenue', 1500000],
+        ], null, 'A1');
 
-        $file = UploadedFile::fake()->createWithContent('cycle3.csv', $csv);
+        $tmpPath = tempnam(sys_get_temp_dir(), 'pay_xlsx_') . '.xlsx';
+        (new Xlsx($spreadsheet))->save($tmpPath);
+
+        $file = new UploadedFile(
+            $tmpPath,
+            'payment-cycle-3.xlsx',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            null,
+            true
+        );
 
         $this->actingAs($admin)
-            ->post(route('payments.import-csv'), ['csv_file' => $file])
+            ->post(route('payments.import-csv'), ['excel_file' => $file])
             ->assertRedirect();
+
+        @unlink($tmpPath);
 
         $cycle = PaymentCycle::firstOrFail();
         $this->assertSame('Payment Cycle 3 (2026-11-01 s/d 2026-11-15)', $cycle->name);
-        $this->assertSame(5000000, $cycle->revenue_idr);
-        $this->assertSame(2691000, $cycle->total_pay_idr);
-        $this->assertDatabaseCount('payment_cycle_entries', 2);
-        $this->assertDatabaseMissing('payment_cycle_entries', ['worker_email' => 'extra_sheet@kamerakitaid.site']);
+        $this->assertSame('kamerakita-ai', $cycle->source_label);
+        $this->assertSame(1500000, $cycle->revenue_idr);
+        $this->assertSame(940200, $cycle->total_pay_idr);
 
-        // Direct worker filter only shows Maki
+        // Missing email should be automatically created in users, partners, atlas_workers & flagged
+        $this->assertDatabaseHas('users', ['email' => 'baru_excel01@kamerakitaid.site', 'role' => 'worker']);
+        $this->assertDatabaseHas('partners', ['email' => 'baru_excel01@kamerakitaid.site', 'partner_role' => Partner::ROLE_WORKER]);
+        $this->assertDatabaseHas('atlas_workers', ['atlas_email' => 'baru_excel01@kamerakitaid.site']);
+        $this->assertDatabaseHas('payment_cycle_entries', [
+            'payment_cycle_id' => $cycle->id,
+            'worker_email' => 'baru_excel01@kamerakitaid.site',
+            'was_auto_created' => true,
+            'amount_to_pay_idr' => 600000,
+        ]);
+        $this->assertDatabaseHas('payment_cycle_entries', [
+            'payment_cycle_id' => $cycle->id,
+            'worker_email' => 'dimass211119@kamerakitaid.site',
+            'was_auto_created' => false,
+            'amount_to_pay_idr' => 340200,
+        ]);
+
+        // Unwanted columns must not appear in table UI
+        $page = $this->actingAs($admin)->get(route('payments.manage', ['cycle_id' => $cycle->id]));
+        $page->assertOk()
+            ->assertSee('Akun Baru (Auto DB)')
+            ->assertSee('baru_excel01@kamerakitaid.site')
+            ->assertSee('Rp 600.000')
+            ->assertSee('dimass211119@kamerakitaid.site')
+            ->assertSee('Rp 340.200')
+            ->assertDontSeeText('Approved share')
+            ->assertDontSeeText('Main rejection reason')
+            ->assertDontSeeText('On the list now')
+            ->assertDontSeeText('Removed from the program');
+
+        // Auto-created filter only shows newly created accounts
         $this->actingAs($admin)
-            ->get(route('payments.manage', ['cycle_id' => $cycle->id, 'account_type' => 'direct_worker']))
+            ->get(route('payments.manage', ['cycle_id' => $cycle->id, 'account_type' => 'auto_created']))
             ->assertOk()
-            ->assertSee('maki0808@kamerakitaid.site')
-            ->assertSee('Rp 2.350.800')
+            ->assertSee('baru_excel01@kamerakitaid.site')
             ->assertDontSee('dimass211119@kamerakitaid.site');
 
         // Mitra & team filter shows Dimas + centralized parent bank
@@ -100,9 +133,8 @@ CSV;
             ->get(route('payments.manage', ['cycle_id' => $cycle->id, 'account_type' => 'mitra', 'parent_id' => $mitra->id]))
             ->assertOk()
             ->assertSee('dimass211119@kamerakitaid.site')
-            ->assertSee('Rp 340.200')
             ->assertSee('888000111')
-            ->assertDontSee('maki0808@kamerakitaid.site');
+            ->assertDontSee('baru_excel01@kamerakitaid.site');
 
         // Mark paid & export CSV
         $entry = PaymentCycleEntry::where('worker_email', 'dimass211119@kamerakitaid.site')->firstOrFail();
@@ -120,60 +152,9 @@ CSV;
             'variant' => 'sheet',
         ]));
         $export->assertOk();
-        $this->assertStringContainsString('maki0808@kamerakitaid.site', $export->streamedContent());
-        $this->assertStringContainsString('Yang Perlu dibayarkan', $export->streamedContent());
-    }
-
-    public function test_live_atlas_mode_and_snapshot_create_cycle(): void
-    {
-        $admin = User::factory()->create(['role' => 'admin', 'email_verified_at' => now()]);
-        $partner = Partner::factory()->create([
-            'partner_role' => Partner::ROLE_WORKER,
-            'email' => 'liveworker@kamerakitaid.site',
-            'status' => Partner::STATUS_ACTIVE,
-        ]);
-        $aw = AtlasWorker::create([
-            'user_id' => $partner->user_id,
-            'atlas_email' => 'liveworker@kamerakitaid.site',
-            'active' => true,
-        ]);
-
-        AtlasTask::create([
-            'atlas_worker_id' => $aw->id,
-            'atlas_task_id' => 'LIVE-1',
-            'task_name' => 'Recording 1',
-            'task_date' => '2026-11-10',
-            'worked_minutes' => 150,
-            'approved_minutes' => 120,
-            'billable_minutes' => 120,
-            'rejected_minutes' => 30,
-            'review_minutes' => 0,
-            'source_details' => ['rejection_reasons' => 'Fake Task'],
-        ]);
-
-        $this->actingAs($admin)
-            ->get(route('payments.manage', ['source' => 'live']))
-            ->assertOk()
-            ->assertSee('liveworker@kamerakitaid.site')
-            ->assertSee('2,00')
-            ->assertSee('0,50')
-            ->assertSee('80%')
-            ->assertSee('Fake Task')
-            ->assertSee('Rp 120.000');
-
-        $this->actingAs($admin)
-            ->post(route('payments.snapshot-live'), [
-                'cycle_name' => 'Snapshot Nov',
-                'worker_rate_idr' => 60000,
-                'client_rate_usd' => 4.50,
-                'revenue_idr' => 150000,
-            ])
-            ->assertRedirect();
-
-        $this->assertDatabaseHas('payment_cycles', [
-            'name' => 'Snapshot Nov',
-            'total_pay_idr' => 120000,
-            'revenue_idr' => 150000,
-        ]);
+        $csvOut = $export->streamedContent();
+        $this->assertStringContainsString('baru_excel01@kamerakitaid.site', $csvOut);
+        $this->assertStringContainsString('Yang Perlu dibayarkan', $csvOut);
+        $this->assertStringNotContainsString('Approved share', $csvOut);
     }
 }

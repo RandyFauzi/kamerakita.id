@@ -188,11 +188,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/qc-room/quick-reconcile', [VerifyVideoWorkReportController::class, 'quickReconcileByEmail'])
         ->middleware('role:superadmin,admin')
         ->name('video-submissions.quick-reconcile');
-    // Payment Cycle & Pembayaran Module
+    // Payment Cycle & Pembayaran Module (Based on Excel Upload)
     Route::prefix('payments/manage')->name('payments.')->middleware('role:superadmin,admin,finance')->group(function () {
         Route::get('/', [\App\Http\Controllers\ManagePaymentsController::class, 'index'])->name('manage');
         Route::post('/import-csv', [\App\Http\Controllers\ManagePaymentsController::class, 'importCsv'])->name('import-csv');
-        Route::post('/snapshot-live', [\App\Http\Controllers\ManagePaymentsController::class, 'snapshotLive'])->name('snapshot-live');
         Route::put('/cycles/{cycle}/financials', [\App\Http\Controllers\ManagePaymentsController::class, 'updateCycleFinancials'])->name('update-financials');
         Route::delete('/cycles/{cycle}', [\App\Http\Controllers\ManagePaymentsController::class, 'destroyCycle'])->name('destroy-cycle');
         Route::post('/entries/status', [\App\Http\Controllers\ManagePaymentsController::class, 'updatePaymentStatus'])->name('update-status');
