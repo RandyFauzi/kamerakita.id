@@ -33,6 +33,15 @@
                 @if($activeCycle)
                     <button
                         type="button"
+                        onclick="window.dispatchEvent(new CustomEvent('open-rates-modal'))"
+                        class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-amber-50 border border-amber-300 text-amber-800 hover:bg-amber-100 shadow-sm transition-colors"
+                    >
+                        <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        Atur Rate Mitra / Tim
+                    </button>
+
+                    <button
+                        type="button"
                         onclick="window.dispatchEvent(new CustomEvent('open-financials-modal'))"
                         class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 shadow-sm transition-colors"
                     >
@@ -80,10 +89,32 @@
         x-data="{
             showImportModal: false,
             showFinancialsModal: false,
+            showRatesModal: false,
+            rateModalScope: 'parent',
+            rateModalParentId: @js($filters['parent_id'] ?? ''),
+            rateModalEntryId: null,
+            rateModalLabel: '',
+            rateModalValue: {{ $activeCycle?->worker_rate_idr ?? 60000 }},
             dragActive: false,
             selectedFileName: '',
             selectedIds: [],
             allPageIds: @json($displayRows->pluck('entry_id')->filter()->values()->all()),
+            openTeamRateModal(parentId = '') {
+                this.rateModalScope = 'parent';
+                if (parentId) {
+                    this.rateModalParentId = parentId;
+                }
+                this.rateModalEntryId = null;
+                this.rateModalLabel = '';
+                this.showRatesModal = true;
+            },
+            openSingleRateModal(entryId, email, currentRate) {
+                this.rateModalScope = 'entries';
+                this.rateModalEntryId = entryId;
+                this.rateModalLabel = email;
+                this.rateModalValue = currentRate;
+                this.showRatesModal = true;
+            },
             toggleAll(checked) {
                 this.selectedIds = checked ? [...this.allPageIds] : [];
             },
@@ -109,6 +140,7 @@
         }"
         @open-import-cycle-modal.window="showImportModal = true"
         @open-financials-modal.window="showFinancialsModal = true"
+        @open-rates-modal.window="openTeamRateModal('{{ $filters['parent_id'] }}')"
         class="py-5 sm:py-7"
     >
         <div class="max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8 space-y-5">
@@ -407,8 +439,19 @@
                             <span>&middot;</span>
                             <span>Recordings: <strong>{{ number_format($filteredSummary['recordings_count'], 0, ',', '.') }}</strong></span>
                         </div>
-                        <div class="font-extrabold text-indigo-700 tabular-nums">
-                            Subtotal Yang Perlu dibayarkan: {{ $fmtIdr($filteredSummary['amount_to_pay_idr']) }}
+                        <div class="flex flex-wrap items-center gap-3">
+                            @if($filters['parent_id'] !== '')
+                                <button
+                                    type="button"
+                                    @click="openTeamRateModal('{{ $filters['parent_id'] }}')"
+                                    class="px-3 py-1 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold shadow-sm transition-colors"
+                                >
+                                    Ubah Rate Tim Ini
+                                </button>
+                            @endif
+                            <div class="font-extrabold text-indigo-700 tabular-nums">
+                                Subtotal Yang Perlu dibayarkan: {{ $fmtIdr($filteredSummary['amount_to_pay_idr']) }}
+                            </div>
                         </div>
                     </div>
                 @endif
@@ -423,6 +466,18 @@
                         <strong x-text="selectedIds.length"></strong> akun dipilih pada halaman ini
                     </div>
                     <div class="flex flex-wrap items-center gap-2">
+                        <form action="{{ route('payments.update-rates', $activeCycle) }}" method="POST" class="inline-flex items-center gap-1.5 bg-slate-800 px-2.5 py-1 rounded-xl border border-slate-700">
+                            @csrf
+                            <input type="hidden" name="scope" value="entries">
+                            <template x-for="id in selectedIds" :key="'r-' + id">
+                                <input type="hidden" name="entry_ids[]" :value="id">
+                            </template>
+                            <span class="text-[11px] text-slate-300 font-semibold">Rate/jam:</span>
+                            <input type="number" name="rate_idr" value="{{ $activeCycle->worker_rate_idr }}" min="1000" step="1000" required class="w-24 rounded-lg border-slate-600 bg-slate-900 text-white text-xs py-1 px-2">
+                            <button type="submit" class="px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-xs font-bold text-white transition-colors">
+                                Ubah Rate
+                            </button>
+                        </form>
                         <form action="{{ route('payments.update-status') }}" method="POST" class="inline">
                             @csrf
                             <input type="hidden" name="status" value="paid">
@@ -602,8 +657,17 @@
                                         <td class="px-2.5 py-2 text-right text-slate-800 tabular-nums whitespace-nowrap">
                                             {{ number_format($row['recordings_count'], 0, ',', '.') }}
                                         </td>
-                                        <td class="px-3 py-2 text-right font-bold text-slate-900 tabular-nums whitespace-nowrap">
-                                            {{ $fmtIdr($row['amount_to_pay_idr']) }}
+                                        <td class="px-3 py-2 text-right tabular-nums whitespace-nowrap">
+                                            <div class="font-bold text-slate-900">{{ $fmtIdr($row['amount_to_pay_idr']) }}</div>
+                                            @php $isCustomRate = $row['hourly_rate_idr'] !== (int) $activeCycle->worker_rate_idr; @endphp
+                                            <button
+                                                type="button"
+                                                @click="openSingleRateModal({{ $row['entry_id'] }}, @js($row['worker_email']), {{ $row['hourly_rate_idr'] }})"
+                                                title="Klik untuk ubah tarif per jam akun ini"
+                                                class="mt-0.5 inline-flex items-center px-1.5 py-0.2 rounded text-[10px] font-semibold transition-colors {{ $isCustomRate ? 'bg-indigo-100 text-indigo-800 hover:bg-indigo-200' : 'text-slate-400 hover:text-indigo-700 hover:bg-slate-100' }}"
+                                            >
+                                                {{ '@' . $fmtIdr($row['hourly_rate_idr']) }}/jam
+                                            </button>
                                         </td>
                                         <td class="px-2.5 py-2 text-center whitespace-nowrap">
                                             @if($row['is_paid'])
@@ -789,6 +853,87 @@
                             </button>
                             <button type="submit" class="px-5 py-2 rounded-xl text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm">
                                 Simpan Perubahan
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Modal Atur Rate per Mitra / Akun -->
+            <div
+                x-show="showRatesModal"
+                style="display: none;"
+                class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
+                @click.self="showRatesModal = false"
+            >
+                <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                        <div>
+                            <h3 class="text-base font-bold text-slate-900" x-text="rateModalScope === 'entries' ? 'Ubah Tarif Akun' : 'Atur Rate Mitra / Tim'"></h3>
+                            <p class="text-xs text-slate-500" x-text="rateModalScope === 'entries' ? rateModalLabel : 'Otomatis menghitung ulang Yang Perlu dibayarkan & Total Bayar'"></p>
+                        </div>
+                        <button type="button" @click="showRatesModal = false" class="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+
+                    <form action="{{ route('payments.update-rates', $activeCycle) }}" method="POST" class="p-6 space-y-4">
+                        @csrf
+                        <input type="hidden" name="scope" :value="rateModalScope">
+                        <template x-if="rateModalScope === 'entries' && rateModalEntryId">
+                            <input type="hidden" name="entry_ids[]" :value="rateModalEntryId">
+                        </template>
+
+                        <div x-show="rateModalScope === 'parent'">
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Pilih Mitra / Main Account Induk</label>
+                            <select
+                                name="parent_id"
+                                x-model="rateModalParentId"
+                                :required="rateModalScope === 'parent'"
+                                class="w-full rounded-xl border-slate-300 text-sm"
+                            >
+                                <option value="">-- Pilih Mitra / Tim --</option>
+                                @foreach($parentOptions as $parentOpt)
+                                    <option value="{{ $parentOpt['id'] }}">
+                                        {{ $parentOpt['name'] }} {{ $parentOpt['mitra_id'] ? "({$parentOpt['mitra_id']})" : '' }} ({{ $parentOpt['count'] }} akun)
+                                    </option>
+                                @endforeach
+                            </select>
+                            @if($parentOptions->isEmpty())
+                                <p class="mt-1 text-[11px] text-amber-700">Belum ada akun terhubung ke Mitra/Main Account pada cycle ini.</p>
+                            @endif
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Tarif Baru per Jam (IDR)</label>
+                            <input
+                                type="number"
+                                name="rate_idr"
+                                x-model.number="rateModalValue"
+                                min="1000"
+                                step="1000"
+                                required
+                                class="w-full rounded-xl border-slate-300 text-sm font-bold"
+                            >
+                            <div class="mt-2 flex flex-wrap gap-1.5">
+                                @foreach([40000, 50000, 55000, 60000, 70000, 80000] as $preset)
+                                    <button
+                                        type="button"
+                                        @click="rateModalValue = {{ $preset }}"
+                                        class="px-2.5 py-1 rounded-lg text-[11px] font-semibold border border-slate-200 bg-slate-50 hover:bg-indigo-50 hover:text-indigo-700 hover:border-indigo-200 transition-colors"
+                                    >
+                                        {{ $fmtIdr($preset) }}
+                                    </button>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+                            <button type="button" @click="showRatesModal = false" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100">
+                                Batal
+                            </button>
+                            <button type="submit" class="px-5 py-2 rounded-xl text-xs font-semibold text-white bg-amber-600 hover:bg-amber-700 shadow-sm">
+                                Terapkan Rate Baru
                             </button>
                         </div>
                     </form>

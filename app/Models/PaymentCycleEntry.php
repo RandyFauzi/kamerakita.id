@@ -13,6 +13,7 @@ class PaymentCycleEntry extends Model
         'atlas_worker_id',
         'worker_email',
         'billable_hours',
+        'hourly_rate_idr',
         'rejected_hours',
         'not_checked_hours',
         'total_hours',
@@ -31,6 +32,7 @@ class PaymentCycleEntry extends Model
 
     protected $casts = [
         'billable_hours' => 'float',
+        'hourly_rate_idr' => 'integer',
         'rejected_hours' => 'float',
         'not_checked_hours' => 'float',
         'total_hours' => 'float',

@@ -193,6 +193,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/', [\App\Http\Controllers\ManagePaymentsController::class, 'index'])->name('manage');
         Route::post('/import-csv', [\App\Http\Controllers\ManagePaymentsController::class, 'importCsv'])->name('import-csv');
         Route::put('/cycles/{cycle}/financials', [\App\Http\Controllers\ManagePaymentsController::class, 'updateCycleFinancials'])->name('update-financials');
+        Route::post('/cycles/{cycle}/rates', [\App\Http\Controllers\ManagePaymentsController::class, 'updateRates'])->name('update-rates');
         Route::delete('/cycles/{cycle}', [\App\Http\Controllers\ManagePaymentsController::class, 'destroyCycle'])->name('destroy-cycle');
         Route::post('/entries/status', [\App\Http\Controllers\ManagePaymentsController::class, 'updatePaymentStatus'])->name('update-status');
         Route::get('/export-csv', [\App\Http\Controllers\ManagePaymentsController::class, 'exportCsv'])->name('export-csv');

@@ -86,13 +86,23 @@ class PaymentCycleCsvImporter
             $removed = $columns['removed'] !== null ? trim((string) ($row[$columns['removed']] ?? '')) : '';
 
             $rawPay = $columns['amount_to_pay'] !== null ? ($row[$columns['amount_to_pay']] ?? null) : null;
-            $amountToPay = ($rawPay !== null && trim((string) $rawPay) !== '' && ! str_starts_with(trim((string) $rawPay), '#'))
+            $hasExplicitPay = $rawPay !== null && trim((string) $rawPay) !== '' && ! str_starts_with(trim((string) $rawPay), '#');
+            $amountToPay = $hasExplicitPay
                 ? $this->parseIdr($rawPay)
                 : (int) round($billable * $workerRateIdr);
+
+            $hourlyRate = $workerRateIdr;
+            if ($hasExplicitPay && $billable > 0) {
+                $defaultExpected = (int) round($billable * $workerRateIdr);
+                if (abs($defaultExpected - $amountToPay) > 5) {
+                    $hourlyRate = max(0, (int) round($amountToPay / $billable));
+                }
+            }
 
             $parsedRows[$email] = [
                 'worker_email' => $email,
                 'billable_hours' => round($billable, 2),
+                'hourly_rate_idr' => $hourlyRate,
                 'rejected_hours' => round($rejected, 2),
                 'not_checked_hours' => round($notChecked, 2),
                 'total_hours' => round($total, 2),

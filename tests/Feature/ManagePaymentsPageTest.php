@@ -160,5 +160,51 @@ class ManagePaymentsPageTest extends TestCase
         $this->assertStringContainsString('baru_excel01@kamerakitaid.site', $csvOut);
         $this->assertStringContainsString('Yang Perlu dibayarkan', $csvOut);
         $this->assertStringNotContainsString('Approved share', $csvOut);
+
+        // Customize rate per Mitra team ($mitra -> 80.000/jam) & recalculate totals
+        $this->actingAs($admin)
+            ->post(route('payments.update-rates', $cycle), [
+                'scope' => 'parent',
+                'parent_id' => $mitra->id,
+                'rate_idr' => 80000,
+            ])
+            ->assertRedirect();
+
+        // Dimas (5.67 * 80,000 = 453,600) updated, baru_excel01 remains 600,000 -> total 1,053,600
+        $this->assertDatabaseHas('payment_cycle_entries', [
+            'payment_cycle_id' => $cycle->id,
+            'worker_email' => 'dimass211119@kamerakitaid.site',
+            'hourly_rate_idr' => 80000,
+            'amount_to_pay_idr' => 453600,
+        ]);
+        $this->assertDatabaseHas('payment_cycle_entries', [
+            'payment_cycle_id' => $cycle->id,
+            'worker_email' => 'baru_excel01@kamerakitaid.site',
+            'hourly_rate_idr' => 60000,
+            'amount_to_pay_idr' => 600000,
+        ]);
+        $this->assertSame(1053600, $cycle->fresh()->total_pay_idr);
+
+        // Customize rate for selected individual entry (baru_excel01 -> 50,000/jam)
+        $baruEntry = PaymentCycleEntry::where('worker_email', 'baru_excel01@kamerakitaid.site')->firstOrFail();
+        $this->actingAs($admin)
+            ->post(route('payments.update-rates', $cycle), [
+                'scope' => 'entries',
+                'entry_ids' => [$baruEntry->id],
+                'rate_idr' => 50000,
+            ])
+            ->assertRedirect();
+
+        $this->assertSame(50000, $baruEntry->fresh()->hourly_rate_idr);
+        $this->assertSame(500000, $baruEntry->fresh()->amount_to_pay_idr);
+        $this->assertSame(953600, $cycle->fresh()->total_pay_idr);
+
+        $this->actingAs($admin)
+            ->get(route('payments.manage', ['cycle_id' => $cycle->id]))
+            ->assertOk()
+            ->assertSee('Rp 453.600')
+            ->assertSee('@Rp 80.000/jam')
+            ->assertSee('Rp 500.000')
+            ->assertSee('@Rp 50.000/jam');
     }
 }

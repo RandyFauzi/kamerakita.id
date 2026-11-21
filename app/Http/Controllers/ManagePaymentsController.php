@@ -170,6 +170,61 @@ class ManagePaymentsController extends Controller
             ->with('success', "Ringkasan finansial {$cycle->name} diperbarui.");
     }
 
+    public function updateRates(Request $request, PaymentCycle $cycle)
+    {
+        $validated = $request->validate([
+            'scope' => ['required', 'in:parent,entries'],
+            'rate_idr' => ['required', 'integer', 'min:1000', 'max:10000000'],
+            'parent_id' => ['required_if:scope,parent', 'nullable', 'string'],
+            'entry_ids' => ['required_if:scope,entries', 'nullable', 'array', 'min:1'],
+            'entry_ids.*' => ['integer', 'exists:payment_cycle_entries,id'],
+        ]);
+
+        $newRate = (int) $validated['rate_idr'];
+
+        $updatedCount = DB::transaction(function () use ($validated, $cycle, $newRate) {
+            if ($validated['scope'] === 'parent') {
+                $parentId = (string) $validated['parent_id'];
+                $entries = $cycle->entries()
+                    ->with(['partner', 'atlasWorker.user.partner'])
+                    ->get()
+                    ->filter(function (PaymentCycleEntry $entry) use ($parentId) {
+                        $partner = $entry->partner ?? $entry->atlasWorker?->user?->partner;
+                        if (! $partner) {
+                            return false;
+                        }
+                        return (string) $partner->id === $parentId || (string) $partner->mitra_parent_id === $parentId;
+                    });
+            } else {
+                $entries = $cycle->entries()
+                    ->whereIn('id', $validated['entry_ids'] ?? [])
+                    ->get();
+            }
+
+            foreach ($entries as $entry) {
+                $entry->update([
+                    'hourly_rate_idr' => $newRate,
+                    'amount_to_pay_idr' => (int) round((float) $entry->billable_hours * $newRate),
+                ]);
+            }
+
+            $cycle->recalculateTotalPay();
+
+            return $entries->count();
+        });
+
+        if ($updatedCount === 0) {
+            return back()->with('error', 'Tidak ada akun yang cocok untuk diubah rate-nya.');
+        }
+
+        ActivityLogger::log(
+            'payment_cycle.update_rates',
+            "Mengubah tarif {$updatedCount} akun pada cycle '{$cycle->name}' menjadi Rp " . number_format($newRate, 0, ',', '.') . '/jam.'
+        );
+
+        return back()->with('success', "Tarif {$updatedCount} akun berhasil diubah menjadi Rp " . number_format($newRate, 0, ',', '.') . '/jam dan total bayar diperbarui.');
+    }
+
     public function updatePaymentStatus(Request $request)
     {
         $validated = $request->validate([
@@ -242,6 +297,7 @@ class ManagePaymentsController extends Controller
                     'No. Rekening / AirTM',
                     'Pemilik Rekening',
                     'Billable hours',
+                    'Rate/Jam (IDR)',
                     'Yang Perlu dibayarkan (IDR)',
                     'Status Pembayaran',
                 ]);
@@ -258,6 +314,7 @@ class ManagePaymentsController extends Controller
                         $r['bank_account_number'] ?? '-',
                         $r['bank_account_owner'] ?? '-',
                         number_format($r['billable_hours'], 2, '.', ''),
+                        $r['hourly_rate_idr'],
                         $r['amount_to_pay_idr'],
                         $r['is_paid'] ? 'Paid' : 'Unpaid',
                     ]);
@@ -371,6 +428,7 @@ class ManagePaymentsController extends Controller
             'atlas_worker_id' => $entry->atlas_worker_id,
             'worker_email' => $entry->worker_email,
             'billable_hours' => (float) $entry->billable_hours,
+            'hourly_rate_idr' => (int) ($entry->hourly_rate_idr ?: $entry->cycle?->worker_rate_idr ?: self::DEFAULT_WORKER_RATE_IDR),
             'rejected_hours' => (float) $entry->rejected_hours,
             'not_checked_hours' => (float) $entry->not_checked_hours,
             'total_hours' => (float) $entry->total_hours,
