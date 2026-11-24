@@ -27,7 +27,8 @@ class PrivateStudioPartnerController extends Controller
     public function index(Request $request): JsonResponse
     {
         $data = $request->validate(['email' => 'required|email|max:100']);
-        $partner = Partner::where('partner_role', Partner::ROLE_MITRA)
+        $partner = Partner::where('partner_role', Partner::ROLE_WORKER)
+            ->whereHas('mitraParent', fn ($query) => $query->whereIn('partner_role', Partner::TEAM_PARENT_ROLES))
             ->whereRaw('LOWER(email) = ?', [strtolower($data['email'])])->first();
 
         return response()->json(['data' => $partner ? [
@@ -41,7 +42,7 @@ class PrivateStudioPartnerController extends Controller
 
     public function show(Partner $partner): JsonResponse
     {
-        abort_unless($partner->partner_role === Partner::ROLE_MITRA, 404);
+        $this->requireTeamWorker($partner);
         return response()->json(['data' => [
             'id' => $partner->id,
             'mitra_id' => $partner->mitra_id,
@@ -71,12 +72,14 @@ class PrivateStudioPartnerController extends Controller
 
         $email = strtolower(trim($data['email']));
 
-        // Idempotensi: jika mitra dengan email ini sudah ada, kembalikan mitra yang sudah ada
-        $existingPartner = Partner::where('partner_role', Partner::ROLE_MITRA)
-            ->whereRaw('LOWER(email) = ?', [$email])
-            ->first();
+        $existingPartner = Partner::whereRaw('LOWER(email) = ?', [$email])->first();
 
         if ($existingPartner) {
+            abort_unless(
+                $existingPartner->isWorker() && $existingPartner->mitra_parent_id === $data['mitra_parent_id'],
+                422,
+                'Email sudah terdaftar. Pilih vendor yang menaungi worker tersebut atau koreksi peran akun di panel admin KameraKita.'
+            );
             $parent = $existingPartner->mitraParent;
             return response()->json(['data' => [
                 'id' => $existingPartner->id,
@@ -88,22 +91,21 @@ class PrivateStudioPartnerController extends Controller
             ]], 200);
         }
 
-        // Jika email sudah terpakai di User atau Partner peran lain (bukan mitra), tolak
-        abort_if(Partner::whereRaw('LOWER(email) = ?', [$email])->exists(), 422, 'Email sudah terdaftar pada peran partner lain.');
         abort_if(User::whereRaw('LOWER(email) = ?', [$email])->exists(), 422, 'Email sudah terdaftar pada akun user lain.');
 
         $parent = Partner::findOrFail($data['mitra_parent_id']);
         abort_unless(in_array($parent->partner_role, Partner::TEAM_PARENT_ROLES, true) && $parent->status !== Partner::STATUS_SUSPENDED, 422, 'Akun utama/mitra tidak valid atau dibekukan.');
 
         $partner = DB::transaction(function () use ($data, $email, $parent) {
+            $bypassBank = $parent->bypassesWorkerBankOnboarding();
             $user = User::create([
                 'name' => $data['full_name'],
                 'email' => $email,
                 'password' => $data['password'],
-                'role' => Partner::ROLE_MITRA,
+                'role' => Partner::ROLE_WORKER,
                 'email_verified_at' => now(),
-                'has_completed_onboarding' => true,
-                'tos_accepted_at' => now(),
+                'has_completed_onboarding' => $bypassBank,
+                'tos_accepted_at' => $bypassBank ? now() : null,
             ]);
 
             Partner::query()->where('mitra_id', 'like', 'KMK-%')->orderByDesc('mitra_id')->lockForUpdate()->first(['id']);
@@ -113,18 +115,23 @@ class PrivateStudioPartnerController extends Controller
             }
 
             return Partner::create([
-                'partner_role' => Partner::ROLE_MITRA,
+                'partner_role' => Partner::ROLE_WORKER,
                 'mitra_parent_id' => $parent->id,
+                'recruiter_partner_id' => $parent->id,
                 'mitra_id' => $mitraId,
                 'full_name' => $data['full_name'],
                 'whatsapp_number' => $data['whatsapp_number'],
                 'email' => $email,
                 'has_headstrap' => false,
                 'status' => Partner::STATUS_ACTIVE,
-                'group_name' => 'Group A',
-                'base_hourly_rate' => Partner::MITRA_WORKER_HOURLY_RATE_IDR,
+                'group_name' => $parent->group_name ?? 'Group A',
+                'base_hourly_rate' => $parent->subWorkerHourlyRate(),
                 'user_id' => $user->id,
-                'bypass_worker_bank_onboarding' => true,
+                'bank_name' => $bypassBank ? $parent->bank_name : null,
+                'bank_account_number' => $bypassBank ? $parent->bank_account_number : null,
+                'bank_account_owner' => $bypassBank ? $parent->bank_account_owner : null,
+                'payment_method' => $bypassBank ? ($parent->payment_method ?: 'bank_transfer') : null,
+                'airtm_username' => $bypassBank ? $parent->airtm_username : null,
             ]);
         });
 
@@ -147,12 +154,12 @@ class PrivateStudioPartnerController extends Controller
 
     public function setStatus(Request $request, Partner $partner): JsonResponse
     {
-        abort_unless($partner->partner_role === Partner::ROLE_MITRA, 404);
+        $this->requireTeamWorker($partner);
         $data = $request->validate(['status' => ['required', Rule::in([Partner::STATUS_ACTIVE, Partner::STATUS_INACTIVE, Partner::STATUS_SUSPENDED])]]);
 
         DB::transaction(function () use ($partner, $data) {
             $partner->update(['status' => $data['status']]);
-            $partner->user?->update(['role' => $data['status'] === Partner::STATUS_ACTIVE ? Partner::ROLE_MITRA : 'suspended']);
+            $partner->user?->update(['role' => $data['status'] === Partner::STATUS_ACTIVE ? Partner::ROLE_WORKER : 'suspended']);
         });
 
         Log::info('Private Studio integration changed a partner status.', ['partner_id' => $partner->id, 'status' => $data['status']]);
@@ -162,7 +169,7 @@ class PrivateStudioPartnerController extends Controller
 
     public function update(Request $request, Partner $partner): JsonResponse
     {
-        abort_unless($partner->partner_role === Partner::ROLE_MITRA, 404);
+        $this->requireTeamWorker($partner);
         $data = $request->validate([
             'full_name' => 'required|string|max:255',
             'whatsapp_number' => 'required|string|max:20',
@@ -190,14 +197,14 @@ class PrivateStudioPartnerController extends Controller
 
     public function destroy(Partner $partner): JsonResponse
     {
-        abort_unless($partner->partner_role === Partner::ROLE_MITRA, 404);
+        $this->requireTeamWorker($partner);
 
         if ($partner->workers()->exists()) {
-            abort(422, 'Tidak dapat menghapus mitra yang masih menaungi pekerja/sub-mitra.');
+            abort(422, 'Tidak dapat menghapus akun yang masih memiliki anggota tim.');
         }
 
         if ($partner->videoWorkReports()->exists() || $partner->recordings()->exists()) {
-            abort(422, 'Tidak dapat menghapus permanen mitra yang sudah memiliki riwayat laporan atau rekaman. Nonaktifkan status akun untuk membekukan.');
+            abort(422, 'Tidak dapat menghapus permanen worker yang sudah memiliki riwayat laporan atau rekaman. Nonaktifkan status akun untuk membekukan.');
         }
 
         $partnerId = $partner->id;
@@ -217,8 +224,13 @@ class PrivateStudioPartnerController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'Akun mitra dan user KameraKita berhasil dihapus.',
+            'message' => 'Akun worker dan user KameraKita berhasil dihapus.',
             'deleted' => true,
         ]);
+    }
+
+    private function requireTeamWorker(Partner $partner): void
+    {
+        abort_unless($partner->isWorker() && $partner->mitraParent?->isTeamParent(), 404);
     }
 }

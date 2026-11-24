@@ -110,7 +110,7 @@ class PrivateStudioPartnerIntegrationTest extends TestCase
         $this->assertEquals('08123456780', $found['whatsapp_number']);
     }
 
-    public function test_it_creates_user_and_mitra_partner_in_a_single_transaction(): void
+    public function test_it_creates_user_and_worker_partner_in_a_single_transaction(): void
     {
         $parent = $this->createActiveParent();
 
@@ -131,21 +131,23 @@ class PrivateStudioPartnerIntegrationTest extends TestCase
         $data = $response->json('data');
         $this->assertEquals('mitra.randy@example.com', $data['email']);
         $this->assertEquals(Partner::STATUS_ACTIVE, $data['status']);
-        $this->assertEquals(Partner::ROLE_MITRA, $data['partner_role']);
+        $this->assertEquals(Partner::ROLE_WORKER, $data['partner_role']);
         $this->assertMatchesRegularExpression('/^KMK-\d+$/', $data['mitra_id']);
 
         // Assert database records
         $this->assertDatabaseHas('users', [
             'email' => 'mitra.randy@example.com',
-            'role' => Partner::ROLE_MITRA,
+            'role' => Partner::ROLE_WORKER,
             'has_completed_onboarding' => 1,
         ]);
 
         $this->assertDatabaseHas('partners', [
             'email' => 'mitra.randy@example.com',
-            'partner_role' => Partner::ROLE_MITRA,
+            'partner_role' => Partner::ROLE_WORKER,
             'status' => Partner::STATUS_ACTIVE,
             'mitra_parent_id' => $parent->id,
+            'recruiter_partner_id' => $parent->id,
+            'base_hourly_rate' => $parent->subWorkerHourlyRate(),
             'bypass_worker_bank_onboarding' => 1,
         ]);
 
@@ -154,7 +156,7 @@ class PrivateStudioPartnerIntegrationTest extends TestCase
         $this->assertEquals($partner->user->name, 'Mitra Studio Randy');
     }
 
-    public function test_it_is_idempotent_on_retry_and_does_not_duplicate_mitra(): void
+    public function test_it_is_idempotent_on_retry_and_does_not_duplicate_worker(): void
     {
         $parent = $this->createActiveParent();
 
@@ -179,11 +181,21 @@ class PrivateStudioPartnerIntegrationTest extends TestCase
             ->assertStatus(200);
 
         $this->assertEquals($firstId, $second->json('data.id'));
+
+        $otherVendor = $this->createActiveParent('KMK-050', Partner::ROLE_MITRA);
+        $this->withHeaders($this->withIntegrationToken())
+            ->postJson(route('api.private.studio.partners.store'), [
+                ...$payload,
+                'mitra_parent_id' => $otherVendor->id,
+            ])
+            ->assertUnprocessable();
+
+        $this->assertSame($parent->id, Partner::findOrFail($firstId)->mitra_parent_id);
         $this->assertEquals(1, Partner::where('email', 'mitra.idempoten@example.com')->count());
         $this->assertEquals(1, User::where('email', 'mitra.idempoten@example.com')->count());
     }
 
-    public function test_it_rejects_creation_when_email_belongs_to_non_mitra_account(): void
+    public function test_it_rejects_creation_when_email_belongs_to_non_worker_account(): void
     {
         $parent = $this->createActiveParent();
 
@@ -206,7 +218,7 @@ class PrivateStudioPartnerIntegrationTest extends TestCase
             ->assertStatus(422);
     }
 
-    public function test_it_finds_mitra_by_email(): void
+    public function test_it_finds_worker_by_email(): void
     {
         $parent = $this->createActiveParent();
 
@@ -217,9 +229,9 @@ class PrivateStudioPartnerIntegrationTest extends TestCase
         $this->assertNull($response->json('data'));
 
         // Create partner
-        $user = User::factory()->create(['email' => 'search@example.com', 'role' => Partner::ROLE_MITRA]);
+        $user = User::factory()->create(['email' => 'search@example.com', 'role' => Partner::ROLE_WORKER]);
         Partner::create([
-            'partner_role' => Partner::ROLE_MITRA,
+            'partner_role' => Partner::ROLE_WORKER,
             'mitra_id' => 'KMK-099',
             'full_name' => 'Search Mitra',
             'whatsapp_number' => '08123450000',
@@ -235,12 +247,12 @@ class PrivateStudioPartnerIntegrationTest extends TestCase
         $this->assertEquals('KMK-099', $found->json('data.mitra_id'));
     }
 
-    public function test_it_updates_mitra_status_and_syncs_user_role(): void
+    public function test_it_updates_worker_status_and_syncs_user_role(): void
     {
         $parent = $this->createActiveParent();
-        $user = User::factory()->create(['email' => 'status.toggle@example.com', 'role' => Partner::ROLE_MITRA]);
+        $user = User::factory()->create(['email' => 'status.toggle@example.com', 'role' => Partner::ROLE_WORKER]);
         $partner = Partner::create([
-            'partner_role' => Partner::ROLE_MITRA,
+            'partner_role' => Partner::ROLE_WORKER,
             'mitra_id' => 'KMK-077',
             'full_name' => 'Toggle Status Mitra',
             'whatsapp_number' => '08123457777',
@@ -264,15 +276,15 @@ class PrivateStudioPartnerIntegrationTest extends TestCase
             ->assertOk();
 
         $this->assertEquals(Partner::STATUS_ACTIVE, $partner->fresh()->status);
-        $this->assertEquals(Partner::ROLE_MITRA, $user->fresh()->role);
+        $this->assertEquals(Partner::ROLE_WORKER, $user->fresh()->role);
     }
 
-    public function test_it_updates_mitra_profile(): void
+    public function test_it_updates_worker_profile(): void
     {
         $parent = $this->createActiveParent();
-        $user = User::factory()->create(['email' => 'edit.profile@example.com', 'role' => Partner::ROLE_MITRA]);
+        $user = User::factory()->create(['email' => 'edit.profile@example.com', 'role' => Partner::ROLE_WORKER]);
         $partner = Partner::create([
-            'partner_role' => Partner::ROLE_MITRA,
+            'partner_role' => Partner::ROLE_WORKER,
             'mitra_id' => 'KMK-088',
             'full_name' => 'Old Full Name',
             'whatsapp_number' => '0811111111',
@@ -299,7 +311,7 @@ class PrivateStudioPartnerIntegrationTest extends TestCase
         $this->assertEquals('New Full Name', $user->fresh()->name);
     }
 
-    public function test_it_denies_detail_and_update_for_non_mitra_partners(): void
+    public function test_it_denies_detail_and_update_for_workers_without_a_team(): void
     {
         $worker = Partner::create([
             'partner_role' => Partner::ROLE_WORKER,
@@ -327,7 +339,7 @@ class PrivateStudioPartnerIntegrationTest extends TestCase
             ->assertNotFound();
     }
 
-    public function test_it_can_delete_mitra_partner_without_locked_history(): void
+    public function test_it_can_delete_worker_partner_without_locked_history(): void
     {
         $parent = $this->createActiveParent();
         $response = $this->withHeaders($this->withIntegrationToken())
