@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\McpOAuthAccessToken;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Passport\Passport;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +21,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Passport::useTokenModel(McpOAuthAccessToken::class);
+        Passport::tokensCan([
+            'mcp:use' => 'Akses Kamerakita MCP Server',
+        ]);
+        Passport::authorizationView(fn (array $parameters) => view('admin.integrations.mcp-authorize', $parameters));
+
         \Illuminate\Support\Facades\Event::listen(
             \Illuminate\Auth\Events\Login::class,
             function (\Illuminate\Auth\Events\Login $event) {

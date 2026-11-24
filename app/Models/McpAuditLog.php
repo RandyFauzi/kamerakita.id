@@ -10,6 +10,8 @@ class McpAuditLog extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
+        'mcp_connection_id',
         'client_name',
         'method',
         'tool_name',

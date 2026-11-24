@@ -10,6 +10,8 @@
         "doctrine/dbal": "^4.4",
         "laravel-notification-channels/webpush": "*",
         "laravel/framework": "^13.8",
+        "laravel/mcp": "*",
+        "laravel/passport": "*",
         "laravel/sanctum": "^4.0",
         "laravel/telescope": "^5.25",
         "laravel/tinker": "^3.0",

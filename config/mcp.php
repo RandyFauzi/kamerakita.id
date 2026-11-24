@@ -1,36 +1,55 @@
 <?php
 
 return [
+    'enabled' => env('MCP_ENABLED', true),
+    'oauth_enabled' => env('MCP_OAUTH_ENABLED', true),
+    'token_prefix' => env('MCP_TOKEN_PREFIX', 'kkm_'),
+    'rate_limit' => env('MCP_RATE_LIMIT', 120),
 
     /*
     |--------------------------------------------------------------------------
-    | MCP Clients Registration
+    | Laravel MCP OAuth Settings
     |--------------------------------------------------------------------------
-    |
-    | Daftarkan semua token klien yang memiliki akses ke MCP Server di sini.
-    | Ini menggunakan model fail-closed. Jika token tidak ada di list ini,
-    | koneksi akan otomatis ditolak (401 Unauthorized).
-    |
     */
+    'redirect_domains' => [
+        '*',
+    ],
 
+    'custom_schemes' => [
+        'claude',
+        'cursor',
+        'vscode',
+    ],
+
+    'authorization_server' => env('MCP_AUTHORIZATION_SERVER'),
+
+    'tool_search' => [
+        'max_tool_calls' => 10,
+        'max_output_bytes' => 65_536,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Dynamic Role -> Ability Mapping
+    |--------------------------------------------------------------------------
+    | Abilities evaluated dynamically via McpAccess::allows() so new tools
+    | follow the user's current role without regenerating existing tokens.
+    */
+    'role_abilities' => [
+        'superadmin' => ['*'],
+        'admin' => ['mcp.read', 'mcp.write', 'mcp.critical'],
+        'finance' => ['mcp.read'],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Legacy Static Clients (Optional Fallback)
+    |--------------------------------------------------------------------------
+    */
     'clients' => array_filter([
-        
-        env('MCP_SECRET_KEY', 'kamerakita-mcp-2026') => [
-            'name' => 'Admin Control Plane',
-            'permissions' => ['*'], // * berarti semua akses (READ, WRITE, CRITICAL)
+        env('MCP_SECRET_KEY') => [
+            'name' => 'Legacy Admin Control Plane',
+            'permissions' => ['*'],
         ],
-
-        // Anda bisa menambahkan agen lain di masa depan dengan batasan scope, contoh:
-        /*
-        env('MCP_READONLY_KEY') => [
-            'name' => 'Analytics Agent',
-            'permissions' => ['mcp.read'],
-        ],
-        */
-        
-    ], function($key) { return !empty($key); }, ARRAY_FILTER_USE_KEY),
-    
-    // Rate Limiting Config
-    'rate_limit' => env('MCP_RATE_LIMIT', 60), // max requests per minute
-
+    ], fn ($key) => ! empty($key), ARRAY_FILTER_USE_KEY),
 ];

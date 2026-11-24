@@ -42,6 +42,10 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'kamerakita-mcp-oauth' => [
+            'driver' => 'passport',
+            'provider' => 'users',
+        ],
     ],
 
     /*

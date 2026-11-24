@@ -228,6 +228,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/admin-assistant', [\App\Http\Controllers\Api\AdminAssistantController::class, 'handle'])
         ->middleware('role:superadmin,admin')
         ->name('admin-assistant');
+
+    // MCP Integrations Management
+    Route::prefix('admin/integrations/mcp')->name('admin.integrations.mcp.')->middleware('role:superadmin,admin,finance')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\McpConnectionController::class, 'index'])->name('index');
+        Route::post('/', [\App\Http\Controllers\Admin\McpConnectionController::class, 'store'])->name('store');
+        Route::post('/{connection}/reveal', [\App\Http\Controllers\Admin\McpConnectionController::class, 'reveal'])->name('reveal');
+        Route::delete('/{connection}', [\App\Http\Controllers\Admin\McpConnectionController::class, 'destroy'])->name('destroy');
+        Route::delete('/oauth/{tokenId}', [\App\Http\Controllers\Admin\McpConnectionController::class, 'revokeOAuth'])->name('oauth.revoke');
+    });
 });
 
 Route::middleware(['auth'])->prefix('vendor')->name('vendor.')->group(function () {
