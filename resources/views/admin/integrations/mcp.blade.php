@@ -19,6 +19,17 @@
         ];
         $defaultExample = $role === 'finance' ? $examples['Payroll'] : $examples['Atlas'];
         $codexCommand = 'codex mcp add kamerakita --url ' . json_encode($endpoint, JSON_UNESCAPED_SLASHES) . ' --bearer-token-env-var KAMERAKITA_MCP_TOKEN';
+        $geminiCommand = 'gemini mcp add --transport http kamerakita ' . json_encode($endpoint, JSON_UNESCAPED_SLASHES) . ' --header "Authorization: Bearer ${KAMERAKITA_MCP_TOKEN}"';
+        $geminiConfig = json_encode([
+            'mcpServers' => [
+                'kamerakita' => [
+                    'httpUrl' => $endpoint,
+                    'headers' => [
+                        'Authorization' => 'Bearer ${KAMERAKITA_MCP_TOKEN}',
+                    ],
+                ],
+            ],
+        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         $jsonConfig = json_encode([
             'mcpServers' => [
                 'kamerakita' => [
@@ -249,7 +260,7 @@
                             </div>
                             <pre class="p-4 font-mono text-xs leading-relaxed text-indigo-100 whitespace-pre-wrap break-all">{{ $codexCommand }}</pre>
                         </div>
-                    @elseif (in_array($client, ['chatgpt', 'gemini'], true))
+                    @elseif ($client === 'chatgpt')
                         <div class="rounded-xl bg-slate-50 p-3.5 ring-1 ring-slate-200/70 space-y-2">
                             <div class="flex items-center justify-between">
                                 <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Endpoint Server MCP (OAuth 2.1)</span>
@@ -261,19 +272,55 @@
                             <code class="block font-mono text-xs text-slate-800 break-all">{{ $endpoint }}</code>
                         </div>
 
-                        @if ($client === 'chatgpt')
-                            <ol class="list-decimal space-y-2 pl-4 text-xs leading-relaxed text-slate-600">
-                                <li>Buka <strong class="text-slate-900">chatgpt.com</strong> &rarr; menu <strong class="text-slate-900">Apps / Plugins</strong> &rarr; <strong class="text-slate-900">Add custom MCP server</strong>.</li>
-                                <li>Tempel URL di atas, lalu pilih autentikasi <strong class="text-slate-900">OAuth</strong>.</li>
-                                <li>Login dan klik <strong class="text-slate-900">Izinkan akses</strong> pada layar persetujuan Kamerakita.</li>
-                            </ol>
-                        @else
-                            <ol class="list-decimal space-y-2 pl-4 text-xs leading-relaxed text-slate-600">
-                                <li>Buka <strong class="text-slate-900">gemini.google.com</strong> &rarr; <strong class="text-slate-900">Settings</strong> &rarr; <strong class="text-slate-900">Connected Apps</strong> &rarr; <strong class="text-slate-900">Add a custom app</strong>.</li>
-                                <li>Isi nama <code class="rounded bg-slate-100 px-1 font-mono text-indigo-700">Kamerakita</code> dan tempel URL di atas.</li>
-                                <li>Selesaikan autentikasi OAuth 2.1 lalu klik <strong class="text-slate-900">Next</strong>.</li>
-                            </ol>
-                        @endif
+                        <ol class="list-decimal space-y-2 pl-4 text-xs leading-relaxed text-slate-600">
+                            <li>Buka <strong class="text-slate-900">chatgpt.com</strong> &rarr; menu <strong class="text-slate-900">Apps / Plugins</strong> &rarr; <strong class="text-slate-900">Add custom MCP server</strong>.</li>
+                            <li>Tempel URL di atas, lalu pilih autentikasi <strong class="text-slate-900">OAuth</strong>.</li>
+                            <li>Login dan klik <strong class="text-slate-900">Izinkan akses</strong> pada layar persetujuan Kamerakita.</li>
+                        </ol>
+                    @elseif ($client === 'gemini')
+                        <p class="text-xs leading-relaxed text-slate-600">
+                            Simpan kunci di variabel lingkungan <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-indigo-700">KAMERAKITA_MCP_TOKEN</code>, lalu jalankan perintah <strong class="text-slate-900">Gemini CLI</strong> berikut di terminal:
+                        </p>
+                        <div class="overflow-hidden rounded-xl bg-slate-900 ring-1 ring-slate-800 shadow-sm">
+                            <div class="flex items-center justify-between border-b border-slate-800 bg-slate-950/60 px-4 py-2.5">
+                                <div class="flex items-center gap-2">
+                                    <span class="flex items-center gap-1.5">
+                                        <span class="h-2.5 w-2.5 rounded-full bg-rose-500/75"></span>
+                                        <span class="h-2.5 w-2.5 rounded-full bg-amber-400/75"></span>
+                                        <span class="h-2.5 w-2.5 rounded-full bg-emerald-400/75"></span>
+                                    </span>
+                                    <span class="ml-1 font-mono text-[11px] font-medium text-slate-400">Terminal &middot; Gemini CLI</span>
+                                </div>
+                                <button type="button" @click="copyText(@js($geminiCommand), 'gemini-cmd')"
+                                    class="inline-flex items-center gap-1.5 rounded-lg bg-white/10 px-2.5 py-1 text-[11px] font-semibold text-white transition hover:bg-white/20 cursor-pointer">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                    <span x-text="copied === 'gemini-cmd' ? 'Tersalin!' : 'Salin'"></span>
+                                </button>
+                            </div>
+                            <pre class="p-4 font-mono text-xs leading-relaxed text-indigo-100 whitespace-pre-wrap break-all">{{ $geminiCommand }}</pre>
+                        </div>
+
+                        <p class="text-xs leading-relaxed text-slate-600">
+                            Atau tambahkan langsung ke <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-indigo-700">~/.gemini/settings.json</code>:
+                        </p>
+                        <div class="overflow-hidden rounded-xl bg-slate-900 ring-1 ring-slate-800 shadow-sm">
+                            <div class="flex items-center justify-between border-b border-slate-800 bg-slate-950/60 px-4 py-2.5">
+                                <div class="flex items-center gap-2">
+                                    <span class="flex items-center gap-1.5">
+                                        <span class="h-2.5 w-2.5 rounded-full bg-rose-500/75"></span>
+                                        <span class="h-2.5 w-2.5 rounded-full bg-amber-400/75"></span>
+                                        <span class="h-2.5 w-2.5 rounded-full bg-emerald-400/75"></span>
+                                    </span>
+                                    <span class="ml-1 font-mono text-[11px] font-medium text-slate-400">~/.gemini/settings.json</span>
+                                </div>
+                                <button type="button" @click="copyText(@js($geminiConfig), 'gemini-json')"
+                                    class="inline-flex items-center gap-1.5 rounded-lg bg-white/10 px-2.5 py-1 text-[11px] font-semibold text-white transition hover:bg-white/20 cursor-pointer">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                    <span x-text="copied === 'gemini-json' ? 'Tersalin!' : 'Salin JSON'"></span>
+                                </button>
+                            </div>
+                            <pre class="p-4 font-mono text-xs leading-relaxed text-indigo-100 whitespace-pre-wrap break-all">{{ $geminiConfig }}</pre>
+                        </div>
                     @else
                         <p class="text-xs leading-relaxed text-slate-600">
                             Tempel konfigurasi ini ke <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-indigo-700">mcp_config.json</code> (Antigravity) atau <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-indigo-700">.mcp.json</code> (Claude Code):
@@ -298,16 +345,18 @@
                         </div>
                     @endif
 
-                    <div class="border-t border-slate-100 pt-4 space-y-2">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-semibold text-slate-700">Prompt Setup Otomatis untuk AI</span>
-                            <button type="button" @click="copyText(@js($setupPrompt), 'setup-prompt')"
-                                class="text-xs font-semibold text-indigo-600 hover:text-indigo-700">
-                                <span x-text="copied === 'setup-prompt' ? 'Prompt Tersalin!' : 'Salin Prompt'"></span>
-                            </button>
+                    @if ($client !== 'chatgpt')
+                        <div class="border-t border-slate-100 pt-4 space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-semibold text-slate-700">Prompt Setup Otomatis untuk AI (CLI / IDE)</span>
+                                <button type="button" @click="copyText(@js($setupPrompt), 'setup-prompt')"
+                                    class="text-xs font-semibold text-indigo-600 hover:text-indigo-700">
+                                    <span x-text="copied === 'setup-prompt' ? 'Prompt Tersalin!' : 'Salin Prompt'"></span>
+                                </button>
+                            </div>
+                            <p class="rounded-xl bg-slate-50 p-3 text-xs leading-relaxed text-slate-600 ring-1 ring-slate-200/70">{{ $setupPrompt }}</p>
                         </div>
-                        <p class="rounded-xl bg-slate-50 p-3 text-xs leading-relaxed text-slate-600 ring-1 ring-slate-200/70">{{ $setupPrompt }}</p>
-                    </div>
+                    @endif
                 </div>
 
                 {{-- Right Column: Try Examples + Advanced --}}

@@ -12,7 +12,7 @@ return [
         'codex' => ['label' => 'Codex'],
         'claude-code' => ['label' => 'Claude Code'],
         'chatgpt' => ['label' => 'ChatGPT'],
-        'gemini' => ['label' => 'Gemini'],
+        'gemini' => ['label' => 'Gemini CLI'],
         'antigravity' => ['label' => 'Antigravity'],
         'other' => ['label' => 'Aplikasi lain'],
     ],
