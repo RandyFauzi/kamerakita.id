@@ -210,7 +210,7 @@ class McpServerContractTest extends TestCase
         $this->actingAs($admin)
             ->get(route('admin.integrations.mcp.index', ['tab' => 'tokens']))
             ->assertOk()
-            ->assertSee('Kunci akses');
+            ->assertSee('Kunci Akses');
 
         $this->actingAs($admin)
             ->delete(route('admin.integrations.mcp.destroy', $connection))
