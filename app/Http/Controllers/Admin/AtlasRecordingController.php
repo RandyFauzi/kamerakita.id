@@ -30,9 +30,10 @@ class AtlasRecordingController extends Controller
             'account_scope' => ['nullable', 'in:account,team']]);
         $query = AtlasTask::with('atlasWorker');
         $recordingPartner = null;
-        $recordingScope = $request->input('account_scope') ?: 'account';
+        $recordingScope = 'account';
         if ($request->filled('partner_id')) {
             $recordingPartner = Partner::with('user:id,email')->findOrFail($request->input('partner_id'));
+            $recordingScope = $request->input('account_scope') ?? ($recordingPartner->isTeamParent() ? 'team' : 'account');
             abort_if($recordingScope === 'team' && !$recordingPartner->isTeamParent(), 422, 'Akun ini tidak memiliki cakupan tim.');
             $owners = Partner::with('user:id,email')->where(function ($owners) use ($recordingPartner, $recordingScope) {
                 $owners->whereKey($recordingPartner->id);

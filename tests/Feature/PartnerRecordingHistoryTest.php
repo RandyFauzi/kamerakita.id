@@ -45,17 +45,17 @@ class PartnerRecordingHistoryTest extends TestCase
             $this->recording($child->user_id, $role.'-child@example.com', 'CHILD '.$role);
             $this->recording($outside->user_id, $parent->email, 'FOREIGN-LINK '.$role);
             $filters = ['partner_id' => $parent->id, 'source' => '1618'];
-            $this->actingAs($admin)->get(route('admin.recordings.index', $filters))->assertOk()
+            $this->actingAs($admin)->get(route('admin.recordings.index', $filters + ['account_scope' => 'account']))->assertOk()
                 ->assertSee('OWN '.$role)->assertSee('UNLINKED '.$role)->assertDontSee('CHILD '.$role)
                 ->assertDontSee('FOREIGN-LINK '.$role)
                 ->assertSee('name="partner_id"', false)
                 ->assertViewHas('stats', fn ($stats) => (float) $stats['total_worked'] === 120.0);
-            $this->get(route('admin.recordings.index', $filters + ['account_scope' => 'team']))->assertOk()
+            $this->get(route('admin.recordings.index', $filters))->assertOk()
                 ->assertSee('CHILD '.$role)->assertDontSee('FOREIGN-LINK '.$role)
                 ->assertViewHas('trend', fn ($trend) => (float) $trend->sum('worked') === 180.0);
             $this->get(route('admin.recordings.index', ['partner_id' => $child->id]))->assertOk()
                 ->assertSee('CHILD '.$role)->assertDontSee('OWN '.$role)->assertDontSee('FOREIGN-LINK '.$role);
-            $this->actingAs($child->user)->get(route('admin.recordings.index', $filters))->assertForbidden();
+            $this->actingAs($child->user)->get(route('admin.recordings.index', $filters + ['account_scope' => 'account']))->assertForbidden();
         }
     }
 
