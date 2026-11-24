@@ -231,12 +231,23 @@
                         <p class="text-xs leading-relaxed text-slate-600">
                             Simpan kunci di variabel lingkungan <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-indigo-700">KAMERAKITA_MCP_TOKEN</code>, lalu jalankan perintah berikut di terminal:
                         </p>
-                        <div class="relative rounded-xl bg-slate-900 p-4 text-slate-100">
-                            <button type="button" @click="copyText(@js($codexCommand), 'cmd')"
-                                class="absolute right-3 top-3 rounded-lg bg-white/10 px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-white/20">
-                                <span x-text="copied === 'cmd' ? 'Tersalin!' : 'Salin'"></span>
-                            </button>
-                            <pre class="pr-16 font-mono text-xs leading-relaxed overflow-x-auto">{{ $codexCommand }}</pre>
+                        <div class="overflow-hidden rounded-xl bg-slate-900 ring-1 ring-slate-800 shadow-sm">
+                            <div class="flex items-center justify-between border-b border-slate-800 bg-slate-950/60 px-4 py-2.5">
+                                <div class="flex items-center gap-2">
+                                    <span class="flex items-center gap-1.5">
+                                        <span class="h-2.5 w-2.5 rounded-full bg-rose-500/75"></span>
+                                        <span class="h-2.5 w-2.5 rounded-full bg-amber-400/75"></span>
+                                        <span class="h-2.5 w-2.5 rounded-full bg-emerald-400/75"></span>
+                                    </span>
+                                    <span class="ml-1 font-mono text-[11px] font-medium text-slate-400">Terminal &middot; Codex CLI</span>
+                                </div>
+                                <button type="button" @click="copyText(@js($codexCommand), 'cmd')"
+                                    class="inline-flex items-center gap-1.5 rounded-lg bg-white/10 px-2.5 py-1 text-[11px] font-semibold text-white transition hover:bg-white/20 cursor-pointer">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                    <span x-text="copied === 'cmd' ? 'Tersalin!' : 'Salin'"></span>
+                                </button>
+                            </div>
+                            <pre class="p-4 font-mono text-xs leading-relaxed text-indigo-100 whitespace-pre-wrap break-all">{{ $codexCommand }}</pre>
                         </div>
                     @elseif (in_array($client, ['chatgpt', 'gemini'], true))
                         <div class="rounded-xl bg-slate-50 p-3.5 ring-1 ring-slate-200/70 space-y-2">
@@ -267,12 +278,23 @@
                         <p class="text-xs leading-relaxed text-slate-600">
                             Tempel konfigurasi ini ke <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-indigo-700">mcp_config.json</code> (Antigravity) atau <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-indigo-700">.mcp.json</code> (Claude Code):
                         </p>
-                        <div class="relative rounded-xl bg-slate-900 p-4 text-slate-100">
-                            <button type="button" @click="copyText(@js($jsonConfig), 'json')"
-                                class="absolute right-3 top-3 rounded-lg bg-white/10 px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-white/20">
-                                <span x-text="copied === 'json' ? 'Tersalin!' : 'Salin JSON'"></span>
-                            </button>
-                            <pre class="font-mono text-xs leading-relaxed overflow-x-auto">{{ $jsonConfig }}</pre>
+                        <div class="overflow-hidden rounded-xl bg-slate-900 ring-1 ring-slate-800 shadow-sm">
+                            <div class="flex items-center justify-between border-b border-slate-800 bg-slate-950/60 px-4 py-2.5">
+                                <div class="flex items-center gap-2">
+                                    <span class="flex items-center gap-1.5">
+                                        <span class="h-2.5 w-2.5 rounded-full bg-rose-500/75"></span>
+                                        <span class="h-2.5 w-2.5 rounded-full bg-amber-400/75"></span>
+                                        <span class="h-2.5 w-2.5 rounded-full bg-emerald-400/75"></span>
+                                    </span>
+                                    <span class="ml-1 font-mono text-[11px] font-medium text-slate-400">mcp_config.json / .mcp.json</span>
+                                </div>
+                                <button type="button" @click="copyText(@js($jsonConfig), 'json')"
+                                    class="inline-flex items-center gap-1.5 rounded-lg bg-white/10 px-2.5 py-1 text-[11px] font-semibold text-white transition hover:bg-white/20 cursor-pointer">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                    <span x-text="copied === 'json' ? 'Tersalin!' : 'Salin JSON'"></span>
+                                </button>
+                            </div>
+                            <pre class="p-4 font-mono text-xs leading-relaxed text-indigo-100 whitespace-pre-wrap break-all">{{ $jsonConfig }}</pre>
                         </div>
                     @endif
 
