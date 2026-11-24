@@ -32,6 +32,14 @@ abstract class BaseTool implements McpToolInterface
             case 'video_work_reports': return \App\Models\VideoWorkReport::query();
             case 'captured_emails': return \App\Models\CapturedEmail::query();
             case 'mailbox_sync_states': return \App\Models\MailboxSyncState::query();
+            case 'atlas_tasks': return \App\Models\AtlasTask::query();
+            case 'atlas_workers': return \App\Models\AtlasWorker::query();
+            case 'payrolls': return \App\Models\Payroll::query();
+            case 'finance_entries': return \App\Models\FinanceEntry::query();
+            case 'invoices': return \App\Models\Invoice::query();
+            case 'main_account_requests': return \App\Models\MainAccountRequest::query();
+            case 'password_recovery_requests': return \App\Models\PasswordRecoveryRequest::query();
+            case 'fastwork_onboardings': return \App\Models\FastworkOnboarding::query();
             default: throw new \Exception("Resource not allowed: {$resource}");
         }
     }

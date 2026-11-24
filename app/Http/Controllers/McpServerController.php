@@ -22,6 +22,12 @@ use App\Mcp\Tools\SoftDeleteEmailTool;
 use App\Mcp\Tools\SendWaTool;
 use App\Mcp\Tools\QuickReconcileByEmailTool;
 use App\Mcp\Tools\MatchPayrollExcelTool;
+use App\Mcp\Tools\GetMcpContextTool;
+use App\Mcp\Tools\AtlasRecordingSummaryTool;
+use App\Mcp\Tools\PayrollSummaryTool;
+use App\Mcp\Tools\FinanceSummaryTool;
+use App\Mcp\Tools\InvoiceSummaryTool;
+use App\Mcp\Tools\OperationsOverviewTool;
 
 class McpServerController extends Controller
 {
@@ -49,6 +55,12 @@ class McpServerController extends Controller
         $this->registry->register(new SendWaTool());
         $this->registry->register(new QuickReconcileByEmailTool());
         $this->registry->register(new MatchPayrollExcelTool());
+        $this->registry->register(new GetMcpContextTool());
+        $this->registry->register(new AtlasRecordingSummaryTool());
+        $this->registry->register(new PayrollSummaryTool());
+        $this->registry->register(new FinanceSummaryTool());
+        $this->registry->register(new InvoiceSummaryTool());
+        $this->registry->register(new OperationsOverviewTool());
     }
 
     public function handle(Request $request)

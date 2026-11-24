@@ -74,7 +74,7 @@ class McpServerContractTest extends TestCase
             ->assertJsonStructure(['client_id', 'redirect_uris']);
     }
 
-    public function test_superadmin_sees_all_17_tools_with_output_schema(): void
+    public function test_superadmin_sees_all_23_tools_with_output_schema(): void
     {
         $superadmin = User::factory()->create(['role' => 'superadmin', 'account_version' => 1]);
         [$token] = $this->createTokenFor($superadmin);
@@ -89,7 +89,7 @@ class McpServerContractTest extends TestCase
         $tools = $response->json('result.tools');
 
         $this->assertIsArray($tools);
-        $this->assertCount(17, $tools);
+        $this->assertCount(23, $tools);
 
         foreach ($tools as $tool) {
             $this->assertArrayHasKey('name', $tool);
@@ -115,6 +115,12 @@ class McpServerContractTest extends TestCase
 
         $this->assertContains('search_partner', $toolNames);
         $this->assertContains('qc_stats', $toolNames);
+        $this->assertContains('get_mcp_context', $toolNames);
+        $this->assertContains('atlas_recording_summary', $toolNames);
+        $this->assertContains('payroll_summary', $toolNames);
+        $this->assertContains('finance_summary', $toolNames);
+        $this->assertContains('invoice_summary', $toolNames);
+        $this->assertContains('operations_overview', $toolNames);
         $this->assertNotContains('create_worker', $toolNames);
         $this->assertNotContains('soft_delete_email', $toolNames);
         $this->assertNotContains('send_wa', $toolNames);
@@ -204,5 +210,37 @@ class McpServerContractTest extends TestCase
         $this->assertNotNull($connection->revoked_at);
         $this->assertNull($connection->token_hash);
         $this->assertNull($connection->token_encrypted);
+    }
+
+    public function test_new_operational_and_analytics_tools_execute_cleanly(): void
+    {
+        $finance = User::factory()->create(['role' => 'finance', 'account_version' => 1]);
+        [$token] = $this->createTokenFor($finance, 'Finance AI');
+
+        $toolsToCall = [
+            'get_mcp_context',
+            'atlas_recording_summary',
+            'payroll_summary',
+            'finance_summary',
+            'invoice_summary',
+            'operations_overview',
+        ];
+
+        foreach ($toolsToCall as $idx => $toolName) {
+            $res = $this->withToken($token)->postJson('/mcp/kamerakita', [
+                'jsonrpc' => '2.0',
+                'id' => 100 + $idx,
+                'method' => 'tools/call',
+                'params' => [
+                    'name' => $toolName,
+                    'arguments' => [],
+                ],
+            ]);
+
+            $res->assertOk()
+                ->assertJsonPath('result.isError', false)
+                ->assertJsonPath('result.structuredContent.ok', true)
+                ->assertJsonPath('result.structuredContent.tool', $toolName);
+        }
     }
 }
