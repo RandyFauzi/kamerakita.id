@@ -4,7 +4,25 @@ return [
     'enabled' => env('MCP_ENABLED', true),
     'oauth_enabled' => env('MCP_OAUTH_ENABLED', true),
     'token_prefix' => env('MCP_TOKEN_PREFIX', 'kkm_'),
+    'token_days' => env('MCP_TOKEN_DAYS', 90),
+    'max_connections' => env('MCP_MAX_CONNECTIONS', 20),
     'rate_limit' => env('MCP_RATE_LIMIT', 120),
+
+    'clients_ui' => [
+        'codex' => ['label' => 'Codex'],
+        'claude-code' => ['label' => 'Claude Code'],
+        'chatgpt' => ['label' => 'ChatGPT'],
+        'gemini' => ['label' => 'Gemini'],
+        'antigravity' => ['label' => 'Antigravity'],
+        'other' => ['label' => 'Aplikasi lain'],
+    ],
+
+    'ability_labels' => [
+        '*' => 'Akses penuh (Analitik, QC, Payroll, Keuangan & Operasional)',
+        'mcp.read' => 'Analitik & Ringkasan (Atlas, Payroll, QC, Keuangan, Invoice)',
+        'mcp.write' => 'Operasional & Rekonsiliasi',
+        'mcp.critical' => 'Aksi Kritis & Manajemen Akun',
+    ],
 
     /*
     |--------------------------------------------------------------------------

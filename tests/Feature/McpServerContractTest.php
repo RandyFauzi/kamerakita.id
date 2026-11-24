@@ -203,8 +203,18 @@ class McpServerContractTest extends TestCase
         $this->assertStringContainsString('no-store', (string) $reveal->headers->get('Cache-Control'));
 
         $this->actingAs($admin)
+            ->get(route('admin.integrations.mcp.index', ['client' => 'chatgpt']))
+            ->assertOk()
+            ->assertSee('Hubungkan ChatGPT');
+
+        $this->actingAs($admin)
+            ->get(route('admin.integrations.mcp.index', ['tab' => 'tokens']))
+            ->assertOk()
+            ->assertSee('Kunci akses');
+
+        $this->actingAs($admin)
             ->delete(route('admin.integrations.mcp.destroy', $connection))
-            ->assertRedirect(route('admin.integrations.mcp.index'));
+            ->assertRedirect(route('admin.integrations.mcp.index', ['tab' => 'tokens']));
 
         $connection->refresh();
         $this->assertNotNull($connection->revoked_at);
