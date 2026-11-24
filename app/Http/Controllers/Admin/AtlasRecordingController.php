@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\AtlasTask;
+use App\Models\{Partner, AtlasWorker, User};
 use App\Models\RoboticsSyncRun;
 use App\Services\Robotics1618Sync;
 use Illuminate\Http\Request;
@@ -24,8 +25,36 @@ class AtlasRecordingController extends Controller
 
     public function index(Request $request)
     {
-        $request->validate(['source' => ['nullable', 'in:atlas,1618']]);
+        $request->validate(['source' => ['nullable', 'in:atlas,1618'],
+            'partner_id' => ['required_with:account_scope', 'nullable', 'uuid', 'exists:partners,id'],
+            'account_scope' => ['nullable', 'in:account,team']]);
         $query = AtlasTask::with('atlasWorker');
+        $recordingPartner = null;
+        $recordingScope = $request->input('account_scope') ?: 'account';
+        if ($request->filled('partner_id')) {
+            $recordingPartner = Partner::with('user:id,email')->findOrFail($request->input('partner_id'));
+            abort_if($recordingScope === 'team' && !$recordingPartner->isTeamParent(), 422, 'Akun ini tidak memiliki cakupan tim.');
+            $owners = Partner::with('user:id,email')->where(function ($owners) use ($recordingPartner, $recordingScope) {
+                $owners->whereKey($recordingPartner->id);
+                if ($recordingScope === 'team') {
+                    $owners->orWhere(fn ($children) => $children->where('mitra_parent_id', $recordingPartner->id)
+                        ->where('partner_role', Partner::ROLE_WORKER));
+                }
+            })->get(['id', 'user_id', 'email']);
+            $userIds = $owners->pluck('user_id')->filter()->unique()->values();
+            $emails = $owners->flatMap(fn ($owner) => [$owner->email, $owner->user?->email])
+                ->filter()->map(fn ($email) => strtolower(trim($email)))->unique()->values();
+            $workers = AtlasWorker::where(function ($workers) use ($userIds, $emails) {
+                $workers->whereIn('user_id', $userIds)->orWhere(function ($unlinked) use ($userIds, $emails) {
+                    // Explicit ownership wins. Stale partner emails must never
+                    // claim an Atlas account assigned to a different user.
+                    $unlinked->whereNull('user_id')->whereIn(\Illuminate\Support\Facades\DB::raw('LOWER(atlas_email)'), $emails)
+                        ->whereNotIn(\Illuminate\Support\Facades\DB::raw('LOWER(atlas_email)'),
+                            User::whereNotIn('id', $userIds)->selectRaw('LOWER(email)'));
+                });
+            });
+            $query->whereIn('atlas_worker_id', $workers->select('id'));
+        }
 
         if ($request->filled('source')) {
             $query->where('ingest_source', $request->input('source'));
@@ -111,6 +140,6 @@ class AtlasRecordingController extends Controller
                             ->withQueryString();
 
         $syncRun = RoboticsSyncRun::latest('id')->first();
-        return view('admin.atlas-recordings.index', compact('recordings', 'stats', 'trend', 'syncRun'));
+        return view('admin.atlas-recordings.index', compact('recordings', 'stats', 'trend', 'syncRun', 'recordingPartner', 'recordingScope'));
     }
 }

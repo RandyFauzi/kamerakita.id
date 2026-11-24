@@ -161,7 +161,25 @@
 
             <div class="overflow-hidden rounded-2xl bg-white border border-gray-100 p-4 shadow-sm sm:p-6">
                 <!-- Header / Filters -->
+                @if(!$isVendorView && isset($recordingPartner))
+                    <div class="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-indigo-100 bg-indigo-50 px-4 py-3">
+                        <div><p class="text-sm font-bold text-indigo-900">Riwayat recording: {{ $recordingPartner->full_name }}</p><p class="mt-1 text-xs text-indigo-700">{{ $recordingPartner->mitra_id }} · {{ $recordingPartner->user?->email ?? $recordingPartner->email ?? 'Belum ada email' }} · {{ $recordingScope === 'team' ? 'Akun ini dan worker tim' : 'Akun ini saja' }}</p></div>
+                        <a href="{{ route('admin.recordings.index') }}" class="text-xs font-semibold text-indigo-700 underline">Lihat semua recording</a>
+                    </div>
+                @endif
                 <form action="{{ route($isVendorView ? 'vendor.recordings.index' : 'admin.recordings.index') }}" method="GET" class="flex flex-col items-end gap-3 md:flex-row mb-6">
+                    @if(!$isVendorView && isset($recordingPartner))
+                        <input type="hidden" name="partner_id" value="{{ $recordingPartner->id }}">
+                        @if($recordingPartner->isTeamParent())
+                            <div class="w-full md:w-auto" style="min-width:180px;">
+                                <label for="account_scope" class="mb-2 block text-xs font-bold uppercase text-gray-400">Cakupan recording</label>
+                                <select id="account_scope" name="account_scope" class="w-full rounded-xl border-gray-200 py-2.5 text-sm">
+                                    <option value="account" @selected($recordingScope === 'account')>Akun ini saja</option>
+                                    <option value="team" @selected($recordingScope === 'team')>Akun ini + worker tim</option>
+                                </select>
+                            </div>
+                        @endif
+                    @endif
                     <div class="w-full" style="flex: 1 1 260px; min-width: 220px;">
                         <label for="search" class="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-gray-400">Pencarian</label>
                         <div class="relative">
