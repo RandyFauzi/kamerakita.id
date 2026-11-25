@@ -52,9 +52,8 @@ class VideoWorkReport extends Model
     {
         $clearCache = function () {
             \Illuminate\Support\Facades\Cache::forget('global_metrics');
-            \Illuminate\Support\Facades\Cache::forget('admin_latest_reports');
-            \Illuminate\Support\Facades\Cache::forget('admin_monthly_data');
-            \Illuminate\Support\Facades\Cache::forget('admin_daily_average_data');
+            \Illuminate\Support\Facades\Cache::forget('admin_monthly_data_v3');
+            \Illuminate\Support\Facades\Cache::forget('admin_daily_average_data_v4');
         };
 
         static::saved($clearCache);

@@ -87,27 +87,34 @@ class VerifyVideoWorkReportController extends Controller
         }
 
         $partners = $query->paginate(15)->withQueryString();
+        $partnerIds = $partners->getCollection()->pluck('id');
 
-        // 3. For each partner, load their reports in this period and their period approval status
-        foreach ($partners as $partner) {
-            $reportsQuery = VideoWorkReport::where('partner_id', $partner->id)->orderBy('submission_date', 'asc');
+        $reportsByPartner = collect();
+        $approvalsByPartner = collect();
+
+        if ($partnerIds->isNotEmpty()) {
+            $batchReportsQuery = VideoWorkReport::whereIn('partner_id', $partnerIds)->orderBy('submission_date', 'asc');
             if ($filterDate) {
-                $reportsQuery->whereDate('submission_date', $filterDate->format('Y-m-d'));
+                $batchReportsQuery->whereDate('submission_date', $filterDate->format('Y-m-d'));
             } elseif ($startDate && $endDate) {
-                $reportsQuery->whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')]);
+                $batchReportsQuery->whereBetween('submission_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')]);
             }
-            $reports = $reportsQuery->get();
+            $reportsByPartner = $batchReportsQuery->get()->groupBy('partner_id');
 
-            $totalReportedMinutes = $reports->sum('submitted_duration_minutes');
-            
-            // Get period approval
-            $approval = null;
             if ($startDate && $endDate) {
-                $approval = PeriodApproval::where('partner_id', $partner->id)
+                $approvalsByPartner = PeriodApproval::whereIn('partner_id', $partnerIds)
                     ->where('period_start_date', $startDate->format('Y-m-d'))
                     ->where('period_end_date', $endDate->format('Y-m-d'))
-                    ->first();
+                    ->get()
+                    ->keyBy('partner_id');
             }
+        }
+
+        // 3. For each partner, attach their preloaded reports and period approval status
+        foreach ($partners as $partner) {
+            $reports = $reportsByPartner->get($partner->id, collect());
+            $totalReportedMinutes = $reports->sum('submitted_duration_minutes');
+            $approval = $approvalsByPartner->get($partner->id);
 
             $partner->period_reports = $reports;
             $partner->total_reported_minutes = $totalReportedMinutes;

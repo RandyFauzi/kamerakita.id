@@ -102,6 +102,17 @@ class CalculatePartnerMetricsService
             ->with('user')
             ->get();
 
+        $workerIds = $workers->pluck('id');
+        $reportsByPartner = $workerIds->isNotEmpty()
+            ? VideoWorkReport::query()
+                ->whereIn('partner_id', $workerIds)
+                ->where('qc_status', 'approved')
+                ->get()
+                ->groupBy('partner_id')
+            : collect();
+
+        $atlasBatch = $this->buildBatchAtlasStats($workers, includeDailyExtremes: true);
+
         $workersData = [];
         $totalAllTime = 0;
         $totalPaid = 0;
@@ -115,7 +126,11 @@ class CalculatePartnerMetricsService
         $commissionPending = 0;
 
         foreach ($workers as $worker) {
-            $metrics = $this->getWorkerMetrics($worker);
+            $metrics = $this->buildWorkerMetricsFromBatch(
+                $worker,
+                $reportsByPartner->get($worker->id, collect()),
+                $atlasBatch[$worker->id] ?? $this->emptyAtlasBatchEntry()
+            );
 
             $workersData[] = [
                 'worker' => $worker,
@@ -190,6 +205,8 @@ class CalculatePartnerMetricsService
             ->with('worker')
             ->get();
 
+        $atlasBatch = $this->buildBatchAtlasStats($recruitedWorkers, includeDailyExtremes: false);
+
         $workersData = [];
         $totalApprovedVideosAll = 0;
         $totalApprovedMinutesAll = 0;
@@ -204,21 +221,15 @@ class CalculatePartnerMetricsService
             });
             $qcTotalVideosCount = $worker->videoWorkReports->count();
 
-            // 2. AtlasTask counts & minutes (Atlas Worker recordings)
-            $atlasWorkerIds = $this->resolveAtlasWorkerIds($worker);
+            // 2. AtlasTask counts & minutes (pre-aggregated in batch)
+            $atlasAgg = $atlasBatch[$worker->id] ?? $this->emptyAtlasBatchEntry();
 
-            $atlasAgg = $atlasWorkerIds->isNotEmpty()
-                ? \App\Models\AtlasTask::whereIn('atlas_worker_id', $atlasWorkerIds)
-                    ->selectRaw('COUNT(*) as task_count, SUM(CASE WHEN approved_minutes > 0 THEN 1 ELSE 0 END) as approved_count, COALESCE(SUM(worked_minutes), 0) as worked_minutes, COALESCE(SUM(approved_minutes), 0) as approved_minutes, COALESCE(SUM(review_minutes), 0) as review_minutes, COALESCE(SUM(rejected_minutes), 0) as rejected_minutes')
-                    ->first()
-                : null;
-
-            $atlasApprovedVideosCount = (int) ($atlasAgg->approved_count ?? 0);
-            $atlasApprovedMinutes = (float) ($atlasAgg->approved_minutes ?? 0);
-            $atlasReportedMinutes = (float) ($atlasAgg->worked_minutes ?? 0);
-            $atlasPendingMinutes = (float) ($atlasAgg->review_minutes ?? 0);
-            $atlasRejectedMinutes = (float) ($atlasAgg->rejected_minutes ?? 0);
-            $atlasTotalVideosCount = (int) ($atlasAgg->task_count ?? 0);
+            $atlasApprovedVideosCount = (int) $atlasAgg['approved_count'];
+            $atlasApprovedMinutes = (float) $atlasAgg['approved_minutes'];
+            $atlasReportedMinutes = (float) $atlasAgg['worked_minutes'];
+            $atlasPendingMinutes = (float) $atlasAgg['review_minutes'];
+            $atlasRejectedMinutes = (float) $atlasAgg['rejected_minutes'];
+            $atlasTotalVideosCount = (int) $atlasAgg['task_count'];
 
             // Combined metrics
             $totalApprovedVideos = $qcApprovedVideosCount + $atlasApprovedVideosCount;
@@ -369,17 +380,11 @@ class CalculatePartnerMetricsService
 
     /**
      * Aggregate AtlasTask approved & worked minutes within a WITA (Asia/Makassar) date window,
-     * matching the exact date expression used by Admin\AtlasRecordingController.
+     * using the indexed task_date column (aligned to Asia/Makassar on ingest).
      */
     private function computeTargetWindowMetrics(int $targetHours, string $startDate, string $endDate, string $label): array
     {
-        $isMysql = \Illuminate\Support\Facades\DB::connection()->getDriverName() === 'mysql';
-        $dateExpr = $isMysql
-            ? "COALESCE(DATE(DATE_ADD(recorded_at, INTERVAL 8 HOUR)), task_date)"
-            : "COALESCE(DATE(datetime(recorded_at, '+8 hours')), task_date)";
-
-        $totals = \App\Models\AtlasTask::whereRaw("{$dateExpr} >= ?", [$startDate])
-            ->whereRaw("{$dateExpr} <= ?", [$endDate])
+        $totals = \App\Models\AtlasTask::whereBetween('task_date', [$startDate, $endDate])
             ->selectRaw('COALESCE(SUM(approved_minutes), 0) as approved_sum, COALESCE(SUM(worked_minutes), 0) as worked_sum')
             ->first();
 
@@ -527,5 +532,182 @@ class CalculatePartnerMetricsService
                     : $q->where('atlas_email', $partner->email);
             }
         })->pluck('id');
+    }
+
+    /**
+     * Batch-resolve AtlasWorker IDs and aggregate AtlasTask metrics for a collection of partners.
+     *
+     * @return array<string, array{task_count: int, approved_count: int, worked_minutes: float, approved_minutes: float, review_minutes: float, rejected_minutes: float, today_worked_minutes: float, highest_daily_minutes: float}>
+     */
+    private function buildBatchAtlasStats(\Illuminate\Support\Collection $partners, bool $includeDailyExtremes = false): array
+    {
+        if ($partners->isEmpty()) {
+            return [];
+        }
+
+        $userIds = $partners->pluck('user_id')->filter()->unique()->values();
+        $emails = $partners->pluck('email')->filter()->unique()->values();
+
+        if ($userIds->isEmpty() && $emails->isEmpty()) {
+            return [];
+        }
+
+        $atlasWorkers = \App\Models\AtlasWorker::query()
+            ->where(function ($q) use ($userIds, $emails) {
+                if ($userIds->isNotEmpty()) {
+                    $q->whereIn('user_id', $userIds);
+                }
+                if ($emails->isNotEmpty()) {
+                    $userIds->isNotEmpty()
+                        ? $q->orWhereIn('atlas_email', $emails)
+                        : $q->whereIn('atlas_email', $emails);
+                }
+            })
+            ->get(['id', 'user_id', 'atlas_email']);
+
+        $byUserId = $atlasWorkers->whereNotNull('user_id')->groupBy('user_id');
+        $byEmail = $atlasWorkers->whereNotNull('atlas_email')->groupBy('atlas_email');
+
+        $partnerAtlasIds = [];
+        $allAtlasIds = collect();
+
+        foreach ($partners as $partner) {
+            $ids = collect();
+            if ($partner->user_id && $byUserId->has($partner->user_id)) {
+                $ids = $ids->merge($byUserId->get($partner->user_id)->pluck('id'));
+            }
+            if (! empty($partner->email) && $byEmail->has($partner->email)) {
+                $ids = $ids->merge($byEmail->get($partner->email)->pluck('id'));
+            }
+            $uniqueIds = $ids->unique()->values();
+            $partnerAtlasIds[$partner->id] = $uniqueIds;
+            $allAtlasIds = $allAtlasIds->merge($uniqueIds);
+        }
+
+        $allAtlasIds = $allAtlasIds->unique()->values();
+        if ($allAtlasIds->isEmpty()) {
+            return [];
+        }
+
+        $totalsByAtlasWorker = \App\Models\AtlasTask::query()
+            ->whereIn('atlas_worker_id', $allAtlasIds)
+            ->groupBy('atlas_worker_id')
+            ->selectRaw('atlas_worker_id, COUNT(*) as task_count, SUM(CASE WHEN approved_minutes > 0 THEN 1 ELSE 0 END) as approved_count, COALESCE(SUM(worked_minutes), 0) as worked_minutes, COALESCE(SUM(approved_minutes), 0) as approved_minutes, COALESCE(SUM(review_minutes), 0) as review_minutes, COALESCE(SUM(rejected_minutes), 0) as rejected_minutes')
+            ->get()
+            ->keyBy('atlas_worker_id');
+
+        $todayByAtlasWorker = collect();
+        $dailyByAtlasWorker = collect();
+
+        if ($includeDailyExtremes) {
+            $todayByAtlasWorker = \App\Models\AtlasTask::query()
+                ->whereIn('atlas_worker_id', $allAtlasIds)
+                ->whereDate('task_date', now())
+                ->groupBy('atlas_worker_id')
+                ->selectRaw('atlas_worker_id, COALESCE(SUM(worked_minutes), 0) as today_worked')
+                ->pluck('today_worked', 'atlas_worker_id');
+
+            $dailyByAtlasWorker = \App\Models\AtlasTask::query()
+                ->whereIn('atlas_worker_id', $allAtlasIds)
+                ->groupBy('atlas_worker_id', 'task_date')
+                ->selectRaw('atlas_worker_id, task_date, SUM(worked_minutes) as daily_total')
+                ->get()
+                ->groupBy('atlas_worker_id');
+        }
+
+        $result = [];
+        foreach ($partners as $partner) {
+            $entry = $this->emptyAtlasBatchEntry();
+            $dailyTotals = [];
+
+            foreach ($partnerAtlasIds[$partner->id] as $awId) {
+                $row = $totalsByAtlasWorker->get($awId);
+                if ($row) {
+                    $entry['task_count'] += (int) $row->task_count;
+                    $entry['approved_count'] += (int) $row->approved_count;
+                    $entry['worked_minutes'] += (float) $row->worked_minutes;
+                    $entry['approved_minutes'] += (float) $row->approved_minutes;
+                    $entry['review_minutes'] += (float) $row->review_minutes;
+                    $entry['rejected_minutes'] += (float) $row->rejected_minutes;
+                }
+
+                if ($includeDailyExtremes) {
+                    $entry['today_worked_minutes'] += (float) ($todayByAtlasWorker->get($awId) ?? 0);
+                    foreach ($dailyByAtlasWorker->get($awId, collect()) as $dailyRow) {
+                        $dateKey = (string) $dailyRow->task_date;
+                        $dailyTotals[$dateKey] = ($dailyTotals[$dateKey] ?? 0.0) + (float) $dailyRow->daily_total;
+                    }
+                }
+            }
+
+            if ($includeDailyExtremes && ! empty($dailyTotals)) {
+                $entry['highest_daily_minutes'] = (float) max($dailyTotals);
+            }
+
+            $result[$partner->id] = $entry;
+        }
+
+        return $result;
+    }
+
+    private function emptyAtlasBatchEntry(): array
+    {
+        return [
+            'task_count' => 0,
+            'approved_count' => 0,
+            'worked_minutes' => 0.0,
+            'approved_minutes' => 0.0,
+            'review_minutes' => 0.0,
+            'rejected_minutes' => 0.0,
+            'today_worked_minutes' => 0.0,
+            'highest_daily_minutes' => 360.0,
+        ];
+    }
+
+    private function buildWorkerMetricsFromBatch(Partner $worker, \Illuminate\Support\Collection $approvedReports, array $atlasStats): array
+    {
+        $totalSubmittedMinutes = (float) $atlasStats['worked_minutes'];
+        $allTimeMinutes = (float) $atlasStats['approved_minutes'];
+        $recordingBillableMinutes = (float) $atlasStats['approved_minutes'];
+        $recordingPendingMinutes = (float) $atlasStats['review_minutes'];
+        $recordingRejectedMinutes = (float) $atlasStats['rejected_minutes'];
+        $todaySubmittedMinutes = (float) $atlasStats['today_worked_minutes'];
+        $highestDailyMinutes = (float) $atlasStats['highest_daily_minutes'];
+
+        $paidMinutes = (float) $approvedReports->where('payment_status', 'paid')
+            ->sum('approved_duration_minutes');
+
+        $pendingMinutes = (float) $approvedReports->where('payment_status', 'unpaid')
+            ->sum('approved_duration_minutes');
+
+        $rate = $worker->effectiveHourlyRate();
+        $paidEarnings = ($paidMinutes / 60) * $rate;
+        $pendingEarnings = ($pendingMinutes / 60) * $rate;
+        $totalEarnings = $paidEarnings + $pendingEarnings;
+
+        return [
+            'total_submitted_minutes' => round($totalSubmittedMinutes, 1),
+            'today_submitted_minutes' => round($todaySubmittedMinutes, 1),
+            'highest_daily_minutes' => round($highestDailyMinutes, 1),
+            'all_time_minutes' => round($allTimeMinutes, 1),
+            'paid_minutes' => round($paidMinutes, 1),
+            'pending_minutes' => round($pendingMinutes, 1),
+            'recording_worked_minutes' => round($totalSubmittedMinutes, 1),
+            'recording_billable_minutes' => round($recordingBillableMinutes, 1),
+            'recording_pending_minutes' => round($recordingPendingMinutes, 1),
+            'recording_rejected_minutes' => round($recordingRejectedMinutes, 1),
+            'total_submitted_hours_formatted' => $this->formatMinutes($totalSubmittedMinutes),
+            'all_time_hours_formatted' => $this->formatMinutes($allTimeMinutes),
+            'paid_hours_formatted' => $this->formatMinutes($paidMinutes),
+            'pending_hours_formatted' => $this->formatMinutes($pendingMinutes),
+            'recording_worked_hours_formatted' => $this->formatMinutes($totalSubmittedMinutes),
+            'recording_billable_hours_formatted' => $this->formatMinutes($recordingBillableMinutes),
+            'recording_pending_hours_formatted' => $this->formatMinutes($recordingPendingMinutes),
+            'recording_rejected_hours_formatted' => $this->formatMinutes($recordingRejectedMinutes),
+            'paid_earnings' => $paidEarnings,
+            'pending_earnings' => $pendingEarnings,
+            'total_earnings' => $totalEarnings,
+            'hourly_rate' => $rate,
+        ];
     }
 }

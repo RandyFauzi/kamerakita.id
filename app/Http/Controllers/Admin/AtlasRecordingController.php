@@ -111,17 +111,27 @@ class AtlasRecordingController extends Controller
             }
         }
 
-        // Aggregate Stats
+        // Aggregate Stats in a single query
         $statsQuery = clone $query;
         $statsQuery->setEagerLoads([]);
+        $statsRow = $statsQuery->selectRaw('
+            COALESCE(SUM(worked_minutes), 0) as total_worked,
+            COALESCE(SUM(approved_minutes), 0) as total_approved,
+            COALESCE(SUM(CASE WHEN payroll_id IS NOT NULL THEN approved_minutes ELSE 0 END), 0) as total_paid,
+            COALESCE(SUM(CASE WHEN payroll_id IS NULL THEN approved_minutes ELSE 0 END), 0) as total_unpaid,
+            COALESCE(SUM(review_minutes), 0) as total_review,
+            COALESCE(SUM(deferred_minutes), 0) as total_deferred,
+            COALESCE(SUM(rejected_minutes), 0) as total_rejected
+        ')->first();
+
         $stats = [
-            'total_worked' => $statsQuery->sum('worked_minutes'),
-            'total_approved' => $statsQuery->sum('approved_minutes'),
-            'total_paid' => (clone $statsQuery)->whereNotNull('payroll_id')->sum('approved_minutes'),
-            'total_unpaid' => (clone $statsQuery)->whereNull('payroll_id')->sum('approved_minutes'),
-            'total_review' => $statsQuery->sum('review_minutes'),
-            'total_deferred' => $statsQuery->sum('deferred_minutes'),
-            'total_rejected' => $statsQuery->sum('rejected_minutes'),
+            'total_worked' => (float) ($statsRow->total_worked ?? 0),
+            'total_approved' => (float) ($statsRow->total_approved ?? 0),
+            'total_paid' => (float) ($statsRow->total_paid ?? 0),
+            'total_unpaid' => (float) ($statsRow->total_unpaid ?? 0),
+            'total_review' => (float) ($statsRow->total_review ?? 0),
+            'total_deferred' => (float) ($statsRow->total_deferred ?? 0),
+            'total_rejected' => (float) ($statsRow->total_rejected ?? 0),
         ];
 
         // Chart Data (Group by date, aligned with Makassar / WITA local time)
