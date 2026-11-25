@@ -130,7 +130,6 @@ class RenderDashboardOverviewController extends Controller
             $year = (int) now('Asia/Makassar')->format('Y');
             $report = app(\App\Services\AccountingLedgerService::class)->buildReport($month, $year);
             $taxPeriod = \App\Models\TaxPeriod::firstOrCreate(['period_month' => $month]);
-            $recentInvoices = \App\Models\Invoice::with('client')->orderByDesc('invoice_date')->limit(5)->get();
             $recentCycles = \App\Models\PaymentCycle::orderByDesc('id')->limit(5)->get();
             $missingTaxPartnersCount = \App\Models\Partner::query()
                 ->where(function ($q): void {
@@ -150,7 +149,6 @@ class RenderDashboardOverviewController extends Controller
                 'month',
                 'report',
                 'taxPeriod',
-                'recentInvoices',
                 'recentCycles',
                 'missingTaxPartnersCount'
             ));

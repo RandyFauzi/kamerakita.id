@@ -72,8 +72,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/records/{taxRecord}/bupot', [\App\Http\Controllers\TaxCenterController::class, 'uploadBupot'])->name('records.bupot');
         Route::get('/records/{taxRecord}/bupot/download', [\App\Http\Controllers\TaxCenterController::class, 'downloadBupot'])->name('records.bupot.download');
         Route::post('/partners/{partner}/tax-profile', [\App\Http\Controllers\TaxCenterController::class, 'updatePartnerTaxProfile'])->name('partners.update');
-        Route::post('/invoices/{invoice}/tax', [\App\Http\Controllers\TaxCenterController::class, 'updateInvoiceTax'])->name('invoices.update');
-        Route::post('/invoices/{invoice}/post-journal', [\App\Http\Controllers\TaxCenterController::class, 'postInvoiceToJournal'])->name('post-invoice');
         Route::post('/cycles/{cycle}/post-journal', [\App\Http\Controllers\TaxCenterController::class, 'postCycleToJournal'])->name('post-cycle');
         Route::get('/export-csv', [\App\Http\Controllers\TaxCenterController::class, 'exportCoretaxCsv'])->name('export-csv');
     });

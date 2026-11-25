@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Invoice;
 use App\Models\Partner;
 use App\Models\PaymentCycle;
 use App\Models\PaymentCycleEntry;
@@ -181,30 +180,12 @@ class TaxCalculationService
             ")
             ->first();
 
-        $invoices = Invoice::query()
-            ->where('status', '!=', 'VOID')
-            ->where('invoice_date', '>=', $start->toDateString())
-            ->where('invoice_date', '<', $end->toDateString())
-            ->get();
-
-        $totalPpnIdr = 0;
-        $totalClientPph23Idr = 0;
-
-        foreach ($invoices as $invoice) {
-            $fx = strtoupper((string) $invoice->currency) === 'IDR'
-                ? 1.0
-                : max(0.0, (float) ($invoice->idr_exchange_rate ?? 0));
-
-            $totalPpnIdr += (int) round((float) $invoice->ppn_amount * $fx);
-            $totalClientPph23Idr += (int) round((float) $invoice->pph23_withheld * $fx);
-        }
-
         $period->update([
             'total_gross_idr' => (int) ($totals->total_gross ?? 0),
             'total_pph21_idr' => (int) ($totals->total_pph21 ?? 0),
             'total_pph23_idr' => (int) ($totals->total_pph23 ?? 0),
-            'total_ppn_idr' => $totalPpnIdr,
-            'total_client_pph23_idr' => $totalClientPph23Idr,
+            'total_ppn_idr' => 0,
+            'total_client_pph23_idr' => 0,
         ]);
 
         return $period->fresh();

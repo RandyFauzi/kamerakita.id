@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Invoice;
 use App\Models\Partner;
 use App\Models\PaymentCycle;
 use App\Models\TaxPeriod;
@@ -10,7 +9,6 @@ use App\Models\TaxRecord;
 use App\Services\AccountingLedgerService;
 use App\Services\ActivityLogger;
 use App\Services\TaxCalculationService;
-use Carbon\CarbonImmutable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -35,8 +33,6 @@ class TaxCenterController extends Controller
         ]);
 
         $month = $validated['month'] ?? now('Asia/Makassar')->format('Y-m');
-        $start = CarbonImmutable::createFromFormat('!Y-m', $month);
-        $end = $start->addMonth();
 
         $period = TaxPeriod::firstOrCreate(
             ['period_month' => $month],
@@ -66,26 +62,12 @@ class TaxCenterController extends Controller
             ->paginate(25)
             ->withQueryString();
 
-        $invoices = Invoice::query()
-            ->where('invoice_date', '>=', $start->toDateString())
-            ->where('invoice_date', '<', $end->toDateString())
-            ->orderByDesc('invoice_date')
-            ->get();
-
-        $unpostedCycles = PaymentCycle::query()
-            ->where('total_pay_idr', '>', 0)
-            ->whereNull('journal_posted_at')
-            ->orderByDesc('id')
-            ->get();
-
         $allPeriods = TaxPeriod::orderByDesc('period_month')->limit(12)->get();
 
         return view('tax.index', [
             'month' => $month,
             'period' => $period,
             'records' => $records,
-            'invoices' => $invoices,
-            'unpostedCycles' => $unpostedCycles,
             'allPeriods' => $allPeriods,
             'filters' => $validated,
         ]);
@@ -244,54 +226,6 @@ class TaxCenterController extends Controller
         ActivityLogger::log('partner.tax_profile', "Memperbarui profil pajak {$partner->full_name} ({$partner->mitra_id}).");
 
         return back()->with('success', "Profil pajak {$partner->full_name} berhasil diperbarui.");
-    }
-
-    public function updateInvoiceTax(Request $request, Invoice $invoice): RedirectResponse
-    {
-        $validated = $request->validate([
-            'is_domestic' => ['nullable', 'boolean'],
-            'ppn_rate' => ['required', 'numeric', 'min:0', 'max:20'],
-            'pph23_withheld' => ['required', 'numeric', 'min:0'],
-            'idr_exchange_rate' => ['nullable', 'numeric', 'min:0'],
-            'faktur_pajak_no' => ['nullable', 'string', 'max:64'],
-        ]);
-
-        $ppnAmount = round((float) $invoice->total_amount * ((float) $validated['ppn_rate'] / 100), 2);
-
-        $invoice->update([
-            'is_domestic' => $request->boolean('is_domestic'),
-            'ppn_rate' => (float) $validated['ppn_rate'],
-            'ppn_amount' => $ppnAmount,
-            'pph23_withheld' => (float) $validated['pph23_withheld'],
-            'idr_exchange_rate' => ($validated['idr_exchange_rate'] ?? null) !== null ? (float) $validated['idr_exchange_rate'] : null,
-            'faktur_pajak_no' => $validated['faktur_pajak_no'] ?? null,
-        ]);
-
-        $month = ($invoice->invoice_date ?? now('Asia/Makassar'))->format('Y-m');
-        if ($period = TaxPeriod::where('period_month', $month)->first()) {
-            $this->taxService->recalculatePeriodTotals($period);
-        }
-
-        ActivityLogger::log('invoice.tax_update', "Memperbarui atribut pajak Invoice {$invoice->invoice_no}.");
-
-        return back()->with('success', "Data pajak Invoice {$invoice->invoice_no} berhasil disimpan.");
-    }
-
-    public function postInvoiceToJournal(Request $request, Invoice $invoice): RedirectResponse
-    {
-        $validated = $request->validate([
-            'idr_exchange_rate' => ['nullable', 'numeric', 'min:1'],
-        ]);
-
-        $entry = $this->ledgerService->postPaidInvoiceToJournal(
-            $invoice,
-            isset($validated['idr_exchange_rate']) ? (float) $validated['idr_exchange_rate'] : null,
-            $request->user()->id
-        );
-
-        ActivityLogger::log('accounting.post_invoice', "Memposting Invoice {$invoice->invoice_no} ke Jurnal Keuangan sebesar Rp" . number_format($entry->amount, 0, ',', '.'));
-
-        return back()->with('success', "Invoice {$invoice->invoice_no} berhasil diposting ke Jurnal Keuangan (Rp" . number_format($entry->amount, 0, ',', '.') . ').');
     }
 
     public function postCycleToJournal(Request $request, PaymentCycle $cycle): RedirectResponse

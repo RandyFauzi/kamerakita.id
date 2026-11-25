@@ -2,9 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\Client;
 use App\Models\FinanceEntry;
-use App\Models\Invoice;
 use App\Models\Partner;
 use App\Models\PaymentCycle;
 use App\Models\PaymentCycleEntry;
@@ -181,43 +179,14 @@ class AccountantTaxRoleTest extends TestCase
             'tax_amount_idr' => 0,
         ]);
 
-        // 2. Posting PAID Invoice & Cycle to FinanceJournal
-        $client = Client::create([
-            'name' => 'Global Robotics Inc',
-            'default_currency' => 'USD',
-            'default_rate' => 15.00,
-        ]);
-
-        $invoice = Invoice::create([
-            'invoice_no' => 'INV-2026-000999',
-            'invoice_date' => '2026-11-20',
-            'client_id' => $client->id,
-            'client_name' => $client->name,
-            'currency' => 'USD',
-            'unit_rate' => 15.00,
-            'source_approved_hours' => 100,
-            'billable_hours' => 100,
-            'total_approved_hours' => 100,
-            'total_workers' => 3,
-            'total_amount' => 1500.00,
-            'status' => 'PAID',
-        ]);
-
-        $this->actingAs($accountant)
-            ->post(route('tax.post-invoice', $invoice), ['idr_exchange_rate' => 16000])
-            ->assertSessionHasNoErrors();
-
-        $this->assertDatabaseHas('finance_entries', [
-            'source_type' => 'invoice',
-            'source_id' => $invoice->id,
+        // 2. Manual Finance Journal income + Cycle expense posting -> P&L Report
+        $this->actingAs($accountant)->post(route('admin.finance.store'), [
+            'entry_date' => '2026-11-20',
             'type' => 'income',
+            'category' => 'Pemasukan Klien Real',
+            'description' => 'Transfer wire aktual November',
             'amount' => 24000000,
-        ]);
-
-        // Re-posting same invoice must be blocked cleanly
-        $this->actingAs($accountant)
-            ->post(route('tax.post-invoice', $invoice), ['idr_exchange_rate' => 16000])
-            ->assertSessionHasErrors('invoice');
+        ])->assertSessionHasNoErrors();
 
         $this->actingAs($accountant)
             ->post(route('tax.post-cycle', $cycle))
@@ -230,8 +199,13 @@ class AccountantTaxRoleTest extends TestCase
             'amount' => 15000000,
         ]);
 
+        // Re-posting same cycle must be blocked cleanly
+        $this->actingAs($accountant)
+            ->post(route('tax.post-cycle', $cycle))
+            ->assertSessionHasErrors('cycle');
+
         // Confirm P&L reflection: 24,000,000 - 15,000,000 = 9,000,000
-        $this->assertSame(1, FinanceEntry::where('source_type', 'invoice')->count());
+        $this->assertSame(1, FinanceEntry::where('source_type', 'payment_cycle')->count());
         $this->actingAs($accountant)
             ->get(route('accounting.reports.index', ['month' => '2026-11', 'year' => 2026]))
             ->assertOk()
