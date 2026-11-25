@@ -97,6 +97,13 @@ class Partner extends Model
                 $partner->referral_code = $code;
             }
         });
+
+        $clearCache = function (Partner $partner) {
+            app(\App\Services\DashboardCacheService::class)->invalidateForPartner($partner);
+        };
+
+        static::saved($clearCache);
+        static::deleted($clearCache);
     }
 
     protected $casts = [

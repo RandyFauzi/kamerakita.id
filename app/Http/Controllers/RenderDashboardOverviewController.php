@@ -168,7 +168,9 @@ class RenderDashboardOverviewController extends Controller
                 ->limit(5)
                 ->get();
 
-            $monthlyData = collect(\Illuminate\Support\Facades\Cache::remember('admin_monthly_data_v3', 600, function () {
+            $dashboardCache = app(\App\Services\DashboardCacheService::class);
+
+            $monthlyData = collect($dashboardCache->remember('admin_monthly_data_v3', \App\Services\DashboardCacheService::TTL_CHARTS, function () {
                 $isMysql = \Illuminate\Support\Facades\DB::getDriverName() === 'mysql';
                 $groupByRawTaskDate = $isMysql ? "DATE_FORMAT(task_date, '%Y-%m')" : "strftime('%Y-%m', task_date)";
                 
@@ -204,7 +206,7 @@ class RenderDashboardOverviewController extends Controller
                 return $merged;
             }));
 
-            $dailyAverageData = collect(\Illuminate\Support\Facades\Cache::remember('admin_daily_average_data_v4', 600, function () {
+            $dailyAverageData = collect($dashboardCache->remember('admin_daily_average_data_v4', \App\Services\DashboardCacheService::TTL_CHARTS, function () {
                 $isMysql = \Illuminate\Support\Facades\DB::getDriverName() === 'mysql';
                 $dateRaw = $isMysql ? "DATE(task_date)" : "DATE(task_date)";
                 return \App\Models\AtlasTask::select(

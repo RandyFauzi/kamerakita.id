@@ -11,6 +11,17 @@ class AtlasTask extends Model
 
     protected $casts = ['source_observed_at' => 'datetime', 'source_details' => 'array', 'qc_changed_at' => 'datetime'];
 
+    protected static function booted(): void
+    {
+        $clearCache = function (AtlasTask $task) {
+            app(\App\Services\DashboardCacheService::class)
+                ->invalidateForAtlasWorker($task->atlas_worker_id);
+        };
+
+        static::saved($clearCache);
+        static::deleted($clearCache);
+    }
+
     public function getQcDeltaAttribute(): ?array
     {
         if (! $this->qc_changed_at) {

@@ -50,10 +50,13 @@ class VideoWorkReport extends Model
 
     protected static function booted(): void
     {
-        $clearCache = function () {
-            \Illuminate\Support\Facades\Cache::forget('global_metrics');
-            \Illuminate\Support\Facades\Cache::forget('admin_monthly_data_v3');
-            \Illuminate\Support\Facades\Cache::forget('admin_daily_average_data_v4');
+        $clearCache = function (VideoWorkReport $report) {
+            $cache = app(\App\Services\DashboardCacheService::class);
+            $partner = $report->relationLoaded('partner')
+                ? $report->partner
+                : ($report->partner_id ? Partner::find($report->partner_id) : null);
+
+            $cache->invalidateForPartner($partner);
         };
 
         static::saved($clearCache);

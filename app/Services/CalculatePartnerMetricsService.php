@@ -14,9 +14,18 @@ class CalculatePartnerMetricsService
     private const DEFAULT_MITRA_OWN_HOURLY_RATE_IDR = 60000;
 
     /**
-     * Get dynamic metrics for a single Worker partner.
+     * Get dynamic metrics for a single Worker partner (cached 30s, isolated per partner).
      */
     public function getWorkerMetrics(Partner $worker): array
+    {
+        return app(DashboardCacheService::class)->remember(
+            DashboardCacheService::workerKey($worker->id),
+            DashboardCacheService::TTL_WORKER,
+            fn () => $this->computeWorkerMetrics($worker)
+        );
+    }
+
+    private function computeWorkerMetrics(Partner $worker): array
     {
         $allReports = VideoWorkReport::query()
             ->where('partner_id', $worker->id)
@@ -91,9 +100,18 @@ class CalculatePartnerMetricsService
     }
 
     /**
-     * Get aggregated metrics for a Mitra or Main Account managing multiple Workers.
+     * Get aggregated metrics for a Mitra or Main Account managing multiple Workers (cached 5m, isolated per partner).
      */
     public function getMitraMetrics(Partner $mitra): array
+    {
+        return app(DashboardCacheService::class)->remember(
+            DashboardCacheService::mitraKey($mitra->id),
+            DashboardCacheService::TTL_MITRA,
+            fn () => $this->computeMitraMetrics($mitra)
+        );
+    }
+
+    private function computeMitraMetrics(Partner $mitra): array
     {
         // Get all workers assigned to this parent (Mitra or Main Account)
         $workers = Partner::query()
@@ -191,9 +209,18 @@ class CalculatePartnerMetricsService
     }
 
     /**
-     * Get metrics for a Rekruter — tracks recruited workers and milestone commissions.
+     * Get metrics for a Rekruter — tracks recruited workers and milestone commissions (cached 5m, isolated per partner).
      */
     public function getRekruterMetrics(Partner $rekruter): array
+    {
+        return app(DashboardCacheService::class)->remember(
+            DashboardCacheService::rekruterKey($rekruter->id),
+            DashboardCacheService::TTL_REKRUTER,
+            fn () => $this->computeRekruterMetrics($rekruter)
+        );
+    }
+
+    private function computeRekruterMetrics(Partner $rekruter): array
     {
         // Workers recruited via referral code
         $recruitedWorkers = \App\Models\Partner::where('recruiter_partner_id', $rekruter->id)
@@ -299,9 +326,18 @@ class CalculatePartnerMetricsService
     }
 
     /**
-     * Get global metrics for Super Admin, including dynamic live USD conversions.
+     * Get global metrics for Super Admin (cached 60s).
      */
     public function getGlobalMetrics(): array
+    {
+        return app(DashboardCacheService::class)->remember(
+            DashboardCacheService::ownerGlobalKey(),
+            DashboardCacheService::TTL_OWNER_GLOBAL,
+            fn () => $this->computeGlobalMetrics()
+        );
+    }
+
+    private function computeGlobalMetrics(): array
     {
         $totalWorkersCount = Partner::where('partner_role', 'worker')->count();
         $totalMitraCount = Partner::where('partner_role', 'mitra')->count();
