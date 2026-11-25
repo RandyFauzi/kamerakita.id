@@ -17,17 +17,14 @@
             <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent pointer-events-none"></div>
 
             <div class="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-                <div class="space-y-2">
+                <div class="space-y-1">
                     <span class="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-blue-100 font-mono">
                         <span class="w-2 h-2 rounded-full bg-emerald-300"></span>
-                        ACCOUNTING REPORTS · LABA RUGI &amp; BUKU BESAR
+                        LAPORAN AKUNTANSI
                     </span>
                     <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-white">
-                        Laporan Keuangan · {{ \Carbon\Carbon::createFromFormat('!Y-m', $report['month'])->translatedFormat('F Y') }}
+                        Laba Rugi · {{ \Carbon\Carbon::createFromFormat('!Y-m', $report['month'])->translatedFormat('F Y') }}
                     </h1>
-                    <p class="text-xs sm:text-sm text-blue-50/90 max-w-2xl">
-                        Disusun langsung dari data real Jurnal Keuangan, siklus payroll terbayar, dan kewajiban pajak aktif.
-                    </p>
                 </div>
 
                 <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 shrink-0">

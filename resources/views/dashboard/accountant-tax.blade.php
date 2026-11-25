@@ -30,8 +30,8 @@
                     <h1 class="mt-3 text-3xl sm:text-4xl font-black tracking-tight tabular-nums drop-shadow-sm">
                         Rp{{ number_format($report['cashBalanceIdr'], 0, ',', '.') }}
                     </h1>
-                    <p class="mt-1.5 text-xs sm:text-sm text-blue-50/90">
-                        Saldo Kas Jurnal (Input Manual Real) · Profit Bulan Ini:
+                    <p class="mt-1 text-xs sm:text-sm text-blue-50/90">
+                        Saldo Kas · Profit {{ $month }}:
                         <strong class="text-white">
                             Rp{{ number_format($report['monthlyTotals']['profit'], 0, ',', '.') }}
                         </strong>

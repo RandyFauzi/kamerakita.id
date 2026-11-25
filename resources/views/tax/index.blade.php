@@ -25,18 +25,20 @@
             <div class="absolute -bottom-24 -left-16 w-64 h-64 rounded-full bg-white/15 blur-3xl pointer-events-none"></div>
             <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent pointer-events-none"></div>
 
-            <div class="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-                <div class="space-y-2">
-                    <span class="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-blue-100 font-mono">
-                        <span class="w-2 h-2 rounded-full bg-emerald-300"></span>
-                        TAX CENTER · PPH 21 &amp; PPH 23 PAYROLL
-                    </span>
+            <div class="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                <div class="space-y-1.5">
+                    <div class="flex flex-wrap items-center gap-2.5">
+                        <span class="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-blue-100 font-mono">
+                            <span class="w-2 h-2 rounded-full bg-emerald-300"></span>
+                            TAX CENTER
+                        </span>
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-white/20 text-white border border-white/25">
+                            {{ $period->status }}
+                        </span>
+                    </div>
                     <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-white">
-                        Manajemen Pajak Periode {{ \Carbon\Carbon::createFromFormat('!Y-m', $month)->translatedFormat('F Y') }}
+                        PPh 21 &amp; 23 · {{ \Carbon\Carbon::createFromFormat('!Y-m', $month)->translatedFormat('F Y') }}
                     </h1>
-                    <p class="text-xs sm:text-sm text-blue-50/90 max-w-2xl leading-relaxed">
-                        Kalkulasi otomatis PPh 21 Bukan Pegawai (PMK 168/2023) &amp; PPh 23 Vendor Badan dari siklus payroll, unggah bukti potong, dan ekspor CSV Coretax. Pemasukan klien dikelola terpisah di Jurnal Keuangan.
-                    </p>
                 </div>
 
                 <div class="flex flex-col sm:flex-row lg:flex-col xl:flex-row items-stretch sm:items-center gap-2.5 shrink-0">
@@ -70,77 +72,58 @@
             $totalNetPayroll = max(0, $period->total_gross_idr - $totalPph);
         @endphp
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-            <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-sm flex flex-col justify-between gap-3">
-                <div class="flex items-start justify-between gap-2">
-                    <span class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-500">Total Bruto Payroll</span>
-                    <div class="w-9 h-9 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center shrink-0">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>
+            <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-sm flex flex-col justify-between gap-2">
+                <div class="flex items-center justify-between gap-2">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Bruto Payroll</span>
+                    <div class="w-8 h-8 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center shrink-0">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>
                     </div>
                 </div>
-                <div>
-                    <p class="text-xl sm:text-2xl font-black text-slate-900 tabular-nums tracking-tight">Rp{{ number_format($period->total_gross_idr, 0, ',', '.') }}</p>
-                    <p class="text-[11px] text-slate-500 mt-0.5">Dasar penghasilan siklus {{ $month }}</p>
-                </div>
+                <p class="text-xl sm:text-2xl font-black text-slate-900 tabular-nums tracking-tight">Rp{{ number_format($period->total_gross_idr, 0, ',', '.') }}</p>
             </div>
 
-            <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-sm flex flex-col justify-between gap-3">
-                <div class="flex items-start justify-between gap-2">
-                    <span class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-500">PPh 21 (Perorangan)</span>
-                    <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 ring-1 ring-indigo-100 flex items-center justify-center shrink-0">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-sm flex flex-col justify-between gap-2">
+                <div class="flex items-center justify-between gap-2">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">PPh 21</span>
+                    <div class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                     </div>
                 </div>
-                <div>
-                    <p class="text-xl sm:text-2xl font-black text-indigo-700 tabular-nums tracking-tight">Rp{{ number_format($period->total_pph21_idr, 0, ',', '.') }}</p>
-                    <p class="text-[11px] text-slate-500 mt-0.5">Kode objek 21-100-09 (PMK 168)</p>
-                </div>
+                <p class="text-xl sm:text-2xl font-black text-blue-700 tabular-nums tracking-tight">Rp{{ number_format($period->total_pph21_idr, 0, ',', '.') }}</p>
             </div>
 
-            <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-sm flex flex-col justify-between gap-3">
-                <div class="flex items-start justify-between gap-2">
-                    <span class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-500">PPh 23 (Badan)</span>
-                    <div class="w-9 h-9 rounded-xl bg-violet-50 text-violet-600 ring-1 ring-violet-100 flex items-center justify-center shrink-0">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5"/></svg>
+            <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-sm flex flex-col justify-between gap-2">
+                <div class="flex items-center justify-between gap-2">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">PPh 23</span>
+                    <div class="w-8 h-8 rounded-xl bg-violet-50 text-violet-600 flex items-center justify-center shrink-0">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5"/></svg>
                     </div>
                 </div>
-                <div>
-                    <p class="text-xl sm:text-2xl font-black text-violet-700 tabular-nums tracking-tight">Rp{{ number_format($period->total_pph23_idr, 0, ',', '.') }}</p>
-                    <p class="text-[11px] text-slate-500 mt-0.5">Kode objek 24-104-01 (2% / 4%)</p>
-                </div>
+                <p class="text-xl sm:text-2xl font-black text-violet-700 tabular-nums tracking-tight">Rp{{ number_format($period->total_pph23_idr, 0, ',', '.') }}</p>
             </div>
 
-            <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-sm flex flex-col justify-between gap-3">
-                <div class="flex items-start justify-between gap-2">
-                    <span class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-500">Net Dibayar Payroll</span>
-                    <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100 flex items-center justify-center shrink-0">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-sm flex flex-col justify-between gap-2">
+                <div class="flex items-center justify-between gap-2">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Net Payroll</span>
+                    <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </div>
                 </div>
-                <div>
-                    <p class="text-xl sm:text-2xl font-black text-emerald-700 tabular-nums tracking-tight">Rp{{ number_format($totalNetPayroll, 0, ',', '.') }}</p>
-                    <p class="text-[11px] text-slate-500 mt-0.5">Total setor PPh: <strong class="text-slate-700">Rp{{ number_format($totalPph, 0, ',', '.') }}</strong></p>
-                </div>
+                <p class="text-xl sm:text-2xl font-black text-emerald-700 tabular-nums tracking-tight">Rp{{ number_format($totalNetPayroll, 0, ',', '.') }}</p>
             </div>
         </div>
 
         <!-- Panel Status SPT Masa & Stepper -->
-        <div class="bg-white rounded-2xl sm:rounded-[28px] border border-slate-200/80 p-5 sm:p-6 shadow-sm space-y-5">
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-4 border-b border-slate-100">
-                <div>
-                    <div class="flex items-center gap-2.5">
-                        <h2 class="text-sm sm:text-base font-bold text-slate-900">Pelaporan SPT Masa Pajak · {{ $month }}</h2>
-                        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-black border {{ $period->status === 'REPORTED' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : ($period->status === 'PAID' ? 'bg-blue-50 text-blue-700 border-blue-200' : ($period->status === 'CALCULATED' ? 'bg-indigo-50 text-indigo-700 border-indigo-200' : 'bg-amber-50 text-amber-700 border-amber-200')) }}">
-                            {{ $period->status }}
-                        </span>
-                    </div>
-                    <p class="text-xs text-slate-500 mt-1">
-                        @if($period->ntpn_code)
-                            NTPN Terdaftar: <strong class="font-mono text-slate-800">{{ $period->ntpn_code }}</strong>
-                            @if($period->payment_date) · Tgl Setor: {{ $period->payment_date->translatedFormat('d M Y') }} @endif
-                        @else
-                            Lengkapi NTPN &amp; tanggal setor ketika pajak periode ini telah dibayar ke kas negara.
-                        @endif
-                    </p>
+        <div class="bg-white rounded-2xl sm:rounded-[28px] border border-slate-200/80 p-5 shadow-sm space-y-4">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 pb-3.5 border-b border-slate-100">
+                <div class="flex flex-wrap items-center gap-2.5">
+                    <h2 class="text-sm sm:text-base font-bold text-slate-900">SPT Masa · {{ $month }}</h2>
+                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-black border {{ $period->status === 'REPORTED' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : ($period->status === 'PAID' ? 'bg-blue-50 text-blue-700 border-blue-200' : ($period->status === 'CALCULATED' ? 'bg-indigo-50 text-indigo-700 border-indigo-200' : 'bg-amber-50 text-amber-700 border-amber-200')) }}">
+                        {{ $period->status }}
+                    </span>
+                    @if($period->ntpn_code)
+                        <span class="text-xs text-slate-500 font-mono">NTPN: <strong class="text-slate-800">{{ $period->ntpn_code }}</strong></span>
+                    @endif
                 </div>
 
                 <!-- Visual Stepper -->
@@ -148,9 +131,9 @@
                     $stepOrder = ['DRAFT' => 1, 'CALCULATED' => 2, 'PAID' => 3, 'REPORTED' => 4];
                     $currentStep = $stepOrder[$period->status] ?? 1;
                 @endphp
-                <div class="flex items-center gap-1.5 sm:gap-2 text-[11px] font-bold">
+                <div class="flex flex-wrap items-center gap-1.5 text-[11px] font-bold">
                     @foreach($stepOrder as $label => $num)
-                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg {{ $currentStep >= $num ? 'bg-gradient-to-r from-blue-600 to-sky-500 text-white shadow-sm' : 'bg-slate-100 text-slate-400' }}">
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg {{ $currentStep >= $num ? 'bg-gradient-to-r from-blue-600 to-sky-500 text-white shadow-sm' : 'bg-slate-100 text-slate-400' }}">
                             <span>{{ $num }}.</span>
                             <span>{{ $label }}</span>
                         </span>
@@ -161,7 +144,7 @@
             <form action="{{ route('tax.periods.status', $period) }}" method="POST" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-end">
                 @csrf
                 <div>
-                    <label for="period-status" class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Status Periode</label>
+                    <label for="period-status" class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Status</label>
                     <select id="period-status" name="status" class="block w-full rounded-xl border-slate-200 text-sm font-semibold focus:ring-blue-500 focus:border-blue-500">
                         @foreach(\App\Models\TaxPeriod::ALL_STATUSES as $st)
                             <option value="{{ $st }}" @selected($period->status === $st)>{{ $st }}</option>
@@ -169,16 +152,16 @@
                     </select>
                 </div>
                 <div>
-                    <label for="ntpn-code" class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Kode NTPN Setor</label>
-                    <input id="ntpn-code" type="text" name="ntpn_code" value="{{ old('ntpn_code', $period->ntpn_code) }}" placeholder="Wajib untuk PAID / REPORTED" class="block w-full rounded-xl border-slate-200 text-sm focus:ring-blue-500 focus:border-blue-500">
+                    <label for="ntpn-code" class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Kode NTPN</label>
+                    <input id="ntpn-code" type="text" name="ntpn_code" value="{{ old('ntpn_code', $period->ntpn_code) }}" placeholder="Isi jika PAID / REPORTED" class="block w-full rounded-xl border-slate-200 text-sm focus:ring-blue-500 focus:border-blue-500">
                 </div>
                 <div>
-                    <label for="payment-date" class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Tanggal Setor</label>
+                    <label for="payment-date" class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Tgl Setor</label>
                     <input id="payment-date" type="date" name="payment_date" value="{{ old('payment_date', $period->payment_date?->toDateString()) }}" class="block w-full rounded-xl border-slate-200 text-sm focus:ring-blue-500 focus:border-blue-500">
                 </div>
                 <div>
                     <button type="submit" class="w-full rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 px-4 py-2.5 text-sm font-bold text-white shadow-sm shadow-blue-200 transition">
-                        Simpan Status SPT
+                        Simpan Status
                     </button>
                 </div>
             </form>
@@ -186,25 +169,22 @@
 
         <!-- Daftar Pemotongan PPh 21 / PPh 23 Payroll -->
         <div class="bg-white rounded-2xl sm:rounded-[28px] border border-slate-200/80 shadow-sm overflow-hidden">
-            <div class="p-5 sm:p-6 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                <div>
-                    <h3 class="text-base font-bold text-slate-900">Rincian Pemotongan PPh 21 &amp; PPh 23</h3>
-                    <p class="text-xs text-slate-500 mt-0.5">Klik <strong>Atur &amp; Bupot</strong> pada baris mana pun untuk memperbarui NPWP, tarif, nomor bupot, atau unggah PDF bukti potong.</p>
-                </div>
+            <div class="p-5 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+                <h3 class="text-base font-bold text-slate-900">Daftar Pemotongan PPh</h3>
 
                 <form method="GET" class="grid grid-cols-1 sm:flex sm:flex-wrap items-center gap-2">
                     <input type="hidden" name="month" value="{{ $month }}">
-                    <input type="text" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Cari nama, email, atau NPWP..." class="rounded-xl border-slate-200 text-xs sm:w-56">
+                    <input type="text" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Cari nama / NPWP..." class="rounded-xl border-slate-200 text-xs sm:w-48">
                     <select name="tax_type" class="rounded-xl border-slate-200 text-xs">
-                        <option value="">Semua Jenis</option>
+                        <option value="">Semua Pajak</option>
                         <option value="PPH21" @selected(($filters['tax_type'] ?? '') === 'PPH21')>PPh 21</option>
                         <option value="PPH23" @selected(($filters['tax_type'] ?? '') === 'PPH23')>PPh 23</option>
                     </select>
-                    <label class="inline-flex items-center gap-1.5 text-xs text-slate-600 px-2">
-                        <input type="checkbox" name="missing_tax_id" value="1" @checked(!empty($filters['missing_tax_id'])) class="rounded border-slate-300 text-indigo-600">
-                        Belum ada NPWP/NIK
+                    <label class="inline-flex items-center gap-1.5 text-xs text-slate-600 px-1.5">
+                        <input type="checkbox" name="missing_tax_id" value="1" @checked(!empty($filters['missing_tax_id'])) class="rounded border-slate-300 text-blue-600">
+                        Tanpa NPWP/NIK
                     </label>
-                    <button type="submit" class="rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white hover:bg-blue-700 transition">Terapkan</button>
+                    <button type="submit" class="rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white hover:bg-blue-700 transition">Filter</button>
                 </form>
             </div>
 
@@ -284,14 +264,14 @@
                 <table class="min-w-full divide-y divide-slate-100 text-xs">
                     <thead class="bg-slate-50 text-slate-500">
                         <tr>
-                            <th class="px-5 py-3.5 text-left font-semibold">Penerima &amp; Identitas Pajak</th>
-                            <th class="px-5 py-3.5 text-left font-semibold">Jenis &amp; Kode Objek</th>
-                            <th class="px-5 py-3.5 text-right font-semibold">Bruto</th>
-                            <th class="px-5 py-3.5 text-right font-semibold">DPP</th>
-                            <th class="px-5 py-3.5 text-right font-semibold">PPh Terpotong</th>
-                            <th class="px-5 py-3.5 text-right font-semibold">Net Diterima</th>
-                            <th class="px-5 py-3.5 text-center font-semibold">Status &amp; Bupot</th>
-                            <th class="px-5 py-3.5 text-right font-semibold">Aksi</th>
+                            <th class="px-5 py-3 text-left font-semibold">Penerima</th>
+                            <th class="px-5 py-3 text-left font-semibold">Pajak</th>
+                            <th class="px-5 py-3 text-right font-semibold">Bruto</th>
+                            <th class="px-5 py-3 text-right font-semibold">DPP</th>
+                            <th class="px-5 py-3 text-right font-semibold">PPh</th>
+                            <th class="px-5 py-3 text-right font-semibold">Net</th>
+                            <th class="px-5 py-3 text-center font-semibold">Status</th>
+                            <th class="px-5 py-3 text-right font-semibold">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 bg-white">
@@ -375,11 +355,8 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="px-6 py-12 text-center">
-                                    <div class="mx-auto max-w-md space-y-2">
-                                        <p class="text-sm font-bold text-slate-700">Belum ada data pemotongan pajak pada periode {{ $month }}</p>
-                                        <p class="text-xs text-slate-500">Pastikan siklus pembayaran bulan tersebut sudah dibuat di menu Pembayaran, lalu klik tombol <strong>Hitung / Sync Pajak</strong> di bagian atas halaman.</p>
-                                    </div>
+                                <td colspan="8" class="px-6 py-10 text-center text-sm text-slate-400">
+                                    Belum ada data pemotongan pajak untuk periode {{ $month }}.
                                 </td>
                             </tr>
                         @endforelse
