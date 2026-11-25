@@ -73,45 +73,96 @@
 
         <!-- Dynamic Holographic Card & Info Balance -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-            <!-- Left: Holographic balance card (2 cols) -->
-            <div class="lg:col-span-2 bg-gradient-to-r from-purple-200 via-sky-100 to-yellow-100 rounded-2xl sm:rounded-[32px] p-5 sm:p-8 border border-white/40 shadow-sm flex flex-col justify-between min-h-[200px] sm:min-h-[220px] relative overflow-hidden group">
-                <div class="absolute inset-0 bg-white/10 backdrop-blur-[1px] pointer-events-none"></div>
+            <!-- Left: Hero Global Approved Card (2 cols) -->
+            <div class="lg:col-span-2 relative overflow-hidden rounded-2xl sm:rounded-[32px] bg-gradient-to-br from-slate-900 via-[#162033] to-indigo-950 p-5 sm:p-8 text-white shadow-lg border border-slate-800/80 flex flex-col justify-between gap-6">
+                <!-- Ambient Background Glows -->
+                <div class="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-indigo-500/20 blur-3xl pointer-events-none"></div>
+                <div class="absolute -bottom-24 -left-16 w-64 h-64 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none"></div>
+                <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent pointer-events-none"></div>
 
-                <div class="relative z-10">
-                    <span class="block text-xs font-bold uppercase tracking-wider text-slate-500 font-mono">{{ __('dashboard.general.global_all_time_approved') }}</span>
-                    <div class="flex flex-wrap items-baseline gap-2 mt-3">
-                        <span class="text-3xl sm:text-4xl font-black text-slate-900">{{ $metrics['global_all_time_hours_formatted'] }}</span>
-                        <span class="text-xs text-slate-500 font-bold uppercase font-mono">{{ __('dashboard.general.approved') }}</span>
+                <!-- Top Section: Title, Live Context & Main Metric -->
+                <div class="relative z-10 flex flex-col gap-5">
+                    <div class="flex flex-wrap items-start justify-between gap-3">
+                        <div>
+                            <span class="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-indigo-200/80 font-mono">
+                                <span class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span>
+                                {{ __('dashboard.general.global_all_time_approved') }}
+                            </span>
+                            <div class="flex flex-wrap items-center gap-3 mt-3">
+                                <span class="text-4xl sm:text-5xl font-black tracking-tight text-white tabular-nums">{{ $metrics['global_all_time_hours_formatted'] }}</span>
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-400/30 text-[11px] font-bold uppercase tracking-wider text-emerald-300 font-mono">
+                                    <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    {{ __('dashboard.general.approved') }}
+                                </span>
+                            </div>
+                            <span class="block text-xs text-slate-300/80 font-medium mt-2">{{ __('dashboard.general.total_duration_desc') }}</span>
+                        </div>
+
+                        @if(isset($metrics['total_workers'], $metrics['total_mitra']))
+                        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.07] border border-white/10 backdrop-blur-sm text-[11px] font-semibold text-slate-200">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span>{{ number_format($metrics['total_workers']) }} Workers · {{ number_format($metrics['total_mitra']) }} Mitra</span>
+                        </div>
+                        @endif
                     </div>
-                    <span class="block text-xs text-slate-400 font-medium mt-1">{{ __('dashboard.general.total_duration_desc') }}</span>
-                    
-                    <!-- Queue Status Durations Breakdown (Sleek Inline Row) -->
-                    <div class="mt-4 pt-4 border-t border-slate-900/10 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs font-mono font-medium text-slate-500">
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">{{ __('dashboard.general.queues') }}:</span>
-                        <div class="flex items-center gap-1.5">
-                            <span class="w-1.5 h-1.5 rounded-full bg-yellow-500"></span>
-                            <span>{{ __('dashboard.general.pending') }}: <strong class="text-slate-800">{{ $metrics['global_pending_submitted_hours_formatted'] }}</strong></span>
+
+                    <!-- Middle Section: Queue Status KPI Tiles -->
+                    <div class="pt-4 border-t border-white/10">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 font-mono">{{ __('dashboard.general.queues') }}</span>
                         </div>
-                        <div class="flex items-center gap-1.5">
-                            <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-                            <span>{{ __('dashboard.general.on_review') }}: <strong class="text-slate-800">{{ $metrics['global_on_review_submitted_hours_formatted'] }}</strong></span>
-                        </div>
-                        <div class="flex items-center gap-1.5">
-                            <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
-                            <span>{{ __('dashboard.general.rejected') }}: <strong class="text-slate-800">{{ $metrics['global_rejected_submitted_hours_formatted'] }}</strong></span>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <!-- Pending Tile -->
+                            <div class="rounded-2xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 px-4 py-3 transition">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[11px] font-semibold uppercase tracking-wider text-amber-200/90 font-mono">{{ __('dashboard.general.pending') }}</span>
+                                    <span class="w-2 h-2 rounded-full bg-amber-400 ring-4 ring-amber-400/20"></span>
+                                </div>
+                                <p class="mt-2 text-lg sm:text-xl font-extrabold text-white tabular-nums tracking-tight">{{ $metrics['global_pending_submitted_hours_formatted'] }}</p>
+                            </div>
+
+                            <!-- On Review Tile -->
+                            <div class="rounded-2xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 px-4 py-3 transition">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[11px] font-semibold uppercase tracking-wider text-sky-200/90 font-mono">{{ __('dashboard.general.on_review') }}</span>
+                                    <span class="w-2 h-2 rounded-full bg-sky-400 ring-4 ring-sky-400/20"></span>
+                                </div>
+                                <p class="mt-2 text-lg sm:text-xl font-extrabold text-white tabular-nums tracking-tight">{{ $metrics['global_on_review_submitted_hours_formatted'] }}</p>
+                            </div>
+
+                            <!-- Rejected Tile -->
+                            <div class="rounded-2xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 px-4 py-3 transition">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[11px] font-semibold uppercase tracking-wider text-rose-200/90 font-mono">{{ __('dashboard.general.rejected') }}</span>
+                                    <span class="w-2 h-2 rounded-full bg-rose-400 ring-4 ring-rose-400/20"></span>
+                                </div>
+                                <p class="mt-2 text-lg sm:text-xl font-extrabold text-white tabular-nums tracking-tight">{{ $metrics['global_rejected_submitted_hours_formatted'] }}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6 relative z-10">
-                    <a href="{{ route('payroll.export-csv') }}" class="flex items-center justify-center gap-2 py-3.5 bg-white hover:bg-gray-50 text-gray-800 font-bold text-xs rounded-2xl shadow-sm transition">
-                        {{ __('dashboard.general.export_csv_payroll') }}
+                <!-- Bottom Section: Action Buttons -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 relative z-10">
+                    <a href="{{ route('payroll.export-csv') }}" class="flex items-center justify-center gap-2 py-3.5 px-4 bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs rounded-2xl shadow-sm transition">
+                        <svg class="w-4 h-4 text-slate-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span>{{ __('dashboard.general.export_csv_payroll') }}</span>
                     </a>
-                    <a href="{{ route('payroll.export-hourly-tracker-excel') }}" class="flex items-center justify-center gap-2 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-2xl shadow-sm transition w-full">
-                        📊 {{ __('dashboard.general.export_excel_tracker') }}
+                    <a href="{{ route('payroll.export-hourly-tracker-excel') }}" class="flex items-center justify-center gap-2 py-3.5 px-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-2xl shadow-lg shadow-emerald-500/20 transition w-full">
+                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span>{{ __('dashboard.general.export_excel_tracker') }}</span>
                     </a>
-                    <a href="{{ route('video-submissions.qc-room') }}" class="flex items-center justify-center gap-2 py-3.5 bg-white/60 hover:bg-white/80 text-gray-800 font-bold text-xs rounded-2xl shadow-sm transition">
-                        {{ __('dashboard.general.open_qc_room') }}
+                    <a href="{{ route('video-submissions.qc-room') }}" class="flex items-center justify-center gap-2 py-3.5 px-4 bg-white/10 hover:bg-white/20 text-white border border-white/15 backdrop-blur-sm font-bold text-xs rounded-2xl transition">
+                        <svg class="w-4 h-4 text-indigo-200 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                        <span>{{ __('dashboard.general.open_qc_room') }}</span>
                     </a>
                 </div>
             </div>
@@ -416,104 +467,161 @@
             });
         </script>
 
-        <!-- OTHER FEATURES Section -->
+        <!-- AGENCY STRUCTURE STATS Section -->
         <div class="space-y-3">
-            <span class="block text-xs font-black tracking-widest text-slate-400 uppercase font-mono">{{ __('dashboard.general.agency_structure_statistics') }}</span>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-                <!-- Feature 1: {{ __('dashboard.general.total_workers') }} -->
-                <div class="bg-white rounded-2xl p-5 border border-gray-150 shadow-sm flex flex-col items-center justify-center text-center space-y-2 hover:shadow-md transition">
-                    <div class="p-2.5 bg-blue-50 text-blue-600 rounded-xl">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                        </svg>
+            <div class="flex items-center justify-between">
+                <span class="block text-xs font-black tracking-widest text-slate-500 uppercase font-mono">{{ __('dashboard.general.agency_structure_statistics') }}</span>
+            </div>
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                <!-- Stat 1: Total Workers -->
+                <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-sm hover:shadow-md transition flex flex-col justify-between gap-3">
+                    <div class="flex items-start justify-between gap-2">
+                        <span class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 leading-tight">{{ __('dashboard.general.total_workers') }}</span>
+                        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-blue-50 text-blue-600 ring-1 ring-blue-100 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                            </svg>
+                        </div>
                     </div>
-                    <span class="block text-xs font-bold text-gray-800">{{ __('dashboard.general.total_workers') }}</span>
-                    <span class="block text-[10px] text-gray-400 font-medium">{{ $metrics['total_workers'] }} Mitra</span>
+                    <div>
+                        <p class="text-2xl sm:text-3xl font-black text-slate-900 tabular-nums tracking-tight">{{ number_format($metrics['total_workers']) }}</p>
+                        <p class="text-[11px] sm:text-xs text-slate-500 font-medium mt-0.5">Worker / Mitra Terdaftar</p>
+                    </div>
                 </div>
 
-                <!-- Feature 2: {{ __('dashboard.general.total_mitra') }} -->
-                <div class="bg-white rounded-2xl p-5 border border-gray-150 shadow-sm flex flex-col items-center justify-center text-center space-y-2 hover:shadow-md transition">
-                    <div class="p-2.5 bg-indigo-50 text-indigo-650 rounded-xl">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                        </svg>
+                <!-- Stat 2: Total Mitra -->
+                <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-sm hover:shadow-md transition flex flex-col justify-between gap-3">
+                    <div class="flex items-start justify-between gap-2">
+                        <span class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 leading-tight">{{ __('dashboard.general.total_mitra') }}</span>
+                        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-indigo-50 text-indigo-600 ring-1 ring-indigo-100 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                            </svg>
+                        </div>
                     </div>
-                    <span class="block text-xs font-bold text-gray-800">{{ __('dashboard.general.total_mitra') }}</span>
-                    <span class="block text-[10px] text-gray-400 font-medium">{{ $metrics['total_mitra'] }} Koordinator</span>
+                    <div>
+                        <p class="text-2xl sm:text-3xl font-black text-slate-900 tabular-nums tracking-tight">{{ number_format($metrics['total_mitra']) }}</p>
+                        <p class="text-[11px] sm:text-xs text-slate-500 font-medium mt-0.5">Koordinator Aktif</p>
+                    </div>
                 </div>
 
-                <!-- Feature 3: WhatsApp support -->
-                <div class="bg-white rounded-2xl p-5 border border-gray-150 shadow-sm flex flex-col items-center justify-center text-center space-y-2 hover:shadow-md transition">
-                    <div class="p-2.5 bg-purple-50 text-purple-650 rounded-xl">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-                        </svg>
+                <!-- Stat 3: System Engine -->
+                <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-sm hover:shadow-md transition flex flex-col justify-between gap-3">
+                    <div class="flex items-start justify-between gap-2">
+                        <span class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 leading-tight">{{ __('dashboard.general.system_engine') }}</span>
+                        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-violet-50 text-violet-600 ring-1 ring-violet-100 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/>
+                            </svg>
+                        </div>
                     </div>
-                    <span class="block text-xs font-bold text-gray-800">{{ __('dashboard.general.system_engine') }}</span>
-                    <span class="block text-[10px] text-gray-400 font-medium">Laravel 11.x Active</span>
+                    <div>
+                        <p class="text-lg sm:text-xl font-black text-slate-900 tracking-tight">Laravel 11.x</p>
+                        <div class="mt-1 inline-flex items-center gap-1.5 text-[11px] font-semibold text-violet-700 bg-violet-50 px-2 py-0.5 rounded-md">
+                            <span class="w-1.5 h-1.5 rounded-full bg-violet-500"></span>
+                            Engine Active
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Feature 4: Status Pajak / Akun -->
-                <div class="bg-white rounded-2xl p-5 border border-gray-150 shadow-sm flex flex-col items-center justify-center text-center space-y-2 hover:shadow-md transition relative">
-                    <div class="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.952 11.952 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                        </svg>
+                <!-- Stat 4: Server Status -->
+                <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-sm hover:shadow-md transition flex flex-col justify-between gap-3">
+                    <div class="flex items-start justify-between gap-2">
+                        <span class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 leading-tight">{{ __('dashboard.general.server_status') }}</span>
+                        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.952 11.952 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                            </svg>
+                        </div>
                     </div>
-                    <span class="block text-xs font-bold text-gray-800">{{ __('dashboard.general.server_status') }}</span>
-                    <span class="bg-emerald-55 border border-emerald-100 text-emerald-700 text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">
-                        SECURED
-                    </span>
+                    <div>
+                        <span class="inline-flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-black px-2.5 py-1 rounded-full uppercase tracking-wider">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            SECURED
+                        </span>
+                        <p class="text-[11px] sm:text-xs text-slate-500 font-medium mt-1.5">Proteksi &amp; SSL Aktif</p>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- ADMINISTRATIVE ACTIONS Section -->
         <div class="space-y-3">
-            <span class="block text-xs font-black tracking-widest text-slate-400 uppercase font-mono">{{ __('dashboard.general.administration_and_group') }}</span>
-            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 sm:gap-4">
-                <!-- Action 1: {{ __('dashboard.general.manage_activation_code') }} -->
-                <a href="{{ route('activation-codes.index') }}" class="bg-white rounded-2xl p-5 border border-gray-150 shadow-sm flex flex-col items-center justify-center text-center space-y-2 hover:shadow-md hover:border-indigo-200 transition">
-                    <div class="p-2.5 bg-indigo-50 text-indigo-650 rounded-xl">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
-                        </svg>
+            <div class="flex items-center justify-between">
+                <span class="block text-xs font-black tracking-widest text-slate-500 uppercase font-mono">{{ __('dashboard.general.administration_and_group') }}</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                <!-- Action 1: Kelola Kode Aktivasi -->
+                <a href="{{ route('activation-codes.index') }}" class="group bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-sm hover:shadow-md hover:border-indigo-300 transition flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3.5 min-w-0">
+                        <div class="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 ring-1 ring-indigo-100 group-hover:bg-indigo-600 group-hover:text-white transition flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
+                            </svg>
+                        </div>
+                        <div class="min-w-0">
+                            <span class="block text-sm font-bold text-slate-900 group-hover:text-indigo-700 transition truncate">{{ __('dashboard.general.manage_activation_code') }}</span>
+                            <span class="block text-xs text-slate-500 font-medium mt-0.5 truncate">Buat &amp; kelola grup A / B</span>
+                        </div>
                     </div>
-                    <span class="block text-xs font-extrabold text-gray-800">{{ __('dashboard.general.manage_activation_code') }}</span>
-                    <span class="block text-[10px] text-gray-400 font-medium">Buat & kelola grup A / B</span>
+                    <svg class="w-4 h-4 text-slate-300 group-hover:text-indigo-500 group-hover:translate-x-0.5 transition shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                    </svg>
                 </a>
 
-                <!-- Action 2: {{ __('dashboard.general.manage_admin_account') }} -->
-                <a href="{{ route('admin-users.index') }}" class="bg-white rounded-2xl p-5 border border-gray-150 shadow-sm flex flex-col items-center justify-center text-center space-y-2 hover:shadow-md hover:border-indigo-200 transition">
-                    <div class="p-2.5 bg-slate-50 text-slate-700 rounded-xl">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
-                        </svg>
+                <!-- Action 2: Kelola Akun Admin -->
+                <a href="{{ route('admin-users.index') }}" class="group bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-sm hover:shadow-md hover:border-slate-400 transition flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3.5 min-w-0">
+                        <div class="w-11 h-11 rounded-xl bg-slate-100 text-slate-700 ring-1 ring-slate-200 group-hover:bg-slate-800 group-hover:text-white transition flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                        </div>
+                        <div class="min-w-0">
+                            <span class="block text-sm font-bold text-slate-900 group-hover:text-slate-700 transition truncate">{{ __('dashboard.general.manage_admin_account') }}</span>
+                            <span class="block text-xs text-slate-500 font-medium mt-0.5 truncate">Atur hak akses &amp; role</span>
+                        </div>
                     </div>
-                    <span class="block text-xs font-extrabold text-gray-800">{{ __('dashboard.general.manage_admin_account') }}</span>
-                    <span class="block text-[10px] text-gray-400 font-medium">Atur hak akses</span>
+                    <svg class="w-4 h-4 text-slate-300 group-hover:text-slate-600 group-hover:translate-x-0.5 transition shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                    </svg>
                 </a>
 
-                <!-- Action 3: Kelola Mitra Demographics -->
-                <a href="{{ route('partners.index') }}" class="bg-white rounded-2xl p-5 border border-gray-150 shadow-sm flex flex-col items-center justify-center text-center space-y-2 hover:shadow-md hover:border-indigo-200 transition">
-                    <div class="p-2.5 bg-blue-50 text-blue-600 rounded-xl">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                        </svg>
+                <!-- Action 3: Data Demografi Mitra -->
+                <a href="{{ route('partners.index') }}" class="group bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-sm hover:shadow-md hover:border-sky-300 transition flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3.5 min-w-0">
+                        <div class="w-11 h-11 rounded-xl bg-sky-50 text-sky-600 ring-1 ring-sky-100 group-hover:bg-sky-600 group-hover:text-white transition flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/>
+                            </svg>
+                        </div>
+                        <div class="min-w-0">
+                            <span class="block text-sm font-bold text-slate-900 group-hover:text-sky-700 transition truncate">{{ __('dashboard.general.partner_demographics_data') }}</span>
+                            <span class="block text-xs text-slate-500 font-medium mt-0.5 truncate">Detail profil &amp; ekspor kontak</span>
+                        </div>
                     </div>
-                    <span class="block text-xs font-extrabold text-gray-800">{{ __('dashboard.general.partner_demographics_data') }}</span>
-                    <span class="block text-[10px] text-gray-400 font-medium">Detail profil & ekspor kontak</span>
+                    <svg class="w-4 h-4 text-slate-300 group-hover:text-sky-500 group-hover:translate-x-0.5 transition shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                    </svg>
                 </a>
 
-                <!-- Action 4: Log Aktivitas Audit Trail -->
-                <a href="{{ route('activity-logs.index') }}" class="bg-white rounded-2xl p-5 border border-gray-150 shadow-sm flex flex-col items-center justify-center text-center space-y-2 hover:shadow-md hover:border-indigo-200 transition">
-                    <div class="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
+                <!-- Action 4: Log Aktivitas Sistem -->
+                <a href="{{ route('activity-logs.index') }}" class="group bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-sm hover:shadow-md hover:border-emerald-300 transition flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3.5 min-w-0">
+                        <div class="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100 group-hover:bg-emerald-600 group-hover:text-white transition flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                            </svg>
+                        </div>
+                        <div class="min-w-0">
+                            <span class="block text-sm font-bold text-slate-900 group-hover:text-emerald-700 transition truncate">{{ __('dashboard.general.system_activity_log') }}</span>
+                            <span class="block text-xs text-slate-500 font-medium mt-0.5 truncate">Audit trail tindakan pengguna</span>
+                        </div>
                     </div>
-                    <span class="block text-xs font-extrabold text-gray-800">{{ __('dashboard.general.system_activity_log') }}</span>
-                    <span class="block text-[10px] text-gray-400 font-medium">Audit trail tindakan pengguna</span>
+                    <svg class="w-4 h-4 text-slate-300 group-hover:text-emerald-500 group-hover:translate-x-0.5 transition shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                    </svg>
                 </a>
             </div>
         </div>
