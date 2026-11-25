@@ -2,13 +2,13 @@
     <x-slot name="header">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <h2 class="font-bold text-2xl text-gray-800 leading-tight">
-                {{ __('dashboard.admin_users.title') }}
+                Kelola Akun Internal (Admin, Finance, Accountant & Tax)
             </h2>
-            <a href="{{ route('admin-users.create') }}" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-650 border border-transparent rounded-xl font-semibold text-xs text-white uppercase tracking-widest hover:from-blue-700 hover:to-indigo-700 transition shadow-md shadow-indigo-100">
+            <a href="{{ route('admin-users.create') }}" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 border border-transparent rounded-xl font-semibold text-xs text-white uppercase tracking-widest hover:from-blue-700 hover:to-indigo-700 transition shadow-md shadow-indigo-100">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
                 </svg>
-                {{ __('dashboard.admin_users.add_admin') }}
+                Tambah Akun Internal
             </a>
         </div>
     </x-slot>
@@ -37,15 +37,25 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                                 </svg>
                             </div>
-                            <input type="text" name="search" id="search" value="{{ $search }}" placeholder="{{ __('dashboard.admin_users.search_placeholder') }}" class="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                            <input type="text" name="search" id="search" value="{{ $search }}" placeholder="Cari nama atau email akun internal..." class="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
                         </div>
+                    </div>
+
+                    <div class="w-full md:w-64">
+                        <label for="role" class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 font-mono">Filter Role</label>
+                        <select name="role" id="role" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                            <option value="">Semua Role Internal</option>
+                            @foreach($roleOptions as $roleValue => $meta)
+                                <option value="{{ $roleValue }}" @selected(($roleFilter ?? '') === $roleValue)>{{ $meta['label'] }}</option>
+                            @endforeach
+                        </select>
                     </div>
 
                     <div class="flex gap-2 w-full md:w-auto">
                         <button type="submit" class="flex-1 md:flex-none justify-center inline-flex items-center px-5 py-2.5 bg-gray-900 border border-transparent rounded-xl font-semibold text-sm text-white hover:bg-gray-800 transition">
                             Filter
                         </button>
-                        @if($search)
+                        @if($search || !empty($roleFilter))
                             <a href="{{ route('admin-users.index') }}" class="flex-1 md:flex-none justify-center inline-flex items-center px-5 py-2.5 bg-gray-100 border border-gray-200 rounded-xl font-semibold text-sm text-gray-700 hover:bg-gray-200 transition">
                                 Reset
                             </a>
@@ -72,8 +82,11 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">{{ $admin->name }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $admin->email }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border bg-indigo-50 text-indigo-700 border-indigo-100">
-                                            Admin
+                                        @php
+                                            $roleMeta = $roleOptions[$admin->role] ?? ['label' => $admin->roleLabel(), 'badge_class' => 'bg-slate-50 text-slate-700 border-slate-200'];
+                                        @endphp
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border {{ $roleMeta['badge_class'] }}">
+                                            {{ $roleMeta['label'] }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $admin->created_at?->translatedFormat('d F Y') }}</td>

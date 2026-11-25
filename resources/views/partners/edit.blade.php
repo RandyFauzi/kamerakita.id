@@ -356,6 +356,58 @@
                                     </div>
                                 </div>
 
+                                <!-- Accordion 4: Profil Pajak (NPWP & PTKP) -->
+                                <div class="border border-gray-150 rounded-2xl overflow-hidden shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] bg-white transition-all duration-300" :class="{'ring-2 ring-violet-100 border-violet-200': activeMenu === 'pajak'}">
+                                    <div @click="activeMenu = activeMenu === 'pajak' ? null : 'pajak'" class="px-4 py-4 lg:py-5 flex items-center justify-between cursor-pointer group hover:bg-gray-50 transition-colors">
+                                        <div class="flex items-center gap-4">
+                                            <div class="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-violet-50 flex items-center justify-center text-violet-600 group-hover:scale-110 transition-transform">
+                                                <svg width="18" height="18" class="lg:w-5 lg:h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <h4 class="text-[13px] lg:text-[14px] font-bold text-gray-800 mb-0.5">Profil Pajak (NPWP, Entitas &amp; PTKP)</h4>
+                                                <p class="text-[11px] lg:text-xs text-gray-400 font-medium">Acuan perhitungan PPh 21 / PPh 23 oleh Accountant &amp; Tax Manager.</p>
+                                            </div>
+                                        </div>
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-300" :class="{'rotate-90': activeMenu === 'pajak'}">
+                                            <polyline points="9 18 15 12 9 6"></polyline>
+                                        </svg>
+                                    </div>
+
+                                    <div x-show="activeMenu === 'pajak'" x-collapse class="px-5 lg:px-8 pb-6 lg:pb-8 pt-2 border-t border-gray-100 bg-gray-50/30">
+                                        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div>
+                                                <label for="npwp" class="block text-sm font-semibold text-gray-700 mb-1">NPWP / NITKU (15 atau 16 digit)</label>
+                                                <input type="text" name="npwp" id="npwp" value="{{ old('npwp', $partner->npwp) }}" placeholder="Contoh: 12.345.678.9-012.000 atau NIK 16 digit" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                                @error('npwp') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                                            </div>
+                                            <div>
+                                                <label for="tax_entity_type" class="block text-sm font-semibold text-gray-700 mb-1">Entitas Pajak</label>
+                                                <select name="tax_entity_type" id="tax_entity_type" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                                    <option value="orang_pribadi" {{ old('tax_entity_type', $partner->tax_entity_type ?: 'orang_pribadi') === 'orang_pribadi' ? 'selected' : '' }}>Orang Pribadi (PPh 21 Bukan Pegawai)</option>
+                                                    <option value="badan" {{ old('tax_entity_type', $partner->tax_entity_type) === 'badan' ? 'selected' : '' }}>Badan Usaha PT / CV (PPh 23)</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label for="ptkp_status" class="block text-sm font-semibold text-gray-700 mb-1">Status PTKP</label>
+                                                <select name="ptkp_status" id="ptkp_status" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                                    @foreach(['TK/0', 'TK/1', 'TK/2', 'TK/3', 'K/0', 'K/1', 'K/2', 'K/3'] as $ptkp)
+                                                        <option value="{{ $ptkp }}" {{ old('ptkp_status', $partner->ptkp_status ?: 'TK/0') === $ptkp ? 'selected' : '' }}>{{ $ptkp }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label for="is_tax_exempt" class="block text-sm font-semibold text-gray-700 mb-1">Pembebasan Pajak Lokal</label>
+                                                <select name="is_tax_exempt" id="is_tax_exempt" class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                                    <option value="0" {{ old('is_tax_exempt', $partner->is_tax_exempt ? '1' : '0') === '0' ? 'selected' : '' }}>Subjek Pajak Normal</option>
+                                                    <option value="1" {{ old('is_tax_exempt', $partner->is_tax_exempt ? '1' : '0') === '1' ? 'selected' : '' }}>Dikecualikan (Exempt / SKB)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <!-- Submit Actions -->
                                 <div class="mt-6 flex justify-end gap-3 pt-2">
                                     <a href="{{ route('partners.index') }}" class="inline-flex items-center px-6 py-3 bg-white border border-gray-200 rounded-xl font-semibold text-sm text-gray-700 hover:bg-gray-50 transition shadow-sm">

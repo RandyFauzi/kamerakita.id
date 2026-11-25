@@ -20,6 +20,13 @@ class Invoice extends Model
         'client_email',
         'client_address',
         'client_tax_id',
+        'is_domestic',
+        'ppn_rate',
+        'ppn_amount',
+        'pph23_withheld',
+        'idr_exchange_rate',
+        'faktur_pajak_no',
+        'journal_posted_at',
         'unit_rate',
         'currency',
         'period_start',
@@ -45,6 +52,12 @@ class Invoice extends Model
         'total_approved_hours' => 'decimal:2',
         'total_amount' => 'decimal:2',
         'unit_rate' => 'decimal:2',
+        'is_domestic' => 'boolean',
+        'ppn_rate' => 'decimal:2',
+        'ppn_amount' => 'decimal:2',
+        'pph23_withheld' => 'decimal:2',
+        'idr_exchange_rate' => 'decimal:2',
+        'journal_posted_at' => 'datetime',
     ];
 
     public function client()

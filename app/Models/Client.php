@@ -14,8 +14,14 @@ class Client extends Model
         'email',
         'address',
         'tax_id',
+        'is_domestic',
         'default_currency',
         'default_rate',
+    ];
+
+    protected $casts = [
+        'is_domestic' => 'boolean',
+        'default_rate' => 'decimal:2',
     ];
 
     public function invoices()

@@ -124,6 +124,38 @@ class RenderDashboardOverviewController extends Controller
             }
         }
 
+        // Accountant & Tax Manager dedicated financial & tax dashboard
+        if ($user->isAccountantTax()) {
+            $month = now('Asia/Makassar')->format('Y-m');
+            $year = (int) now('Asia/Makassar')->format('Y');
+            $report = app(\App\Services\AccountingLedgerService::class)->buildReport($month, $year);
+            $taxPeriod = \App\Models\TaxPeriod::firstOrCreate(['period_month' => $month]);
+            $recentInvoices = \App\Models\Invoice::with('client')->orderByDesc('invoice_date')->limit(5)->get();
+            $recentCycles = \App\Models\PaymentCycle::orderByDesc('id')->limit(5)->get();
+            $missingTaxPartnersCount = \App\Models\Partner::query()
+                ->where(function ($q): void {
+                    $q->whereNull('country_code')->orWhere('country_code', 'ID');
+                })
+                ->where('is_tax_exempt', false)
+                ->where(function ($q): void {
+                    $q->whereNull('npwp')->orWhere('npwp', '');
+                })
+                ->where(function ($q): void {
+                    $q->whereNull('nik')->orWhere('nik', '');
+                })
+                ->count();
+
+            return view('dashboard.accountant-tax', compact(
+                'user',
+                'month',
+                'report',
+                'taxPeriod',
+                'recentInvoices',
+                'recentCycles',
+                'missingTaxPartnersCount'
+            ));
+        }
+
         // Check if user is an internal admin/finance user
         if ($user->hasFullAdminAccess() || $user->role === 'finance') {
             $metrics = $this->metricsService->getGlobalMetrics();

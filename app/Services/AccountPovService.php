@@ -151,6 +151,7 @@ class AccountPovService
             'superadmin' => 'Super Admin',
             'admin' => 'Admin',
             'finance' => 'Finance',
+            'accountant_tax' => 'Accountant & Tax Manager',
             default => ucfirst((string) $user->role),
         };
     }

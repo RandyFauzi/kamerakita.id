@@ -54,7 +54,7 @@ Route::get('/leaderboard', [\App\Http\Controllers\LeaderboardController::class, 
     ->name('leaderboard.index');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::prefix('admin/finance')->name('admin.finance.')->middleware('role:superadmin,admin')->group(function () {
+    Route::prefix('admin/finance')->name('admin.finance.')->middleware('role:superadmin,admin,accountant_tax')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\FinanceController::class, 'index'])->name('index');
         Route::post('/entries', [\App\Http\Controllers\Admin\FinanceController::class, 'store'])->name('store');
         Route::put('/entries/{entry}', [\App\Http\Controllers\Admin\FinanceController::class, 'update'])->name('update');
@@ -63,17 +63,40 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/distribute', [\App\Http\Controllers\Admin\FinanceController::class, 'distribute'])->name('distribute');
     });
 
+    // Accountant & Tax Manager: Tax Center & Accounting Reports
+    Route::prefix('tax')->name('tax.')->middleware('role:superadmin,admin,accountant_tax')->group(function () {
+        Route::get('/', [\App\Http\Controllers\TaxCenterController::class, 'index'])->name('index');
+        Route::post('/periods/sync', [\App\Http\Controllers\TaxCenterController::class, 'syncPeriod'])->name('periods.sync');
+        Route::post('/periods/{taxPeriod}/status', [\App\Http\Controllers\TaxCenterController::class, 'updatePeriodStatus'])->name('periods.status');
+        Route::patch('/records/{taxRecord}', [\App\Http\Controllers\TaxCenterController::class, 'updateRecord'])->name('records.update');
+        Route::post('/records/{taxRecord}/bupot', [\App\Http\Controllers\TaxCenterController::class, 'uploadBupot'])->name('records.bupot');
+        Route::get('/records/{taxRecord}/bupot/download', [\App\Http\Controllers\TaxCenterController::class, 'downloadBupot'])->name('records.bupot.download');
+        Route::post('/partners/{partner}/tax-profile', [\App\Http\Controllers\TaxCenterController::class, 'updatePartnerTaxProfile'])->name('partners.update');
+        Route::post('/invoices/{invoice}/tax', [\App\Http\Controllers\TaxCenterController::class, 'updateInvoiceTax'])->name('invoices.update');
+        Route::post('/invoices/{invoice}/post-journal', [\App\Http\Controllers\TaxCenterController::class, 'postInvoiceToJournal'])->name('post-invoice');
+        Route::post('/cycles/{cycle}/post-journal', [\App\Http\Controllers\TaxCenterController::class, 'postCycleToJournal'])->name('post-cycle');
+        Route::get('/export-csv', [\App\Http\Controllers\TaxCenterController::class, 'exportCoretaxCsv'])->name('export-csv');
+    });
+
+    Route::prefix('accounting')->name('accounting.')->middleware('role:superadmin,admin,accountant_tax')->group(function () {
+        Route::get('/reports', [\App\Http\Controllers\AccountingReportController::class, 'index'])->name('reports.index');
+        Route::get('/reports/export-csv', [\App\Http\Controllers\AccountingReportController::class, 'exportCsv'])->name('reports.export-csv');
+    });
+
     Route::get('/video-work-reports/{report}/evidence/{type}', ShowVideoWorkReportEvidenceController::class)
         ->middleware(['signed:relative'])
         ->name('video-submissions.evidence.show');
 
-    // Phase 1: Partner Demographics CRUD
+    // Phase 1: Partner Demographics (Read + Export for Accountant & Tax audit; Full CRUD for Superadmin/Admin)
     Route::get('/partners/export', [\App\Http\Controllers\ManagePartnerDemographicsController::class, 'export'])
-        ->middleware('role:superadmin,admin')
+        ->middleware('role:superadmin,admin,accountant_tax')
         ->name('partners.export');
     Route::get('/partners/export-contacts', [\App\Http\Controllers\ManagePartnerDemographicsController::class, 'exportContacts'])
-        ->middleware('role:superadmin,admin')
+        ->middleware('role:superadmin,admin,accountant_tax')
         ->name('partners.export-contacts');
+    Route::get('/partners', [\App\Http\Controllers\ManagePartnerDemographicsController::class, 'index'])
+        ->middleware('role:superadmin,admin,accountant_tax')
+        ->name('partners.index');
     Route::post('/partners/bulk-update', [\App\Http\Controllers\ManagePartnerDemographicsController::class, 'bulkUpdate'])
         ->middleware('role:superadmin,admin')
         ->name('partners.bulk-update');
@@ -81,6 +104,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware('role:superadmin,admin')
         ->name('partners.toggle-bank-bypass');
     Route::resource('partners', ManagePartnerDemographicsController::class)
+        ->except(['index', 'show'])
         ->middleware('role:superadmin,admin');
 
     Route::resource('activation-codes', \App\Http\Controllers\ManageActivationCodesController::class)
@@ -189,7 +213,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware('role:superadmin,admin')
         ->name('video-submissions.quick-reconcile');
     // Payment Cycle & Pembayaran Module (Based on Excel Upload)
-    Route::prefix('payments/manage')->name('payments.')->middleware('role:superadmin,admin,finance')->group(function () {
+    Route::prefix('payments/manage')->name('payments.')->middleware('role:superadmin,admin,finance,accountant_tax')->group(function () {
         Route::get('/', [\App\Http\Controllers\ManagePaymentsController::class, 'index'])->name('manage');
         Route::post('/import-csv', [\App\Http\Controllers\ManagePaymentsController::class, 'importCsv'])->name('import-csv');
         Route::put('/cycles/{cycle}/financials', [\App\Http\Controllers\ManagePaymentsController::class, 'updateCycleFinancials'])->name('update-financials');
@@ -201,13 +225,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Phase 5: Bulk Payroll Export Module
     Route::get('/payroll/export-csv', [ExportPayrollDataController::class, 'exportCsv'])
-        ->middleware('role:superadmin,admin,finance')
+        ->middleware('role:superadmin,admin,finance,accountant_tax')
         ->name('payroll.export-csv');
     Route::get('/payroll/export-hourly-tracker-excel', [ExportPayrollDataController::class, 'exportHourlyTrackerExcel'])
-        ->middleware('role:superadmin,admin,finance')
+        ->middleware('role:superadmin,admin,finance,accountant_tax')
         ->name('payroll.export-hourly-tracker-excel');
     Route::post('/payroll/mark-as-paid', [ExportPayrollDataController::class, 'markAsPaid'])
-        ->middleware('role:superadmin,admin,finance')
+        ->middleware('role:superadmin,admin,finance,accountant_tax')
         ->name('payroll.mark-as-paid');
 
     // Web Push Subscriptions
@@ -281,16 +305,18 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/avatar/{path}', [\App\Http\Controllers\ShowAvatarController::class, '__invoke'])->where('path', '.*')->name('avatar.show');
 
-    // Invoices
-    Route::get('/invoices', [\App\Http\Controllers\InvoiceController::class, 'index'])->name('invoices.index');
-    Route::get('/invoices/create', [\App\Http\Controllers\InvoiceController::class, 'index'])->name('invoices.create');
-    Route::post('/invoices', [\App\Http\Controllers\InvoiceController::class, 'store'])->name('invoices.store');
-    Route::get('/invoices/{invoice}/preview', [\App\Http\Controllers\InvoiceController::class, 'show'])->name('invoices.show');
-    Route::delete('/invoices/{invoice}', [\App\Http\Controllers\InvoiceController::class, 'destroy'])->name('invoices.destroy');
-    Route::post('/invoices/{invoice}/issue', [\App\Http\Controllers\InvoiceController::class, 'issue'])->name('invoices.issue');
-    Route::post('/invoices/{invoice}/send', [\App\Http\Controllers\InvoiceController::class, 'send'])->name('invoices.send');
-    Route::post('/invoices/{invoice}/pay', [\App\Http\Controllers\InvoiceController::class, 'pay'])->name('invoices.pay');
-    Route::post('/invoices/{invoice}/void', [\App\Http\Controllers\InvoiceController::class, 'voidInvoice'])->name('invoices.void');
+    // Invoices (Protected for internal financial roles)
+    Route::middleware('role:superadmin,admin,finance,accountant_tax')->group(function () {
+        Route::get('/invoices', [\App\Http\Controllers\InvoiceController::class, 'index'])->name('invoices.index');
+        Route::get('/invoices/create', [\App\Http\Controllers\InvoiceController::class, 'index'])->name('invoices.create');
+        Route::post('/invoices', [\App\Http\Controllers\InvoiceController::class, 'store'])->name('invoices.store');
+        Route::get('/invoices/{invoice}/preview', [\App\Http\Controllers\InvoiceController::class, 'show'])->name('invoices.show');
+        Route::delete('/invoices/{invoice}', [\App\Http\Controllers\InvoiceController::class, 'destroy'])->name('invoices.destroy');
+        Route::post('/invoices/{invoice}/issue', [\App\Http\Controllers\InvoiceController::class, 'issue'])->name('invoices.issue');
+        Route::post('/invoices/{invoice}/send', [\App\Http\Controllers\InvoiceController::class, 'send'])->name('invoices.send');
+        Route::post('/invoices/{invoice}/pay', [\App\Http\Controllers\InvoiceController::class, 'pay'])->name('invoices.pay');
+        Route::post('/invoices/{invoice}/void', [\App\Http\Controllers\InvoiceController::class, 'voidInvoice'])->name('invoices.void');
+    });
 });
 
 // Public Fastwork Onboarding routes

@@ -41,6 +41,10 @@ class Partner extends Model
         'mitra_parent_id',        // referencing the parent Mitra
         'mitra_id',               // e.g., KMK-001
         'nik',
+        'npwp',
+        'tax_entity_type',
+        'ptkp_status',
+        'is_tax_exempt',
         'full_name',
         'registration_date',
         'whatsapp_number',
@@ -72,7 +76,7 @@ class Partner extends Model
     {
         static::creating(function (Partner $partner) {
             if (empty($partner->registration_date)) {
-                $partner->registration_date = now()->toDateString();
+                $partner->registration_date = now('Asia/Makassar')->toDateString();
             }
 
             if (in_array($partner->partner_role, self::RECRUITER_ROLES) && empty($partner->referral_code)) {
@@ -101,6 +105,7 @@ class Partner extends Model
         'is_client_registered' => 'boolean',
         'is_vip' => 'boolean',
         'bypass_worker_bank_onboarding' => 'boolean',
+        'is_tax_exempt' => 'boolean',
     ];
 
     public static function nextMitraId(): string

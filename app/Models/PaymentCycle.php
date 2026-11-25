@@ -22,6 +22,7 @@ class PaymentCycle extends Model
         'worker_rate_idr',
         'total_pay_idr',
         'created_by',
+        'journal_posted_at',
     ];
 
     protected $casts = [
@@ -35,6 +36,7 @@ class PaymentCycle extends Model
         'revenue_idr' => 'integer',
         'worker_rate_idr' => 'integer',
         'total_pay_idr' => 'integer',
+        'journal_posted_at' => 'datetime',
     ];
 
     public function entries(): HasMany

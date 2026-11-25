@@ -145,20 +145,32 @@
             </div>
 
             <!-- GROUP 2: ADMIN OPERASIONAL -->
-            @if(Auth::user()->canAccessQcRoom() || in_array(Auth::user()->role ?? '', ['superadmin', 'admin']))
+            @if(Auth::user()->canAccessQcRoom() || Auth::user()->canAccessPayroll() || Auth::user()->canAccessFinanceJournal() || Auth::user()->hasFullAdminAccess())
             @php
-                $isAdminActive = request()->routeIs('video-submissions.*', 'admin.recordings.*', 'admin.finance.*', 'payments.*', 'payroll.*', 'invoices.*', 'partners.*', 'admin.onboardings.*', 'admin.main-account-requests.*', 'admin.password-recoveries.*', 'push-notifications.broadcast.*');
+                $isAdminActive = request()->routeIs('video-submissions.*', 'admin.recordings.*', 'admin.finance.*', 'tax.*', 'accounting.*', 'payments.*', 'payroll.*', 'invoices.*', 'partners.*', 'admin.onboardings.*', 'admin.main-account-requests.*', 'admin.password-recoveries.*', 'push-notifications.broadcast.*');
             @endphp
             <details name="sidebar-menu" class="group border-t border-gray-100 pt-3" {{ $isAdminActive ? 'open' : '' }}>
                 <summary class="flex items-center justify-between px-3 py-2 cursor-pointer rounded-xl text-[10px] font-bold text-gray-400 uppercase tracking-wider hover:bg-gray-50 transition-colors">
-                    <span>Modul Admin</span>
+                    <span>{{ Auth::user()->isAccountantTax() ? 'Keuangan & Pajak' : 'Modul Admin' }}</span>
                     <svg class="w-4 h-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </summary>
                 <div class="mt-1 space-y-1">
-                    @if(in_array(Auth::user()->role, ['admin', 'superadmin']))
+                    @if(Auth::user()->canAccessFinanceJournal())
                     <a href="{{ route('admin.finance.index') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('admin.finance.*') ? 'bg-indigo-50/80 text-indigo-700' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-2 0-3 1-3 2s1 2 3 2 3 1 3 2-1 2-3 2m0-10v12M5 4h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5a1 1 0 011-1z"/></svg>
                         Keuangan
+                    </a>
+                    @endif
+                    @if(Auth::user()->canAccessTaxCenter())
+                    <a href="{{ route('tax.index') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('tax.*') ? 'bg-indigo-50/80 text-indigo-700' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
+                        <svg class="w-5 h-5 mr-3 {{ request()->routeIs('tax.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/></svg>
+                        Tax Center (PPh/PPN)
+                    </a>
+                    @endif
+                    @if(Auth::user()->canAccessAccountingReports())
+                    <a href="{{ route('accounting.reports.index') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('accounting.*') ? 'bg-indigo-50/80 text-indigo-700' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
+                        <svg class="w-5 h-5 mr-3 {{ request()->routeIs('accounting.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        Laporan Akuntansi
                     </a>
                     @endif
                     @if(Auth::user()->canAccessQcRoom())
@@ -195,13 +207,16 @@
                         </a>
                     @endif
 
-                    @if(Auth::user()->hasFullAdminAccess())
-                        <a href="{{ route('partners.index') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('partners.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
+                    @if(Auth::user()->canViewPartnerTaxAudit())
+                        <a href="{{ route('partners.index') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('partners.*') ? 'bg-indigo-50/80 text-indigo-700' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
                             <svg class="w-5 h-5 mr-3 {{ request()->routeIs('partners.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                             </svg>
-                            Mitra & Pekerja
+                            {{ Auth::user()->hasFullAdminAccess() ? 'Mitra & Pekerja' : 'Audit Data Mitra' }}
                         </a>
+                    @endif
+
+                    @if(Auth::user()->hasFullAdminAccess())
                         <a href="{{ route('admin.onboardings.index') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('admin.onboardings.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
                             <svg class="w-5 h-5 mr-3 {{ request()->routeIs('admin.onboardings.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
@@ -357,7 +372,7 @@
                             @elseif($partner && $partner->partner_role === 'rekruter')
                                 Rekruter
                             @else
-                                {{ Auth::user()->role }}
+                                {{ Auth::user()->roleLabel() }}
                             @endif
                         </span>
                         @if($partner && $partner->is_vip)

@@ -34,7 +34,7 @@
                                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                             </svg>
                             <span class="text-[10px] font-bold tracking-wide uppercase">
-                                {{ $adminUser->role ?? 'ADMIN' }}
+                                {{ $adminUser->roleLabel() }}
                             </span>
                         </div>
                     </div>
@@ -72,8 +72,18 @@
                                     
                                     <div x-show="activeMenu === 'informasi'" x-collapse class="px-5 lg:px-8 pb-6 lg:pb-8 pt-2 border-t border-gray-100 bg-gray-50/30">
                                         <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div class="md:col-span-2">
+                                                <label for="role" class="block text-sm font-semibold text-gray-700 mb-1">Role Akses <span class="text-red-500">*</span></label>
+                                                <select name="role" id="role" required class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                                    @foreach($roleOptions as $roleValue => $meta)
+                                                        <option value="{{ $roleValue }}" @selected(old('role', $adminUser->role) === $roleValue)>{{ $meta['label'] }}</option>
+                                                    @endforeach
+                                                </select>
+                                                @error('role') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                                            </div>
+
                                             <div>
-                                                <label for="name" class="block text-sm font-semibold text-gray-700 mb-1">Nama Admin <span class="text-red-500">*</span></label>
+                                                <label for="name" class="block text-sm font-semibold text-gray-700 mb-1">Nama Lengkap <span class="text-red-500">*</span></label>
                                                 <input type="text" name="name" id="name" value="{{ old('name', $adminUser->name) }}" required class="block w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                                                 @error('name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                                             </div>
