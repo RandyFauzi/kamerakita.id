@@ -74,69 +74,69 @@
         <!-- Dynamic Holographic Card & Info Balance -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
             <!-- Left: Hero Global Approved Card (2 cols) -->
-            <div class="lg:col-span-2 relative overflow-hidden rounded-2xl sm:rounded-[32px] bg-gradient-to-br from-slate-900 via-[#162033] to-indigo-950 p-5 sm:p-8 text-white shadow-lg border border-slate-800/80 flex flex-col justify-between gap-6">
-                <!-- Ambient Background Glows -->
-                <div class="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-indigo-500/20 blur-3xl pointer-events-none"></div>
-                <div class="absolute -bottom-24 -left-16 w-64 h-64 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none"></div>
-                <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent pointer-events-none"></div>
+            <div class="lg:col-span-2 relative overflow-hidden rounded-2xl sm:rounded-[32px] bg-gradient-to-br from-blue-600 via-[#3b82f6] to-[#0ea5e9] p-5 sm:p-8 text-white shadow-lg shadow-blue-500/20 border border-blue-400/30 flex flex-col justify-between gap-6">
+                <!-- Bright Ambient Glows -->
+                <div class="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-cyan-300/30 blur-3xl pointer-events-none"></div>
+                <div class="absolute -bottom-24 -left-16 w-64 h-64 rounded-full bg-white/15 blur-3xl pointer-events-none"></div>
+                <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent pointer-events-none"></div>
 
                 <!-- Top Section: Title, Live Context & Main Metric -->
                 <div class="relative z-10 flex flex-col gap-5">
                     <div class="flex flex-wrap items-start justify-between gap-3">
                         <div>
-                            <span class="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-indigo-200/80 font-mono">
-                                <span class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span>
+                            <span class="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-blue-100 font-mono">
+                                <span class="w-2 h-2 rounded-full bg-emerald-300 shadow-[0_0_8px_rgba(110,231,183,0.9)]"></span>
                                 {{ __('dashboard.general.global_all_time_approved') }}
                             </span>
                             <div class="flex flex-wrap items-center gap-3 mt-3">
-                                <span class="text-4xl sm:text-5xl font-black tracking-tight text-white tabular-nums">{{ $metrics['global_all_time_hours_formatted'] }}</span>
-                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-400/30 text-[11px] font-bold uppercase tracking-wider text-emerald-300 font-mono">
-                                    <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                <span class="text-4xl sm:text-5xl font-black tracking-tight text-white tabular-nums drop-shadow-sm">{{ $metrics['global_all_time_hours_formatted'] }}</span>
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/20 border border-white/30 backdrop-blur-sm text-[11px] font-bold uppercase tracking-wider text-white font-mono">
+                                    <svg class="w-3.5 h-3.5 text-emerald-200" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                                     </svg>
                                     {{ __('dashboard.general.approved') }}
                                 </span>
                             </div>
-                            <span class="block text-xs text-slate-300/80 font-medium mt-2">{{ __('dashboard.general.total_duration_desc') }}</span>
+                            <span class="block text-xs text-blue-50/90 font-medium mt-2">{{ __('dashboard.general.total_duration_desc') }}</span>
                         </div>
 
                         @if(isset($metrics['total_workers'], $metrics['total_mitra']))
-                        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.07] border border-white/10 backdrop-blur-sm text-[11px] font-semibold text-slate-200">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/15 border border-white/25 backdrop-blur-sm text-[11px] font-semibold text-white">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse"></span>
                             <span>{{ number_format($metrics['total_workers']) }} Workers · {{ number_format($metrics['total_mitra']) }} Mitra</span>
                         </div>
                         @endif
                     </div>
 
                     <!-- Middle Section: Queue Status KPI Tiles -->
-                    <div class="pt-4 border-t border-white/10">
+                    <div class="pt-4 border-t border-white/20">
                         <div class="flex items-center justify-between mb-3">
-                            <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 font-mono">{{ __('dashboard.general.queues') }}</span>
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-blue-100 font-mono">{{ __('dashboard.general.queues') }}</span>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                             <!-- Pending Tile -->
-                            <div class="rounded-2xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 px-4 py-3 transition">
+                            <div class="rounded-2xl bg-white/15 hover:bg-white/20 border border-white/25 backdrop-blur-sm px-4 py-3 transition">
                                 <div class="flex items-center justify-between">
-                                    <span class="text-[11px] font-semibold uppercase tracking-wider text-amber-200/90 font-mono">{{ __('dashboard.general.pending') }}</span>
-                                    <span class="w-2 h-2 rounded-full bg-amber-400 ring-4 ring-amber-400/20"></span>
+                                    <span class="text-[11px] font-bold uppercase tracking-wider text-amber-100 font-mono">{{ __('dashboard.general.pending') }}</span>
+                                    <span class="w-2 h-2 rounded-full bg-amber-300 ring-4 ring-amber-300/25"></span>
                                 </div>
                                 <p class="mt-2 text-lg sm:text-xl font-extrabold text-white tabular-nums tracking-tight">{{ $metrics['global_pending_submitted_hours_formatted'] }}</p>
                             </div>
 
                             <!-- On Review Tile -->
-                            <div class="rounded-2xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 px-4 py-3 transition">
+                            <div class="rounded-2xl bg-white/15 hover:bg-white/20 border border-white/25 backdrop-blur-sm px-4 py-3 transition">
                                 <div class="flex items-center justify-between">
-                                    <span class="text-[11px] font-semibold uppercase tracking-wider text-sky-200/90 font-mono">{{ __('dashboard.general.on_review') }}</span>
-                                    <span class="w-2 h-2 rounded-full bg-sky-400 ring-4 ring-sky-400/20"></span>
+                                    <span class="text-[11px] font-bold uppercase tracking-wider text-cyan-100 font-mono">{{ __('dashboard.general.on_review') }}</span>
+                                    <span class="w-2 h-2 rounded-full bg-cyan-200 ring-4 ring-cyan-200/25"></span>
                                 </div>
                                 <p class="mt-2 text-lg sm:text-xl font-extrabold text-white tabular-nums tracking-tight">{{ $metrics['global_on_review_submitted_hours_formatted'] }}</p>
                             </div>
 
                             <!-- Rejected Tile -->
-                            <div class="rounded-2xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 px-4 py-3 transition">
+                            <div class="rounded-2xl bg-white/15 hover:bg-white/20 border border-white/25 backdrop-blur-sm px-4 py-3 transition">
                                 <div class="flex items-center justify-between">
-                                    <span class="text-[11px] font-semibold uppercase tracking-wider text-rose-200/90 font-mono">{{ __('dashboard.general.rejected') }}</span>
-                                    <span class="w-2 h-2 rounded-full bg-rose-400 ring-4 ring-rose-400/20"></span>
+                                    <span class="text-[11px] font-bold uppercase tracking-wider text-rose-100 font-mono">{{ __('dashboard.general.rejected') }}</span>
+                                    <span class="w-2 h-2 rounded-full bg-rose-300 ring-4 ring-rose-300/25"></span>
                                 </div>
                                 <p class="mt-2 text-lg sm:text-xl font-extrabold text-white tabular-nums tracking-tight">{{ $metrics['global_rejected_submitted_hours_formatted'] }}</p>
                             </div>
@@ -146,20 +146,20 @@
 
                 <!-- Bottom Section: Action Buttons -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 relative z-10">
-                    <a href="{{ route('payroll.export-csv') }}" class="flex items-center justify-center gap-2 py-3.5 px-4 bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs rounded-2xl shadow-sm transition">
-                        <svg class="w-4 h-4 text-slate-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <a href="{{ route('payroll.export-csv') }}" class="flex items-center justify-center gap-2 py-3.5 px-4 bg-white hover:bg-blue-50 text-blue-700 font-bold text-xs rounded-2xl shadow-sm transition">
+                        <svg class="w-4 h-4 text-blue-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                         <span>{{ __('dashboard.general.export_csv_payroll') }}</span>
                     </a>
-                    <a href="{{ route('payroll.export-hourly-tracker-excel') }}" class="flex items-center justify-center gap-2 py-3.5 px-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-2xl shadow-lg shadow-emerald-500/20 transition w-full">
+                    <a href="{{ route('payroll.export-hourly-tracker-excel') }}" class="flex items-center justify-center gap-2 py-3.5 px-4 bg-emerald-500 hover:bg-emerald-400 text-white font-bold text-xs rounded-2xl shadow-md shadow-emerald-600/20 transition w-full">
                         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                         <span>{{ __('dashboard.general.export_excel_tracker') }}</span>
                     </a>
-                    <a href="{{ route('video-submissions.qc-room') }}" class="flex items-center justify-center gap-2 py-3.5 px-4 bg-white/10 hover:bg-white/20 text-white border border-white/15 backdrop-blur-sm font-bold text-xs rounded-2xl transition">
-                        <svg class="w-4 h-4 text-indigo-200 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <a href="{{ route('video-submissions.qc-room') }}" class="flex items-center justify-center gap-2 py-3.5 px-4 bg-white/15 hover:bg-white/25 text-white border border-white/25 backdrop-blur-sm font-bold text-xs rounded-2xl transition">
+                        <svg class="w-4 h-4 text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                         </svg>
                         <span>{{ __('dashboard.general.open_qc_room') }}</span>

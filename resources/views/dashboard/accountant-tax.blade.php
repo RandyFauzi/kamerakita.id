@@ -15,40 +15,40 @@
             </div>
         @endif
 
-        <!-- Hero Card: Keuangan & Pajak Bulan Ini -->
-        <div class="relative overflow-hidden rounded-2xl sm:rounded-[32px] bg-gradient-to-br from-slate-900 via-[#162033] to-indigo-950 p-5 sm:p-8 text-white shadow-lg border border-slate-800/80">
-            <div class="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-indigo-500/20 blur-3xl pointer-events-none"></div>
-            <div class="absolute -bottom-24 -left-16 w-64 h-64 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none"></div>
-            <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent pointer-events-none"></div>
+        <!-- Hero Card: Keuangan & Pajak Bulan Ini (KameraKita Blue Gradient) -->
+        <div class="relative overflow-hidden rounded-2xl sm:rounded-[32px] bg-gradient-to-br from-blue-600 via-[#3b82f6] to-[#0ea5e9] p-5 sm:p-8 text-white shadow-lg shadow-blue-500/20 border border-blue-400/30">
+            <div class="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-cyan-300/30 blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-24 -left-16 w-64 h-64 rounded-full bg-white/15 blur-3xl pointer-events-none"></div>
+            <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent pointer-events-none"></div>
 
             <div class="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                 <div>
-                    <span class="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-indigo-200/80 font-mono">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                    <span class="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-blue-100 font-mono">
+                        <span class="w-2 h-2 rounded-full bg-emerald-300"></span>
                         ACCOUNTANT &amp; TAX MANAGER WORKSPACE · {{ $month }}
                     </span>
-                    <h1 class="mt-3 text-3xl sm:text-4xl font-black tracking-tight tabular-nums">
+                    <h1 class="mt-3 text-3xl sm:text-4xl font-black tracking-tight tabular-nums drop-shadow-sm">
                         Rp{{ number_format($report['cashBalanceIdr'], 0, ',', '.') }}
                     </h1>
-                    <p class="mt-1.5 text-xs sm:text-sm text-slate-300">
+                    <p class="mt-1.5 text-xs sm:text-sm text-blue-50/90">
                         Saldo Kas Jurnal (Input Manual Real) · Profit Bulan Ini:
-                        <strong class="{{ $report['monthlyTotals']['profit'] >= 0 ? 'text-emerald-300' : 'text-rose-300' }}">
+                        <strong class="text-white">
                             Rp{{ number_format($report['monthlyTotals']['profit'], 0, ',', '.') }}
                         </strong>
                     </p>
                 </div>
 
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <a href="{{ route('admin.finance.index') }}" class="flex items-center justify-center gap-2 rounded-2xl bg-white px-4 py-3 text-xs font-bold text-slate-900 hover:bg-slate-100 transition">
+                    <a href="{{ route('admin.finance.index') }}" class="flex items-center justify-center gap-2 rounded-2xl bg-white px-4 py-3 text-xs font-bold text-blue-700 hover:bg-blue-50 shadow-sm transition">
                         Jurnal Keuangan
                     </a>
-                    <a href="{{ route('tax.index') }}" class="flex items-center justify-center gap-2 rounded-2xl bg-emerald-500 px-4 py-3 text-xs font-bold text-slate-950 hover:bg-emerald-400 transition">
+                    <a href="{{ route('tax.index') }}" class="flex items-center justify-center gap-2 rounded-2xl bg-emerald-500 px-4 py-3 text-xs font-bold text-white hover:bg-emerald-400 shadow-md shadow-emerald-600/20 transition">
                         Tax Center
                     </a>
-                    <a href="{{ route('accounting.reports.index') }}" class="flex items-center justify-center gap-2 rounded-2xl bg-white/10 border border-white/15 px-4 py-3 text-xs font-bold text-white hover:bg-white/20 transition">
+                    <a href="{{ route('accounting.reports.index') }}" class="flex items-center justify-center gap-2 rounded-2xl bg-white/15 border border-white/25 backdrop-blur-sm px-4 py-3 text-xs font-bold text-white hover:bg-white/25 transition">
                         Laporan P&amp;L
                     </a>
-                    <a href="{{ route('payments.manage') }}" class="flex items-center justify-center gap-2 rounded-2xl bg-white/10 border border-white/15 px-4 py-3 text-xs font-bold text-white hover:bg-white/20 transition">
+                    <a href="{{ route('payments.manage') }}" class="flex items-center justify-center gap-2 rounded-2xl bg-white/15 border border-white/25 backdrop-blur-sm px-4 py-3 text-xs font-bold text-white hover:bg-white/25 transition">
                         Pembayaran
                     </a>
                 </div>
@@ -132,7 +132,7 @@
                             </div>
                             <form action="{{ route('tax.post-cycle', $cycle) }}" method="POST">
                                 @csrf
-                                <button type="submit" class="rounded-lg bg-slate-900 px-3 py-2 text-xs font-bold text-white hover:bg-slate-800 transition whitespace-nowrap">
+                                <button type="submit" class="rounded-lg bg-blue-600 px-3 py-2 text-xs font-bold text-white hover:bg-blue-700 transition whitespace-nowrap">
                                     Posting Beban
                                 </button>
                             </form>

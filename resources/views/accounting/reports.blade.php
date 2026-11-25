@@ -10,34 +10,34 @@
             <div class="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-800">{{ $errors->first() }}</div>
         @endif
 
-        <!-- Hero Control Banner -->
-        <div class="relative overflow-hidden rounded-2xl sm:rounded-[32px] bg-gradient-to-br from-slate-900 via-[#162033] to-indigo-950 p-5 sm:p-8 text-white shadow-lg border border-slate-800/80">
-            <div class="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-indigo-500/20 blur-3xl pointer-events-none"></div>
-            <div class="absolute -bottom-24 -left-16 w-64 h-64 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none"></div>
-            <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent pointer-events-none"></div>
+        <!-- Hero Control Banner (KameraKita Blue Gradient) -->
+        <div class="relative overflow-hidden rounded-2xl sm:rounded-[32px] bg-gradient-to-br from-blue-600 via-[#3b82f6] to-[#0ea5e9] p-5 sm:p-8 text-white shadow-lg shadow-blue-500/20 border border-blue-400/30">
+            <div class="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-cyan-300/30 blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-24 -left-16 w-64 h-64 rounded-full bg-white/15 blur-3xl pointer-events-none"></div>
+            <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent pointer-events-none"></div>
 
             <div class="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                 <div class="space-y-2">
-                    <span class="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-indigo-200/80 font-mono">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                    <span class="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-blue-100 font-mono">
+                        <span class="w-2 h-2 rounded-full bg-emerald-300"></span>
                         ACCOUNTING REPORTS · LABA RUGI &amp; BUKU BESAR
                     </span>
                     <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-white">
                         Laporan Keuangan · {{ \Carbon\Carbon::createFromFormat('!Y-m', $report['month'])->translatedFormat('F Y') }}
                     </h1>
-                    <p class="text-xs sm:text-sm text-slate-300 max-w-2xl">
+                    <p class="text-xs sm:text-sm text-blue-50/90 max-w-2xl">
                         Disusun langsung dari data real Jurnal Keuangan, siklus payroll terbayar, dan kewajiban pajak aktif.
                     </p>
                 </div>
 
                 <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 shrink-0">
-                    <form method="GET" class="flex items-center gap-2 bg-white/10 border border-white/15 rounded-2xl p-1.5 backdrop-blur-sm">
-                        <input type="month" name="month" value="{{ $report['month'] }}" class="bg-transparent border-0 text-white text-xs sm:text-sm font-semibold focus:ring-0 px-2.5 py-1.5 [color-scheme:dark]">
-                        <input type="number" name="year" value="{{ $report['year'] }}" min="2020" max="2100" class="w-20 bg-white/10 border-0 rounded-lg text-white text-xs font-semibold text-center focus:ring-0 py-1.5">
-                        <button type="submit" class="rounded-xl bg-white/15 hover:bg-white/25 px-3 py-1.5 text-xs font-bold text-white transition">Buka</button>
+                    <form method="GET" class="flex items-center gap-2 bg-white border border-white/50 rounded-2xl p-1.5 shadow-sm">
+                        <input type="month" name="month" value="{{ $report['month'] }}" class="bg-transparent border-0 text-slate-800 text-xs sm:text-sm font-semibold focus:ring-0 px-2.5 py-1.5">
+                        <input type="number" name="year" value="{{ $report['year'] }}" min="2020" max="2100" class="w-20 bg-slate-100 border-0 rounded-lg text-slate-800 text-xs font-semibold text-center focus:ring-0 py-1.5">
+                        <button type="submit" class="rounded-xl bg-blue-50 hover:bg-blue-100 px-3 py-1.5 text-xs font-bold text-blue-700 transition">Buka</button>
                     </form>
 
-                    <a href="{{ route('accounting.reports.export-csv', ['month' => $report['month']]) }}" class="flex items-center justify-center gap-2 rounded-2xl bg-emerald-500 hover:bg-emerald-400 px-4 py-3 text-xs font-bold text-slate-950 shadow-lg shadow-emerald-500/20 transition whitespace-nowrap">
+                    <a href="{{ route('accounting.reports.export-csv', ['month' => $report['month']]) }}" class="flex items-center justify-center gap-2 rounded-2xl bg-emerald-500 hover:bg-emerald-400 px-4 py-3 text-xs font-bold text-white shadow-md shadow-emerald-600/20 transition whitespace-nowrap">
                         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                         <span>Ekspor Buku Besar CSV</span>
                     </a>

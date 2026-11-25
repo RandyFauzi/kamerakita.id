@@ -19,43 +19,43 @@
             <div class="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-800" role="alert">{{ $errors->first() }}</div>
         @endif
 
-        <!-- Hero Banner: Tax Center Control Header -->
-        <div class="relative overflow-hidden rounded-2xl sm:rounded-[32px] bg-gradient-to-br from-slate-900 via-[#162033] to-indigo-950 p-5 sm:p-8 text-white shadow-lg border border-slate-800/80">
-            <div class="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-indigo-500/20 blur-3xl pointer-events-none"></div>
-            <div class="absolute -bottom-24 -left-16 w-64 h-64 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none"></div>
-            <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent pointer-events-none"></div>
+        <!-- Hero Banner: Tax Center Control Header (KameraKita Blue Gradient) -->
+        <div class="relative overflow-hidden rounded-2xl sm:rounded-[32px] bg-gradient-to-br from-blue-600 via-[#3b82f6] to-[#0ea5e9] p-5 sm:p-8 text-white shadow-lg shadow-blue-500/20 border border-blue-400/30">
+            <div class="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-cyan-300/30 blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-24 -left-16 w-64 h-64 rounded-full bg-white/15 blur-3xl pointer-events-none"></div>
+            <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent pointer-events-none"></div>
 
             <div class="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                 <div class="space-y-2">
-                    <span class="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-indigo-200/80 font-mono">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                    <span class="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-blue-100 font-mono">
+                        <span class="w-2 h-2 rounded-full bg-emerald-300"></span>
                         TAX CENTER · PPH 21 &amp; PPH 23 PAYROLL
                     </span>
                     <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-white">
                         Manajemen Pajak Periode {{ \Carbon\Carbon::createFromFormat('!Y-m', $month)->translatedFormat('F Y') }}
                     </h1>
-                    <p class="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
+                    <p class="text-xs sm:text-sm text-blue-50/90 max-w-2xl leading-relaxed">
                         Kalkulasi otomatis PPh 21 Bukan Pegawai (PMK 168/2023) &amp; PPh 23 Vendor Badan dari siklus payroll, unggah bukti potong, dan ekspor CSV Coretax. Pemasukan klien dikelola terpisah di Jurnal Keuangan.
                     </p>
                 </div>
 
                 <div class="flex flex-col sm:flex-row lg:flex-col xl:flex-row items-stretch sm:items-center gap-2.5 shrink-0">
-                    <form method="GET" class="flex items-center gap-2 bg-white/10 border border-white/15 rounded-2xl p-1.5 backdrop-blur-sm">
+                    <form method="GET" class="flex items-center gap-2 bg-white border border-white/50 rounded-2xl p-1.5 shadow-sm">
                         <label for="tax-month" class="sr-only">Pilih Bulan Pajak</label>
-                        <input id="tax-month" type="month" name="month" value="{{ $month }}" class="bg-transparent border-0 text-white text-xs sm:text-sm font-semibold focus:ring-0 px-2.5 py-1.5 [color-scheme:dark]">
-                        <button type="submit" class="rounded-xl bg-white/15 hover:bg-white/25 px-3 py-1.5 text-xs font-bold text-white transition">Buka</button>
+                        <input id="tax-month" type="month" name="month" value="{{ $month }}" class="bg-transparent border-0 text-slate-800 text-xs sm:text-sm font-semibold focus:ring-0 px-2.5 py-1.5">
+                        <button type="submit" class="rounded-xl bg-blue-50 hover:bg-blue-100 px-3 py-1.5 text-xs font-bold text-blue-700 transition">Buka</button>
                     </form>
 
                     <div class="grid grid-cols-2 sm:flex items-center gap-2.5">
                         <form action="{{ route('tax.periods.sync') }}" method="POST" class="flex-1 sm:flex-none">
                             @csrf
                             <input type="hidden" name="month" value="{{ $month }}">
-                            <button type="submit" class="w-full flex items-center justify-center gap-2 rounded-2xl bg-white hover:bg-slate-100 px-4 py-3 text-xs font-bold text-slate-900 shadow-sm transition whitespace-nowrap">
-                                <svg class="w-4 h-4 text-indigo-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                            <button type="submit" class="w-full flex items-center justify-center gap-2 rounded-2xl bg-white hover:bg-blue-50 px-4 py-3 text-xs font-bold text-blue-700 shadow-sm transition whitespace-nowrap">
+                                <svg class="w-4 h-4 text-blue-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                                 <span>Hitung / Sync Pajak</span>
                             </button>
                         </form>
-                        <a href="{{ route('tax.export-csv', ['month' => $month]) }}" class="flex items-center justify-center gap-2 rounded-2xl bg-emerald-500 hover:bg-emerald-400 px-4 py-3 text-xs font-bold text-slate-950 shadow-lg shadow-emerald-500/20 transition whitespace-nowrap">
+                        <a href="{{ route('tax.export-csv', ['month' => $month]) }}" class="flex items-center justify-center gap-2 rounded-2xl bg-emerald-500 hover:bg-emerald-400 px-4 py-3 text-xs font-bold text-white shadow-md shadow-emerald-600/20 transition whitespace-nowrap">
                             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                             <span>CSV Coretax</span>
                         </a>
@@ -150,7 +150,7 @@
                 @endphp
                 <div class="flex items-center gap-1.5 sm:gap-2 text-[11px] font-bold">
                     @foreach($stepOrder as $label => $num)
-                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg {{ $currentStep >= $num ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-400' }}">
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg {{ $currentStep >= $num ? 'bg-gradient-to-r from-blue-600 to-sky-500 text-white shadow-sm' : 'bg-slate-100 text-slate-400' }}">
                             <span>{{ $num }}.</span>
                             <span>{{ $label }}</span>
                         </span>
@@ -162,7 +162,7 @@
                 @csrf
                 <div>
                     <label for="period-status" class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Status Periode</label>
-                    <select id="period-status" name="status" class="block w-full rounded-xl border-slate-200 text-sm font-semibold focus:ring-indigo-500 focus:border-indigo-500">
+                    <select id="period-status" name="status" class="block w-full rounded-xl border-slate-200 text-sm font-semibold focus:ring-blue-500 focus:border-blue-500">
                         @foreach(\App\Models\TaxPeriod::ALL_STATUSES as $st)
                             <option value="{{ $st }}" @selected($period->status === $st)>{{ $st }}</option>
                         @endforeach
@@ -170,14 +170,14 @@
                 </div>
                 <div>
                     <label for="ntpn-code" class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Kode NTPN Setor</label>
-                    <input id="ntpn-code" type="text" name="ntpn_code" value="{{ old('ntpn_code', $period->ntpn_code) }}" placeholder="Wajib untuk PAID / REPORTED" class="block w-full rounded-xl border-slate-200 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                    <input id="ntpn-code" type="text" name="ntpn_code" value="{{ old('ntpn_code', $period->ntpn_code) }}" placeholder="Wajib untuk PAID / REPORTED" class="block w-full rounded-xl border-slate-200 text-sm focus:ring-blue-500 focus:border-blue-500">
                 </div>
                 <div>
                     <label for="payment-date" class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Tanggal Setor</label>
-                    <input id="payment-date" type="date" name="payment_date" value="{{ old('payment_date', $period->payment_date?->toDateString()) }}" class="block w-full rounded-xl border-slate-200 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                    <input id="payment-date" type="date" name="payment_date" value="{{ old('payment_date', $period->payment_date?->toDateString()) }}" class="block w-full rounded-xl border-slate-200 text-sm focus:ring-blue-500 focus:border-blue-500">
                 </div>
                 <div>
-                    <button type="submit" class="w-full rounded-xl bg-slate-900 hover:bg-slate-800 px-4 py-2.5 text-sm font-bold text-white transition">
+                    <button type="submit" class="w-full rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 px-4 py-2.5 text-sm font-bold text-white shadow-sm shadow-blue-200 transition">
                         Simpan Status SPT
                     </button>
                 </div>
@@ -204,7 +204,7 @@
                         <input type="checkbox" name="missing_tax_id" value="1" @checked(!empty($filters['missing_tax_id'])) class="rounded border-slate-300 text-indigo-600">
                         Belum ada NPWP/NIK
                     </label>
-                    <button type="submit" class="rounded-xl bg-slate-900 px-4 py-2 text-xs font-bold text-white hover:bg-slate-800 transition">Terapkan</button>
+                    <button type="submit" class="rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white hover:bg-blue-700 transition">Terapkan</button>
                 </form>
             </div>
 
@@ -263,7 +263,7 @@
                                         <option value="{{ $rst }}" @selected($rec->status === $rst)>{{ $rst }}</option>
                                     @endforeach
                                 </select>
-                                <button type="submit" class="w-full rounded-lg bg-slate-900 py-2 text-xs font-bold text-white">Simpan Perubahan</button>
+                                <button type="submit" class="w-full rounded-lg bg-blue-600 hover:bg-blue-700 py-2 text-xs font-bold text-white">Simpan Perubahan</button>
                             </form>
                             <form action="{{ route('tax.records.bupot', $rec) }}" method="POST" enctype="multipart/form-data" class="pt-2 border-t border-slate-200 space-y-2">
                                 @csrf
@@ -358,7 +358,7 @@
                                                 </select>
                                             </div>
                                             <div>
-                                                <button type="submit" class="w-full rounded-lg bg-slate-900 py-2 text-xs font-bold text-white hover:bg-slate-800">Simpan</button>
+                                                <button type="submit" class="w-full rounded-lg bg-blue-600 py-2 text-xs font-bold text-white hover:bg-blue-700">Simpan</button>
                                             </div>
                                         </form>
 
