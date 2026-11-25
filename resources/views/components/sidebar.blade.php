@@ -16,7 +16,7 @@
         <div class="h-16 flex items-center justify-between px-5 border-b border-gray-100 shrink-0">
             <a href="{{ route('dashboard') }}" class="flex items-center gap-2.5 min-w-0">
                 <img src="{{ asset('images/Logo.webp') }}" alt="Logo" class="h-8 w-auto object-contain">
-                <span class="font-black text-slate-800 tracking-tight text-lg truncate">KameraKita<span class="text-indigo-600">.ai</span></span>
+                <span class="font-black text-slate-800 tracking-tight text-lg truncate">KameraKita<span class="text-blue-600">.ai</span></span>
             </a>
             <!-- Mobile Close Button (X) -->
             <button type="button" aria-label="Tutup menu navigasi" class="w-10 h-10 shrink-0 inline-flex items-center justify-center rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-50 md:hidden focus:outline-none" onclick="
@@ -44,37 +44,37 @@
             <div class="space-y-1">
                 <div class="px-3 pb-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Menu Utama</div>
 
-                <a href="{{ route('dashboard') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('dashboard') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
-                    <svg class="w-5 h-5 mr-3 {{ request()->routeIs('dashboard') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a href="{{ route('dashboard') }}" class="group flex items-center px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('dashboard') ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
+                    <svg class="w-5 h-5 mr-3 shrink-0 {{ request()->routeIs('dashboard') ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                     </svg>
                     {{ __('dashboard.sidebar.summary') }}
                 </a>
 
-                <a href="{{ route('tasks.index') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('tasks.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
-                    <svg class="w-5 h-5 mr-3 {{ request()->routeIs('tasks.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a href="{{ route('tasks.index') }}" class="group flex items-center px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('tasks.*') ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
+                    <svg class="w-5 h-5 mr-3 shrink-0 {{ request()->routeIs('tasks.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                     </svg>
                     Daftar Task
                 </a>
 
-                <a href="{{ route('panduan.index') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('panduan.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
-                    <svg class="w-5 h-5 mr-3 {{ request()->routeIs('panduan.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a href="{{ route('panduan.index') }}" class="group flex items-center px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('panduan.*') ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
+                    <svg class="w-5 h-5 mr-3 shrink-0 {{ request()->routeIs('panduan.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                     </svg>
                     {{ __('dashboard.sidebar.guide_book') }}
                 </a>
 
-                <a href="{{ route('leaderboard.index') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('leaderboard.index') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
-                    <svg class="w-5 h-5 mr-3 {{ request()->routeIs('leaderboard.index') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <a href="{{ route('leaderboard.index') }}" class="group flex items-center px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('leaderboard.index') ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
+                    <svg class="w-5 h-5 mr-3 shrink-0 {{ request()->routeIs('leaderboard.index') ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600' }}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.504-1.125-1.125-1.125h-.871m-4.008 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M18.75 4.236c.982.143 1.954.317 2.916.52a6.003 6.003 0 01-5.395 4.972m0 0a8.001 8.001 0 00-1.588-4.982m-1.226 0H9.102m1.226 0a8.001 8.001 0 011.588-4.982" />
                     </svg>
                     {{ __('dashboard.sidebar.leaderboard') }}
                 </a>
 
                 @if(in_array(Auth::user()->role ?? '', ['superadmin', 'admin']))
-                    <a href="{{ route('admin.event') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('admin.event') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
-                        <svg class="w-5 h-5 mr-3 {{ request()->routeIs('admin.event') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="{{ route('admin.event') }}" class="group flex items-center px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('admin.event') ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
+                        <svg class="w-5 h-5 mr-3 shrink-0 {{ request()->routeIs('admin.event') ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                         </svg>
                         <span class="font-bold">{{ __('dashboard.sidebar.event') }}</span>
@@ -82,8 +82,8 @@
                 @endif
 
                 @if($partner && $partner->hasStandardPortalAccess())
-                    <a href="{{ route('mailbox.index') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('mailbox.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
-                        <svg class="w-5 h-5 mr-3 {{ request()->routeIs('mailbox.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="{{ route('mailbox.index') }}" class="group flex items-center px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('mailbox.*') ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
+                        <svg class="w-5 h-5 mr-3 shrink-0 {{ request()->routeIs('mailbox.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                         </svg>
                         {{ __('dashboard.sidebar.mailbox') }}
@@ -106,15 +106,15 @@
                     <!-- Menu Standar Pekerja (Selalu Ada) -->
                     {{-- Upload Laporan di-hide sementara di semua role sesuai permintaan --}}
                     @if(false)
-                    <a href="{{ route('reports.create') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('reports.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
-                        <svg class="w-5 h-5 mr-3 {{ request()->routeIs('reports.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="{{ route('reports.create') }}" class="group flex items-center px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('reports.*') ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
+                        <svg class="w-5 h-5 mr-3 shrink-0 {{ request()->routeIs('reports.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
                         </svg>
                         Upload Laporan
                     </a>
                     @endif
-                    <a href="{{ route('video-submissions.report-history') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('video-submissions.report-history') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
-                        <svg class="w-5 h-5 mr-3 {{ request()->routeIs('video-submissions.report-history') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="{{ route('video-submissions.report-history') }}" class="group flex items-center px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('video-submissions.report-history') ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
+                        <svg class="w-5 h-5 mr-3 shrink-0 {{ request()->routeIs('video-submissions.report-history') ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
                         </svg>
                         Riwayat QC Pribadi
@@ -122,8 +122,8 @@
 
                     @if($isAstro)
                         <!-- Khusus Group Astro -->
-                        <a href="{{ route('astro.recording') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('astro.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
-                            <svg class="w-5 h-5 mr-3 {{ request()->routeIs('astro.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <a href="{{ route('astro.recording') }}" class="group flex items-center px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('astro.*') ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
+                            <svg class="w-5 h-5 mr-3 shrink-0 {{ request()->routeIs('astro.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
                             </svg>
                             Recording
@@ -131,12 +131,12 @@
                     @endif
 
                     @if($partner && $partner->isWorker())
-                        <a href="{{ route('main-account.request') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('main-account.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
-                            <svg class="w-5 h-5 mr-3 {{ request()->routeIs('main-account.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <a href="{{ route('main-account.request') }}" class="group flex items-center px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('main-account.*') ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
+                            <svg class="w-5 h-5 mr-3 shrink-0 {{ request()->routeIs('main-account.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                             </svg>
                             <span class="flex-1">Ajukan Akun Induk</span>
-                            <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-extrabold bg-indigo-100 text-indigo-700">
+                            <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-extrabold bg-blue-100 text-blue-700">
                                 BARU
                             </span>
                         </a>
@@ -147,87 +147,108 @@
             <!-- GROUP 2: ADMIN OPERASIONAL -->
             @if(Auth::user()->canAccessQcRoom() || Auth::user()->canAccessPayroll() || Auth::user()->canAccessFinanceJournal() || Auth::user()->hasFullAdminAccess())
             @php
-                $isAdminActive = request()->routeIs('video-submissions.*', 'admin.recordings.*', 'admin.finance.*', 'tax.*', 'accounting.*', 'payments.*', 'payroll.*', 'invoices.*', 'partners.*', 'admin.onboardings.*', 'admin.main-account-requests.*', 'admin.password-recoveries.*', 'push-notifications.broadcast.*');
+                $isAdminActive = request()->routeIs('video-submissions.*', 'admin.recordings.*', 'admin.finance.*', 'tax.*', 'accounting.*', 'payments.*', 'payroll.*', 'invoices.*', 'partners.*', 'admin.onboardings.*', 'admin.main-account-requests.*', 'admin.password-recoveries.*', 'push-notifications.broadcast.*', 'admin.integrations.mcp.*');
             @endphp
             <details name="sidebar-menu" class="group border-t border-gray-100 pt-3" {{ $isAdminActive ? 'open' : '' }}>
                 <summary class="flex items-center justify-between px-3 py-2 cursor-pointer rounded-xl text-[10px] font-bold text-gray-400 uppercase tracking-wider hover:bg-gray-50 transition-colors">
-                    <span>{{ Auth::user()->isAccountantTax() ? 'Keuangan & Pajak' : 'Modul Admin' }}</span>
+                    <span>{{ Auth::user()->isAccountantTax() ? 'Portal Akuntan & Pajak' : 'Modul Admin' }}</span>
                     <svg class="w-4 h-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </summary>
-                <div class="mt-1 space-y-1">
-                    @if(Auth::user()->canAccessFinanceJournal())
-                    <a href="{{ route('admin.finance.index') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('admin.finance.*') ? 'bg-indigo-50/80 text-indigo-700' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-2 0-3 1-3 2s1 2 3 2 3 1 3 2-1 2-3 2m0-10v12M5 4h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5a1 1 0 011-1z"/></svg>
-                        Keuangan
-                    </a>
-                    @endif
-                    @if(Auth::user()->canAccessTaxCenter())
-                    <a href="{{ route('tax.index') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('tax.*') ? 'bg-indigo-50/80 text-indigo-700' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
-                        <svg class="w-5 h-5 mr-3 {{ request()->routeIs('tax.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/></svg>
-                        Tax Center (PPh/PPN)
-                    </a>
-                    @endif
-                    @if(Auth::user()->canAccessAccountingReports())
-                    <a href="{{ route('accounting.reports.index') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('accounting.*') ? 'bg-indigo-50/80 text-indigo-700' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
-                        <svg class="w-5 h-5 mr-3 {{ request()->routeIs('accounting.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                        Laporan Akuntansi
-                    </a>
-                    @endif
+                <div class="mt-2 space-y-3">
+                    
+                    <!-- KATEGORI: OPERASIONAL -->
                     @if(Auth::user()->canAccessQcRoom())
-                        {{-- Verifikasi Laporan di-hide sementara sesuai permintaan (tidak dipakai lagi tapi jangan dihapus) --}}
-                        @if(false)
-                        <a href="{{ route('video-submissions.qc-room') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('video-submissions.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
-                            <svg class="w-5 h-5 mr-3 {{ request()->routeIs('video-submissions.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                            </svg>
-                            Verifikasi Laporan
-                        </a>
-                        @endif
+                    <div class="space-y-0.5">
+                        <div class="px-3 pt-1 pb-1 flex items-center gap-2">
+                            <span class="text-[9.5px] font-bold uppercase tracking-wider text-slate-400">Operasional</span>
+                            <div class="h-px bg-slate-100 flex-1"></div>
+                        </div>
 
-                        <a href="{{ route('admin.recordings.index') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('admin.recordings.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
-                            <svg class="w-5 h-5 mr-3 {{ request()->routeIs('admin.recordings.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <a href="{{ route('admin.recordings.index') }}" class="group flex items-center px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('admin.recordings.*') ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
+                            <svg class="w-5 h-5 mr-3 shrink-0 {{ request()->routeIs('admin.recordings.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
                             </svg>
                             Recording
                         </a>
+                    </div>
                     @endif
 
-                    @if(Auth::user()->canAccessPayroll())
-                        <a href="{{ route('payments.manage') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('payments.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
-                            <svg class="w-5 h-5 mr-3 {{ request()->routeIs('payments.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <!-- KATEGORI: KEUANGAN & PAJAK -->
+                    @if(Auth::user()->canAccessFinanceJournal() || Auth::user()->canAccessTaxCenter() || Auth::user()->canAccessAccountingReports() || Auth::user()->canAccessPayroll())
+                    <div class="space-y-0.5">
+                        <div class="px-3 pt-1 pb-1 flex items-center gap-2">
+                            <span class="text-[9.5px] font-bold uppercase tracking-wider text-slate-400">Keuangan & Pajak</span>
+                            <div class="h-px bg-slate-100 flex-1"></div>
+                        </div>
+
+                        @if(Auth::user()->canAccessFinanceJournal())
+                        <a href="{{ route('admin.finance.index') }}" class="group flex items-center px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('admin.finance.*') ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
+                            <svg class="w-5 h-5 mr-3 shrink-0 {{ request()->routeIs('admin.finance.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-2 0-3 1-3 2s1 2 3 2 3 1 3 2-1 2-3 2m0-10v12M5 4h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5a1 1 0 011-1z"/></svg>
+                            Keuangan
+                        </a>
+                        @endif
+
+                        @if(Auth::user()->canAccessTaxCenter())
+                        <a href="{{ route('tax.index') }}" class="group flex items-center px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('tax.*') ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
+                            <svg class="w-5 h-5 mr-3 shrink-0 {{ request()->routeIs('tax.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/></svg>
+                            Tax Center (PPh/PPN)
+                        </a>
+                        @endif
+
+                        @if(Auth::user()->canAccessAccountingReports())
+                        <a href="{{ route('accounting.reports.index') }}" class="group flex items-center px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('accounting.*') ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
+                            <svg class="w-5 h-5 mr-3 shrink-0 {{ request()->routeIs('accounting.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            Laporan Akuntansi
+                        </a>
+                        @endif
+
+                        @if(Auth::user()->canAccessPayroll())
+                        <a href="{{ route('payments.manage') }}" class="group flex items-center px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('payments.*') ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
+                            <svg class="w-5 h-5 mr-3 shrink-0 {{ request()->routeIs('payments.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
                             </svg>
                             Pembayaran
                         </a>
-                        <a href="{{ route('invoices.index') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('invoices.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
-                            <svg class="w-5 h-5 mr-3 {{ request()->routeIs('invoices.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <a href="{{ route('invoices.index') }}" class="group flex items-center px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('invoices.*') ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
+                            <svg class="w-5 h-5 mr-3 shrink-0 {{ request()->routeIs('invoices.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                             </svg>
                             Invoice Klien
                         </a>
+                        @endif
+                    </div>
                     @endif
 
-                    @if(Auth::user()->canViewPartnerTaxAudit())
-                        <a href="{{ route('partners.index') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('partners.*') ? 'bg-indigo-50/80 text-indigo-700' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
-                            <svg class="w-5 h-5 mr-3 {{ request()->routeIs('partners.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <!-- KATEGORI: MITRA & PENGGUNA -->
+                    @if(Auth::user()->canViewPartnerTaxAudit() || Auth::user()->hasFullAdminAccess())
+                    <div class="space-y-0.5">
+                        <div class="px-3 pt-1 pb-1 flex items-center gap-2">
+                            <span class="text-[9.5px] font-bold uppercase tracking-wider text-slate-400">Mitra & Pengguna</span>
+                            <div class="h-px bg-slate-100 flex-1"></div>
+                        </div>
+
+                        @if(Auth::user()->canViewPartnerTaxAudit())
+                        <a href="{{ route('partners.index') }}" class="group flex items-center px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('partners.*') ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
+                            <svg class="w-5 h-5 mr-3 shrink-0 {{ request()->routeIs('partners.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                             </svg>
                             {{ Auth::user()->hasFullAdminAccess() ? 'Mitra & Pekerja' : 'Audit Data Mitra' }}
                         </a>
-                    @endif
+                        @endif
 
-                    @if(Auth::user()->hasFullAdminAccess())
-                        <a href="{{ route('admin.onboardings.index') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('admin.onboardings.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
-                            <svg class="w-5 h-5 mr-3 {{ request()->routeIs('admin.onboardings.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        @if(Auth::user()->hasFullAdminAccess())
+                        <a href="{{ route('admin.onboardings.index') }}" class="group flex items-center px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('admin.onboardings.*') ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
+                            <svg class="w-5 h-5 mr-3 shrink-0 {{ request()->routeIs('admin.onboardings.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
                             </svg>
                             Pendaftar Baru
                         </a>
-                        <a href="{{ route('admin.main-account-requests.index') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('admin.main-account-requests.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
-                            <svg class="w-5 h-5 mr-3 {{ request()->routeIs('admin.main-account-requests.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+                        <a href="{{ route('admin.main-account-requests.index') }}" class="group flex items-center px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('admin.main-account-requests.*') ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
+                            <svg class="w-5 h-5 mr-3 shrink-0 {{ request()->routeIs('admin.main-account-requests.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
                             </svg>
-                            <span class="flex-1">Pengajuan Akun Induk</span>
+                            <span class="flex-1 truncate">Pengajuan Akun Induk</span>
                             @php
                                 $sidebarPendingMainAccountCount = \Illuminate\Support\Facades\Cache::remember('sidebar_pending_main_account_requests_count', 30, function () {
                                     return \App\Models\MainAccountRequest::where('status', 'pending')->count();
@@ -240,27 +261,40 @@
                             @endif
                         </a>
 
-                        <a href="{{ route('admin.password-recoveries.index') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('admin.password-recoveries.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
-                            <svg class="w-5 h-5 mr-3 {{ request()->routeIs('admin.password-recoveries.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <a href="{{ route('admin.password-recoveries.index') }}" class="group flex items-center px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('admin.password-recoveries.*') ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
+                            <svg class="w-5 h-5 mr-3 shrink-0 {{ request()->routeIs('admin.password-recoveries.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                             </svg>
                             Password Recoveries
                         </a>
+                        @endif
+                    </div>
+                    @endif
 
-                        <a href="{{ route('push-notifications.broadcast.index') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('push-notifications.broadcast.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
-                            <svg class="w-5 h-5 mr-3 {{ request()->routeIs('push-notifications.broadcast.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <!-- KATEGORI: SISTEM & ALAT -->
+                    @if(Auth::user()->hasFullAdminAccess())
+                    <div class="space-y-0.5">
+                        <div class="px-3 pt-1 pb-1 flex items-center gap-2">
+                            <span class="text-[9.5px] font-bold uppercase tracking-wider text-slate-400">Sistem & Alat</span>
+                            <div class="h-px bg-slate-100 flex-1"></div>
+                        </div>
+
+                        <a href="{{ route('push-notifications.broadcast.index') }}" class="group flex items-center px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('push-notifications.broadcast.*') ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
+                            <svg class="w-5 h-5 mr-3 shrink-0 {{ request()->routeIs('push-notifications.broadcast.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                             </svg>
                             Broadcast Notif
                         </a>
 
-                        <a href="{{ route('admin.integrations.mcp.index') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('admin.integrations.mcp.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
-                            <svg class="w-5 h-5 mr-3 {{ request()->routeIs('admin.integrations.mcp.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <a href="{{ route('admin.integrations.mcp.index') }}" class="group flex items-center px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('admin.integrations.mcp.*') ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
+                            <svg class="w-5 h-5 mr-3 shrink-0 {{ request()->routeIs('admin.integrations.mcp.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                             </svg>
                             Integrasi MCP
                         </a>
+                    </div>
                     @endif
+
                 </div>
             </details>
             @endif
@@ -275,25 +309,25 @@
                     <span>{{ $partner->isMainAccount() ? 'Main Account' : 'Vendor Operasional' }}</span>
                     <svg class="w-4 h-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </summary>
-                <div class="mt-1 space-y-1">
-                    <a href="{{ route('vendor.workers.index') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('vendor.workers.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
-                        <svg class="w-5 h-5 mr-3 {{ request()->routeIs('vendor.workers.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="mt-1 space-y-0.5">
+                    <a href="{{ route('vendor.workers.index') }}" class="group flex items-center px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('vendor.workers.*') ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
+                        <svg class="w-5 h-5 mr-3 shrink-0 {{ request()->routeIs('vendor.workers.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                         </svg>
                         {{ $partner->isMainAccount() ? 'Sub-Akun Saya' : __('dashboard.sidebar.team_worker_data') }}
                     </a>
-                    <a href="{{ route('vendor.recordings.index') }}" @if(request()->routeIs('vendor.recordings.*')) aria-current="page" @endif class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('vendor.recordings.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
-                        <svg aria-hidden="true" class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l5-3v10l-5-3M4 6h9a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2z"/></svg>
+                    <a href="{{ route('vendor.recordings.index') }}" @if(request()->routeIs('vendor.recordings.*')) aria-current="page" @endif class="group flex items-center px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('vendor.recordings.*') ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
+                        <svg aria-hidden="true" class="w-5 h-5 mr-3 shrink-0 {{ request()->routeIs('vendor.recordings.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l5-3v10l-5-3M4 6h9a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2z"/></svg>
                         {{ $partner->isMainAccount() ? 'Recording Akun' : 'Recording Tim' }}
                     </a>
-                    <a href="{{ route('vendor.reports.index') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('vendor.reports.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
-                        <svg class="w-5 h-5 mr-3 {{ request()->routeIs('vendor.reports.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="{{ route('vendor.reports.index') }}" class="group flex items-center px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('vendor.reports.*') ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
+                        <svg class="w-5 h-5 mr-3 shrink-0 {{ request()->routeIs('vendor.reports.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
                         </svg>
                         {{ $partner->isMainAccount() ? 'QC Tracker Akun' : __('dashboard.sidebar.team_qc_tracker') }}
                     </a>
-                    <a href="{{ route('vendor.payments.index') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('vendor.payments.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
-                        <svg class="w-5 h-5 mr-3 {{ request()->routeIs('vendor.payments.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="{{ route('vendor.payments.index') }}" class="group flex items-center px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('vendor.payments.*') ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
+                        <svg class="w-5 h-5 mr-3 shrink-0 {{ request()->routeIs('vendor.payments.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                         Riwayat {{ __('dashboard.sidebar.payments') }}
@@ -312,23 +346,23 @@
                     <span>Sistem Akses</span>
                     <svg class="w-4 h-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </summary>
-                <div class="mt-1 space-y-1">
-                    <a href="{{ route('activation-codes.index') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('activation-codes.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
-                        <svg class="w-5 h-5 mr-3 {{ request()->routeIs('activation-codes.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="mt-1 space-y-0.5">
+                    <a href="{{ route('activation-codes.index') }}" class="group flex items-center px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('activation-codes.*') ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
+                        <svg class="w-5 h-5 mr-3 shrink-0 {{ request()->routeIs('activation-codes.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
                         </svg>
                         Kode Aktivasi
                     </a>
-                    <a href="{{ route('admin-users.index') }}" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('admin-users.*') ? 'bg-indigo-50/80 text-indigo-750' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
-                        <svg class="w-5 h-5 mr-3 {{ request()->routeIs('admin-users.*') ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="{{ route('admin-users.index') }}" class="group flex items-center px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('admin-users.*') ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
+                        <svg class="w-5 h-5 mr-3 shrink-0 {{ request()->routeIs('admin-users.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
                         </svg>
                         Admin Users
                     </a>
 
                     @if(Auth::user()->email === 'randyfauzi24@gmail.com')
-                    <a href="{{ url('telescope') }}" target="_blank" class="flex items-center px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 text-slate-500 hover:bg-slate-50 hover:text-slate-900">
-                        <svg class="w-5 h-5 mr-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="{{ url('telescope') }}" target="_blank" class="group flex items-center px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                        <svg class="w-5 h-5 mr-3 shrink-0 text-slate-400 group-hover:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                         </svg>
