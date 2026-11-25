@@ -21,65 +21,61 @@
         <div class="space-y-4 sm:space-y-6">
             
             <!-- Stats Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5 mb-6 items-stretch">
                 <!-- Total Jam Kerja (Main Highlight) -->
-                <div class="rounded-[24px] p-7 relative overflow-hidden transition-all duration-300 hover:-translate-y-1" style="background: linear-gradient(135deg, #2563eb 0%, #1e3a8a 100%); box-shadow: 0 12px 30px -10px rgba(37, 99, 235, 0.5);">
+                <div class="rounded-[22px] p-5 sm:p-6 relative overflow-hidden transition-all duration-300 hover:-translate-y-1 h-full flex flex-col justify-between min-w-0" style="background: linear-gradient(135deg, #2563eb 0%, #1e3a8a 100%); box-shadow: 0 12px 30px -10px rgba(37, 99, 235, 0.5);">
                     <!-- Soft top-right ambient glow instead of hard rings -->
-                    <div class="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-blue-400 opacity-20 blur-3xl"></div>
+                    <div class="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-blue-400 opacity-20 blur-3xl pointer-events-none"></div>
                     
-                    <div class="flex justify-between items-start mb-8 relative z-10">
-                        <div>
-                            <h3 class="text-xs font-semibold text-blue-100 uppercase tracking-wider">Total Jam Kerja</h3>
-                        </div>
-                        <div class="w-10 h-10 rounded-2xl bg-white/10 border border-white/10 flex items-center justify-center backdrop-blur-md">
+                    <div class="flex justify-between items-start gap-3 mb-5 relative z-10">
+                        <h3 class="text-xs font-semibold text-blue-100 uppercase tracking-wider leading-snug">Total Jam Kerja</h3>
+                        <div class="w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-2xl bg-white/10 border border-white/10 flex items-center justify-center backdrop-blur-md">
                             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         </div>
                     </div>
                     
-                    <div class="relative z-10 mt-2">
-                        <div class="text-4xl sm:text-5xl font-black text-white tracking-tight flex items-baseline gap-1.5 drop-shadow-sm">
-                            {{ floor($stats['total_worked'] / 60) }}<span class="text-2xl font-bold text-blue-200/80">h</span>
-                            {{ round($stats['total_worked'] % 60) }}<span class="text-2xl font-bold text-blue-200/80">m</span>
+                    <div class="relative z-10">
+                        <div class="font-black text-white tracking-tight tabular-nums leading-none flex flex-wrap items-baseline gap-x-1.5 gap-y-1 drop-shadow-sm" style="font-size: clamp(1.75rem, 2.1vw, 2.35rem);">
+                            <span class="whitespace-nowrap">{{ floor($stats['total_worked'] / 60) }}<span class="text-lg sm:text-xl font-bold text-blue-200/80 ml-0.5">h</span></span>
+                            <span class="whitespace-nowrap">{{ round($stats['total_worked'] % 60) }}<span class="text-lg sm:text-xl font-bold text-blue-200/80 ml-0.5">m</span></span>
                         </div>
                         
-                        <div class="mt-6 flex items-center gap-2">
-                            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-bold bg-white/15 text-white border border-white/10 tracking-wide uppercase">
+                        <div class="mt-5 flex flex-wrap items-center justify-between gap-2">
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-bold bg-white/15 text-white border border-white/10 tracking-wide uppercase whitespace-nowrap">
                                 {{ $isVendorView ? 'Seluruh Worker Tim' : 'Seluruh Pekerja' }}
                             </span>
-                            <span class="text-[11px] font-medium text-blue-200/80">Durasi Atlas V.2</span>
+                            <span class="text-[11px] font-medium text-blue-200/80 whitespace-nowrap">Durasi Atlas V.2</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Approved -->
-                <div class="bg-white rounded-[24px] p-7 transition-all duration-300 hover:-translate-y-1" style="box-shadow: 0 10px 40px -10px rgba(0,0,0,0.06); border: 1px solid #f8fafc;">
-                    <div class="flex justify-between items-start mb-6">
-                        <div>
-                            <h3 class="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Total Approved</h3>
-                        </div>
-                        <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background-color: #ecfdf5;">
+                <div class="bg-white rounded-[22px] p-5 sm:p-6 transition-all duration-300 hover:-translate-y-1 h-full flex flex-col justify-between min-w-0" style="box-shadow: 0 10px 40px -10px rgba(0,0,0,0.06); border: 1px solid #f1f5f9;">
+                    <div class="flex justify-between items-start gap-3 mb-5">
+                        <h3 class="text-[11px] font-bold text-gray-400 uppercase tracking-widest leading-snug">Total Approved</h3>
+                        <div class="w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-full flex items-center justify-center" style="background-color: #ecfdf5;">
                             <svg class="w-5 h-5" style="color: #10b981;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
                         </div>
                     </div>
                     <div>
-                        <div class="text-3xl font-black text-gray-800 tracking-tighter flex items-baseline gap-1 mb-2">
-                            {{ floor($stats['total_approved'] / 60) }}<span class="text-lg font-bold text-gray-400">h</span>
-                            {{ round($stats['total_approved'] % 60) }}<span class="text-lg font-bold text-gray-400">m</span>
+                        <div class="font-black text-gray-800 tracking-tight tabular-nums leading-none flex flex-wrap items-baseline gap-x-1.5 gap-y-1 mb-3" style="font-size: clamp(1.5rem, 1.85vw, 2rem);">
+                            <span class="whitespace-nowrap">{{ floor($stats['total_approved'] / 60) }}<span class="text-base sm:text-lg font-bold text-gray-400 ml-0.5">h</span></span>
+                            <span class="whitespace-nowrap">{{ round($stats['total_approved'] % 60) }}<span class="text-base sm:text-lg font-bold text-gray-400 ml-0.5">m</span></span>
                         </div>
                         @php $pctApp = $stats['total_worked'] > 0 ? round(($stats['total_approved'] / $stats['total_worked']) * 100, 1) : 0; @endphp
-                        <div class="flex items-center gap-2">
-                            <span class="px-2 py-1 rounded text-[11px] font-bold" style="background-color: #ecfdf5; color: #10b981;">{{ $pctApp }}%</span>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="px-2 py-0.5 rounded-md text-[11px] font-bold whitespace-nowrap" style="background-color: #ecfdf5; color: #10b981;">{{ $pctApp }}%</span>
                             <span class="text-[11px] font-semibold text-gray-400">dari total durasi</span>
                         </div>
                         @unless($isVendorView)
-                        <div class="mt-4 flex flex-col gap-2 border-t border-gray-100 pt-3">
-                            <div class="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider">
-                                <span class="text-blue-500">PAID (Lunas)</span>
-                                <span class="text-gray-700 bg-blue-50 px-2 py-0.5 rounded">{{ floor($stats['total_paid'] / 60) }}h {{ round($stats['total_paid'] % 60) }}m</span>
+                        <div class="mt-4 flex flex-col gap-1.5 border-t border-gray-100 pt-3">
+                            <div class="flex justify-between items-center gap-2 text-[10px] font-bold uppercase tracking-wider">
+                                <span class="text-blue-500 whitespace-nowrap">PAID (Lunas)</span>
+                                <span class="text-gray-700 bg-blue-50 px-2 py-0.5 rounded whitespace-nowrap tabular-nums">{{ floor($stats['total_paid'] / 60) }}h {{ round($stats['total_paid'] % 60) }}m</span>
                             </div>
-                            <div class="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider">
-                                <span class="text-gray-400">UNPAID (Pending)</span>
-                                <span class="text-gray-700 bg-gray-50 border border-gray-200 px-2 py-0.5 rounded">{{ floor($stats['total_unpaid'] / 60) }}h {{ round($stats['total_unpaid'] % 60) }}m</span>
+                            <div class="flex justify-between items-center gap-2 text-[10px] font-bold uppercase tracking-wider">
+                                <span class="text-gray-400 whitespace-nowrap">UNPAID (Pending)</span>
+                                <span class="text-gray-700 bg-gray-50 border border-gray-200 px-2 py-0.5 rounded whitespace-nowrap tabular-nums">{{ floor($stats['total_unpaid'] / 60) }}h {{ round($stats['total_unpaid'] % 60) }}m</span>
                             </div>
                         </div>
                         @endunless
@@ -87,46 +83,42 @@
                 </div>
 
                 <!-- Dalam Ulasan -->
-                <div class="bg-white rounded-[24px] p-7 transition-all duration-300 hover:-translate-y-1" style="box-shadow: 0 10px 40px -10px rgba(0,0,0,0.06); border: 1px solid #f8fafc;">
-                    <div class="flex justify-between items-start mb-6">
-                        <div>
-                            <h3 class="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Dalam Ulasan</h3>
-                        </div>
-                        <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background-color: #fffbeb;">
+                <div class="bg-white rounded-[22px] p-5 sm:p-6 transition-all duration-300 hover:-translate-y-1 h-full flex flex-col justify-between min-w-0" style="box-shadow: 0 10px 40px -10px rgba(0,0,0,0.06); border: 1px solid #f1f5f9;">
+                    <div class="flex justify-between items-start gap-3 mb-5">
+                        <h3 class="text-[11px] font-bold text-gray-400 uppercase tracking-widest leading-snug">Dalam Ulasan</h3>
+                        <div class="w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-full flex items-center justify-center" style="background-color: #fffbeb;">
                             <svg class="w-5 h-5" style="color: #f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         </div>
                     </div>
                     <div>
-                        <div class="text-3xl font-black text-gray-800 tracking-tighter flex items-baseline gap-1 mb-2">
-                            {{ floor($stats['total_review'] / 60) }}<span class="text-lg font-bold text-gray-400">h</span>
-                            {{ round($stats['total_review'] % 60) }}<span class="text-lg font-bold text-gray-400">m</span>
+                        <div class="font-black text-gray-800 tracking-tight tabular-nums leading-none flex flex-wrap items-baseline gap-x-1.5 gap-y-1 mb-3" style="font-size: clamp(1.5rem, 1.85vw, 2rem);">
+                            <span class="whitespace-nowrap">{{ floor($stats['total_review'] / 60) }}<span class="text-base sm:text-lg font-bold text-gray-400 ml-0.5">h</span></span>
+                            <span class="whitespace-nowrap">{{ round($stats['total_review'] % 60) }}<span class="text-base sm:text-lg font-bold text-gray-400 ml-0.5">m</span></span>
                         </div>
                         @php $pctRev = $stats['total_worked'] > 0 ? round(($stats['total_review'] / $stats['total_worked']) * 100, 1) : 0; @endphp
-                        <div class="flex items-center gap-2">
-                            <span class="px-2 py-1 rounded text-[11px] font-bold" style="background-color: #fffbeb; color: #d97706;">{{ $pctRev }}%</span>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="px-2 py-0.5 rounded-md text-[11px] font-bold whitespace-nowrap" style="background-color: #fffbeb; color: #d97706;">{{ $pctRev }}%</span>
                             <span class="text-[11px] font-semibold text-gray-400">dari total durasi</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Ditolak -->
-                <div class="bg-white rounded-[24px] p-7 transition-all duration-300 hover:-translate-y-1" style="box-shadow: 0 10px 40px -10px rgba(0,0,0,0.06); border: 1px solid #f8fafc;">
-                    <div class="flex justify-between items-start mb-6">
-                        <div>
-                            <h3 class="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Ditolak</h3>
-                        </div>
-                        <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background-color: #fff1f2;">
+                <div class="bg-white rounded-[22px] p-5 sm:p-6 transition-all duration-300 hover:-translate-y-1 h-full flex flex-col justify-between min-w-0" style="box-shadow: 0 10px 40px -10px rgba(0,0,0,0.06); border: 1px solid #f1f5f9;">
+                    <div class="flex justify-between items-start gap-3 mb-5">
+                        <h3 class="text-[11px] font-bold text-gray-400 uppercase tracking-widest leading-snug">Ditolak</h3>
+                        <div class="w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-full flex items-center justify-center" style="background-color: #fff1f2;">
                             <svg class="w-5 h-5" style="color: #f43f5e;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
                         </div>
                     </div>
                     <div>
-                        <div class="text-3xl font-black text-gray-800 tracking-tighter flex items-baseline gap-1 mb-2">
-                            {{ floor($stats['total_rejected'] / 60) }}<span class="text-lg font-bold text-gray-400">h</span>
-                            {{ round($stats['total_rejected'] % 60) }}<span class="text-lg font-bold text-gray-400">m</span>
+                        <div class="font-black text-gray-800 tracking-tight tabular-nums leading-none flex flex-wrap items-baseline gap-x-1.5 gap-y-1 mb-3" style="font-size: clamp(1.5rem, 1.85vw, 2rem);">
+                            <span class="whitespace-nowrap">{{ floor($stats['total_rejected'] / 60) }}<span class="text-base sm:text-lg font-bold text-gray-400 ml-0.5">h</span></span>
+                            <span class="whitespace-nowrap">{{ round($stats['total_rejected'] % 60) }}<span class="text-base sm:text-lg font-bold text-gray-400 ml-0.5">m</span></span>
                         </div>
                         @php $pctRej = $stats['total_worked'] > 0 ? round(($stats['total_rejected'] / $stats['total_worked']) * 100, 1) : 0; @endphp
-                        <div class="flex items-center gap-2">
-                            <span class="px-2 py-1 rounded text-[11px] font-bold" style="background-color: #fff1f2; color: #e11d48;">{{ $pctRej }}%</span>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="px-2 py-0.5 rounded-md text-[11px] font-bold whitespace-nowrap" style="background-color: #fff1f2; color: #e11d48;">{{ $pctRej }}%</span>
                             <span class="text-[11px] font-semibold text-gray-400">dari total durasi</span>
                         </div>
                     </div>
