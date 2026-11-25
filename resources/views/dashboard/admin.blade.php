@@ -127,8 +127,35 @@
                         </span>
                     </div>
 
-                    <!-- {{ __('dashboard.general.weekly_target') }} (100 Jam) -->
-                    <div class="space-y-1.5 mb-4">
+                    <!-- {{ __('dashboard.general.daily_target') }} (450 Jam) -->
+                    <div class="space-y-1.5 mb-3">
+                        <div class="flex justify-between items-baseline">
+                            <div>
+                                <span class="text-xs font-bold text-slate-800">{{ __('dashboard.general.daily_target') }}</span>
+                                <span class="text-[10px] text-slate-400 font-medium block">{{ __('dashboard.general.period') }}: {{ $metrics['daily_period_label'] }}</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-sm font-black text-slate-900">{{ $metrics['daily_approved_hours'] }} <span class="text-xs text-slate-400 font-normal">/ {{ number_format($metrics['daily_target_hours'], 0, ',', '.') }} Jam</span></span>
+                                <div class="flex items-center justify-end gap-2 mt-0.5">
+                                    <span class="text-[10px] text-blue-500 font-medium">Submitted: {{ $metrics['daily_submitted_hours'] }} Jam ({{ $metrics['daily_submitted_percent'] }}%)</span>
+                                    <span class="text-[10px] font-bold {{ $metrics['daily_progress_percent'] >= 100 ? 'text-emerald-600' : 'text-emerald-500' }} font-mono">Approved: {{ $metrics['daily_progress_percent'] }}%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Progress Bar Harian -->
+                        <div class="w-full bg-slate-200/60 rounded-full h-3 overflow-hidden relative shadow-inner">
+                            <!-- Layer 1: Submitted (Light Blue) -->
+                            <div class="absolute top-0 left-0 h-full rounded-full transition-all duration-1000 ease-out"
+                                 style="width: {{ min(100, $metrics['daily_submitted_percent']) }}%; background: linear-gradient(90deg, #93c5fd 0%, #3b82f6 100%); box-shadow: 0 0 10px rgba(59,130,246,0.5);"></div>
+
+                            <!-- Layer 2: Approved (Green) -->
+                            <div class="absolute top-0 left-0 h-full rounded-full transition-all duration-1000 ease-out delay-150"
+                                 style="width: {{ min(100, $metrics['daily_progress_percent']) }}%; background: linear-gradient(90deg, #34d399 0%, #059669 100%); box-shadow: 0 0 10px rgba(16,185,129,0.5);"></div>
+                        </div>
+                    </div>
+
+                    <!-- {{ __('dashboard.general.weekly_target') }} (2.000 Jam) -->
+                    <div class="space-y-1.5 mb-3 pt-2.5 border-t border-slate-100">
                         <div class="flex justify-between items-baseline">
                             <div>
                                 <span class="text-xs font-bold text-slate-800">{{ __('dashboard.general.weekly_target') }}</span>
@@ -154,8 +181,35 @@
                         </div>
                     </div>
 
-                    <!-- {{ __('dashboard.general.monthly_target') }} (400 Jam) -->
-                    <div class="space-y-1.5 pt-3 border-t border-slate-100">
+                    <!-- {{ __('dashboard.general.biweekly_target') }} (4.000 Jam) -->
+                    <div class="space-y-1.5 mb-3 pt-2.5 border-t border-slate-100">
+                        <div class="flex justify-between items-baseline">
+                            <div>
+                                <span class="text-xs font-bold text-slate-800">{{ __('dashboard.general.biweekly_target') }}</span>
+                                <span class="text-[10px] text-slate-400 font-medium block">{{ __('dashboard.general.period') }}: {{ $metrics['biweekly_period_label'] }}</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-sm font-black text-slate-900">{{ $metrics['biweekly_approved_hours'] }} <span class="text-xs text-slate-400 font-normal">/ {{ number_format($metrics['biweekly_target_hours'], 0, ',', '.') }} Jam</span></span>
+                                <div class="flex items-center justify-end gap-2 mt-0.5">
+                                    <span class="text-[10px] text-blue-500 font-medium">Submitted: {{ $metrics['biweekly_submitted_hours'] }} Jam ({{ $metrics['biweekly_submitted_percent'] }}%)</span>
+                                    <span class="text-[10px] font-bold {{ $metrics['biweekly_progress_percent'] >= 100 ? 'text-emerald-600' : 'text-emerald-500' }} font-mono">Approved: {{ $metrics['biweekly_progress_percent'] }}%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Progress Bar Per 2 Minggu -->
+                        <div class="w-full bg-slate-200/60 rounded-full h-3 overflow-hidden relative shadow-inner">
+                            <!-- Layer 1: Submitted (Light Blue) -->
+                            <div class="absolute top-0 left-0 h-full rounded-full transition-all duration-1000 ease-out"
+                                 style="width: {{ min(100, $metrics['biweekly_submitted_percent']) }}%; background: linear-gradient(90deg, #93c5fd 0%, #3b82f6 100%); box-shadow: 0 0 10px rgba(59,130,246,0.5);"></div>
+
+                            <!-- Layer 2: Approved (Green) -->
+                            <div class="absolute top-0 left-0 h-full rounded-full transition-all duration-1000 ease-out delay-150"
+                                 style="width: {{ min(100, $metrics['biweekly_progress_percent']) }}%; background: linear-gradient(90deg, #34d399 0%, #059669 100%); box-shadow: 0 0 10px rgba(16,185,129,0.5);"></div>
+                        </div>
+                    </div>
+
+                    <!-- {{ __('dashboard.general.monthly_target') }} (8.000 Jam) -->
+                    <div class="space-y-1.5 pt-2.5 border-t border-slate-100">
                         <div class="flex justify-between items-baseline">
                             <div>
                                 <span class="text-xs font-bold text-slate-800">{{ __('dashboard.general.monthly_target') }}</span>

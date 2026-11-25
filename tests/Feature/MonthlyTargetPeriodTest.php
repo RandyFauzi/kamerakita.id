@@ -99,6 +99,33 @@ class MonthlyTargetPeriodTest extends TestCase
         $this->assertEquals('30 Dec 2026 - 05 Jan 2027', $crossYear['label']);
     }
 
+    public function test_biweekly_target_range_splits_16th_cycle_into_14_days_and_remainder(): void
+    {
+        $service = app(CalculatePartnerMetricsService::class);
+
+        // First 2 weeks: 16 Nov - 29 Nov 2026
+        $bw1Start = $service->getBiweeklyTargetRange(Carbon::parse('2026-11-16'));
+        $this->assertEquals('2026-11-16', $bw1Start['start']->toDateString());
+        $this->assertEquals('2026-11-29', $bw1Start['end']->toDateString());
+        $this->assertEquals('16 Nov - 29 Nov 2026', $bw1Start['label']);
+
+        $bw1Day10 = $service->getBiweeklyTargetRange(Carbon::parse('2026-11-25'));
+        $this->assertEquals('2026-11-16', $bw1Day10['start']->toDateString());
+        $this->assertEquals('2026-11-29', $bw1Day10['end']->toDateString());
+
+        // Second 2 weeks: 30 Nov - 15 Dec 2026
+        $bw2 = $service->getBiweeklyTargetRange(Carbon::parse('2026-11-30'));
+        $this->assertEquals('2026-11-30', $bw2['start']->toDateString());
+        $this->assertEquals('2026-12-15', $bw2['end']->toDateString());
+        $this->assertEquals('30 Nov - 15 Dec 2026', $bw2['label']);
+
+        // Cross-year 2nd half: 30 Dec 2026 - 15 Jan 2027
+        $crossBw2 = $service->getBiweeklyTargetRange(Carbon::parse('2027-01-02'));
+        $this->assertEquals('2026-12-30', $crossBw2['start']->toDateString());
+        $this->assertEquals('2027-01-15', $crossBw2['end']->toDateString());
+        $this->assertEquals('30 Dec 2026 - 15 Jan 2027', $crossBw2['label']);
+    }
+
     public function test_global_metrics_sums_monthly_target_only_within_16th_to_15th_window(): void
     {
         Carbon::setTestNow(Carbon::parse('2026-11-17 14:00:00'));
@@ -156,16 +183,58 @@ class MonthlyTargetPeriodTest extends TestCase
 
             $metrics = app(CalculatePartnerMetricsService::class)->getGlobalMetrics();
 
-            $this->assertEquals(4000, $metrics['monthly_target_hours']);
-            $this->assertEquals(1000, $metrics['weekly_target_hours']);
-            $this->assertEquals('16 Nov - 22 Nov 2026', $metrics['weekly_period_label']);
-            $this->assertEquals(120, $metrics['weekly_approved_minutes']); // Only T-START (16 Nov)
-            $this->assertEquals(2.0, $metrics['weekly_approved_hours']);
-            $this->assertEquals(3.0, $metrics['weekly_submitted_hours']);
-            $this->assertEquals('16 Nov - 15 Dec 2026', $metrics['monthly_period_label']);
-            $this->assertEquals(180, $metrics['monthly_approved_minutes']); // 120 + 60
-            $this->assertEquals(3.0, $metrics['monthly_approved_hours']);
-            $this->assertEquals(4.0, $metrics['monthly_submitted_hours']); // (180 + 60) / 60
+            $this->assertEquals(450, $metrics['daily_target_hours']);
+            $this->assertEquals('17 Nov 2026', $metrics['daily_period_label']);
+            $this->assertEquals(0, $metrics['daily_approved_minutes']);
+            $this->assertEquals(0.0, $metrics['daily_approved_hours']);
+            $this->assertEquals(0.0, $metrics['daily_submitted_hours']);
+
+            // Add today's task (17 Nov) -> counted in daily, weekly, and monthly
+            AtlasTask::create([
+                'atlas_worker_id' => $worker->id,
+                'atlas_task_id' => 'T-TODAY',
+                'task_name' => 'Today Work',
+                'task_date' => '2026-11-17',
+                'worked_minutes' => 2700, // 45h
+                'approved_minutes' => 1350, // 22.5h
+                'status' => 'APPROVED',
+            ]);
+
+            $metricsWithDaily = app(CalculatePartnerMetricsService::class)->getGlobalMetrics();
+            $this->assertEquals(1350, $metricsWithDaily['daily_approved_minutes']);
+            $this->assertEquals(22.5, $metricsWithDaily['daily_approved_hours']);
+            $this->assertEquals(45.0, $metricsWithDaily['daily_submitted_hours']);
+            $this->assertEquals(5.0, $metricsWithDaily['daily_progress_percent']);
+            $this->assertEquals(10.0, $metricsWithDaily['daily_submitted_percent']);
+
+            $admin = User::factory()->create(['role' => 'admin', 'email_verified_at' => now()]);
+            $this->actingAs($admin)
+                ->get(route('dashboard'))
+                ->assertOk()
+                ->assertSeeText('Target Harian')
+                ->assertSeeText('/ 450 Jam')
+                ->assertSeeText('Target Mingguan')
+                ->assertSeeText('/ 2.000 Jam')
+                ->assertSeeText('Target Per 2 Minggu')
+                ->assertSeeText('/ 4.000 Jam')
+                ->assertSeeText('Target Bulanan')
+                ->assertSeeText('/ 8.000 Jam')
+                ->assertSeeText('22.5');
+
+            $this->assertEquals(8000, $metricsWithDaily['monthly_target_hours']);
+            $this->assertEquals(4000, $metricsWithDaily['biweekly_target_hours']);
+            $this->assertEquals(2000, $metricsWithDaily['weekly_target_hours']);
+            $this->assertEquals('16 Nov - 29 Nov 2026', $metricsWithDaily['biweekly_period_label']);
+            $this->assertEquals(1470, $metricsWithDaily['biweekly_approved_minutes']); // T-START (120) + T-TODAY (1350)
+            $this->assertEquals(24.5, $metricsWithDaily['biweekly_approved_hours']);
+            $this->assertEquals('16 Nov - 22 Nov 2026', $metricsWithDaily['weekly_period_label']);
+            $this->assertEquals(1470, $metricsWithDaily['weekly_approved_minutes']); // T-START (120) + T-TODAY (1350)
+            $this->assertEquals(24.5, $metricsWithDaily['weekly_approved_hours']);
+            $this->assertEquals(48.0, $metricsWithDaily['weekly_submitted_hours']);
+            $this->assertEquals('16 Nov - 15 Dec 2026', $metricsWithDaily['monthly_period_label']);
+            $this->assertEquals(1530, $metricsWithDaily['monthly_approved_minutes']); // 120 + 1350 + 60
+            $this->assertEquals(25.5, $metricsWithDaily['monthly_approved_hours']);
+            $this->assertEquals(49.0, $metricsWithDaily['monthly_submitted_hours']); // (180 + 2700 + 60) / 60
         } finally {
             Carbon::setTestNow();
         }
