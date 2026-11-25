@@ -23,7 +23,7 @@
             <!-- Stats Grid -->
             <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5 mb-6 items-stretch">
                 <!-- Total Jam Kerja (Main Highlight) -->
-                <div class="rounded-[22px] p-5 sm:p-6 relative overflow-hidden transition-all duration-300 hover:-translate-y-1 h-full flex flex-col justify-between min-w-0" style="background: linear-gradient(135deg, #2563eb 0%, #1e3a8a 100%); box-shadow: 0 12px 30px -10px rgba(37, 99, 235, 0.5);">
+                <div class="rounded-3xl p-5 sm:p-6 relative overflow-hidden transition-all duration-300 hover:-translate-y-1 h-full flex flex-col justify-between min-w-0" style="border-radius: 24px; background: linear-gradient(135deg, #2563eb 0%, #1e3a8a 100%); box-shadow: 0 12px 30px -10px rgba(37, 99, 235, 0.5);">
                     <!-- Soft top-right ambient glow instead of hard rings -->
                     <div class="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-blue-400 opacity-20 blur-3xl pointer-events-none"></div>
                     
@@ -50,7 +50,7 @@
                 </div>
 
                 <!-- Approved -->
-                <div class="bg-white rounded-[22px] p-5 sm:p-6 transition-all duration-300 hover:-translate-y-1 h-full flex flex-col justify-between min-w-0" style="box-shadow: 0 10px 40px -10px rgba(0,0,0,0.06); border: 1px solid #f1f5f9;">
+                <div class="bg-white rounded-3xl p-5 sm:p-6 transition-all duration-300 hover:-translate-y-1 h-full flex flex-col justify-between min-w-0" style="border-radius: 24px; box-shadow: 0 10px 40px -10px rgba(0,0,0,0.06); border: 1px solid #f1f5f9;">
                     <div class="flex justify-between items-start gap-3 mb-5">
                         <h3 class="text-[11px] font-bold text-gray-400 uppercase tracking-widest leading-snug">Total Approved</h3>
                         <div class="w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-full flex items-center justify-center" style="background-color: #ecfdf5;">
@@ -83,7 +83,7 @@
                 </div>
 
                 <!-- Dalam Ulasan -->
-                <div class="bg-white rounded-[22px] p-5 sm:p-6 transition-all duration-300 hover:-translate-y-1 h-full flex flex-col justify-between min-w-0" style="box-shadow: 0 10px 40px -10px rgba(0,0,0,0.06); border: 1px solid #f1f5f9;">
+                <div class="bg-white rounded-3xl p-5 sm:p-6 transition-all duration-300 hover:-translate-y-1 h-full flex flex-col justify-between min-w-0" style="border-radius: 24px; box-shadow: 0 10px 40px -10px rgba(0,0,0,0.06); border: 1px solid #f1f5f9;">
                     <div class="flex justify-between items-start gap-3 mb-5">
                         <h3 class="text-[11px] font-bold text-gray-400 uppercase tracking-widest leading-snug">Dalam Ulasan</h3>
                         <div class="w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-full flex items-center justify-center" style="background-color: #fffbeb;">
@@ -104,7 +104,7 @@
                 </div>
 
                 <!-- Ditolak -->
-                <div class="bg-white rounded-[22px] p-5 sm:p-6 transition-all duration-300 hover:-translate-y-1 h-full flex flex-col justify-between min-w-0" style="box-shadow: 0 10px 40px -10px rgba(0,0,0,0.06); border: 1px solid #f1f5f9;">
+                <div class="bg-white rounded-3xl p-5 sm:p-6 transition-all duration-300 hover:-translate-y-1 h-full flex flex-col justify-between min-w-0" style="border-radius: 24px; box-shadow: 0 10px 40px -10px rgba(0,0,0,0.06); border: 1px solid #f1f5f9;">
                     <div class="flex justify-between items-start gap-3 mb-5">
                         <h3 class="text-[11px] font-bold text-gray-400 uppercase tracking-widest leading-snug">Ditolak</h3>
                         <div class="w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-full flex items-center justify-center" style="background-color: #fff1f2;">
