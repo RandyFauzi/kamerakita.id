@@ -104,11 +104,13 @@ class CalculatePartnerMetricsService
      */
     public function getMitraMetrics(Partner $mitra): array
     {
-        return app(DashboardCacheService::class)->remember(
+        $cached = app(DashboardCacheService::class)->remember(
             DashboardCacheService::mitraKey($mitra->id),
             DashboardCacheService::TTL_MITRA,
             fn () => $this->computeMitraMetrics($mitra)
         );
+
+        return $this->hydrateMitraMetrics($cached);
     }
 
     private function computeMitraMetrics(Partner $mitra): array
@@ -151,7 +153,7 @@ class CalculatePartnerMetricsService
             );
 
             $workersData[] = [
-                'worker' => $worker,
+                'worker_data' => $this->serializePartnerForCache($worker),
                 'metrics' => $metrics,
             ];
 
@@ -213,11 +215,13 @@ class CalculatePartnerMetricsService
      */
     public function getRekruterMetrics(Partner $rekruter): array
     {
-        return app(DashboardCacheService::class)->remember(
+        $cached = app(DashboardCacheService::class)->remember(
             DashboardCacheService::rekruterKey($rekruter->id),
             DashboardCacheService::TTL_REKRUTER,
             fn () => $this->computeRekruterMetrics($rekruter)
         );
+
+        return $this->hydrateRekruterMetrics($cached);
     }
 
     private function computeRekruterMetrics(Partner $rekruter): array
@@ -284,7 +288,7 @@ class CalculatePartnerMetricsService
             }
 
             $workersData[] = [
-                'worker' => $worker,
+                'worker_data' => $this->serializePartnerForCache($worker),
                 'reported_hours' => $reportedHours,
                 'reported_hours_formatted' => $this->formatMinutes((int)$totalReportedMinutes),
                 'reported_videos_count' => $totalReportedVideos,
@@ -303,7 +307,7 @@ class CalculatePartnerMetricsService
                 'milestone_reached' => $workerCommission !== null,
                 'milestone_status' => $workerCommission?->status,
                 'commission_amount' => $workerCommission ? (int)$workerCommission->commission_amount : \App\Services\CheckRecruiterMilestone::COMMISSION_AMOUNT,
-                'commission' => $workerCommission,
+                'commission_data' => $workerCommission ? $workerCommission->getAttributes() : null,
             ];
         }
 
@@ -321,7 +325,6 @@ class CalculatePartnerMetricsService
             'pending_commission_amount' => $pendingCommissions->sum('commission_amount'),
             'paid_commission_amount' => $paidCommissions->sum('commission_amount'),
             'total_commission_amount' => $commissions->sum('commission_amount'),
-            'claimable_workers' => collect($workersData)->filter(fn($w) => $w['milestone_reached'] && $w['milestone_status'] === 'pending')->values(),
         ];
     }
 
@@ -745,5 +748,78 @@ class CalculatePartnerMetricsService
             'total_earnings' => $totalEarnings,
             'hourly_rate' => $rate,
         ];
+    }
+
+    private function serializePartnerForCache(Partner $partner): array
+    {
+        $user = $partner->relationLoaded('user') ? $partner->user : null;
+
+        return [
+            'attributes' => $partner->getAttributes(),
+            'user' => $user ? [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'created_at' => $user->getRawOriginal('created_at') ?? ($user->created_at ? (string) $user->created_at : null),
+            ] : null,
+        ];
+    }
+
+    private function hydratePartnerFromCache(array $data): Partner
+    {
+        $partner = new Partner();
+        $partner->forceFill($data['attributes'] ?? []);
+        $partner->exists = true;
+
+        if (! empty($data['user'])) {
+            $user = new \App\Models\User();
+            $user->forceFill($data['user']);
+            $user->exists = true;
+            $partner->setRelation('user', $user);
+        }
+
+        return $partner;
+    }
+
+    private function hydrateMitraMetrics(array $cached): array
+    {
+        $cached['workers_data'] = array_map(function (array $item) {
+            if (! isset($item['worker']) && isset($item['worker_data'])) {
+                $item['worker'] = $this->hydratePartnerFromCache($item['worker_data']);
+            }
+            unset($item['worker_data']);
+
+            return $item;
+        }, $cached['workers_data'] ?? []);
+
+        return $cached;
+    }
+
+    private function hydrateRekruterMetrics(array $cached): array
+    {
+        $cached['workers_data'] = array_map(function (array $item) {
+            if (! isset($item['worker']) && isset($item['worker_data'])) {
+                $item['worker'] = $this->hydratePartnerFromCache($item['worker_data']);
+            }
+            if (! isset($item['commission'])) {
+                if (! empty($item['commission_data'])) {
+                    $commission = new \App\Models\RecruiterCommission();
+                    $commission->forceFill($item['commission_data']);
+                    $commission->exists = true;
+                    $item['commission'] = $commission;
+                } else {
+                    $item['commission'] = null;
+                }
+            }
+            unset($item['worker_data'], $item['commission_data']);
+
+            return $item;
+        }, $cached['workers_data'] ?? []);
+
+        $cached['claimable_workers'] = collect($cached['workers_data'])
+            ->filter(fn (array $w) => ! empty($w['milestone_reached']) && ($w['milestone_status'] ?? null) === 'pending')
+            ->values();
+
+        return $cached;
     }
 }

@@ -165,4 +165,55 @@ class DashboardCacheServiceTest extends TestCase
 
         $this->assertSame(['ok' => true], $result);
     }
+
+    public function test_mitra_and_rekruter_metrics_work_with_file_cache_and_serializable_classes_disabled(): void
+    {
+        config(['cache.default' => 'file', 'cache.serializable_classes' => false]);
+        Cache::forgetDriver('file');
+
+        $mitraUser = User::factory()->create(['role' => 'mitra']);
+        $workerUser = User::factory()->create(['role' => 'worker']);
+
+        $mitra = Partner::create([
+            'user_id' => $mitraUser->id,
+            'partner_role' => Partner::ROLE_MAIN_ACCOUNT,
+            'mitra_id' => 'KMK-FILE-M1',
+            'full_name' => 'File Cache Parent',
+            'whatsapp_number' => '628555555555',
+            'email' => $mitraUser->email,
+            'status' => Partner::STATUS_ACTIVE,
+        ]);
+
+        $worker = Partner::create([
+            'user_id' => $workerUser->id,
+            'partner_role' => Partner::ROLE_WORKER,
+            'mitra_parent_id' => $mitra->id,
+            'recruiter_partner_id' => $mitra->id,
+            'mitra_id' => 'KMK-FILE-W1',
+            'full_name' => 'File Cache Worker',
+            'whatsapp_number' => '628666666666',
+            'email' => $workerUser->email,
+            'status' => Partner::STATUS_ACTIVE,
+        ]);
+
+        $service = app(CalculatePartnerMetricsService::class);
+
+        // First call populates file cache; second call unserializes with serializable_classes = false
+        $service->getMitraMetrics($mitra);
+        $mitraSecond = $service->getMitraMetrics($mitra);
+
+        $this->assertCount(1, $mitraSecond['workers_data']);
+        $this->assertInstanceOf(Partner::class, $mitraSecond['workers_data'][0]['worker']);
+        $this->assertSame('File Cache Worker', $mitraSecond['workers_data'][0]['worker']->full_name);
+        $this->assertSame($workerUser->email, $mitraSecond['workers_data'][0]['worker']->user->email);
+
+        $service->getRekruterMetrics($mitra);
+        $rekruterSecond = $service->getRekruterMetrics($mitra);
+
+        $this->assertCount(1, $rekruterSecond['workers_data']);
+        $this->assertInstanceOf(Partner::class, $rekruterSecond['workers_data'][0]['worker']);
+        $this->assertSame($worker->id, $rekruterSecond['workers_data'][0]['worker']->id);
+
+        Cache::store('file')->flush();
+    }
 }

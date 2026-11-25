@@ -27,12 +27,12 @@ class DashboardCacheService
 
     public static function mitraKey(string $partnerId): string
     {
-        return "dashboard:mitra:{$partnerId}:v1";
+        return "dashboard:mitra:{$partnerId}:v2";
     }
 
     public static function rekruterKey(string $partnerId): string
     {
-        return "dashboard:rekruter:{$partnerId}:v1";
+        return "dashboard:rekruter:{$partnerId}:v2";
     }
 
     /**
