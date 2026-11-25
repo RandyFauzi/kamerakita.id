@@ -32,8 +32,8 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-3 w-full md:w-auto">
-                    <a href="{{ route('video-submissions.qc-room') }}" class="w-full md:w-auto min-h-11 inline-flex items-center justify-center px-5 py-2.5 bg-indigo-600 text-white rounded-xl text-xs font-bold shadow-sm hover:bg-indigo-700 transition">
-                        {{ __('dashboard.general.open_qc_room') }}
+                    <a href="{{ route('admin.recordings.index') }}" class="w-full md:w-auto min-h-11 inline-flex items-center justify-center px-5 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-sm hover:bg-blue-700 transition">
+                        Buka Recording
                     </a>
                     <button type="button" aria-label="{{ __('dashboard.general.close_notification') }}" @click="showBanner = false" class="absolute top-4 right-4 w-9 h-9 inline-flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-lg">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -145,24 +145,18 @@
                 </div>
 
                 <!-- Bottom Section: Action Buttons -->
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 relative z-10">
-                    <a href="{{ route('payroll.export-csv') }}" class="flex items-center justify-center gap-2 py-3.5 px-4 bg-white hover:bg-blue-50 text-blue-700 font-bold text-xs rounded-2xl shadow-sm transition">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 relative z-10">
+                    <a href="{{ route('admin.recordings.index') }}" class="flex items-center justify-center gap-2 py-3.5 px-4 bg-white hover:bg-blue-50 text-blue-700 font-bold text-xs rounded-2xl shadow-sm transition">
                         <svg class="w-4 h-4 text-blue-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
                         </svg>
-                        <span>{{ __('dashboard.general.export_csv_payroll') }}</span>
+                        <span>Recording</span>
                     </a>
-                    <a href="{{ route('payroll.export-hourly-tracker-excel') }}" class="flex items-center justify-center gap-2 py-3.5 px-4 bg-emerald-500 hover:bg-emerald-400 text-white font-bold text-xs rounded-2xl shadow-md shadow-emerald-600/20 transition w-full">
-                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        <span>{{ __('dashboard.general.export_excel_tracker') }}</span>
-                    </a>
-                    <a href="{{ route('video-submissions.qc-room') }}" class="flex items-center justify-center gap-2 py-3.5 px-4 bg-white/15 hover:bg-white/25 text-white border border-white/25 backdrop-blur-sm font-bold text-xs rounded-2xl transition">
+                    <a href="{{ route('payments.manage') }}" class="flex items-center justify-center gap-2 py-3.5 px-4 bg-white/15 hover:bg-white/25 text-white border border-white/25 backdrop-blur-sm font-bold text-xs rounded-2xl transition">
                         <svg class="w-4 h-4 text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
                         </svg>
-                        <span>{{ __('dashboard.general.open_qc_room') }}</span>
+                        <span>Pembayaran</span>
                     </a>
                 </div>
             </div>
