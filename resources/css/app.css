@@ -53,3 +53,384 @@
         -webkit-tap-highlight-color: transparent;
     }
 }
+
+/* KameraKita Modern Custom Select & Date/Month Pickers */
+.kk-control-host {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+}
+
+.kk-native-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+    pointer-events: none !important;
+    opacity: 0 !important;
+}
+
+.kk-select-trigger,
+.kk-picker-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    width: 100%;
+    min-width: 0;
+    padding: 0.625rem 0.875rem;
+    border-radius: 0.75rem;
+    border: 1px solid #e2e8f0;
+    background-color: #ffffff;
+    color: #0f172a;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.25rem;
+    text-align: left;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+    cursor: pointer;
+}
+
+.kk-select-trigger.is-compact,
+.kk-picker-trigger.is-compact {
+    padding: 0.45rem 0.75rem;
+    font-size: 0.75rem;
+    line-height: 1.1rem;
+    border-radius: 0.75rem;
+}
+
+.kk-select-trigger.is-borderless,
+.kk-picker-trigger.is-borderless {
+    border-color: transparent !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    padding: 0.375rem 0.625rem;
+}
+
+.kk-select-trigger:hover:not(:disabled),
+.kk-picker-trigger:hover:not(:disabled) {
+    border-color: #60a5fa;
+    background-color: #f8fbff;
+}
+
+.kk-select-trigger.is-borderless:hover:not(:disabled),
+.kk-picker-trigger.is-borderless:hover:not(:disabled) {
+    background-color: #eff6ff !important;
+}
+
+.kk-select-trigger.is-open,
+.kk-picker-trigger.is-open,
+.kk-select-trigger:focus-visible,
+.kk-picker-trigger:focus-visible {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
+}
+
+.kk-select-trigger.is-placeholder,
+.kk-picker-trigger.is-placeholder {
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+.kk-select-trigger:disabled,
+.kk-picker-trigger:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    background-color: #f1f5f9;
+}
+
+.kk-trigger-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kk-chevron {
+    width: 1rem;
+    height: 1rem;
+    color: #64748b;
+    flex-shrink: 0;
+    transition: transform 200ms ease, color 200ms ease;
+}
+
+.kk-select-trigger.is-open .kk-chevron {
+    transform: rotate(180deg);
+    color: #2563eb;
+}
+
+.kk-cal-icon {
+    width: 1rem;
+    height: 1rem;
+    color: #2563eb;
+    flex-shrink: 0;
+}
+
+.kk-popover {
+    position: fixed;
+    z-index: 9999;
+    background-color: #ffffff;
+    border: 1px solid #dbeafe;
+    border-radius: 1rem;
+    box-shadow: 0 22px 48px -12px rgba(37, 99, 235, 0.18), 0 6px 18px rgba(15, 23, 42, 0.08);
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+    transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.kk-popover.is-open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.kk-popover-search-wrap {
+    padding: 0.5rem;
+    border-bottom: 1px solid #f1f5f9;
+    background-color: #f8fafc;
+}
+
+.kk-popover-search {
+    width: 100%;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.625rem;
+    padding: 0.45rem 0.7rem;
+    font-size: 0.75rem;
+    color: #0f172a;
+    background-color: #ffffff;
+}
+
+.kk-popover-search:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.18);
+}
+
+.kk-select-list {
+    max-height: 15.5rem;
+    overflow-y: auto;
+    padding: 0.375rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+}
+
+.kk-select-option {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.55rem 0.75rem;
+    border-radius: 0.625rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: #334155;
+    text-align: left;
+    transition: background-color 140ms ease, color 140ms ease;
+}
+
+.kk-select-option:hover:not(:disabled) {
+    background-color: #eff6ff;
+    color: #1d4ed8;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.kk-select-option.is-selected {
+    background: linear-gradient(90deg, #eff6ff 0%, #e0f2fe 100%);
+    color: #1d4ed8;
+    font-weight: 700;
+}
+
+.kk-select-option:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.kk-option-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kk-option-check {
+    width: 1rem;
+    height: 1rem;
+    color: #2563eb;
+    flex-shrink: 0;
+}
+
+.kk-popover-empty {
+    padding: 1rem;
+    text-align: center;
+    font-size: 0.75rem;
+    color: #94a3b8;
+}
+
+/* Custom Month & Date Picker Styles */
+.kk-picker-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.7rem 0.85rem;
+    background: linear-gradient(135deg, #2563eb 0%, #3b82f6 55%, #0ea5e9 100%);
+    color: #ffffff;
+}
+
+.kk-picker-title {
+    font-size: 0.875rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+}
+
+.kk-picker-nav {
+    width: 1.85rem;
+    height: 1.85rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.6rem;
+    background-color: rgba(255, 255, 255, 0.18);
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.kk-picker-nav:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.kk-picker-body {
+    padding: 0.75rem;
+}
+
+.kk-month-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.375rem;
+}
+
+.kk-month-cell {
+    padding: 0.55rem 0.25rem;
+    border-radius: 0.625rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #334155;
+    text-align: center;
+}
+
+.kk-month-cell:hover {
+    background-color: #eff6ff;
+    color: #1d4ed8;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.kk-month-cell.is-today {
+    border: 1px solid #93c5fd;
+    color: #1d4ed8;
+}
+
+.kk-month-cell.is-selected {
+    background: linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%);
+    color: #ffffff !important;
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.28) !important;
+}
+
+.kk-day-head {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 0.25rem;
+    margin-bottom: 0.375rem;
+    text-align: center;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+}
+
+.kk-day-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 0.25rem;
+}
+
+.kk-day-cell {
+    height: 2rem;
+    border-radius: 0.55rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #334155;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.kk-day-cell:hover {
+    background-color: #eff6ff;
+    color: #1d4ed8;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.kk-day-cell.is-today {
+    border: 1px solid #93c5fd;
+    color: #1d4ed8;
+}
+
+.kk-day-cell.is-selected {
+    background: linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%);
+    color: #ffffff !important;
+    border-color: transparent;
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.28) !important;
+}
+
+.kk-picker-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.55rem 0.85rem;
+    border-top: 1px solid #f1f5f9;
+    background-color: #f8fafc;
+}
+
+.kk-picker-action {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #2563eb;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.5rem;
+}
+
+.kk-picker-action:hover {
+    background-color: #eff6ff;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.kk-picker-clear {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #64748b;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.5rem;
+}
+
+.kk-picker-clear:hover {
+    color: #e11d48;
+    background-color: #fff1f2;
+    transform: none !important;
+    box-shadow: none !important;
+}
