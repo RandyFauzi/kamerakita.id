@@ -239,4 +239,45 @@ class MonthlyTargetPeriodTest extends TestCase
             Carbon::setTestNow();
         }
     }
+
+    public function test_target_metrics_align_with_makassar_recording_dates_even_during_early_wita_morning(): void
+    {
+        // 2026-11-24 20:00 UTC == 2026-11-25 04:00 WITA
+        Carbon::setTestNow(Carbon::parse('2026-11-24 20:00:00', 'UTC'));
+
+        try {
+            $admin = User::factory()->create(['role' => 'admin', 'email_verified_at' => now()]);
+            $worker = AtlasWorker::create(['user_id' => $admin->id, 'atlas_email' => 'wita_parity@example.com']);
+
+            // Recorded at 2026-11-24 17:00:00 UTC == 2026-11-25 01:00:00 WITA
+            AtlasTask::create([
+                'atlas_worker_id' => $worker->id,
+                'atlas_task_id' => 'T-WITA-EARLY',
+                'task_name' => 'WITA Early Task',
+                'task_date' => '2026-11-25',
+                'recorded_at' => '2026-11-24 17:00:00',
+                'worked_minutes' => 180,
+                'approved_minutes' => 150,
+                'status' => 'APPROVED',
+            ]);
+
+            $metrics = app(CalculatePartnerMetricsService::class)->getGlobalMetrics();
+            $this->assertEquals('25 Nov 2026', $metrics['daily_period_label']);
+            $this->assertEquals(150, $metrics['daily_approved_minutes']);
+            $this->assertEquals(2.5, $metrics['daily_approved_hours']);
+            $this->assertEquals(3.0, $metrics['daily_submitted_hours']);
+
+            // Exact same stats on Admin Recordings filtered for 2026-11-25
+            $recordings = $this->actingAs($admin)->get(route('admin.recordings.index', [
+                'start_date' => '2026-11-25',
+                'end_date' => '2026-11-25',
+            ]));
+            $recordings->assertOk();
+            $stats = $recordings->viewData('stats');
+            $this->assertEquals($metrics['daily_approved_minutes'], (int) round((float) $stats['total_approved']));
+            $this->assertEquals(180, (int) round((float) $stats['total_worked']));
+        } finally {
+            Carbon::setTestNow();
+        }
+    }
 }

@@ -303,95 +303,17 @@ class CalculatePartnerMetricsService
         $onReviewMinutesSum = (int) VideoWorkReport::where('qc_status', 'on_review')->sum('submitted_duration_minutes');
         $rejectedMinutesSum = (int) VideoWorkReport::where('qc_status', 'rejected')->sum('submitted_duration_minutes');
 
-        // 0. Target Harian (450 Jam per hari)
-        $dailyTargetHours = 450;
-        $today = now();
+        $monthlyTargetHours = 8000;
+        $today = now('Asia/Makassar');
         $todayDate = $today->toDateString();
 
-        $dailyTotals = \App\Models\AtlasTask::whereBetween('task_date', [$todayDate, $todayDate])
-            ->selectRaw('COALESCE(SUM(approved_minutes), 0) as approved_sum, COALESCE(SUM(worked_minutes), 0) as worked_sum')
-            ->first();
-
-        $dailyApprovedMinutes = (int) round((float) ($dailyTotals->approved_sum ?? 0));
-        $dailySubmittedMinutes = (int) round((float) ($dailyTotals->worked_sum ?? 0));
-        $dailyTargetMinutes = $dailyTargetHours * 60;
-        $dailyApprovedHours = round($dailyApprovedMinutes / 60, 1);
-        $dailySubmittedHours = round($dailySubmittedMinutes / 60, 1);
-        $dailyProgressPercent = $dailyTargetMinutes > 0 ? round(($dailyApprovedMinutes / $dailyTargetMinutes) * 100, 1) : 0;
-        $dailySubmittedPercent = $dailyTargetMinutes > 0 ? round(($dailySubmittedMinutes / $dailyTargetMinutes) * 100, 1) : 0;
-        $dailyPeriodLabel = $today->format('d M Y');
-
-        // 1. Target Mingguan (7 hari per minggu dihitung mulai tanggal 16 siklus bulanan)
-        $monthlyTargetHours = 8000;
-        $weeklyPeriod = $this->getWeeklyTargetRange();
-        $weeklyPeriodStart = $weeklyPeriod['start'];
-        $weeklyPeriodEnd = $weeklyPeriod['end'];
-
-        $weeklyApprovedMinutes = \App\Models\AtlasTask::whereBetween('task_date', [
-                $weeklyPeriodStart->toDateString(),
-                $weeklyPeriodEnd->toDateString(),
-            ])
-            ->sum('approved_minutes');
-
-        $weeklySubmittedMinutes = \App\Models\AtlasTask::whereBetween('task_date', [
-                $weeklyPeriodStart->toDateString(),
-                $weeklyPeriodEnd->toDateString(),
-            ])
-            ->sum('worked_minutes');
-
-        $weeklyTargetHours = (int) round($monthlyTargetHours / 4);
-        $weeklyTargetMinutes = $weeklyTargetHours * 60;
-        $weeklyApprovedHours = round($weeklyApprovedMinutes / 60, 1);
-        $weeklySubmittedHours = round($weeklySubmittedMinutes / 60, 1);
-        $weeklyProgressPercent = $weeklyTargetMinutes > 0 ? round(($weeklyApprovedMinutes / $weeklyTargetMinutes) * 100, 1) : 0;
-        $weeklySubmittedPercent = $weeklyTargetMinutes > 0 ? round(($weeklySubmittedMinutes / $weeklyTargetMinutes) * 100, 1) : 0;
-        $weeklyPeriodLabel = $weeklyPeriod['label'];
-
-        // 2. Target Per 2 Minggu (4.000 Jam per 14 hari dari siklus tanggal 16)
-        $biweeklyPeriod = $this->getBiweeklyTargetRange();
-        $biweeklyStart = $biweeklyPeriod['start'];
-        $biweeklyEnd = $biweeklyPeriod['end'];
-
-        $biweeklyTotals = \App\Models\AtlasTask::whereBetween('task_date', [
-                $biweeklyStart->toDateString(),
-                $biweeklyEnd->toDateString(),
-            ])
-            ->selectRaw('COALESCE(SUM(approved_minutes), 0) as approved_sum, COALESCE(SUM(worked_minutes), 0) as worked_sum')
-            ->first();
-
-        $biweeklyApprovedMinutes = (int) round((float) ($biweeklyTotals->approved_sum ?? 0));
-        $biweeklySubmittedMinutes = (int) round((float) ($biweeklyTotals->worked_sum ?? 0));
-        $biweeklyTargetHours = (int) round($monthlyTargetHours / 2);
-        $biweeklyTargetMinutes = $biweeklyTargetHours * 60;
-        $biweeklyApprovedHours = round($biweeklyApprovedMinutes / 60, 1);
-        $biweeklySubmittedHours = round($biweeklySubmittedMinutes / 60, 1);
-        $biweeklyProgressPercent = $biweeklyTargetMinutes > 0 ? round(($biweeklyApprovedMinutes / $biweeklyTargetMinutes) * 100, 1) : 0;
-        $biweeklySubmittedPercent = $biweeklyTargetMinutes > 0 ? round(($biweeklySubmittedMinutes / $biweeklyTargetMinutes) * 100, 1) : 0;
-        $biweeklyPeriodLabel = $biweeklyPeriod['label'];
-
-        // 3. Target Bulanan (Siklus tanggal 16 bulan ini s/d 15 bulan depan)
-        $monthlyPeriod = $this->getMonthlyTargetRange();
-        $monthlyStart = $monthlyPeriod['start'];
-        $monthlyEnd = $monthlyPeriod['end'];
-
-        $monthlyApprovedMinutes = \App\Models\AtlasTask::whereBetween('task_date', [
-                $monthlyStart->toDateString(),
-                $monthlyEnd->toDateString(),
-            ])
-            ->sum('approved_minutes');
-
-        $monthlySubmittedMinutes = \App\Models\AtlasTask::whereBetween('task_date', [
-                $monthlyStart->toDateString(),
-                $monthlyEnd->toDateString(),
-            ])
-            ->sum('worked_minutes');
-
-        $monthlyTargetMinutes = $monthlyTargetHours * 60;
-        $monthlyApprovedHours = round($monthlyApprovedMinutes / 60, 1);
-        $monthlySubmittedHours = round($monthlySubmittedMinutes / 60, 1);
-        $monthlyProgressPercent = $monthlyTargetMinutes > 0 ? round(($monthlyApprovedMinutes / $monthlyTargetMinutes) * 100, 1) : 0;
-        $monthlySubmittedPercent = $monthlyTargetMinutes > 0 ? round(($monthlySubmittedMinutes / $monthlyTargetMinutes) * 100, 1) : 0;
-        $monthlyPeriodLabel = $monthlyPeriod['label'];
+        $daily = $this->computeTargetWindowMetrics(450, $todayDate, $todayDate, $today->format('d M Y'));
+        $weeklyPeriod = $this->getWeeklyTargetRange($today);
+        $weekly = $this->computeTargetWindowMetrics((int) round($monthlyTargetHours / 4), $weeklyPeriod['start']->toDateString(), $weeklyPeriod['end']->toDateString(), $weeklyPeriod['label']);
+        $biweeklyPeriod = $this->getBiweeklyTargetRange($today);
+        $biweekly = $this->computeTargetWindowMetrics((int) round($monthlyTargetHours / 2), $biweeklyPeriod['start']->toDateString(), $biweeklyPeriod['end']->toDateString(), $biweeklyPeriod['label']);
+        $monthlyPeriod = $this->getMonthlyTargetRange($today);
+        $monthly = $this->computeTargetWindowMetrics($monthlyTargetHours, $monthlyPeriod['start']->toDateString(), $monthlyPeriod['end']->toDateString(), $monthlyPeriod['label']);
 
         return [
             'total_workers' => $totalWorkersCount,
@@ -406,42 +328,74 @@ class CalculatePartnerMetricsService
             'global_on_review_submitted_hours_formatted' => $this->formatMinutes($onReviewMinutesSum),
             'global_rejected_submitted_hours_formatted' => $this->formatMinutes($rejectedMinutesSum),
 
-            // Target Harian, Mingguan & Bulanan
-            'daily_target_hours' => $dailyTargetHours,
-            'daily_approved_minutes' => $dailyApprovedMinutes,
-            'daily_approved_hours' => $dailyApprovedHours,
-            'daily_submitted_hours' => $dailySubmittedHours,
-            'daily_approved_hours_formatted' => $this->formatMinutes($dailyApprovedMinutes),
-            'daily_progress_percent' => $dailyProgressPercent,
-            'daily_submitted_percent' => $dailySubmittedPercent,
-            'daily_period_label' => $dailyPeriodLabel,
+            // Target Harian, Mingguan, Per 2 Minggu & Bulanan (disinkronkan dengan UTC+8 / WITA Recording)
+            'daily_target_hours' => $daily['target_hours'],
+            'daily_approved_minutes' => $daily['approved_minutes'],
+            'daily_approved_hours' => $daily['approved_hours'],
+            'daily_submitted_hours' => $daily['submitted_hours'],
+            'daily_approved_hours_formatted' => $daily['approved_hours_formatted'],
+            'daily_progress_percent' => $daily['progress_percent'],
+            'daily_submitted_percent' => $daily['submitted_percent'],
+            'daily_period_label' => $daily['period_label'],
 
-            'weekly_target_hours' => $weeklyTargetHours,
-            'weekly_approved_minutes' => $weeklyApprovedMinutes,
-            'weekly_approved_hours' => $weeklyApprovedHours,
-            'weekly_submitted_hours' => $weeklySubmittedHours,
-            'weekly_approved_hours_formatted' => $this->formatMinutes($weeklyApprovedMinutes),
-            'weekly_progress_percent' => $weeklyProgressPercent,
-            'weekly_submitted_percent' => $weeklySubmittedPercent,
-            'weekly_period_label' => $weeklyPeriodLabel,
+            'weekly_target_hours' => $weekly['target_hours'],
+            'weekly_approved_minutes' => $weekly['approved_minutes'],
+            'weekly_approved_hours' => $weekly['approved_hours'],
+            'weekly_submitted_hours' => $weekly['submitted_hours'],
+            'weekly_approved_hours_formatted' => $weekly['approved_hours_formatted'],
+            'weekly_progress_percent' => $weekly['progress_percent'],
+            'weekly_submitted_percent' => $weekly['submitted_percent'],
+            'weekly_period_label' => $weekly['period_label'],
 
-            'biweekly_target_hours' => $biweeklyTargetHours,
-            'biweekly_approved_minutes' => $biweeklyApprovedMinutes,
-            'biweekly_approved_hours' => $biweeklyApprovedHours,
-            'biweekly_submitted_hours' => $biweeklySubmittedHours,
-            'biweekly_approved_hours_formatted' => $this->formatMinutes($biweeklyApprovedMinutes),
-            'biweekly_progress_percent' => $biweeklyProgressPercent,
-            'biweekly_submitted_percent' => $biweeklySubmittedPercent,
-            'biweekly_period_label' => $biweeklyPeriodLabel,
+            'biweekly_target_hours' => $biweekly['target_hours'],
+            'biweekly_approved_minutes' => $biweekly['approved_minutes'],
+            'biweekly_approved_hours' => $biweekly['approved_hours'],
+            'biweekly_submitted_hours' => $biweekly['submitted_hours'],
+            'biweekly_approved_hours_formatted' => $biweekly['approved_hours_formatted'],
+            'biweekly_progress_percent' => $biweekly['progress_percent'],
+            'biweekly_submitted_percent' => $biweekly['submitted_percent'],
+            'biweekly_period_label' => $biweekly['period_label'],
 
-            'monthly_target_hours' => $monthlyTargetHours,
-            'monthly_approved_minutes' => $monthlyApprovedMinutes,
-            'monthly_approved_hours' => $monthlyApprovedHours,
-            'monthly_submitted_hours' => $monthlySubmittedHours,
-            'monthly_approved_hours_formatted' => $this->formatMinutes($monthlyApprovedMinutes),
-            'monthly_progress_percent' => $monthlyProgressPercent,
-            'monthly_submitted_percent' => $monthlySubmittedPercent,
-            'monthly_period_label' => $monthlyPeriodLabel,
+            'monthly_target_hours' => $monthly['target_hours'],
+            'monthly_approved_minutes' => $monthly['approved_minutes'],
+            'monthly_approved_hours' => $monthly['approved_hours'],
+            'monthly_submitted_hours' => $monthly['submitted_hours'],
+            'monthly_approved_hours_formatted' => $monthly['approved_hours_formatted'],
+            'monthly_progress_percent' => $monthly['progress_percent'],
+            'monthly_submitted_percent' => $monthly['submitted_percent'],
+            'monthly_period_label' => $monthly['period_label'],
+        ];
+    }
+
+    /**
+     * Aggregate AtlasTask approved & worked minutes within a WITA (Asia/Makassar) date window,
+     * matching the exact date expression used by Admin\AtlasRecordingController.
+     */
+    private function computeTargetWindowMetrics(int $targetHours, string $startDate, string $endDate, string $label): array
+    {
+        $isMysql = \Illuminate\Support\Facades\DB::connection()->getDriverName() === 'mysql';
+        $dateExpr = $isMysql
+            ? "COALESCE(DATE(DATE_ADD(recorded_at, INTERVAL 8 HOUR)), task_date)"
+            : "COALESCE(DATE(datetime(recorded_at, '+8 hours')), task_date)";
+
+        $totals = \App\Models\AtlasTask::whereRaw("{$dateExpr} >= ?", [$startDate])
+            ->whereRaw("{$dateExpr} <= ?", [$endDate])
+            ->selectRaw('COALESCE(SUM(approved_minutes), 0) as approved_sum, COALESCE(SUM(worked_minutes), 0) as worked_sum')
+            ->first();
+
+        $approvedMinutes = (int) round((float) ($totals->approved_sum ?? 0));
+        $submittedMinutes = (int) round((float) ($totals->worked_sum ?? 0));
+        $targetMinutes = $targetHours * 60;
+
+        return [
+            'target_hours' => $targetHours,
+            'approved_minutes' => $approvedMinutes,
+            'approved_hours' => round($approvedMinutes / 60, 1),
+            'submitted_hours' => round($submittedMinutes / 60, 1),
+            'approved_hours_formatted' => $this->formatMinutes($approvedMinutes),
+            'progress_percent' => $targetMinutes > 0 ? round(($approvedMinutes / $targetMinutes) * 100, 1) : 0,
+            'submitted_percent' => $targetMinutes > 0 ? round(($submittedMinutes / $targetMinutes) * 100, 1) : 0,
+            'period_label' => $label,
         ];
     }
 
@@ -453,7 +407,7 @@ class CalculatePartnerMetricsService
      */
     public function getBiweeklyTargetRange(?Carbon $referenceDate = null): array
     {
-        $now = ($referenceDate ? $referenceDate->copy() : now())->startOfDay();
+        $now = ($referenceDate ? $referenceDate->copy() : now('Asia/Makassar'))->startOfDay();
         $monthlyPeriod = $this->getMonthlyTargetRange($now);
         $monthlyStart = $monthlyPeriod['start'];
         $monthlyEnd = $monthlyPeriod['end'];
@@ -489,7 +443,7 @@ class CalculatePartnerMetricsService
      */
     public function getWeeklyTargetRange(?Carbon $referenceDate = null): array
     {
-        $now = ($referenceDate ? $referenceDate->copy() : now())->startOfDay();
+        $now = ($referenceDate ? $referenceDate->copy() : now('Asia/Makassar'))->startOfDay();
         $monthlyPeriod = $this->getMonthlyTargetRange($now);
         $monthlyStart = $monthlyPeriod['start'];
         $monthlyEnd = $monthlyPeriod['end'];
@@ -522,7 +476,7 @@ class CalculatePartnerMetricsService
      */
     public function getMonthlyTargetRange(?Carbon $referenceDate = null): array
     {
-        $now = ($referenceDate ? $referenceDate->copy() : now())->startOfDay();
+        $now = ($referenceDate ? $referenceDate->copy() : now('Asia/Makassar'))->startOfDay();
 
         if ($now->day >= 16) {
             $start = $now->copy()->startOfMonth()->day(16)->startOfDay();
