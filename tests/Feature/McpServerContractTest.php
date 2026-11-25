@@ -74,7 +74,7 @@ class McpServerContractTest extends TestCase
             ->assertJsonStructure(['client_id', 'redirect_uris']);
     }
 
-    public function test_superadmin_sees_all_23_tools_with_output_schema(): void
+    public function test_superadmin_sees_all_29_tools_with_output_schema(): void
     {
         $superadmin = User::factory()->create(['role' => 'superadmin', 'account_version' => 1]);
         [$token] = $this->createTokenFor($superadmin);
@@ -89,7 +89,7 @@ class McpServerContractTest extends TestCase
         $tools = $response->json('result.tools');
 
         $this->assertIsArray($tools);
-        $this->assertCount(23, $tools);
+        $this->assertCount(29, $tools);
 
         foreach ($tools as $tool) {
             $this->assertArrayHasKey('name', $tool);
@@ -234,6 +234,12 @@ class McpServerContractTest extends TestCase
             'finance_summary',
             'invoice_summary',
             'operations_overview',
+            'list_main_account_requests',
+            'list_password_recoveries',
+            'list_fastwork_onboardings',
+            'recruiter_commissions_summary',
+            'payment_cycles_summary',
+            'mailbox_summary',
         ];
 
         foreach ($toolsToCall as $idx => $toolName) {

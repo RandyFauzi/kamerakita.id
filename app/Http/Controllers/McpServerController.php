@@ -28,6 +28,12 @@ use App\Mcp\Tools\PayrollSummaryTool;
 use App\Mcp\Tools\FinanceSummaryTool;
 use App\Mcp\Tools\InvoiceSummaryTool;
 use App\Mcp\Tools\OperationsOverviewTool;
+use App\Mcp\Tools\ListMainAccountRequestsTool;
+use App\Mcp\Tools\ListPasswordRecoveriesTool;
+use App\Mcp\Tools\ListFastworkOnboardingsTool;
+use App\Mcp\Tools\RecruiterCommissionsSummaryTool;
+use App\Mcp\Tools\PaymentCyclesSummaryTool;
+use App\Mcp\Tools\MailboxSummaryTool;
 
 class McpServerController extends Controller
 {
@@ -61,6 +67,12 @@ class McpServerController extends Controller
         $this->registry->register(new FinanceSummaryTool());
         $this->registry->register(new InvoiceSummaryTool());
         $this->registry->register(new OperationsOverviewTool());
+        $this->registry->register(new ListMainAccountRequestsTool());
+        $this->registry->register(new ListPasswordRecoveriesTool());
+        $this->registry->register(new ListFastworkOnboardingsTool());
+        $this->registry->register(new RecruiterCommissionsSummaryTool());
+        $this->registry->register(new PaymentCyclesSummaryTool());
+        $this->registry->register(new MailboxSummaryTool());
     }
 
     public function handle(Request $request)

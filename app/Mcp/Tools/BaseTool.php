@@ -40,6 +40,10 @@ abstract class BaseTool implements McpToolInterface
             case 'main_account_requests': return \App\Models\MainAccountRequest::query();
             case 'password_recovery_requests': return \App\Models\PasswordRecoveryRequest::query();
             case 'fastwork_onboardings': return \App\Models\FastworkOnboarding::query();
+            case 'recruiter_commissions': return \App\Models\RecruiterCommission::query();
+            case 'payment_cycles': return \App\Models\PaymentCycle::query();
+            case 'master_tasks': return \App\Models\MasterTask::query();
+            case 'activity_logs': return \App\Models\ActivityLog::query();
             default: throw new \Exception("Resource not allowed: {$resource}");
         }
     }

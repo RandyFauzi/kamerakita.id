@@ -202,7 +202,7 @@
                         <div class="space-y-1.5">
                             <div class="flex items-center gap-2">
                                 <span class="rounded-lg bg-indigo-600 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">1-Klik Setup</span>
-                                <span class="text-xs font-medium text-slate-500">Berlaku {{ config('mcp.token_days', 90) }} hari &middot; 23 Tools aktif</span>
+                                <span class="text-xs font-medium text-slate-500">Berlaku {{ config('mcp.token_days', 90) }} hari &middot; 29 Tools aktif</span>
                             </div>
                             <h2 class="text-base font-bold text-slate-900">Hubungkan {{ $clientLabel }} ke Kamerakita</h2>
                             <p class="text-xs text-slate-600">

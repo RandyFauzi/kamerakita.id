@@ -14,12 +14,18 @@ use App\Mcp\ServerTools\FetchRecordsMcpTool;
 use App\Mcp\ServerTools\FinanceSummaryMcpTool;
 use App\Mcp\ServerTools\GetMcpContextMcpTool;
 use App\Mcp\ServerTools\InvoiceSummaryMcpTool;
+use App\Mcp\ServerTools\ListFastworkOnboardingsMcpTool;
+use App\Mcp\ServerTools\ListMainAccountRequestsMcpTool;
+use App\Mcp\ServerTools\ListPasswordRecoveriesMcpTool;
+use App\Mcp\ServerTools\MailboxSummaryMcpTool;
 use App\Mcp\ServerTools\MatchPayrollExcelMcpTool;
 use App\Mcp\ServerTools\OperationsOverviewMcpTool;
+use App\Mcp\ServerTools\PaymentCyclesSummaryMcpTool;
 use App\Mcp\ServerTools\PayrollAssistantMcpTool;
 use App\Mcp\ServerTools\PayrollSummaryMcpTool;
 use App\Mcp\ServerTools\QcStatsMcpTool;
 use App\Mcp\ServerTools\QuickReconcileByEmailMcpTool;
+use App\Mcp\ServerTools\RecruiterCommissionsSummaryMcpTool;
 use App\Mcp\ServerTools\RevertReconcileByEmailMcpTool;
 use App\Mcp\ServerTools\SearchPartnerMcpTool;
 use App\Mcp\ServerTools\SendWaMcpTool;
@@ -31,7 +37,7 @@ class KamerakitaServer extends Server
 {
     protected string $name = 'Kamerakita MCP';
 
-    protected string $version = '3.1.0';
+    protected string $version = '3.2.0';
 
     public int $defaultPaginationLength = 50;
 
@@ -42,12 +48,18 @@ class KamerakitaServer extends Server
 
         Panduan memilih tool yang tepat:
         - Orientasi peran/sistem: `get_mcp_context`
+        - Permintaan Main Account: `list_main_account_requests`
+        - Permintaan Password Recovery: `list_password_recoveries`
+        - Pendaftaran Fastwork Onboarding: `list_fastwork_onboardings`
+        - Ringkasan gabungan antrean operasional & log aktivitas: `operations_overview`
         - Rekaman Atlas (worked/approved/rejected/billable/sync bot): `atlas_recording_summary`
-        - Payroll Atlas (PAID/UNPAID, periode, nominal): `payroll_summary` (atau `match_payroll_excel` untuk pencocokan Excel)
+        - Payroll Atlas (PAID/UNPAID, periode, nominal): `payroll_summary` (atau `match_payroll_excel`)
+        - Siklus pembayaran (`PaymentCycle`): `payment_cycles_summary`
+        - Komisi rekruter (`RecruiterCommission`): `recruiter_commissions_summary`
         - Laporan manual & QC video (`VideoWorkReport`): `qc_stats`, `payroll_assistant`, `top_partners`, `anomaly_detector`
         - Keuangan / kas internal (`FinanceEntry`): `finance_summary`
         - Invoice klien (`Invoice`): `invoice_summary`
-        - Antrean operasional admin (Main Account, Password Recovery, Fastwork Onboarding, Activity Log): `operations_overview`
+        - Mailbox IMAP & sinkronisasi email: `mailbox_summary`
         - Pencarian partner/worker: `search_partner`; query fleksibel lintas tabel: `fetch_records` / `aggregate_records`
         - Aksi perubahan data (rekonsiliasi, approve massal, buat akun, WhatsApp): pastikan parameter tervalidasi dan tawarkan `is_simulation: true` bila perlu pratinjau.
 
@@ -59,11 +71,17 @@ class KamerakitaServer extends Server
      */
     protected array $tools = [
         GetMcpContextMcpTool::class,
+        ListMainAccountRequestsMcpTool::class,
+        ListPasswordRecoveriesMcpTool::class,
+        ListFastworkOnboardingsMcpTool::class,
+        OperationsOverviewMcpTool::class,
         AtlasRecordingSummaryMcpTool::class,
         PayrollSummaryMcpTool::class,
+        PaymentCyclesSummaryMcpTool::class,
+        RecruiterCommissionsSummaryMcpTool::class,
         FinanceSummaryMcpTool::class,
         InvoiceSummaryMcpTool::class,
-        OperationsOverviewMcpTool::class,
+        MailboxSummaryMcpTool::class,
         SearchPartnerMcpTool::class,
         QcStatsMcpTool::class,
         FetchRecordsMcpTool::class,
