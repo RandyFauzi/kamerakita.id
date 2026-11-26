@@ -225,7 +225,7 @@ class ManagePartnerDemographicsController extends Controller
             }
         }
 
-        DB::transaction(function () use ($partner, $validated) {
+        DB::transaction(function () use ($partner, $validated, $request) {
             $password = $validated['password'] ?? null;
             unset($validated['password']);
 
