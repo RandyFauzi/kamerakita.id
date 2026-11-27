@@ -7,7 +7,9 @@ use Carbon\CarbonImmutable;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use RuntimeException;
 
 class Robotics1618Sync
@@ -129,8 +131,22 @@ class Robotics1618Sync
             return $run;
         } catch (\Throwable $error) {
             // Do not log HTTP requests, cookies, CSV content or credentials.
-            $safe = $error instanceof RuntimeException && ! ($error instanceof QueryException)
-                ? mb_substr($error->getMessage(), 0, 250) : 'Sinkronisasi gagal saat validasi/penyimpanan. Periksa konfigurasi dan pemetaan akun.';
+            Log::error('Robotics 1618 sync failed', [
+                'exception' => get_class($error),
+                'message' => mb_substr($error->getMessage(), 0, 500),
+                'file' => $error->getFile(),
+                'line' => $error->getLine(),
+            ]);
+
+            if ($error instanceof ValidationException) {
+                $firstError = collect($error->errors())->flatten()->first() ?: $error->getMessage();
+                $safe = mb_substr('Validasi gagal: '.$firstError, 0, 250);
+            } elseif ($error instanceof RuntimeException && ! ($error instanceof QueryException)) {
+                $safe = mb_substr($error->getMessage(), 0, 250);
+            } else {
+                $safe = 'Sinkronisasi gagal saat validasi/penyimpanan. Cek laravel.log untuk detail error.';
+            }
+
             $run?->update(['status' => 'failed', 'active_slot' => null, 'message' => $safe, 'finished_at' => now()]);
 
             return $run;

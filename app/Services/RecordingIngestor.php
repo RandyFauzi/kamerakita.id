@@ -71,7 +71,8 @@ class RecordingIngestor
             }
         }
 
-        $result = DB::transaction(function () use ($records, $source, $observed, $import, $hasTracking, $hasQcTracking) {
+        $dirtyWorkerIds = [];
+        $result = DB::transaction(function () use ($records, $source, $observed, $import, $hasTracking, $hasQcTracking, &$dirtyWorkerIds) {
             $written = 0;
             $skipped = 0;
             $payloadHash = hash('sha256', json_encode($records, JSON_THROW_ON_ERROR));
@@ -184,7 +185,8 @@ class RecordingIngestor
                 }
                 $task->fill($values);
                 if ($task->isDirty()) {
-                    $task->save();
+                    AtlasTask::withoutEvents(fn () => $task->save());
+                    $dirtyWorkerIds[$worker->id] = true;
                     $written++;
                 } else {
                     $skipped++;
@@ -207,6 +209,13 @@ class RecordingIngestor
 
             return compact('written', 'skipped');
         }, 5);
+
+        if ($result['written'] > 0) {
+            $cache = app(DashboardCacheService::class);
+            foreach (array_keys($dirtyWorkerIds) as $atlasWorkerId) {
+                $cache->invalidateForAtlasWorker((int) $atlasWorkerId);
+            }
+        }
 
         return ['status' => 'success', 'count' => count($records)] + $result;
     }
