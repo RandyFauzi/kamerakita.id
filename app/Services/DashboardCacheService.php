@@ -71,7 +71,8 @@ class DashboardCacheService
         $this->forget(
             self::ownerGlobalKey(),
             'admin_monthly_data_v3',
-            'admin_daily_average_data_v4'
+            'admin_daily_average_data_v4',
+            'admin_daily_highest_data_v1'
         );
     }
 

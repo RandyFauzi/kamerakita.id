@@ -206,17 +206,25 @@ class RenderDashboardOverviewController extends Controller
                 return $merged;
             }));
 
-            $dailyAverageData = collect($dashboardCache->remember('admin_daily_average_data_v4', \App\Services\DashboardCacheService::TTL_CHARTS, function () {
-                $isMysql = \Illuminate\Support\Facades\DB::getDriverName() === 'mysql';
-                $dateRaw = $isMysql ? "DATE(task_date)" : "DATE(task_date)";
-                return \App\Models\AtlasTask::select(
-                        \Illuminate\Support\Facades\DB::raw("$dateRaw as submission_date"),
-                        \Illuminate\Support\Facades\DB::raw("SUM(worked_minutes) / COUNT(DISTINCT atlas_worker_id) as avg_minutes")
+            $dailyAverageData = collect($dashboardCache->remember('admin_daily_highest_data_v1', \App\Services\DashboardCacheService::TTL_CHARTS, function () {
+                $dailyWorkerTotals = \App\Models\AtlasTask::select(
+                        \Illuminate\Support\Facades\DB::raw('task_date as submission_date'),
+                        'atlas_worker_id',
+                        \Illuminate\Support\Facades\DB::raw('SUM(worked_minutes) as worker_daily_minutes')
                     )
-                    ->where('task_date', '>=', now()->subDays(7)->toDateString())
+                    ->where('task_date', '>=', now('Asia/Makassar')->subDays(7)->toDateString())
+                    ->groupBy('task_date', 'atlas_worker_id');
+
+                return \Illuminate\Support\Facades\DB::query()
+                    ->fromSub($dailyWorkerTotals, 'daily_worker_totals')
+                    ->select(
+                        'submission_date',
+                        \Illuminate\Support\Facades\DB::raw('MAX(worker_daily_minutes) as peak_minutes')
+                    )
                     ->groupBy('submission_date')
                     ->orderBy('submission_date', 'asc')
                     ->get()
+                    ->map(fn ($row) => (array) $row)
                     ->toArray();
             }));
 

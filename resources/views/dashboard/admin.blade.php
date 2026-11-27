@@ -309,8 +309,8 @@
             $dailyDates = $dailyAverageData->pluck('submission_date')->map(function($d) {
                 return \Carbon\Carbon::parse($d)->format('d M');
             })->toArray();
-            $dailyAvgs = $dailyAverageData->pluck('avg_minutes')->map(function($m) {
-                return round($m, 1); // Average in minutes
+            $dailyAvgs = $dailyAverageData->map(function($item) {
+                return round((float) ($item['peak_minutes'] ?? $item['avg_minutes'] ?? 0), 1);
             })->toArray();
         @endphp
 
@@ -330,12 +330,12 @@
                     <div id="monthlyPerformanceChart" class="min-h-[280px]"></div>
                 </div>
 
-                <!-- Daily Average Duration Chart -->
+                <!-- Daily Highest Duration Chart -->
                 <div class="bg-white rounded-2xl sm:rounded-[32px] p-5 sm:p-6 border border-gray-150 shadow-sm">
                     <div class="flex items-center justify-between mb-4">
                         <div>
-                            <h4 class="text-sm font-bold text-gray-800">{{ __('dashboard.general.average_work_duration_per_day') }}</h4>
-                            <p class="text-[10px] text-gray-400 mt-0.5">{{ __('dashboard.general.average_duration_reported_per_day_7_days') }}</p>
+                            <h4 class="text-sm font-bold text-gray-800">Durasi Kerja Tertinggi Harian</h4>
+                            <p class="text-[10px] text-gray-400 mt-0.5">Durasi kerja tertinggi (menit) oleh worker per hari (7 hari terakhir)</p>
                         </div>
                         <span class="bg-indigo-50 text-indigo-700 text-[10px] font-black px-2 py-0.5 rounded-md font-mono">Harian</span>
                     </div>
@@ -416,7 +416,7 @@
                     },
                     colors: ['#4f46e5'],
                     series: [{
-                        name: 'Rata-rata Menit',
+                        name: 'Durasi Tertinggi',
                         data: @js($dailyAvgs)
                     }],
                     xaxis: {
