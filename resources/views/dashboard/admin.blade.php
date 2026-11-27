@@ -11,38 +11,39 @@
         </div>
     </x-slot>
 
-    <div class="py-1 sm:py-4 space-y-4 sm:space-y-6" x-data="{ showBanner: true }">
+    <div class="py-1 sm:py-4 space-y-4 sm:space-y-6">
         
-        <!-- Top Banner: YOUR ACCOUNT IS ACTIVE -->
-        <template x-if="showBanner">
-            <div class="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-gray-150 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative animate-in fade-in slide-in-from-top-4 duration-300">
-                <div class="flex gap-3 sm:gap-4 items-start pr-8 md:pr-0">
-                    <div class="p-2.5 sm:p-3 bg-blue-50 text-blue-600 rounded-xl sm:rounded-2xl shrink-0">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.952 11.952 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                        </svg>
-                    </div>
-                    <div class="space-y-1">
-                        <span class="block text-xs font-black tracking-widest text-blue-600 uppercase">{{ __('dashboard.general.admin_system_monitoring') }}</span>
-                        <p class="text-sm text-gray-500 max-w-xl">{{ __('dashboard.general.admin_system_desc') }}</p>
-                        <!-- Progress bar -->
-                        <div class="w-full bg-blue-100 h-2 rounded-full mt-3 overflow-hidden">
-                            <div class="bg-blue-650 h-full rounded-full" style="width: 100%"></div>
-                        </div>
-                    </div>
+        <!-- Greeting Header Card -->
+        @php
+            $adminUser = Auth::user();
+            $roleLabel = strtoupper(str_replace('_', ' ', $adminUser?->role ?? 'admin'));
+            $todayWita = now('Asia/Makassar')->locale(app()->getLocale())->translatedFormat('l, d F Y');
+        @endphp
+        <div class="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-gray-100 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div class="flex items-center gap-3.5 sm:gap-4 min-w-0">
+                <div class="w-11 h-11 sm:w-12 sm:h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center shrink-0 font-bold text-lg">
+                    {{ strtoupper(mb_substr($adminUser?->name ?? 'A', 0, 1)) }}
                 </div>
-                <div class="flex items-center gap-3 w-full md:w-auto">
-                    <a href="{{ route('admin.recordings.index') }}" class="w-full md:w-auto min-h-11 inline-flex items-center justify-center px-5 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-sm hover:bg-blue-700 transition">
-                        Buka Recording
-                    </a>
-                    <button type="button" aria-label="{{ __('dashboard.general.close_notification') }}" @click="showBanner = false" class="absolute top-4 right-4 w-9 h-9 inline-flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-lg">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                        </svg>
-                    </button>
+                <div class="min-w-0 space-y-1">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <h3 class="text-base sm:text-lg font-bold text-gray-900 truncate">
+                            Halo, {{ $adminUser?->name ?? 'Admin' }}
+                        </h3>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wider uppercase bg-blue-50 text-blue-600 whitespace-nowrap">
+                            {{ $roleLabel }}
+                        </span>
+                    </div>
+                    <p class="text-xs sm:text-sm text-gray-500">
+                        {{ $todayWita }} &middot; Ringkasan progres target produksi dan aktivitas tim hari ini.
+                    </p>
                 </div>
             </div>
-        </template>
+            <div class="flex items-center gap-3 w-full md:w-auto shrink-0">
+                <a href="{{ route('admin.recordings.index') }}" class="w-full md:w-auto min-h-11 inline-flex items-center justify-center px-5 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-sm hover:bg-blue-700 transition whitespace-nowrap">
+                    Buka Recording
+                </a>
+            </div>
+        </div>
 
         @if(session('success'))
             <div class="p-4 text-sm text-green-800 rounded-xl bg-green-50 border border-green-100 flex items-center gap-2" role="alert">
