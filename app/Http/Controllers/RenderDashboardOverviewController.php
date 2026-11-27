@@ -206,25 +206,19 @@ class RenderDashboardOverviewController extends Controller
                 return $merged;
             }));
 
-            $dailyAverageData = collect($dashboardCache->remember('admin_daily_highest_data_v1', \App\Services\DashboardCacheService::TTL_CHARTS, function () {
-                $dailyWorkerTotals = \App\Models\AtlasTask::select(
+            $dailyAverageData = collect($dashboardCache->remember('admin_daily_total_data_v1', \App\Services\DashboardCacheService::TTL_CHARTS, function () {
+                return \App\Models\AtlasTask::select(
                         \Illuminate\Support\Facades\DB::raw('task_date as submission_date'),
-                        'atlas_worker_id',
-                        \Illuminate\Support\Facades\DB::raw('SUM(worked_minutes) as worker_daily_minutes')
+                        \Illuminate\Support\Facades\DB::raw('COALESCE(SUM(worked_minutes), 0) as total_minutes')
                     )
                     ->where('task_date', '>=', now('Asia/Makassar')->subDays(7)->toDateString())
-                    ->groupBy('task_date', 'atlas_worker_id');
-
-                return \Illuminate\Support\Facades\DB::query()
-                    ->fromSub($dailyWorkerTotals, 'daily_worker_totals')
-                    ->select(
-                        'submission_date',
-                        \Illuminate\Support\Facades\DB::raw('MAX(worker_daily_minutes) as peak_minutes')
-                    )
-                    ->groupBy('submission_date')
-                    ->orderBy('submission_date', 'asc')
+                    ->groupBy('task_date')
+                    ->orderBy('task_date', 'asc')
                     ->get()
-                    ->map(fn ($row) => (array) $row)
+                    ->map(fn ($row) => [
+                        'submission_date' => $row->submission_date,
+                        'total_minutes' => (float) $row->total_minutes,
+                    ])
                     ->toArray();
             }));
 

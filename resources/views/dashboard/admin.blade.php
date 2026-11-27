@@ -310,7 +310,7 @@
                 return \Carbon\Carbon::parse($d)->format('d M');
             })->toArray();
             $dailyAvgs = $dailyAverageData->map(function($item) {
-                return round((float) ($item['peak_minutes'] ?? $item['avg_minutes'] ?? 0), 1);
+                return (int) round((float) ($item['total_minutes'] ?? $item['peak_minutes'] ?? $item['avg_minutes'] ?? 0));
             })->toArray();
         @endphp
 
@@ -330,12 +330,12 @@
                     <div id="monthlyPerformanceChart" class="min-h-[280px]"></div>
                 </div>
 
-                <!-- Daily Highest Duration Chart -->
+                <!-- Daily Total Recording Chart -->
                 <div class="bg-white rounded-2xl sm:rounded-[32px] p-5 sm:p-6 border border-gray-150 shadow-sm">
                     <div class="flex items-center justify-between mb-4">
                         <div>
-                            <h4 class="text-sm font-bold text-gray-800">Durasi Kerja Tertinggi Harian</h4>
-                            <p class="text-[10px] text-gray-400 mt-0.5">Durasi kerja tertinggi (menit) oleh worker per hari (7 hari terakhir)</p>
+                            <h4 class="text-sm font-bold text-gray-800">Total Rekaman Harian</h4>
+                            <p class="text-[10px] text-gray-400 mt-0.5">Total durasi rekaman keseluruhan per hari (7 hari terakhir)</p>
                         </div>
                         <span class="bg-indigo-50 text-indigo-700 text-[10px] font-black px-2 py-0.5 rounded-md font-mono">Harian</span>
                     </div>
@@ -416,7 +416,7 @@
                     },
                     colors: ['#4f46e5'],
                     series: [{
-                        name: 'Durasi Tertinggi',
+                        name: 'Total Rekaman',
                         data: @js($dailyAvgs)
                     }],
                     xaxis: {
@@ -428,7 +428,12 @@
                     yaxis: {
                         labels: {
                             style: { colors: '#94a3b8', fontSize: '11px', fontFamily: 'Plus Jakarta Sans, sans-serif' },
-                            formatter: function (value) { return value + " Mnt"; }
+                            formatter: function (value) {
+                                const mins = Math.round(value || 0);
+                                const h = Math.floor(mins / 60);
+                                const m = mins % 60;
+                                return h + "j " + m + "m";
+                            }
                         }
                     },
                     stroke: {
@@ -452,7 +457,12 @@
                     tooltip: {
                         theme: 'light',
                         y: {
-                            formatter: function (value) { return value + " Menit"; }
+                            formatter: function (value) {
+                                const mins = Math.round(value || 0);
+                                const h = Math.floor(mins / 60);
+                                const m = mins % 60;
+                                return h + "j " + m + "m";
+                            }
                         }
                     }
                 };
