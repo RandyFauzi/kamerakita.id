@@ -109,7 +109,44 @@ class RecordingIngestor
             }
             $tasksById = AtlasTask::whereIn('atlas_task_id', array_map('strtolower', array_column($records, 'record_id')))
                 ->orderBy('atlas_task_id')->lockForUpdate()->get()->groupBy('atlas_task_id');
-            $workersByEmail = [];
+
+            $uniqueEmails = array_values(array_unique(array_map(
+                fn ($rec) => strtolower(trim((string) $rec['participant'])),
+                $records
+            )));
+            $workersByEmail = $uniqueEmails
+                ? AtlasWorker::whereIn('atlas_email', $uniqueEmails)
+                    ->get()
+                    ->keyBy(fn (AtlasWorker $w) => strtolower($w->atlas_email))
+                    ->all()
+                : [];
+
+            $emailsToResolve = [];
+            foreach ($uniqueEmails as $em) {
+                if (! isset($workersByEmail[$em]) || ! $workersByEmail[$em]->user_id) {
+                    $emailsToResolve[] = $em;
+                }
+            }
+
+            $userIdsByEmail = [];
+            if ($emailsToResolve) {
+                $isMysql = DB::connection()->getDriverName() === 'mysql';
+                $userRows = $isMysql
+                    ? User::whereIn('email', $emailsToResolve)->get(['id', 'email'])
+                    : User::whereIn(DB::raw('LOWER(email)'), $emailsToResolve)->get(['id', 'email']);
+                foreach ($userRows as $u) {
+                    $userIdsByEmail[strtolower($u->email)][] = $u->id;
+                }
+
+                $partnerRows = $isMysql
+                    ? Partner::whereIn('email', $emailsToResolve)->whereNotNull('user_id')->get(['email', 'user_id'])
+                    : Partner::whereIn(DB::raw('LOWER(email)'), $emailsToResolve)->whereNotNull('user_id')->get(['email', 'user_id']);
+                foreach ($partnerRows as $p) {
+                    $userIdsByEmail[strtolower($p->email)][] = $p->user_id;
+                }
+            }
+
+            $resolvedWorkerEmails = [];
             foreach ($records as $i => $rec) {
                 $minutes = static fn (string $minuteKey, string $hourKey): float => round(isset($rec[$minuteKey]) ? (float) $rec[$minuteKey] : (float) $rec[$hourKey] * 60, 6);
                 $approved = $minutes('billable_min', 'billable_hours');
@@ -134,13 +171,14 @@ class RecordingIngestor
                     }
                 }
                 $email = strtolower(trim($rec['participant']));
-                $cachedWorker = isset($workersByEmail[$email]);
-                $worker = $workersByEmail[$email] ?? AtlasWorker::firstOrCreate(['atlas_email' => $email], ['group' => 'ASTRO', 'active' => true]);
-                if (! $cachedWorker && ! $worker->user_id) {
-                    $isMysql = DB::connection()->getDriverName() === 'mysql';
-                    $users = ($isMysql ? User::where('email', $email) : User::whereRaw('LOWER(email) = ?', [$email]))->pluck('id')
-                        ->merge(($isMysql ? Partner::where('email', $email) : Partner::whereRaw('LOWER(email) = ?', [$email]))->whereNotNull('user_id')->pluck('user_id'))
-                        ->unique();
+                $alreadyResolved = isset($resolvedWorkerEmails[$email]);
+                $worker = $workersByEmail[$email] ?? null;
+                if (! $worker) {
+                    $worker = AtlasWorker::firstOrCreate(['atlas_email' => $email], ['group' => 'ASTRO', 'active' => true]);
+                    $workersByEmail[$email] = $worker;
+                }
+                if (! $alreadyResolved && ! $worker->user_id) {
+                    $users = collect($userIdsByEmail[$email] ?? [])->unique()->values();
                     if ($users->count() > 1) {
                         throw ValidationException::withMessages([
                             "records.$i.participant" => "Email {$email} maps to multiple accounts (user IDs: " . $users->implode(', ') . '); resolve account mapping before importing.',
@@ -149,7 +187,7 @@ class RecordingIngestor
                         $worker->update(['user_id' => $users->first()]);
                     }
                 }
-                $workersByEmail[$email] = $worker;
+                $resolvedWorkerEmails[$email] = true;
                 $status = 'UNDER_REVIEW';
                 if ($approved > 0) {
                     $status = ($pending + $deferred + $rejected > 0) ? 'PARTIALLY_APPROVED' : 'APPROVED';

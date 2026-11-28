@@ -170,6 +170,6 @@ class Robotics1618Sync
         $stats['written'] += $result['written'];
         $stats['skipped'] += $result['skipped'];
         $run->update(['processed' => min(($index + 1) * 500, $manifest['total_records']), 'result' => $stats]);
-        usleep(100000); // Yield between batches instead of flooding the shared database.
+        usleep(20000); // Yield briefly between batches without risking shared-host CLI timeout.
     }
 }
