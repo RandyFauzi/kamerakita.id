@@ -47,6 +47,12 @@ return [
             'report' => false,
         ],
 
+        'kamerakita_apk' => [
+            'driver' => 'local',
+            'root' => env('KAMERAKITA_APK_DIRECTORY', storage_path('app/private/kamerakita-apk')),
+            'visibility' => 'private',
+        ],
+
         'evidence' => [
             'driver' => 'local',
             'root' => storage_path('app/private'),

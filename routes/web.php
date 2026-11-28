@@ -54,6 +54,12 @@ Route::get('/leaderboard', [\App\Http\Controllers\LeaderboardController::class, 
     ->name('leaderboard.index');
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::prefix('admin/unduh-apk')->name('admin.apk.')->middleware('role:superadmin,admin')
+        ->controller(\App\Http\Controllers\Admin\ApkDownloadController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/download', 'download')->name('download');
+        });
+
     Route::prefix('admin/finance')->name('admin.finance.')->middleware('role:superadmin,admin,accountant_tax')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\FinanceController::class, 'index'])->name('index');
         Route::post('/entries', [\App\Http\Controllers\Admin\FinanceController::class, 'store'])->name('store');

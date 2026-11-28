@@ -79,6 +79,12 @@
                         </svg>
                         <span class="font-bold">{{ __('dashboard.sidebar.event') }}</span>
                     </a>
+                    <a href="{{ route('admin.apk.index') }}" @if(request()->routeIs('admin.apk.index')) aria-current="page" @endif class="group flex items-center px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('admin.apk.*') ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
+                        <svg aria-hidden="true" class="w-5 h-5 mr-3 shrink-0 {{ request()->routeIs('admin.apk.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v12m-4-4 4 4 4-4M4 16v4h16v-4" />
+                        </svg>
+                        Unduh APK KameraKita
+                    </a>
                 @endif
 
                 @if($partner && $partner->hasStandardPortalAccess())
