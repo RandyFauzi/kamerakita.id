@@ -8,6 +8,7 @@ use App\Models\Partner;
 use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -136,12 +137,15 @@ class RecordingIngestor
                 $cachedWorker = isset($workersByEmail[$email]);
                 $worker = $workersByEmail[$email] ?? AtlasWorker::firstOrCreate(['atlas_email' => $email], ['group' => 'ASTRO', 'active' => true]);
                 if (! $cachedWorker && ! $worker->user_id) {
-                    $users = User::whereRaw('LOWER(email) = ?', [$email])->pluck('id')
-                        ->merge(Partner::whereRaw('LOWER(email) = ?', [$email])->whereNotNull('user_id')->pluck('user_id'))->unique();
+                    $isMysql = DB::connection()->getDriverName() === 'mysql';
+                    $users = ($isMysql ? User::where('email', $email) : User::whereRaw('LOWER(email) = ?', [$email]))->pluck('id')
+                        ->merge(($isMysql ? Partner::where('email', $email) : Partner::whereRaw('LOWER(email) = ?', [$email]))->whereNotNull('user_id')->pluck('user_id'))
+                        ->unique();
                     if ($users->count() > 1) {
-                        throw ValidationException::withMessages(["records.$i.participant" => 'Email maps to multiple accounts; resolve account mapping before importing.']);
-                    }
-                    if ($users->count() === 1) {
+                        throw ValidationException::withMessages([
+                            "records.$i.participant" => "Email {$email} maps to multiple accounts (user IDs: " . $users->implode(', ') . '); resolve account mapping before importing.',
+                        ]);
+                    } elseif ($users->count() === 1) {
                         $worker->update(['user_id' => $users->first()]);
                     }
                 }
